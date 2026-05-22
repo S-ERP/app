@@ -10,7 +10,7 @@ import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
 
 export default class ventas extends React.Component {
     state = {
-        periodo: "semana",
+        periodo: "hoy",
         fecha_inicio: this.formatDate(new Date(new Date().setDate(new Date().getDate() - 6))),
         fecha_fin: this.formatDate(new Date()),
         selectedSucursal: null,
@@ -251,7 +251,7 @@ export default class ventas extends React.Component {
             const topProduct = dataTopProducts[0]?.producto || "N/A";
 
             return (
-                <SView col="xs-12" row style={{ gap: 12, flexWrap: 'wrap' }}>
+                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }} >
                     {[{
                         label: "Sucursal",
                         value: selectedBranchName,
@@ -259,20 +259,22 @@ export default class ventas extends React.Component {
                         label: "Total ventas",
                         value: `Bs. ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
                     }, {
-                        label: "Tickets",
+                        label: "Cantidad de ventas",
                         value: totalTickets,
                     }, {
                         label: "Top producto",
                         value: topProduct,
                     }].map((item, index) => (
-                        <SView
-                            key={index}
-                            col="xs-12 md-6 lg-3"
-                            card
-                            style={{ padding: 16, minHeight: 110, backgroundColor: '#ffffff', borderRadius: 10, borderWidth: 1, borderColor: '#e5e5e5' }}
-                        >
-                            <SText fontSize={12} color={STheme.color.gray}>{item.label}</SText>
-                            <SText fontSize={18} bold>{item.value}</SText>
+                        <SView key={index}
+                            col="xs-12 md-6 lg-3" padding={5} >
+                            <SView
+
+                                card
+                                style={{ padding: 15, minHeight: 110, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                            >
+                                <SText fontSize={12} color={STheme.color.gray}>{item.label}</SText>
+                                <SText fontSize={18} bold>{item.value}</SText>
+                            </SView>
                         </SView>
                     ))}
                 </SView>
@@ -284,23 +286,9 @@ export default class ventas extends React.Component {
                 <ScrollView>
                     <SView col="xs-12" padding={16}>
                         <SText fontSize={18} bold>Dashboard de Ventas</SText>
-                        <SHr />
-
-                        <SView col="xs-12" row style={{ gap: 12, flexWrap: 'wrap' }}>
-                            {['hoy', 'semana', 'año'].map((item) => (
-                                <SButtom
-                                    key={item}
-                                    type={periodo === item ? 'primary' : 'outline'}
-                                    onPress={() => this.handleChangePeriodo(item)}
-                                    style={{ minWidth: 100 }}
-                                >
-                                    <SText>{item === 'hoy' ? 'Día' : item === 'semana' ? 'Semana' : 'Año'}</SText>
-                                </SButtom>
-                            ))}
-                        </SView>
-
-                        <SView col="xs-12" row center style={{ gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
-                            <SView col="xs-12 md-6 lg-4">
+                        <SHr height={20} />
+                        <SView col="xs-12" row card center padding={8}>
+                            <SView row col="xs-12 md-6 lg-4" style={{}}  >
                                 <FechaFullFilter
                                     key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
                                     fecha_inicio={fecha_inicio}
@@ -310,18 +298,36 @@ export default class ventas extends React.Component {
                                     }}
                                 />
                             </SView>
-                            <SView col="xs-12 md-6 lg-8" row center style={{ gap: 8, flexWrap: 'wrap' }}>
+                            <SView col="xs-12 md-6 lg-8" flex   >
+                                <SView style={{ alignItems: "flex-end", justifyContent: "flex-end" }} row center>
+                                    {['hoy', 'semana', 'año'].map((item) => (
+                                        <SButtom
+                                            key={item}
+                                            type={periodo === item ? 'danger' : 'outline'}
+                                            onPress={() => this.handleChangePeriodo(item)}
+                                            style={{ minWidth: 70, width: 70, height: 30, paddingHorizontal: 0, borderColor: STheme.color.gray + "66", }}
+                                        >
+                                            <SText>{item === 'hoy' ? 'Día' : item === 'semana' ? 'Semana' : 'Año'}</SText>
+                                        </SButtom>
+                                    ))}
+                                </SView>
+                            </SView>
+                        </SView>
+
+                        <SView col="xs-12" row center style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} >
+
+                            <SView col="xs-12 md-6 lg-8" row  style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                 <SButtom
-                                    type={!selectedSucursal ? 'primary' : 'outline'}
+                                    type={!selectedSucursal ? 'danger' : 'outline'}
                                     onPress={() => this.handleSucursalSelect(null)}
-                                    style={{ minWidth: 120 }}
+                                    style={{ minWidth: 100, height:50 }}
                                 >
                                     <SText>Todos</SText>
                                 </SButtom>
                                 {(sucursales || []).slice(0, 4).map((sucursal) => (
                                     <SButtom
                                         key={sucursal.key}
-                                        type={selectedSucursal?.key === sucursal.key ? 'primary' : 'outline'}
+                                        type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
                                         onPress={() => this.handleSucursalSelect(sucursal)}
                                         style={{ minWidth: 120 }}
                                     >
@@ -329,126 +335,169 @@ export default class ventas extends React.Component {
                                     </SButtom>
                                 ))}
                             </SView>
+                            <SView col="xs-12 md-6 lg-4" padding={8} card style={{backgroundColor: STheme.color.secondary+"60"}}>
+                                {/* <FechaFullFilter
+                                    key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
+                                    fecha_inicio={fecha_inicio}
+                                    fecha_fin={fecha_fin}
+                                    onChange={(dates) => {
+                                        this.setState({ fecha_inicio: dates.fecha_inicio, fecha_fin: dates.fecha_fin }, this.loadDashboardData);
+                                    }}
+                                /> */}
+                                <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
+                                <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
+                            </SView>
                         </SView>
 
-                        <SView col="xs-12" style={{ marginVertical: 16 }}>
+                        {/* <SHr style={{ marginVertical: 0 }} /> */}
+                        {/* <SView col="xs-12" style={{ marginVertical: 10 }}>
                             <SText fontSize={14} color={STheme.color.gray}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
                             <SText fontSize={14} color={STheme.color.gray}>Sucursal: {selectedBranchName}</SText>
-                        </SView>
+                        </SView> */}
 
                         {renderResumenTarjetas()}
 
-                        <SHr style={{ marginVertical: 16 }} />
+                        {/* <SHr style={{ marginVertical: 10 }} /> */}
 
-                        <SView col="xs-12" row>
-                            <SView col="xs-12 lg-8" padding={8}>
-                                <SText fontSize={16} bold>{lineTitle}</SText>
-                                <SHr />
-                                {loading ? (
-                                    <SText>Cargando datos...</SText>
-                                ) : dataTimeSeries.length === 0 ? (
-                                    <SText>No hay datos para este período.</SText>
-                                ) : (
-                                    <LineaRechartsBd
-                                        data={dataTimeSeries}
-                                        nameKey="label"
-                                        valueKey="monto_total"
-                                        height={320}
-                                    />
-                                )}
+                        <SView col="xs-12" row style={{ flexWrap: 'wrap' }} >
+                            <SView col="xs-12 lg-8" row padding={5} >
+                                <SView
+                                    col="xs-12"
+                                    card
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                >
+                                    <SText fontSize={16} bold>{lineTitle}</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataTimeSeries.length === 0 ? (
+                                        <SText>No hay datos para este período.</SText>
+                                    ) : (
+                                        <LineaRechartsBd
+                                            data={dataTimeSeries}
+                                            nameKey="label"
+                                            valueKey="monto_total"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView>
                             </SView>
-                            <SView col="xs-12 lg-4" padding={8}>
-                                <SText fontSize={16} bold>Participación por sucursal</SText>
-                                <SHr />
-                                {loading ? (
-                                    <SText>Cargando datos...</SText>
-                                ) : dataBranchShare.length === 0 ? (
-                                    <SText>No hay datos por sucursal.</SText>
-                                ) : (
-                                    <CircularRechartsBd
-                                        data={dataBranchShare}
-                                        nameKey="name"
-                                        valueKey="value"
-                                        height={320}
-                                    />
-                                )}
+                            <SView col="xs-12 lg-4" row padding={5} >
+                                <SView card
+                                    col="xs-12"
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }} >
+                                    <SText fontSize={16} bold>Participación por sucursal</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataBranchShare.length === 0 ? (
+                                        <SText>No hay datos por sucursal.</SText>
+                                    ) : (
+                                        <CircularRechartsBd
+                                            data={dataBranchShare}
+                                            nameKey="name"
+                                            valueKey="value"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView>
                             </SView>
                         </SView>
 
+
+
                         <SView col="xs-12" row>
-                            <SView col="xs-12 lg-6" padding={8}>
-                                <SText fontSize={16} bold>TOP 5 Productos</SText>
+                            <SView col="xs-12 lg-6" row padding={5} >
+                                <SView
+                                    col="xs-12"
+                                    card
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                >
+                                    <SText fontSize={16} bold>TOP 5 Productos</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataTopProducts.length === 0 ? (
+                                        <SText>No hay productos disponibles.</SText>
+                                    ) : (
+                                        <BarraRechartsBd
+                                            data={dataTopProducts}
+                                            nameKey="producto"
+                                            valueKey="cantidad_total_vendida"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView>
+                            </SView>
+                            <SView col="xs-12 lg-6" padding={5}>
+                                <SView
+                                    col="xs-12"
+                                    card
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                >
+                                    <SText fontSize={16} bold>Ventas por método de pago</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataMetodoPago.length === 0 ? (
+                                        <SText>No hay datos disponibles.</SText>
+                                    ) : (
+                                        <CircularRechartsBd
+                                            data={dataMetodoPago}
+                                            nameKey="metodo_pago"
+                                            valueKey="total_bs"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView>
+                            </SView>
+                        </SView>
+
+                        {/* <SHr style={{ marginVertical: 10 }} /> */}
+
+                        <SView col="xs-12" padding={8}>
+                            <SView
+                                col="xs-12"
+                                card
+                                style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                            >
+                                <SText fontSize={16} bold>Detalle de ventas por producto</SText>
                                 <SHr />
                                 {loading ? (
                                     <SText>Cargando datos...</SText>
                                 ) : dataTopProducts.length === 0 ? (
-                                    <SText>No hay productos disponibles.</SText>
+                                    <SText>No hay datos de productos.</SText>
                                 ) : (
-                                    <BarraRechartsBd
-                                        data={dataTopProducts}
-                                        nameKey="producto"
-                                        valueKey="cantidad_total_vendida"
-                                        height={320}
-                                    />
+                                    <DinamicTable
+                                        language="es"
+                                        hiddenMenu
+                                        textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
+                                        colors={{ header: "#2E86AB", textHeader: "white" }}
+                                        cellStyle={{ padding: 4 }}
+                                        textStyle={{ fontSize: 10 }}
+                                        loadData={async () => dataTopProducts}
+                                    >
+                                        <DinamicTable.Col
+                                            key="producto"
+                                            label='Producto'
+                                            width={200}
+                                            data={e => e.row.producto}
+                                        />
+                                        <DinamicTable.Col
+                                            key="cantidad_total_vendida"
+                                            label='Cantidad Vendida'
+                                            width={100}
+                                            data={e => e.row.cantidad_total_vendida}
+                                        />
+                                        <DinamicTable.Col
+                                            key="total_bs_ganado"
+                                            label='Total Bs'
+                                            width={120}
+                                            data={e => `Bs. ${Number(e.row.total_bs_ganado).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                        />
+                                    </DinamicTable>
                                 )}
                             </SView>
-                            <SView col="xs-12 lg-6" padding={8}>
-                                <SText fontSize={16} bold>Ventas por método de pago</SText>
-                                <SHr />
-                                {loading ? (
-                                    <SText>Cargando datos...</SText>
-                                ) : dataMetodoPago.length === 0 ? (
-                                    <SText>No hay datos disponibles.</SText>
-                                ) : (
-                                    <CircularRechartsBd
-                                        data={dataMetodoPago}
-                                        nameKey="metodo_pago"
-                                        valueKey="total_bs"
-                                        height={320}
-                                    />
-                                )}
-                            </SView>
-                        </SView>
-
-                        <SHr style={{ marginVertical: 16 }} />
-
-                        <SView col="xs-12" padding={8}>
-                            <SText fontSize={16} bold>Detalle de ventas por producto</SText>
-                            <SHr />
-                            {loading ? (
-                                <SText>Cargando datos...</SText>
-                            ) : dataTopProducts.length === 0 ? (
-                                <SText>No hay datos de productos.</SText>
-                            ) : (
-                                <DinamicTable
-                                    language="es"
-                                    hiddenMenu
-                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
-                                    colors={{ header: "#2E86AB", textHeader: "white" }}
-                                    cellStyle={{ padding: 4 }}
-                                    textStyle={{ fontSize: 10 }}
-                                    loadData={async () => dataTopProducts}
-                                >
-                                    <DinamicTable.Col
-                                        key="producto"
-                                        label='Producto'
-                                        width={200}
-                                        data={e => e.row.producto}
-                                    />
-                                    <DinamicTable.Col
-                                        key="cantidad_total_vendida"
-                                        label='Cantidad Vendida'
-                                        width={100}
-                                        data={e => e.row.cantidad_total_vendida}
-                                    />
-                                    <DinamicTable.Col
-                                        key="total_bs_ganado"
-                                        label='Total Bs'
-                                        width={120}
-                                        data={e => `Bs. ${Number(e.row.total_bs_ganado).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
-                                    />
-                                </DinamicTable>
-                            )}
                         </SView>
                     </SView>
                 </ScrollView>

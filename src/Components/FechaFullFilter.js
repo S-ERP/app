@@ -91,13 +91,13 @@ export default class FechaFullFilter extends Component {
 
     render() {
         return (
-            <SView col="xs-12" row center height={70}>
-                <SView flex backgroundColor="transparent" height={70}>
+            <SView col="xs-12" row  height={40}>
+                <SView flex backgroundColor="transparent" height={40}>
                     <SForm
                         key={this.state.entre_fecha ? "entre" : "normal"}
                         ref={ref => this.form = ref}
                         row
-                        style={{ justifyContent: 'space-between', }}
+                        style={{ justifyContent: 'flex-start', marginTop: -30, alignItems: "center", height:30 }}
                         inputs={{
                             key_opciones: {
                                 placeholder: "Filtro tiempo",
@@ -173,7 +173,7 @@ export default class FechaFullFilter extends Component {
 
                 <SView
                     style={{
-                        top: 15, borderRadius: 2,
+                        top: 0, borderRadius: 2,
                         borderWidth: 1, borderColor: STheme.color.lightGray + "40",
                     }}
                     card
