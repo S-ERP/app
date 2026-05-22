@@ -53,7 +53,6 @@ export default class cuentas_anidadas extends React.Component {
         }
     };
 
-
     filterTree = (nodes, search) => {
         if (!search) return nodes;
         const searchLower = search.toLowerCase();
@@ -74,8 +73,6 @@ export default class cuentas_anidadas extends React.Component {
             .filter(Boolean);
     };
 
-
-
     invalidateCaches = () => {
         this.baseDataCache = null;
         this.reporteTodosPorCodigo = null;
@@ -91,11 +88,9 @@ export default class cuentas_anidadas extends React.Component {
             MDL.contabilidad.getAjustes(),
             MDL.empresa.getFull(),
         ]);
-
         const cuentasObj = resp || {};
         const ajustesArr = ajustes || [];
         const monedas = empresa?.monedas || [];
-
         const ajustesPorCuenta = {};
         ajustesArr.forEach((ajuste) => {
             const keyCuenta = ajuste?.ajuste_empresa?.key_cuenta_contable;
@@ -103,7 +98,6 @@ export default class cuentas_anidadas extends React.Component {
             if (!ajustesPorCuenta[keyCuenta]) ajustesPorCuenta[keyCuenta] = [];
             ajustesPorCuenta[keyCuenta].push(ajuste);
         });
-
         const cuentasBase = Object.values(cuentasObj).map((cuenta) => ({
             ...cuenta,
             moneda: cuenta.key_moneda ? monedas.find((m) => m.key == cuenta.key_moneda) : null,
@@ -207,6 +201,7 @@ export default class cuentas_anidadas extends React.Component {
             openItems: {},
             cuentas: [],
             search: "",
+            tipoComprobante: "Todos",
             hoveredItem: null,
             selectedItem: null,
             selectPosition: null
@@ -331,8 +326,6 @@ export default class cuentas_anidadas extends React.Component {
         const options = [];
 
         // console.log("RENDER ITEM: ", item.codigo, "SELECTED: ", isSelected, "HOVER: ", isHover)
-        console.clear();
-        console.log("%c" + JSON.stringify(item, null, 2), "color: #2ECC40; font-weight: bold;");
         if (this.props.select) {
             options.push({
                 label: 'Seleccionar',
@@ -652,15 +645,17 @@ export default class cuentas_anidadas extends React.Component {
                                         label={"Tipo comprobante"}
                                         customStyle={"erp"}
                                         style={{ padding: 2, height: 30, textAlign: "center", width: 110 }}
-                                        defaultValue={this.tipoComprobante}
+                                        value={this.state.tipoComprobante}
                                         options={["Todos", "Fiscal", "Interno"]}
                                         onChangeText={e => {
                                             this.tipoComprobante = e;
+                                            this.setState({ tipoComprobante: e });
                                             this.loadData();
                                         }}
                                     />
                                 </SView>
                                 <SView width={10} />
+
                                 <SView onPress={() => this.registraNuevo()} row card padding={8}>
                                     <SIconApp name="addFoto" width={15} height={15} fill={STheme.color.text} />
                                     <SView width={5} />
@@ -712,7 +707,7 @@ export default class cuentas_anidadas extends React.Component {
                             <SView style={{ width: 60, alignItems: "center" }}> </SView>
                         </SView>
                         <ScrollView ref={ref => this.scrollViewVertical = ref}
-                            style={{ flex: 1 }} showsVerticalScrollIndicator={true} >
+                            style={{ flex: 1 }} showsVerticalScrollIndicator={true}>
                             {filteredTree.map(item => this.renderItem(item))}
                             <SHr height={65} />
                         </ScrollView>
@@ -722,7 +717,7 @@ export default class cuentas_anidadas extends React.Component {
                     this.registraNuevo();
                 }} />
                 {this.props.btnSelect && this.state.selectedItem && this.state.selectPosition && (
-                    <SView style={{ position: "absolute", top: this.state.selectPosition.y - 65, left: this.state.selectPosition.x + 10, zIndex: 999 }} >
+                    <SView style={{ position: "absolute", top: this.state.selectPosition.y - 65, left: this.state.selectPosition.x + 10, zIndex: 999 }}>
                         <SView row
                             onPress={() => {
                                 const cuenta = this.state.cuentas.find(
