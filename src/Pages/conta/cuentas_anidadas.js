@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SInput, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import FloatMenu from "../../Components/FloatMenu";
 import SIconApp from "../../Assets/SIconApp";
@@ -25,9 +25,31 @@ export default class cuentas_anidadas extends React.Component {
     }
 
     async loadData() {
-        const resp = await MDL.contabilidad.getCuentas();
-        let arr = Object.values(resp);
-        const ajustes = await MDL.contabilidad.getAjustes();
+        const [resp, reporteBalance, ajustes] = await Promise.all([
+            MDL.contabilidad.getCuentas(),
+            MDL.contabilidad.reporte_balance_general(),
+            MDL.contabilidad.getAjustes(),
+        ]);
+        const cuentasObj = resp || {};
+        const reportePorCodigo = {};
+        (reporteBalance || []).forEach((cuenta) => {
+            if (!cuenta?.codigo) return;
+            reportePorCodigo[cuenta.codigo] = cuenta;
+        });
+        let arr = Object.values(cuentasObj).map((cuenta) => {
+            const reporte = reportePorCodigo[cuenta.codigo] || {};
+            const debe = parseFloat(reporte.debe || 0);
+            const haber = parseFloat(reporte.haber || 0);
+            return {
+                ...cuenta,
+                ...reporte,
+                debe,
+                haber,
+                saldo: ["ACTIVO", "GASTO"].includes(cuenta.tipo)
+                    ? (debe - haber)
+                    : (haber - debe),
+            };
+        });
         const empresa = await MDL.empresa.getFull();
         this.setState({ ajustes: ajustes });
         arr.map((cuenta) => {
@@ -196,6 +218,10 @@ export default class cuentas_anidadas extends React.Component {
         const isHover = this.state.hoveredItem === item.codigo;
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
+
+        // console.log("RENDER ITEM: ", item.codigo, "SELECTED: ", isSelected, "HOVER: ", isHover)
+        console.clear();
+        console.log("%c" + JSON.stringify(item, null, 2), "color: #2ECC40; font-weight: bold;");
         if (this.props.select) {
             options.push({
                 label: 'Seleccionar',
@@ -378,7 +404,6 @@ export default class cuentas_anidadas extends React.Component {
                                 paddingHorizontal: 6,
                                 paddingVertical: 3,
                                 borderRadius: 10,
-
                             }}>{item.tipo}</SText>
                         </SView>
                         <SView width={10} />
@@ -395,9 +420,9 @@ export default class cuentas_anidadas extends React.Component {
                             })}
                         </SView>
                     </SView>
-                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: STheme.color.text, fontSize: 12 }}>0</SText> </SView>
-                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: STheme.color.text, fontSize: 12 }}>0</SText> </SView>
-                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: STheme.color.text, fontSize: 12 }}>0</SText> </SView>
+                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.debe ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.debe || 0)}</SText> </SView>
+                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.haber ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.haber || 0)}</SText> </SView>
+                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.saldo ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.saldo || 0)}</SText> </SView>
                     <SView style={{ width: 60, alignItems: "center" }} onPress={(evt) => { FloatMenu.open({ e: evt, label: nombreCuenta, options, }); }}> <SIconApp name="drive-menu" width={10} height={10} fill={STheme.color.text} /> </SView>
                 </SView>
                 {isOpen && item.children.map(child => this.renderItem(child, level + 1))}
@@ -542,10 +567,10 @@ export default class cuentas_anidadas extends React.Component {
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>DEBITO</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>DEBE</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>CREDITO</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>HABER  </SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>SALDO</SText>
