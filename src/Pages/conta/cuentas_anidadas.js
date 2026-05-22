@@ -27,7 +27,54 @@ export default class cuentas_anidadas extends React.Component {
         }).catch(e => {
             console.error(e);
         })
+        if (typeof window !== "undefined") {
+            window.addEventListener("keydown", this.handleKeyDown);
+        }
     }
+
+    componentWillUnmount() {
+        if (typeof window !== "undefined") {
+            window.removeEventListener("keydown", this.handleKeyDown);
+        }
+    }
+
+    handleKeyDown = (e) => {
+        const key = e?.key || e?.nativeEvent?.key;
+        if (key === "Escape") {
+            this.tipoComprobante = "Todos";
+
+            this.setState({
+                search: "",
+                openItems: {},
+                tipoComprobante: "Todos",
+            }, () => {
+                this.loadData();
+            });
+        }
+    };
+
+
+    filterTree = (nodes, search) => {
+        if (!search) return nodes;
+        const searchLower = search.toLowerCase();
+        return nodes
+            .map(node => {
+                const match =
+                    node.descripcion?.toLowerCase().includes(searchLower) ||
+                    node.codigo.includes(search);
+                const childrenFiltered = this.filterTree(node.children, search);
+                if (match || childrenFiltered.length > 0) {
+                    return {
+                        ...node,
+                        children: childrenFiltered,
+                    };
+                }
+                return null;
+            })
+            .filter(Boolean);
+    };
+
+
 
     invalidateCaches = () => {
         this.baseDataCache = null;
