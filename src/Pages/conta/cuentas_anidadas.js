@@ -650,7 +650,11 @@ export default class cuentas_anidadas extends React.Component {
                 <SView col={"xs-12"} style={{ flex: 1 }}>
                     <SView col={"xs-12"} padding={14}>
                         <SView style={{ justifyContent: "space-between", alignItems: "center" }} row>
-                            <SView style={{ flex: 1, position: "relative" }}>
+
+
+
+                            <SView style={{ flex: 1, position: "relative", top: -3 }}>
+                                {/* <SView style={{ flex: 1, position: "relative", top: -5 }}> */}
                                 <SView width={18} height={18} style={{ position: "absolute", top: 12, left: 2, zIndex: 1 }}>
                                     <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
                                 </SView>
@@ -668,14 +672,18 @@ export default class cuentas_anidadas extends React.Component {
                                     }}
                                 />
                             </SView>
+
+
+
                             <SView width={10} />
                             <SView row style={{ alignItems: "center" }}>
-                                <SView width={110}>
+                                <SView width={110}  height={30} >
+                                {/* <SView width={110} border={STheme.color.danger} > */}
                                     <SInput
                                         type="select2"
                                         label={"Tipo comprobante"}
                                         customStyle={"erp"}
-                                        style={{ padding: 2, height: 30, textAlign: "center", width: 110 }}
+                                        style={{ height: 30, width: "100%", borderRadius: 4 }}
                                         value={this.state.tipoComprobante}
                                         onKeyPress={this.handleKeyDown}
                                         options={["Todos", "Fiscal", "Interno"]}
