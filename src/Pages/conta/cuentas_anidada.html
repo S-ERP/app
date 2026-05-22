@@ -1,0 +1,422 @@
+<!-- <SIconApp width={14} height={14} name={this.state.verBloque===tipo.key ? "vineta2" : "vineta0" } -->
+<!-- fill={STheme.color.lightGray} style={{ marginTop: 5 }} /> -->
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plan de cuentas</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 16px 18px 16px 50px;
+            border: none;
+            border-radius: 14px;
+            background: #1e293b;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            border: 1px solid #334155;
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 120px 70px;
+            padding: 18px 22px;
+            background: #0b1220;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .account-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 120px 70px;
+            align-items: center;
+            padding: 18px 22px;
+            border-bottom: 1px solid #1e293b;
+            transition: 0.2s;
+        }
+
+        .account-row:hover {
+            background: #172033;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .arrow {
+            width: 10px;
+            height: 10px;
+            border-left: 2px solid #94a3b8;
+            border-bottom: 2px solid #94a3b8;
+            transform: rotate(-45deg);
+            cursor: pointer;
+        }
+
+        .account-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .account-code {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .passive {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .income {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+        }
+
+        .expense {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        .value {
+            text-align: center;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .menu {
+            text-align: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #94a3b8;
+        }
+
+        .level-1 {
+            background: linear-gradient(90deg, #0f766e, #134e4a);
+        }
+
+        .level-2 {
+            padding-left: 45px;
+        }
+
+        .level-3 {
+            padding-left: 75px;
+        }
+
+        .level-4 {
+            padding-left: 105px;
+        }
+
+        @media(max-width:900px) {
+
+            .table-header {
+                display: none;
+            }
+
+            .account-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .value,
+            .menu {
+                text-align: left;
+            }
+
+            .actions {
+                flex-wrap: wrap;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1 class="title">Plan de cuentas anidadas</h1>
+
+            <div class="actions">
+                <button class="btn btn-primary">+ Nueva cuenta</button>
+                <button class="btn btn-secondary">Expandir</button>
+                <button class="btn btn-secondary">Colapsar</button>
+            </div>
+        </div>
+
+        <div class="search-box">
+
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+
+            <input type="text" placeholder="Buscar cuenta...">
+
+        </div>
+
+        <div class="card">
+
+            <div class="table-header">
+                <div>Cuenta</div>
+                <div>Débito</div>
+                <div>Crédito</div>
+                <div>Saldo</div>
+                <div></div>
+            </div>
+
+            <!-- ACTIVO -->
+            <div class="account-row level-1">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-name">1 - ACTIVO</div>
+                    <span class="badge active">ACTIVO</span>
+                </div>
+
+                <div class="value">0</div>
+                <div class="value">0</div>
+                <div class="value">0</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <div class="account-row level-2">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-code">1.1</div>
+                    <div class="account-name">Activo Corriente</div>
+                    <span class="badge active">ACTIVO</span>
+                </div>
+
+                <div class="value">0</div>
+                <div class="value">0</div>
+                <div class="value">0</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <div class="account-row level-3">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-code">1.1.1</div>
+                    <div class="account-name">Caja</div>
+                </div>
+
+                <div class="value">$0.00</div>
+                <div class="value">$0.00</div>
+                <div class="value">$0.00</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <div class="account-row level-3">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-code">1.1.2</div>
+                    <div class="account-name">Bancos</div>
+                </div>
+
+                <div class="value">$0.00</div>
+                <div class="value">$0.00</div>
+                <div class="value">$0.00</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <div class="account-row level-3">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-code">1.1.3</div>
+                    <div class="account-name">Cuentas por cobrar</div>
+                </div>
+
+                <div class="value">$0.00</div>
+                <div class="value">$0.00</div>
+                <div class="value">$0.00</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <!-- PASIVO -->
+            <div class="account-row">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-name">2 - PASIVO</div>
+                    <span class="badge passive">PASIVO</span>
+                </div>
+
+                <div class="value">0</div>
+                <div class="value">0</div>
+                <div class="value">0</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <!-- PATRIMONIO -->
+            <div class="account-row">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-name">3 - PATRIMONIO</div>
+                    <span class="badge active">PATRIMONIO</span>
+                </div>
+
+                <div class="value">0</div>
+                <div class="value">0</div>
+                <div class="value">0</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <!-- INGRESOS -->
+            <div class="account-row">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-name">4 - INGRESOS</div>
+                    <span class="badge income">INGRESOS</span>
+                </div>
+
+                <div class="value">0</div>
+                <div class="value">0</div>
+                <div class="value">0</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+            <!-- GASTOS -->
+            <div class="account-row">
+                <div class="account-info">
+                    <div class="arrow"></div>
+                    <div class="account-name">5 - COSTOS Y GASTOS</div>
+                    <span class="badge expense">GASTOS</span>
+                </div>
+
+                <div class="value">0</div>
+                <div class="value">0</div>
+                <div class="value">0</div>
+
+                <div class="menu">⋮</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
