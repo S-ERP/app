@@ -234,10 +234,6 @@ export default class cuentas_anidadas extends React.Component {
         const grafo = MDL.contabilidad.getCuentasGrafo(this.state.cuentas);
         const cuentas = grafo.filter(n => n.parent === null);
         const hijos = cuentas || [];
-        console.log(grafo)
-        console.log("AQUIIi")
-        console.log(cuentas)
-        console.log("AQUI")
         let codigo = "";
         if (hijos.length > 0) {
             hijos.sort((a, b) => this.compareCodigos(a, b));
@@ -336,8 +332,6 @@ export default class cuentas_anidadas extends React.Component {
         const isHover = this.state.hoveredItem === item.codigo;
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
-
-        // console.log("RENDER ITEM: ", item.codigo, "SELECTED: ", isSelected, "HOVER: ", isHover)
         if (this.props.select) {
             options.push({
                 label: 'Seleccionar',
@@ -453,7 +447,6 @@ export default class cuentas_anidadas extends React.Component {
         let backgroundColor = "transparent";
         if (isSelected) {
             backgroundColor = STheme.color.card;
-            console.log("SELECT: ", isSelected)
         } else if (isHover) {
             backgroundColor = STheme.color.card;
         }
@@ -473,14 +466,9 @@ export default class cuentas_anidadas extends React.Component {
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        // alvaro: 1,
-                        // paddingVertical: 1,
 
                         paddingVertical: 8,
                         minHeight: 32,
-
-                        // paddingVertical: 1,
-                        // borderBottomWidth: 0.5,
                         borderBottomWidth: 0.2,
                         borderColor: STheme.color.card,
                         backgroundColor,
@@ -504,7 +492,6 @@ export default class cuentas_anidadas extends React.Component {
                     >
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
                         <SText numberOfLines={1}
-                        //  style={{fontWeight: hasChildren ? "400" : "300",}}
                         > {item.codigo} - {item.descripcion || item.tipo} </SText>
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
@@ -512,10 +499,6 @@ export default class cuentas_anidadas extends React.Component {
                                 borderWidth: 1,
                                 borderColor: MDL.contabilidad.color_tipo[item.tipo],
                                 backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55",
-                                // padding: 3,
-                                // borderRadius: 4,
-                                // fontSize: 7
-                                // alvaro
                                 fontSize: 10,
                                 paddingHorizontal: 6,
                                 paddingVertical: 3,
@@ -525,7 +508,7 @@ export default class cuentas_anidadas extends React.Component {
                         <SView width={10} />
                         <SView style={{ alignItems: "center" }}>
                             {item?.ajustes.map((ajuste, index) => {
-                                return <AjusteTag allowDrag ajuste={ajuste} onPress={() => {
+                                return <AjusteTag key={ajuste?.key || index} allowDrag ajuste={ajuste} onPress={() => {
                                     AjusteTagInfoPopup.open({
                                         ajuste: ajuste,
                                         onPress: () => {
@@ -554,7 +537,6 @@ export default class cuentas_anidadas extends React.Component {
             clearTimeout(this.searchDebounceTimeout);
             this.searchDebounceTimeout = null;
         }
-
         if (!text) {
             this.setState({
                 search: "",
@@ -562,9 +544,7 @@ export default class cuentas_anidadas extends React.Component {
             });
             return;
         }
-
         this.setState({ search: text });
-
         this.searchDebounceTimeout = setTimeout(() => {
             const dataArray = this.state.cuentas;
             const tree = this.buildTree(dataArray);
@@ -574,7 +554,6 @@ export default class cuentas_anidadas extends React.Component {
             allCodes.forEach(code => {
                 openItems[code] = true;
             });
-
             this.setState({ openItems });
             this.searchDebounceTimeout = null;
         }, 120);
@@ -587,25 +566,6 @@ export default class cuentas_anidadas extends React.Component {
             e?.stopPropagation?.();
             this.resetFiltros();
         }
-    };
-    filterTree = (nodes, search) => {
-        if (!search) return nodes;
-        const searchLower = search.toLowerCase();
-        return nodes
-            .map(node => {
-                const match =
-                    node.descripcion?.toLowerCase().includes(searchLower) ||
-                    node.codigo.includes(search);
-                const childrenFiltered = this.filterTree(node.children, search);
-                if (match || childrenFiltered.length > 0) {
-                    return {
-                        ...node,
-                        children: childrenFiltered,
-                    };
-                }
-                return null;
-            })
-            .filter(Boolean);
     };
 
     getAllCodesWithChildren = (nodes) => {
@@ -640,7 +600,7 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     render() {
-        const dataArray = this.state.cuentas;
+        const dataArray = [...this.state.cuentas];
         dataArray.sort(this.compareCodigos);
         const tree = this.buildTree(dataArray);
         const filteredTree = this.filterTree(tree, this.state.search);
@@ -650,11 +610,7 @@ export default class cuentas_anidadas extends React.Component {
                 <SView col={"xs-12"} style={{ flex: 1 }}>
                     <SView col={"xs-12"} padding={14}>
                         <SView style={{ justifyContent: "space-between", alignItems: "center" }} row>
-
-
-
                             <SView style={{ flex: 1, position: "relative", top: -3 }}>
-                                {/* <SView style={{ flex: 1, position: "relative", top: -5 }}> */}
                                 <SView width={18} height={18} style={{ position: "absolute", top: 12, left: 2, zIndex: 1 }}>
                                     <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
                                 </SView>
@@ -677,8 +633,7 @@ export default class cuentas_anidadas extends React.Component {
 
                             <SView width={10} />
                             <SView row style={{ alignItems: "center" }}>
-                                <SView width={110}  height={30} >
-                                {/* <SView width={110} border={STheme.color.danger} > */}
+                                <SView width={110} height={30} >
                                     <SInput
                                         type="select2"
                                         label={"Tipo comprobante"}
