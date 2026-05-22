@@ -16,6 +16,7 @@ export default class cuentas_anidadas extends React.Component {
     reporteTodosPorCodigo = null;
     reporteTipoRaw = null;
     reporteTipoPorCodigo = {};
+    searchDebounceTimeout = null;
 
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/cuentas", permiso: "ver" }).then((permit) => {
@@ -36,20 +37,31 @@ export default class cuentas_anidadas extends React.Component {
         if (typeof window !== "undefined") {
             window.removeEventListener("keydown", this.handleKeyDown);
         }
+        if (this.searchDebounceTimeout) {
+            clearTimeout(this.searchDebounceTimeout);
+            this.searchDebounceTimeout = null;
+        }
     }
+
+    resetFiltros = () => {
+        if (this.searchDebounceTimeout) {
+            clearTimeout(this.searchDebounceTimeout);
+            this.searchDebounceTimeout = null;
+        }
+        this.tipoComprobante = "Todos";
+        this.setState({
+            search: "",
+            openItems: {},
+            tipoComprobante: "Todos",
+        }, () => {
+            this.loadData();
+        });
+    };
 
     handleKeyDown = (e) => {
         const key = e?.key || e?.nativeEvent?.key;
         if (key === "Escape") {
-            this.tipoComprobante = "Todos";
-
-            this.setState({
-                search: "",
-                openItems: {},
-                tipoComprobante: "Todos",
-            }, () => {
-                this.loadData();
-            });
+            this.resetFiltros();
         }
     };
 
@@ -538,8 +550,11 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     handleSearch = (text) => {
-        const dataArray = this.state.cuentas;
-        const tree = this.buildTree(dataArray);
+        if (this.searchDebounceTimeout) {
+            clearTimeout(this.searchDebounceTimeout);
+            this.searchDebounceTimeout = null;
+        }
+
         if (!text) {
             this.setState({
                 search: "",
@@ -547,16 +562,31 @@ export default class cuentas_anidadas extends React.Component {
             });
             return;
         }
-        const filteredTree = this.filterTree(tree, text);
-        const allCodes = this.getAllCodesWithChildren(filteredTree);
-        const openItems = {};
-        allCodes.forEach(code => {
-            openItems[code] = true;
-        });
-        this.setState({
-            search: text,
-            openItems
-        });
+
+        this.setState({ search: text });
+
+        this.searchDebounceTimeout = setTimeout(() => {
+            const dataArray = this.state.cuentas;
+            const tree = this.buildTree(dataArray);
+            const filteredTree = this.filterTree(tree, text);
+            const allCodes = this.getAllCodesWithChildren(filteredTree);
+            const openItems = {};
+            allCodes.forEach(code => {
+                openItems[code] = true;
+            });
+
+            this.setState({ openItems });
+            this.searchDebounceTimeout = null;
+        }, 120);
+    };
+
+    handleSearchKeyDown = (e) => {
+        const key = e?.key || e?.nativeEvent?.key;
+        if (key === "Escape") {
+            e?.preventDefault?.();
+            e?.stopPropagation?.();
+            this.resetFiltros();
+        }
     };
     filterTree = (nodes, search) => {
         if (!search) return nodes;
@@ -628,6 +658,7 @@ export default class cuentas_anidadas extends React.Component {
                                     placeholder={"Buscar cuenta..."}
                                     value={this.state.search}
                                     onChangeText={(tx) => this.handleSearch(tx)}
+                                    onKeyPress={this.handleSearchKeyDown}
                                     style={{
                                         top: 4,
                                         paddingLeft: 28,
@@ -646,6 +677,7 @@ export default class cuentas_anidadas extends React.Component {
                                         customStyle={"erp"}
                                         style={{ padding: 2, height: 30, textAlign: "center", width: 110 }}
                                         value={this.state.tipoComprobante}
+                                        onKeyPress={this.handleKeyDown}
                                         options={["Todos", "Fiscal", "Interno"]}
                                         onChangeText={e => {
                                             this.tipoComprobante = e;
