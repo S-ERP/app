@@ -87,7 +87,7 @@ export default class conta extends React.Component {
     }
 
     render() {
-        return <SPage title={"Balance general"} center disableScroll>
+        return <SPage title={"Balance gseneral"} center disableScroll>
             <SView row col={"xs-12"} style={{ alignItems: "center" }}>
 
                 <SView width={"100%"} height={80} />
@@ -113,13 +113,10 @@ export default class conta extends React.Component {
                 <SView width={20} />
                 {this.niveles && <SView width={60}><SInput type="select2"
                     label={"Tipo comprobante"}
-
                     customStyle={"erp"}
-
-
                     style={{ padding: 2, height: 30, textAlign: "center", width: 110 }}
                     defaultValue={this.nivelTipoComprobante}
-                    options={["Todos", "Fiscal", "Interno", "Mixto"]} onChangeText={e => {
+                    options={["Todos", "Fiscal", "Interno",]} onChangeText={e => {
                         this.nivelTipoComprobante = e;
                         if (this.dinamicTable) this.dinamicTable.loadData();
                     }} /></SView>}
