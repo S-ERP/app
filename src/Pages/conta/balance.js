@@ -36,6 +36,8 @@ export default class conta extends React.Component {
     async loadData() {
         try {
             const todasCuentas = await MDL.contabilidad.reporte_balance_general();
+            console.clear();
+            console.log("%c" + JSON.stringify(todasCuentas, null, 2), "color: #2ECC40; font-weight: bold;");
             const cuentas = this.nivelTipoComprobante === "Todos" ? todasCuentas : await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
             const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"
             const codigosNivel = todasCuentas.filter(e => {
@@ -124,6 +126,23 @@ export default class conta extends React.Component {
             <SView col={"xs-12"} flex>
                 <DinamicTable
                     ref={(e) => this.dinamicTable = e}
+                    // headerStyle={{
+                    //     height: 30,
+                    //     backgroundColor: STheme.color.danger
+                    // }}
+                    headerTextStyle={{
+                        height: 40,
+                        alignContent: "center",
+                        textAlign: "center",
+                        fontSize: 14,
+                        textTransform: "uppercase",
+                        paddingLeft: 10,
+                    }}
+                    // cellStyle={{
+                    //     backgroundColor: STheme.color.danger,
+                    //     height: 80,
+                    // }}
+
                     {...Config.table.applyTheme()}
                     loadData={this.loadData.bind(this)}
                     loadInitialState={async () => {
@@ -136,7 +155,8 @@ export default class conta extends React.Component {
                     selectType="multiple"
                 >
 
-                    <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center", }} textStyle={{ fontSize: 7 }}
+                    <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center", minHeight: 32, paddingVertical: 8 }} textStyle={{ fontSize: 10 }}
+                        labelStyle={{ fontSize: 10, height: 30, textAlign: "center" }}
                         customComponent={e => {
                             const aditionalStyle = {
                                 borderWidth: 1,
@@ -149,15 +169,17 @@ export default class conta extends React.Component {
                         }}
                     />
 
-                    <DinamicTable.Col key={"tipo_comprobante"} label="Tipo Comprobante" width={100} data={e => e.row.tipo_comprobante || "-"} cellStyle={{ alignItems: "center", justifyContent: "center", }} textStyle={{ fontSize: 7 }}
+                    <DinamicTable.Col key={"tipo_comprobante"} label="Tipo Comprobante" width={100} data={e => e.row.tipo_comprobante || "-"} cellStyle={{ alignItems: "center", justifyContent: "center", minHeight: 32, paddingVertical: 8 }} textStyle={{ fontSize: 10 }}
                         customComponent={e => {
                             return <SText style={{ ...e.textStyle }}>{e.data ? e.data.toUpperCase() : "-"}</SText>
                         }}
                     />
 
-                    <DinamicTable.Col key="codigo" label="Código" data={e => e.row.codigo} />
+                    <DinamicTable.Col key="codigo" label="Código" data={e => e.row.codigo} textStyle={{ fontSize: 12 }} cellStyle={{ minHeight: 32, paddingVertical: 8 }} />
                     <DinamicTable.Col key={"descripcion"} label="descripcion" width={350}
                         data={e => e.row.descripcion}
+                        textStyle={{ fontSize: 12 }}
+                        cellStyle={{ minHeight: 32, paddingVertical: 8 }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const aditionalStyle = {}
@@ -169,12 +191,16 @@ export default class conta extends React.Component {
                     />
                     <DinamicTable.Col key="debe" label="Debe"
                         data={e => e.row.debe}
+                        textStyle={{ fontSize: 12 }}
+                        cellStyle={{ minHeight: 32, paddingVertical: 8 }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{SMath.formatMoney(e.data || "0")}</SText>
                         }}
                     />
                     <DinamicTable.Col key="haber" label="Haber" data={e => e.row.haber}
+                        textStyle={{ fontSize: 12 }}
+                        cellStyle={{ minHeight: 32, paddingVertical: 8 }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const val = e.data || "0"
@@ -182,6 +208,8 @@ export default class conta extends React.Component {
                         }} />
                     <DinamicTable.Col key="saldo" label="Saldo"
                         data={e => ["ACTIVO", "GASTO"].includes(e.row.tipo) ? ((e.row.debe || 0) - (e.row.haber || 0)) : ((e.row.haber || 0) - (e.row.debe || 0))}
+                        textStyle={{ fontSize: 12 }}
+                        cellStyle={{ minHeight: 32, paddingVertical: 8 }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{SMath.formatMoney(e.data || "0")}</SText>
