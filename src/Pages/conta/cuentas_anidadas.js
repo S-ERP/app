@@ -357,11 +357,6 @@ export default class cuentas_anidadas extends React.Component {
                             flexDirection: "row",
                             alignItems: "center",
                             paddingLeft: level * 15,
-                            // paddingRight: 50,
-
-                            // paddingVertical: 8,
-                            // paddingHorizontal: 12,
-
                         }}
                     >
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
@@ -391,37 +386,12 @@ export default class cuentas_anidadas extends React.Component {
                             })}
                         </SView>
                     </SView>
-                    <SView style={{ width: 80, alignItems: "center" }}>
-                        <SText style={{ color: STheme.color.text, fontSize: 12, fontWeight: "700" }}>0</SText>
-                    </SView>
-                    {/* <SView style={{ width: 80, alignItems: "center" }} center>
-                        <SText width={"100%"} center>220</SText>
-                    </SView> */}
-
-                    <SView style={{ width: 80, alignItems: "center" }}>
-                        <SText style={{ color: STheme.color.text, fontSize: 12, fontWeight: "700" }}>0</SText>
-                    </SView>
-
-                    <SView style={{ width: 80, alignItems: "center" }}>
-                        <SText style={{ color: STheme.color.text, fontSize: 12, fontWeight: "700" }}>0</SText>
-                    </SView>
-
-                    <SView style={{ width: 60, alignItems: "center" }}  onPress={(evt) => { FloatMenu.open({ e: evt, label: nombreCuenta, options, }); }}>
-                        {/* <SText style={{ color: STheme.color.text, fontSize: 11, fontWeight: "700" }}>N{level + 1}</SText> */}
-                        <SIconApp name="drive-menu" width={10} height={10} fill={STheme.color.text} />
-                    </SView>
-
-
-                    {/* <SView style={{ width: 50, alignItems: "center" }} onPress={(evt) => {
-                        FloatMenu.open({ e: evt, label: nombreCuenta, options, });
-                    }}>
-                        <SIconApp name="drive-menu" width={15} height={15} fill={STheme.color.text} />
-                    </SView> */}
+                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: STheme.color.text, fontSize: 12 }}>0</SText> </SView>
+                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: STheme.color.text, fontSize: 12 }}>0</SText> </SView>
+                    <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: STheme.color.text, fontSize: 12 }}>0</SText> </SView>
+                    <SView style={{ width: 60, alignItems: "center" }} onPress={(evt) => { FloatMenu.open({ e: evt, label: nombreCuenta, options, }); }}> <SIconApp name="drive-menu" width={10} height={10} fill={STheme.color.text} /> </SView>
                 </SView>
-                {isOpen &&
-                    item.children.map(child =>
-                        this.renderItem(child, level + 1)
-                    )}
+                {isOpen && item.children.map(child => this.renderItem(child, level + 1))}
             </SView>
         );
     };
