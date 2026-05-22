@@ -338,7 +338,8 @@ export default class cuentas_anidadas extends React.Component {
                         minHeight: 32,
 
                         // paddingVertical: 1,
-                        borderBottomWidth: 0.5,
+                        // borderBottomWidth: 0.5,
+                        borderBottomWidth: 0.2,
                         borderColor: STheme.color.card,
                         backgroundColor,
                     }}
@@ -360,16 +361,24 @@ export default class cuentas_anidadas extends React.Component {
                         }}
                     >
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
-                        <SText numberOfLines={1}> {item.codigo} - {item.descripcion || item.tipo} </SText>
+                        <SText numberOfLines={1}
+                        //  style={{fontWeight: hasChildren ? "400" : "300",}}
+                        > {item.codigo} - {item.descripcion || item.tipo} </SText>
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
                             <SText clean style={{
                                 borderWidth: 1,
                                 borderColor: MDL.contabilidad.color_tipo[item.tipo],
                                 backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55",
-                                padding: 3,
-                                borderRadius: 4,
-                                fontSize: 7
+                                // padding: 3,
+                                // borderRadius: 4,
+                                // fontSize: 7
+                                // alvaro
+                                fontSize: 10,
+                                paddingHorizontal: 6,
+                                paddingVertical: 3,
+                                borderRadius: 10,
+
                             }}>{item.tipo}</SText>
                         </SView>
                         <SView width={10} />
