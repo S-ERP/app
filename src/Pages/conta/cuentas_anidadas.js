@@ -76,7 +76,7 @@ export default class cuentas_anidadas extends React.Component {
             search: "",
             hoveredItem: null,
             selectedItem: null,
-            selectPosition: null // { x, y }
+            selectPosition: null
         };
         this.keyEditApplied = false;
     }
@@ -121,7 +121,7 @@ export default class cuentas_anidadas extends React.Component {
             onChange: (e) => {
                 const newCuenta = e?.cuenta_contable || e;
                 const parts = newCuenta.codigo.split(".");
-                parts.pop(); // quitar el último nivel
+                parts.pop();
                 const parentCode = parts.join(".");
                 this.setState(prev => {
                     const parts = newCuenta.codigo.split(".");
@@ -165,7 +165,7 @@ export default class cuentas_anidadas extends React.Component {
             let parts = item.codigo.split(".");
             let parentFound = false;
             while (parts.length > 1) {
-                parts.pop(); // quitamos el último nivel
+                parts.pop();
                 const parentCode = parts.join(".");
                 if (map[parentCode]) {
                     map[parentCode].children.push(map[item.codigo]);
@@ -239,7 +239,7 @@ export default class cuentas_anidadas extends React.Component {
                         onChange: (e) => {
                             const newCuenta = e?.cuenta_contable || e;
                             const parts = newCuenta.codigo.split(".");
-                            parts.pop(); // quitar el último nivel
+                            parts.pop();
                             const parentCode = parts.join(".");
                             this.setState(prev => {
                                 const parts = newCuenta.codigo.split(".");
@@ -310,17 +310,13 @@ export default class cuentas_anidadas extends React.Component {
         }
         let backgroundColor = "transparent";
         if (isSelected) {
-            backgroundColor = STheme.color.card; //seleccionado
+            backgroundColor = STheme.color.card;
             console.log("SELECT: ", isSelected)
         } else if (isHover) {
-            backgroundColor = STheme.color.card; // hover
+            backgroundColor = STheme.color.card;
         }
         return (
-            <SView key={item.key} col={"xs-12"}
-                style={{
-                    // paddingRight: 12,
-
-                }}>
+            <SView key={item.key} col={"xs-12"}>
                 <SView
                     onPress={(evt) => {
                         const { pageX, pageY } = evt.nativeEvent;
@@ -336,8 +332,12 @@ export default class cuentas_anidadas extends React.Component {
                         flexDirection: "row",
                         alignItems: "center",
                         // alvaro: 1,
-                        paddingVertical: 1,
-                        // paddingVertical: 4,
+                        // paddingVertical: 1,
+
+                        paddingVertical: 8,
+                        minHeight: 32,
+
+                        // paddingVertical: 1,
                         borderBottomWidth: 0.5,
                         borderColor: STheme.color.card,
                         backgroundColor,
@@ -526,48 +526,35 @@ export default class cuentas_anidadas extends React.Component {
                             borderTopLeftRadius: 8,
                             borderTopRightRadius: 8,
                             paddingVertical: 8,
+                            height: 36,
                         }}>
                             <SView style={{ flex: 1, }}>
                                 {/* alvaro */}
-                                <SText style={{ color: STheme.color.text, fontSize: 11, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 12, fontWeight: "700" }}>DEBITO</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>DEBITO</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 12, fontWeight: "700" }}>CREDITO</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>CREDITO</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 12, fontWeight: "700" }}>SALDO</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>SALDO</SText>
                             </SView>
-                            <SView style={{ width: 60, alignItems: "center" }}>
-                                {/* <SText style={{ color: STheme.color.text, fontSize: 11, fontWeight: "700" }}>NIVEL</SText> */}
-                            </SView>
+                            <SView style={{ width: 60, alignItems: "center" }}> </SView>
                         </SView>
-                        <ScrollView
-                            ref={ref => this.scrollViewVertical = ref}
-                            style={{ flex: 1 }}
-                            showsVerticalScrollIndicator={true}
-                        >
+                        <ScrollView ref={ref => this.scrollViewVertical = ref}
+                            style={{ flex: 1 }} showsVerticalScrollIndicator={true} >
                             {filteredTree.map(item => this.renderItem(item))}
                             <SHr height={65} />
                         </ScrollView>
                     </SView>
-
-
                 </SView>
                 <FloatButtom onPress={() => {
                     this.registraNuevo();
                 }} />
                 {this.props.btnSelect && this.state.selectedItem && this.state.selectPosition && (
-                    <SView
-                        style={{
-                            position: "absolute",
-                            top: this.state.selectPosition.y - 65,
-                            left: this.state.selectPosition.x + 10,
-                            zIndex: 999
-                        }}
-                    >
+                    <SView style={{ position: "absolute", top: this.state.selectPosition.y - 65, left: this.state.selectPosition.x + 10, zIndex: 999 }} >
                         <SView row
                             onPress={() => {
                                 const cuenta = this.state.cuentas.find(
