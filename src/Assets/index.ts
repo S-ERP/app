@@ -148,6 +148,11 @@ import ctaSistema, {
   ReactComponent as ctaSistemaW,
 } from "./svg/menucontabilidad/ctaSistema.svg";
 
+
+import arrowRight, { ReactComponent as arrowRightW, } from "./svg/arrowRight.svg";
+import arrowDown, { ReactComponent as arrowDownW, } from "./svg/arrowDown.svg";
+
+
 import iCamera, { ReactComponent as iCameraW } from "./svg/scene/iCamera.svg";
 import iEchado, { ReactComponent as iEchadoW } from "./svg/scene/iEchado.svg";
 import iExit, { ReactComponent as iExitW } from "./svg/scene/iExit.svg";
@@ -528,6 +533,8 @@ export const svg = {
   dashboard: { Native: dashboard, Web: dashboardW },
 
 
+  arrowRight: { Native: arrowRight, Web: arrowRightW },
+  arrowDown: { Native: arrowDown, Web: arrowDownW },
 
 
   ...blender,
