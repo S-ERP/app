@@ -329,7 +329,7 @@ export default class ventas extends React.Component {
                                         key={sucursal.key}
                                         type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
                                         onPress={() => this.handleSucursalSelect(sucursal)}
-                                        style={{ minWidth: 120 }}
+                                        style={{ minWidth: 130, padding: 8,  }}
                                     >
                                         <SText>{sucursal.descripcion}</SText>
                                     </SButtom>
