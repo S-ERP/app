@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Cell
 } from "recharts";
-import { SText, STheme, SView } from "servisofts-component";
+import { SNavigation, SText, STheme, SView } from "servisofts-component";
 
 const defaultData = [
   { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
@@ -38,7 +38,7 @@ export default class BarraRechartsBd extends Component {
 
   CustomTooltip = ({ active, payload, label }) => {
     const isVisible = active && payload && payload.length;
-    console.log("payload en CustomTooltip:", payload);
+    // console.log("payload en CustomTooltip:", payload);
     return (
       <SView style={{
         visibility: isVisible ? "visible" : "hidden",
@@ -50,7 +50,8 @@ export default class BarraRechartsBd extends Component {
           <>
             <SText>{`${label} : ${payload[0].value}`}</SText>
             <SText>{this.getIntroOfPage(label)}</SText>
-            <SText>{`Total: ${payload[0] ? payload[0]?.payload?.total : 0}`}</SText>
+            {payload[0]?.payload?.total && <SText>{`Total: ${payload[0]?.payload?.total}`}</SText>}
+            {payload[0]?.payload?.cantidad && <SText>{`Cantidad: ${payload[0]?.payload?.cantidad}`}</SText>}
           </>
         )}
       </SView>
@@ -77,6 +78,11 @@ export default class BarraRechartsBd extends Component {
             width={300}
             height={300}
             data={data}
+            onClick={(data) => {
+              SNavigation.navigate("/sucursal", {
+                key: data?.activePayload[0]?.payload?.key
+              });
+            }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={nameKey} fontSize={10} tick={{ fill: STheme.color.text }} />
@@ -101,6 +107,26 @@ export default class BarraRechartsBd extends Component {
                 />
               ))}
             </Bar>
+            {valueKey2 && (
+              <Bar dataKey={valueKey2} fill={STheme.color.success} barSize={30}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell2-${index}`}
+                    fill={
+                      [
+                        "#f1aaaa95",
+                        "#a8f1ed95",
+                        "#98e1f195",
+                        "#f7c6b395",
+                        "#d2f3eb95",
+                        "#f8edc295",
+                        "#e6c8f395"
+                      ][index % 7]
+                    }
+                  />
+                ))}
+              </Bar>
+            )}
           </BarChart>
         </ResponsiveContainer>
       </SView>

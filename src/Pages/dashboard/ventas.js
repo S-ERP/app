@@ -18,6 +18,7 @@ export default class ventas extends React.Component {
         dataTimeSeries: [],
         dataTopProducts: [],
         dataBranchShare: [],
+        dataBranchShareBarras: [],
         dataMetodoPago: [],
         loading: true,
         empresaSeleccionada: null,
@@ -107,17 +108,51 @@ export default class ventas extends React.Component {
     loadTimeSeries = async (keyEmpresa) => {
         try {
             const { fecha_inicio, fecha_fin, selectedSucursal } = this.state;
+            const sucursales = await MDL.empresa.getAllSucursales();
+            console.log("sucursales disponibles:", sucursales);
             const res = await MDL.compra_venta.execute_function("ventas_por_dia2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
-            const data = this.transformTimeSeries(raw, selectedSucursal?.key);
+            console.log("Respuesta cruda de ventas_por_dia2:", res);
+            // const rescompleto = res.find((item) => item.key_sucursal === sucursales?.key) || res.find((item) => item.key_sucursal == null) || res;
+            // const itemSucursal = res.filter(
+            //     (item) => item.key_sucursal === sucursales?.key
+            // );
+            // console.log("itemSucursal:", itemSucursal);
+            // const rescompleto = itemSucursal
+            //     ? {
+            //         ...itemSucursal,
+            //         descripcion: sucursales?.descripcion
+            //     }
+            //     : res.find((item) => item.key_sucursal == null) || res;
+            // console.log("rescompleto:", rescompleto);
+            // const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+
+            const rescompleto = res.map((item) => {
+                const sucursal = sucursales.find(
+                    (s) => s.key === item.key_sucursal
+                );
+
+                return {
+                    ...item,
+                    descripcion: sucursal?.descripcion || null
+                };
+            });
+
+            const raw = Array.isArray(rescompleto) ? rescompleto : rescompleto?.data ?? rescompleto?.result ?? [];
+            console.log("Respuesta de ventas_por_dia2:", raw);
+            console.log("sucursal seleccionada para serie temporal:", selectedSucursal);
+
+            const data = this.transformTimeSeries(raw, sucursales, selectedSucursal?.key);
             const branchShare = this.transformBranchShare(raw);
+            const branchShareBarras = this.transformBranchShareBarras(raw);
+            console.log("Datos transformados para participación por sucursal:", branchShare);
+            console.log("Datos transformados para participación por sucursal (barras):", branchShareBarras);
             if (this._mounted) {
-                this.setState({ dataTimeSeries: data, dataBranchShare: branchShare });
+                this.setState({ dataTimeSeries: data, dataBranchShare: branchShare, dataBranchShareBarras: branchShareBarras });
             }
         } catch (e) {
             console.error("Error en ventas_por_dia2:", e);
             if (this._mounted) {
-                this.setState({ dataTimeSeries: [], dataBranchShare: [] });
+                this.setState({ dataTimeSeries: [], dataBranchShare: [], dataBranchShareBarras: [] });
             }
         }
     };
@@ -131,7 +166,7 @@ export default class ventas extends React.Component {
                 .map((item) => ({
                     producto: item.producto ?? item.nombre ?? "Sin nombre",
                     cantidad_total_vendida: Number(item.cantidad_total_vendida ?? item.cantidad ?? item.total_ventas ?? 0),
-                    total_bs_ganado: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
+                    total: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
                     sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],
                 }))
                 .filter((item) => {
@@ -170,8 +205,9 @@ export default class ventas extends React.Component {
         }
     };
 
-    transformTimeSeries = (raw, selectedSucursalKey) => {
+    transformTimeSeries = (raw, sucursales, selectedSucursalKey) => {
         if (!Array.isArray(raw)) return [];
+        console.log("Transformando datos para serie temporal:", { raw, selectedSucursalKey, sucursales });
         const seriesMap = {};
         const rows = selectedSucursalKey ? raw.filter((row) => row.key_sucursal === selectedSucursalKey) : raw;
 
@@ -202,17 +238,44 @@ export default class ventas extends React.Component {
     };
 
     transformBranchShare = (raw) => {
+        console.log("Transformando datos para participación por sucursal:", raw);
         if (!Array.isArray(raw)) return [];
         const branchTotals = {};
         raw.forEach((row) => {
+            console.log("Procesando fila para reparto de sucursal:", row);
             const key = row.key_sucursal || row.key;
             const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
             const dias = Array.isArray(row.dias) ? row.dias : [row];
             const total = dias.reduce((sum, item) => sum + Number(item.monto_total ?? item.total_bs ?? item.total ?? 0), 0);
+            console.log("total", total, "para sucursal", name);
             if (!branchTotals[key]) {
-                branchTotals[key] = { name, value: 0 };
+                branchTotals[key] = { name, value: 0, total: 0 };
             }
             branchTotals[key].value += total;
+        });
+        return Object.values(branchTotals)
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 6);
+    };
+
+    transformBranchShareBarras = (raw) => {
+        console.log("Transformando datos para participación por sucursal (barras):", raw);
+        if (!Array.isArray(raw)) return [];
+        const branchTotals = {};
+        raw.forEach((row) => {
+            console.log("Procesando fila para reparto de sucursal:", row);
+            const key = row.key_sucursal || row.key;
+            const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
+            const dias = Array.isArray(row.dias) ? row.dias : [row];
+            const total = dias.reduce((sum, item) => sum + Number(item.monto_total ?? item.total_bs ?? item.total ?? 0), 0);
+            const cantidad = dias.reduce((sum, item) => sum + Number(item.cantidad_ventas ?? item.total_ventas ?? item.cantidad ?? 0), 0);
+            console.log("total", total, "para sucursal", name);
+            if (!branchTotals[key]) {
+                branchTotals[key] = { name, value: 0, cantidad: 0, key: null };
+            }
+            branchTotals[key].value += total;
+            branchTotals[key].cantidad += cantidad;
+            branchTotals[key].key = key;
         });
         return Object.values(branchTotals)
             .sort((a, b) => b.value - a.value)
@@ -238,12 +301,16 @@ export default class ventas extends React.Component {
             dataTimeSeries,
             dataTopProducts,
             dataBranchShare,
+            dataBranchShareBarras,
             dataMetodoPago,
             loading,
         } = this.state;
 
         const selectedBranchName = selectedSucursal?.descripcion || "Todas las sucursales";
         const lineTitle = periodo === "hoy" ? "Ventas por hora" : periodo === "año" ? "Ventas por mes" : "Ventas por día";
+
+        console.log("dataBranchShare 2", dataBranchShare);
+        console.log("dataBranchShareBarras", dataBranchShareBarras);
 
         const renderResumenTarjetas = () => {
             const totalMonto = dataTimeSeries.reduce((sum, item) => sum + Number(item.monto_total || 0), 0);
@@ -280,7 +347,9 @@ export default class ventas extends React.Component {
                 </SView>
             );
         };
-
+        console.log("dataBranchShare", dataBranchShare);
+        console.log("dataTopProducts", dataTopProducts);
+        console.log("dataBranchShareBarras", dataBranchShareBarras);
         return (
             <SPage title="Dashboard de Ventas">
                 <ScrollView>
@@ -316,11 +385,11 @@ export default class ventas extends React.Component {
 
                         <SView col="xs-12" row center style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} >
 
-                            <SView col="xs-12 md-6 lg-8" row  style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
+                            <SView col="xs-12 md-6 lg-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                 <SButtom
                                     type={!selectedSucursal ? 'danger' : 'outline'}
                                     onPress={() => this.handleSucursalSelect(null)}
-                                    style={{ minWidth: 100, height:50 }}
+                                    style={{ minWidth: 100, height: 50 }}
                                 >
                                     <SText>Todos</SText>
                                 </SButtom>
@@ -329,13 +398,13 @@ export default class ventas extends React.Component {
                                         key={sucursal.key}
                                         type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
                                         onPress={() => this.handleSucursalSelect(sucursal)}
-                                        style={{ minWidth: 130, padding: 8,  }}
+                                        style={{ minWidth: 130, padding: 8, }}
                                     >
                                         <SText>{sucursal.descripcion}</SText>
                                     </SButtom>
                                 ))}
                             </SView>
-                            <SView col="xs-12 md-6 lg-4" padding={8} card style={{backgroundColor: STheme.color.secondary+"60"}}>
+                            <SView col="xs-12 md-6 lg-4" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
                                 {/* <FechaFullFilter
                                     key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
                                     fecha_inicio={fecha_inicio}
@@ -406,6 +475,61 @@ export default class ventas extends React.Component {
 
 
 
+
+
+                        <SView col="xs-12" row>
+                            <SView col="xs-12 lg-6" row padding={5} >
+                                <SView
+                                    col="xs-12"
+                                    card
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                >
+                                    <SText fontSize={16} bold>Ventas por Sucursal</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataBranchShareBarras.length === 0 ? (
+                                        <SText>No hay datos por sucursal.</SText>
+                                    ) : (
+                                        <BarraRechartsBd
+                                            data={dataBranchShareBarras}
+                                            nameKey="name"
+                                            valueKey="value"
+                                            valueKey2="cantidad"
+                                            key="key"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView>
+                            </SView>
+                            <SView col="xs-12 lg-6" padding={5}>
+                                <SView
+                                    col="xs-12"
+                                    card
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                >
+                                    <SText fontSize={16} bold>Ventas por método de pago</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataMetodoPago.length === 0 ? (
+                                        <SText>No hay datos disponibles.</SText>
+                                    ) : (
+                                        <CircularRechartsBd
+                                            data={dataMetodoPago}
+                                            nameKey="metodo_pago"
+                                            valueKey="total_bs"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView>
+                            </SView>
+                        </SView>
+
+
+
+
+
                         <SView col="xs-12" row>
                             <SView col="xs-12 lg-6" row padding={5} >
                                 <SView
@@ -452,6 +576,9 @@ export default class ventas extends React.Component {
                                 </SView>
                             </SView>
                         </SView>
+
+
+
 
                         {/* <SHr style={{ marginVertical: 10 }} /> */}
 

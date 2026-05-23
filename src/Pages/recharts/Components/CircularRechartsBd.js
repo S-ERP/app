@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { PieChart, Pie, Sector, ResponsiveContainer, Cell, Tooltip } from "recharts";
+import { PieChart, Pie, Sector, ResponsiveContainer, Cell, Tooltip, Legend } from "recharts";
 import { SText, SView } from "servisofts-component";
 
 const defaultData = [
-    { name: "Group A", value: 400 },
-    { name: "Group B", value: 300 },
-    { name: "Group C", value: 300 },
-    { name: "Group D", value: 200 },
+    // { name: "Group A", value: 400 },
+    // { name: "Group B", value: 300 },
+    // { name: "Group C", value: 300 },
+    // { name: "Group D", value: 200 },
 ];
 
 const RADIAN = Math.PI / 180;
@@ -15,6 +15,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6B6B", "#4ECDC4"
 export default class CircularRechartsBd extends Component {
 
     renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+        // console.log("Label Props:", { cx, cy, midAngle, innerRadius, outerRadius, percent });
         if (cx == null || cy == null || innerRadius == null || outerRadius == null) {
             return null;
         }
@@ -52,6 +53,7 @@ export default class CircularRechartsBd extends Component {
         if (!Array.isArray(data) || data.length === 0) {
             return <SText>No hay datos disponibles para mostrar el gráfico.</SText>;
         }
+        console.log("CircularRechartsBd Props:", { data, nameKey, valueKey, height, isAnimationActive });
 
         return (
             <SView style={{ width: "100%", height }}>
@@ -73,6 +75,11 @@ export default class CircularRechartsBd extends Component {
                             ))}
                         </Pie>
                         <Tooltip />
+                        <Legend
+                            layout="vertical"
+                            align="right"
+                            verticalAlign="middle"
+                        />
                     </PieChart>
                 </ResponsiveContainer>
             </SView>
