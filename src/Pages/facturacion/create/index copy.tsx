@@ -11,7 +11,6 @@ import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import SIconApp from "../../../Assets/SIconApp";
-import Entorno from "../Components/Entorno";
 
 export default class index extends React.Component {
     _____ambiente = MDL.factura.getAmbiente();
@@ -137,7 +136,6 @@ export default class index extends React.Component {
     updatePageBackground() {
         const backgroundColor = this.state.ambiente === 1 ? STheme.color.success : STheme.color.warning;
         SPage.setBackground(<SView style={{ backgroundColor }} />);
-        // SPage.setBackground(<SView style={{ flex: 1, backgroundColor }} />);
     }
 
     validarAntesDeEmitir() {
