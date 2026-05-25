@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tabla Gestión de Ventas</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body{
+        background:#f4f6f9;
+        padding:30px;
+    }
+
+    .container{
+        width:100%;
+        overflow-x:auto;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.08);
+        padding:20px;
+    }
+
+    .header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+    }
+
+    .header h2{
+        color:#1f2937;
+        font-size:24px;
+    }
+
+    .actions{
+        display:flex;
+        gap:10px;
+    }
+
+    .actions input,
+    .actions select{
+        padding:10px 14px;
+        border:1px solid #d1d5db;
+        border-radius:8px;
+        outline:none;
+    }
+
+    .actions button{
+        background:#0f766e;
+        color:white;
+        border:none;
+        padding:10px 18px;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:600;
+        transition:0.3s;
+    }
+
+    .actions button:hover{
+        background:#115e59;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        min-width:2200px;
+    }
+
+    thead{
+        background:#111827;
+        color:white;
+    }
+
+    th{
+        padding:14px 10px;
+        text-align:left;
+        font-size:13px;
+        border-bottom:1px solid #374151;
+        white-space:nowrap;
+    }
+
+    td{
+        padding:12px 10px;
+        border-bottom:1px solid #e5e7eb;
+        font-size:13px;
+        color:#374151;
+        white-space:nowrap;
+    }
+
+    tbody tr:hover{
+        background:#f9fafb;
+    }
+
+    .badge{
+        padding:6px 10px;
+        border-radius:20px;
+        color:white;
+        font-size:11px;
+        font-weight:bold;
+        display:inline-block;
+    }
+
+    .success{
+        background:#16a34a;
+    }
+
+    .warning{
+        background:#f59e0b;
+    }
+
+    .danger{
+        background:#dc2626;
+    }
+
+    .info{
+        background:#2563eb;
+    }
+
+    .secondary{
+        background:#6b7280;
+    }
+
+    .text-center{
+        text-align:center;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>📊 Tabla Gestión de Ventas</h2>
+
+        <div class="actions">
+            <select>
+                <option>Hoy</option>
+                <option>Esta Semana</option>
+                <option>Este Mes</option>
+                <option>Este Año</option>
+            </select>
+
+            <input type="text" placeholder="Buscar cliente, factura..." />
+
+            <button>FILTRAR</button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Fecha</th>
+                <th>Nro. Factura</th>
+                <th>Cliente</th>
+                <th>NIT / CI</th>
+                <th>Razón Social</th>
+                <th>Sucursal</th>
+                <th>Vendedor</th>
+                <th>Tipo Pago</th>
+                <th>Estado Venta</th>
+                <th>Estado Pago</th>
+                <th>CUF</th>
+                <th>Detalle</th>
+                <th>Cantidad</th>
+                <th>Precio Unit.</th>
+                <th>Descuento</th>
+                <th>Subtotal</th>
+                <th>IVA</th>
+                <th>Total</th>
+                <th>Monto Pagado</th>
+                <th>Saldo Pendiente</th>
+                <th># Cuotas</th>
+                <th>Cuotas Mora</th>
+                <th>Monto Mora</th>
+                <th>Moneda</th>
+                <th>Fecha Pago</th>
+                <th>Observación</th>
+                <th>Admin</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>15</td>
+                <td>2026-05-25 17:24</td>
+                <td>FAC-000152</td>
+                <td>Juan Pérez</td>
+                <td>8452147 LP</td>
+                <td>Distribuidora Central SRL</td>
+                <td>Montero Central</td>
+                <td>Carlos Mendoza</td>
+
+                <td>
+                    <span class="badge success">Contado</span>
+                </td>
+
+                <td>
+                    <span class="badge warning">No Facturada</span>
+                </td>
+
+                <td>
+                    <span class="badge success">Pagado</span>
+                </td>
+
+                <td>4F8A7D98C123</td>
+                <td>Grano de arroz 1 BOB x1</td>
+                <td class="text-center">1</td>
+                <td>1,00 Bs</td>
+                <td>0,00 Bs</td>
+                <td>1,00 Bs</td>
+                <td>0,13 Bs</td>
+                <td><strong>1,00 Bs</strong></td>
+                <td>1,00 Bs</td>
+                <td>0,00 Bs</td>
+                <td class="text-center">1</td>
+                <td class="text-center">0</td>
+                <td>0,00 Bs</td>
+                <td>Boliviano</td>
+                <td>2026-05-25</td>
+                <td>Venta completada correctamente</td>
+                <td>Ing. Álvaro</td>
+            </tr>
+
+            <tr>
+                <td>16</td>
+                <td>2026-05-25 18:10</td>
+                <td>FAC-000153</td>
+                <td>María López</td>
+                <td>7854120 SC</td>
+                <td>Importadora López</td>
+                <td>Santa Cruz Norte</td>
+                <td>Ana Ruiz</td>
+
+                <td>
+                    <span class="badge info">Crédito</span>
+                </td>
+
+                <td>
+                    <span class="badge success">Facturada</span>
+                </td>
+
+                <td>
+                    <span class="badge danger">Pendiente</span>
+                </td>
+
+                <td>7H9K3D45A998</td>
+                <td>Aceite 5L x2</td>
+                <td class="text-center">2</td>
+                <td>120,00 Bs</td>
+                <td>10,00 Bs</td>
+                <td>230,00 Bs</td>
+                <td>29,90 Bs</td>
+                <td><strong>259,90 Bs</strong></td>
+                <td>100,00 Bs</td>
+                <td>159,90 Bs</td>
+                <td class="text-center">4</td>
+                <td class="text-center">1</td>
+                <td>12,00 Bs</td>
+                <td>Boliviano</td>
+                <td>2026-06-01</td>
+                <td>Cliente con crédito aprobado</td>
+                <td>Lic. Torres</td>
+            </tr>
+
+            <tr>
+                <td>17</td>
+                <td>2026-05-25 19:05</td>
+                <td>FAC-000154</td>
+                <td>Empresa Orion</td>
+                <td>102547896</td>
+                <td>Orion Tech SRL</td>
+                <td>Cochabamba</td>
+                <td>José Flores</td>
+
+                <td>
+                    <span class="badge secondary">Transferencia</span>
+                </td>
+
+                <td>
+                    <span class="badge success">Facturada</span>
+                </td>
+
+                <td>
+                    <span class="badge success">Pagado</span>
+                </td>
+
+                <td>8L2M4X9QW741</td>
+                <td>Equipos electrónicos x5</td>
+                <td class="text-center">5</td>
+                <td>350,00 Bs</td>
+                <td>50,00 Bs</td>
+                <td>1700,00 Bs</td>
+                <td>221,00 Bs</td>
+                <td><strong>1921,00 Bs</strong></td>
+                <td>1921,00 Bs</td>
+                <td>0,00 Bs</td>
+                <td class="text-center">1</td>
+                <td class="text-center">0</td>
+                <td>0,00 Bs</td>
+                <td>Dólar</td>
+                <td>2026-05-25</td>
+                <td>Pago confirmado por banco</td>
+                <td>Admin Sistema</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>
