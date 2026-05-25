@@ -136,7 +136,8 @@ export default class index extends React.Component {
 
     updatePageBackground() {
         const backgroundColor = this.state.ambiente === 1 ? STheme.color.success : STheme.color.warning;
-        SPage.setBackground(<SView style={{ flex: 1, backgroundColor }} />);
+        SPage.setBackground(<SView style={{ backgroundColor }} />);
+        // SPage.setBackground(<SView style={{ flex: 1, backgroundColor }} />);
     }
 
     validarAntesDeEmitir() {
@@ -250,20 +251,20 @@ export default class index extends React.Component {
     render() {
         const titleText = `Emitir Factura (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
 
-        return <SPage title={titleText} hidden
-            header={
-                <SView col={"xs-12"}
-                    border={"#00000022"}
-                    style={{
-                        backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor : STheme.color.warning,
-                        height: "36"
-                    }} row>
-                    <SView width={60} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={20} width={20} fill={STheme.color.text} /> </SView>
-                    <SView col={"xs-12"} height={36} center> <SText fontSize={14}  >{titleText}</SText> </SView>
+
+        return <SPage
+            hidden title={titleText} header={
+                <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor : STheme.color.warning, height: 36, overflow: "hidden" }} row center>
+                    <SView width={60} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
+                    <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
+                    <SView width={60} height={"100%"} center> <SText>Logo</SText> </SView>
+
+
                 </SView>
             }
 
         >
+
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
