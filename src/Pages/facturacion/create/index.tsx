@@ -209,12 +209,18 @@ export default class index extends React.Component {
     handleEnviar() {
         this.validarAntesDeEmitir();
         // return;
+        const FacturaData = this.factura;
+        const FacturaAmbiente = this.state.ambiente;
+        console.log("Factura a emitir:", FacturaData);
+        console.log("Ambiente de emisión:", FacturaAmbiente === 1 ? "Producción" : "Prueba");
+        // return;
+
         SNotification.send({
             key: "facturacionEmitir",
             title: "Emitiendo factura",
             type: "loading"
         })
-        MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
+        const resp = MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
             SNotification.send({
                 key: "facturacionEmitir",
                 title: "Factura emitida con éxito",
@@ -232,6 +238,9 @@ export default class index extends React.Component {
                 time: 5000,
             })
         })
+
+        console.log("%c" + JSON.stringify(resp), `color: #cc2eb2; font-weight: bold;`);
+
     }
     render() {
         return <SPage title={`Emitir Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>

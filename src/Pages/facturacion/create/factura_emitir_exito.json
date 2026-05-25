@@ -1,0 +1,55 @@
+// factura emitir exito 
+{
+    "estado": "exito",
+    "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+    "data": {
+        "codigoPuntoVenta": "0",
+        "complemento": "",
+        "leyenda": "Ley N° 453: El proveedor deberá suministrar el servicio en las modalidades y términos ofertados o convenidos.",
+        "numeroDocumento": "454561021",
+        "codigoTipoDocumentoIdentidad": "5",
+        "telefono": "+591 71697801",
+        "cufd": "BQWVDcXh3QUE=NzTQ1RDgxQUExNzc=Qnk+Q0RPYUZhVUFI1RUE0OTI2NzQwR",
+        "key": "1cbf3508-c740-4089-917d-8873dee259fe",
+        "descuentoAdicional": 0,
+        "nombreRazonSocial": "Servisofts SRL",
+        "razonSocialEmisor": "GRUPO ALG TRANSPORTE Y LOGISTICA S.R.L.",
+        "municipio": "Casa Matriz",
+        "direccion": "C/Alto Seco N.- 26 B/Villa Fatima U.V. 51 Mza 0017",
+        "codigoSucursal": "0",
+        "fechaEmision": "2026-05-25T14:03:02.556",
+        "numeroFactura": "3",
+        "nitEmisor": "484942023",
+        "numeroTarjeta": "",
+        "detalle": [
+            {
+                "descripcion": "Pollo presa ALA 2kg",
+                "numeroSerie": "",
+                "precioUnitario": "20",
+                "unidadMedida": "58",
+                "numeroImei": "",
+                "codigoProductoSin": 65116,
+                "cantidad": "2",
+                "subTotal": "40",
+                "codigoProducto": "65116",
+                "montoDescuento": "0",
+                "actividadEconomica": "492321"
+            }
+        ],
+        "codigoMoneda": "1",
+        "cuis": "94938F13",
+        "cuf": "212E5B3D5BBF8FB48C1B9CD8B36E0D2C7F8FA113E025DB53FB17DAF74",
+        "codigoMetodoPago": "1",
+        "usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+        "codigoDocumentoSector": "1",
+        "montoGiftCard": "0",
+        "urlImpuestos": "https://pilotosiat.impuestos.gob.bo/consulta/QR?nit=484942023&cuf=212E5B3D5BBF8FB48C1B9CD8B36E0D2C7F8FA113E025DB53FB17DAF74&numero=3&t=1"
+    },
+    "key_empresa": "12cf4b09-00b5-48af-b9f8-8ee2c1d8102e",
+    "ambiente": 2,
+    "_ssocket_promise": "f787e2b4-29b4-43ef-a2e5-e0deed984df5",
+    "type": "emitir",
+    "noSend": false,
+    "component": "factura",
+    "enviar_siat": true
+}
