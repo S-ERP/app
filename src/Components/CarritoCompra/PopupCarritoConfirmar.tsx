@@ -169,6 +169,22 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "key_proveedor": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "facturar": this.state.factura,
+
+                factura: this.state.factura
+                    ? {
+                        nro_factura: "f-compra-545",
+                        // nro_factura: this.generateRandomCode(),
+                        cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+                        nit: this.props.cliente?.nit || "",
+                        razon_social: this.props.cliente?.razon_social || "",
+                        leyenda: "alvaro",
+                    }
+                    : null,
+
+                tipo_pago: this.state.factura ? "credito" : "contado",
+
+
+
                 "facturar_luego": this.state.factura,
                 "key_caja": MDL.caja.activa?.key,
                 "key_almacen": almacen.key,
@@ -209,7 +225,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "estado": "cargando",
                     "data": data
                 })
-                
+
                 MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
                 SelectTipoPago.closePopup();
                 SNotification.remove("compra_rapida");

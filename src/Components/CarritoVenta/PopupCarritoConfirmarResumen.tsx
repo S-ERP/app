@@ -9,6 +9,19 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 // import ComprobanteRollo from "../PDF/compra/ComprobanteRollo";
 import ComprobanteRollo from "../PDF/venta/ReciboSmall";
 
+interface ClienteType {
+    key?: string;
+    nit?: string;
+    razon_social?: string;
+}
+
+interface PopupCarritoConfirmarResumenProps {
+    descripcion?: string;
+    factura?: boolean;
+    cliente?: ClienteType;
+    descuentoSeleccionado?: any[];
+}
+
 export type PopupCarritoConfirmarResumenProps = {
     onTipoPagoChange: (esCredito: boolean) => void;
 }
@@ -194,6 +207,17 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         });
     }
 
+
+
+    generateRandomCode(length = 6) {
+        const min = Math.pow(10, length - 1);
+        const max = Math.pow(10, length) - 1;
+        const res = Math.floor(min + Math.random() * (max - min + 1)).toString();
+        return "F-" + res;
+    }
+
+
+
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
@@ -242,24 +266,67 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "costos": costos,
                 }
             })
+
             const data = {
-                "descripcion": this.props.descripcion || "",
-                "observacion": "Observación",
-                "facturar": this.props.factura,
-                "facturar_luego": this.props.factura,
+                descripcion: this.props.descripcion || "",
+                observacion: "Observación",
+                facturar: this.props.factura,
+
+                factura: this.props.factura
+                    ? {
+                        nro_factura: this.generateRandomCode(),
+                        cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+                        nit: this.props.cliente?.nit || "",
+                        razon_social: this.props.cliente?.razon_social || "",
+                        leyenda: "alvaro",
+                    }
+                    : null,
+
+                tipo_pago: this.props.factura ? "credito" : "contado",
+                facturar_luego: this.props.factura,
+
                 cliente: {
                     nit: this.props.cliente?.nit || "",
-                    razon_social: this.props.cliente?.razon_social || ""
+                    razon_social: this.props.cliente?.razon_social || "",
                 },
+
                 descuentos: this.props.descuentoSeleccionado || [],
-                "key_cliente": this.props.cliente?.key,
-                "key_usuario": MDL.usuario.session?.key,
-                "key_caja": MDL.caja.activa?.key,
-                "key_almacen": almacen.key,
-                "key_moneda": monedaActual.key,
-                "detalle": detalle,
-                tipos_pago: tipos_pago,
-            }
+
+                key_cliente: this.props.cliente?.key || null,
+                key_usuario: MDL.usuario.session?.key || null,
+                key_caja: MDL.caja.activa?.key || null,
+                key_almacen: almacen.key,
+                key_moneda: monedaActual.key,
+
+                detalle,
+                tipos_pago,
+            };
+            // const data = {
+            //     "descripcion": this.props.descripcion || "",
+            //     "observacion": "Observación",
+            //     "facturar": this.props.factura,
+            //     "factura": this.props.factura ? {
+            //         nro_factura: this.generateRandomCode(),
+            //         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+            //         nit: this.props.cliente?.nit || "",
+            //         razon_social: this.props.cliente?.razon_social || "",
+            //         leyenda: "alvaro"
+            //     } : {},
+            //     "tipo_pago": this.props.factura ? "credito" : "contado",
+            //     "facturar_luego": this.props.factura,
+            //     cliente: {
+            //         nit: this.props.cliente?.nit || "",
+            //         razon_social: this.props.cliente?.razon_social || ""
+            //     },
+            //     descuentos: this.props.descuentoSeleccionado || [],
+            //     "key_cliente": this.props.cliente?.key,
+            //     "key_usuario": MDL.usuario.session?.key,
+            //     "key_caja": MDL.caja.activa?.key,
+            //     "key_almacen": almacen.key,
+            //     "key_moneda": monedaActual.key,
+            //     "detalle": detalle,
+            //     tipos_pago: tipos_pago,
+            // }
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
@@ -272,6 +339,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "estado": "cargando",
                 "data": data
             })
+            console.clear();
+            console.log("%c" + JSON.stringify(data), `color: #ac2ecc; font-weight: bold;`);
+            console.log("Respuesta de venta:", compraResp);
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
             SelectTipoPago.closePopup();
             SNotification.remove("venta_rapida");
@@ -399,7 +469,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 <SView padding={8} card onPress={() => {
                     this.handleOnPress();
                 }}>
-                    <SText>{"Confirmar la venta"}</SText>
+                    <SText>{"Confirmar lasssss venta"}</SText>
                 </SView>
             </SView>
         </SView >
