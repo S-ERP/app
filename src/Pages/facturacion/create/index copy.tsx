@@ -1,8 +1,6 @@
 import React from "react";
-import { SDate, SHr, SNavigation, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
-import SIconApp from "../../../Assets/SIconApp";
+import { SDate, SHr, SIcon, SNavigation, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
-// import Entorno from "./Components/Entorno";
 import { Factura } from "../../../MDL/factura/type";
 import Model from "../../../Model";
 import NitNumero from "./NitNumero";
@@ -12,6 +10,7 @@ import Detalle from "./Detalle";
 import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
+import SIconApp from "../../../Assets/SIconApp";
 import Entorno from "../Components/Entorno";
 
 export default class index extends React.Component {
@@ -126,8 +125,18 @@ export default class index extends React.Component {
         }).catch(e => {
             console.error(e);
         })
-        // Establecer fondo de la página según el ambiente: verde=producción, amarillo=prueba
-        SPage.setBackground(<SView style={{ flex: 1, backgroundColor: this._____ambiente === 1 ? STheme.color.success : STheme.color.warning }} />);
+        this.updatePageBackground();
+    }
+
+    componentDidUpdate(prevProps: any, prevState: any) {
+        if (prevState.ambiente !== this.state.ambiente) {
+            this.updatePageBackground();
+        }
+    }
+
+    updatePageBackground() {
+        const backgroundColor = this.state.ambiente === 1 ? STheme.color.success : STheme.color.warning;
+        SPage.setBackground(<SView style={{ flex: 1, backgroundColor }} />);
     }
 
     validarAntesDeEmitir() {
@@ -239,17 +248,22 @@ export default class index extends React.Component {
         })
     }
     render() {
-        const titleText = `Emitir Facssssssssssssssstura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
-        return <SPage hidden title={titleText} header={
-            <SView col="xs-12" style={{ backgroundColor: this._____ambiente === 1 ? STheme.color.success : STheme.color.warning, height: 60 }} row>
-                <SView width={60} onPress={() => SNavigation.goBack()} center>
-                    <SIconApp name="Back" height={20} width={20} fill={STheme.color.text} />
+        const titleText = `Emitir Factura (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
+
+        return <SPage title={titleText} hidden
+            header={
+                <SView col={"xs-12"}
+                    border={"#00000022"}
+                    style={{
+                        backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor : STheme.color.warning,
+                        height: "36"
+                    }} row>
+                    <SView width={60} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={20} width={20} fill={STheme.color.text} /> </SView>
+                    <SView col={"xs-12"} height={36} center> <SText fontSize={14}  >{titleText}</SText> </SView>
                 </SView>
-                <SView flex center>
-                    <SText fontSize={18} bold>{titleText}</SText>
-                </SView>
-            </SView>
-        }>
+            }
+
+        >
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
@@ -274,12 +288,27 @@ export default class index extends React.Component {
             </SView>
 
             <SView col={"xs-12"} row center>
-                <Entorno onPress={() => {
-                    MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
-                    this.setState({ ambiente: MDL.factura.ambiente })
-                }} ambiente={this.state.ambiente} />
-                <SView width={8} />
-                <SText flex fontSize={10} color={STheme.color.gray}>{"Presiona sobre el ícono de recargar para cambiar el entorno"}</SText>
+
+                <SView width={150} height={30} style={{
+                    borderTopRightRadius: 10,
+                    borderTopLeftRadius: 10,
+                    backgroundColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                    padding: 8,
+                    borderWidth: 1,
+                    borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                }} row center
+
+                    onPress={() => {
+                        MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
+                        this.setState({ ambiente: MDL.factura.ambiente })
+                    }}
+                >
+                    <SText fontSize={12} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+                    <SView flex />
+                    <SIcon name='Reload' width={10} fill={STheme.color.text} />
+                </SView>
+
+
             </SView>
         </SPage>;
     }
