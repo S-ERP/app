@@ -411,8 +411,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                                   borderWidth: 2 }}
                             height={100}>
                             <SView col={"xs-12"} row style={{ justifyContent: "space-between",
-                                
-                                
                                 marginBottom: 4 }}>
                                 <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
                                 <SText fontSize={13} bold color={STheme.color.text}>
