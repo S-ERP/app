@@ -200,34 +200,37 @@ export default class tabla extends Component {
             row?.factura?.cuf && {
                 title: "FACTURACIÓN",
                 items: [
-                    // { label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: async () => { try { this.imprimirFactura(row?.factura?.cuf); } catch (error) { console.error("Error:", error); SPopup.alert("❌ Error. Intenta nuevamente."); } } },
-                    row?.factura?.cuf && { label: "Imprimir (Carta)", icon: "Ajustes", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta" }); } },
-                    row?.factura?.cuf && { label: "Imprimir (Rollo)", icon: "Ajustes", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo" }); } },
+                    row?.factura?.cuf && { label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta" }); } },
+                    row?.factura?.cuf && { label: "Imprimir Factura (Rollo)", icon: "iconLista", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo" }); } },
                 ].filter(Boolean)
             },
             {
-                title: "RECIBO",
+                title: "RECIBOS",
                 items: [
-                    { label: "Imprimir (Rollo)", icon: "imprimir", onPress: () => { ReciboRollo.imprimir(row?.key); } },
-                    { label: "Imprimir (Carta)", icon: "imprimir", onPress: () => { ReciboCarta.imprimir(row?.key); } },
+                    { label: "Imprimir Recibo (Rollo)", icon: "imprimir", onPress: () => { ReciboRollo.imprimir(row?.key); } },
+                    // { label: "Imprimir Recibo (Carta)", icon: "drive-file", onPress: () => { ReciboCarta.imprimir(row?.key); } },
+                    { label: "Imprimir Recibo (Carta)", icon: "iconLista", onPress: () => { ReciboCarta.imprimir(row?.key); } },
                 ]
             },
             {
-                title: "VERIFICACIÓN",
+                title: "CONSULTA",
+                // title: "VERIFICACIÓN",
                 items: [
-                    { label: "Ver venta", icon: "World", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
-
+                    { label: "Ver Detalle de venta", icon: "Eyes", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    // { label: "Ver venta", icon: "Eyes", iconProps: { fill: 'rgb(224, 102, 32)', stroke: 'rgb(224, 102, 32)' }, onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    // { label: "Ver venta", icon: "World", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
                     row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key }); } },
                 ].filter(Boolean)
             },
             {
                 title: "GESTIÓN",
                 items: [
-                    { label: "Anular venta", icon: "cancelado", iconProps: { fill: 'rgb(224, 102, 32)', stroke: 'rgb(224, 102, 32)' }, onPress: () => { MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => { if (this.DinamicTable) this.DinamicTable.loadData(); SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, }); }).catch(error => { console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, }); }); } },
-                    row?.factura?.cuf ? { label: "Anular factura", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
-                ]
+                    { label: "Anular venta", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => { if (this.DinamicTable) this.DinamicTable.loadData(); SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, }); }).catch(error => { console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, }); }); } },
+                    row?.factura?.cuf ? { label: "Anular factura", icon: "Close", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
+                    // row?.factura?.cuf ? { label: "Anular factura", icon: "eliminar", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
+                ].filter(Boolean)
             }
-        ];
+        ].filter(Boolean);
 
         return (
             <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
@@ -276,11 +279,11 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"-keyprofile"} label='Acciones' width={40} data={(e) => e.row?.key} customComponent={e => <>
+                {/* <DinamicTable.Col key={"-keyprofile"} label='Acciones' width={40} data={(e) => e.row?.key} customComponent={e => <>
                     <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile2", { pk: e.row.key }) }} backgroundColor={STheme.color.background}>
                         <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray}></SIconApp>
                     </SView>
-                </>} />
+                </>} /> */}
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" /><DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} data={(e) => e.row?.factura?.nro_factura}
                     customComponent={e => <>
                         {(e.row?.factura?.nro_factura) ?
@@ -290,6 +293,11 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
+
+
+
+
+
                 <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.cliente?.key) ?
@@ -304,9 +312,10 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.factura?.nit ?? ""} />
+                <DinamicTable.Col key="nit" label="NIT / CI" width={100} data={(e) => e.row?.factura?.nit ?? ""} />
                 <DinamicTable.Col key="razon_social" label="Razón social" width={100} data={(e) => e.row?.factura?.razon_social ?? ""} />
-                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} data={(e) => e.row?.factura?.leyenda ?? ""} />
+
+
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
@@ -319,11 +328,36 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="cuotas_total" label="Total" wrap width={80}
-                    data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
-                    cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
+
+
+                <DinamicTable.Col key="admin" label="Vendedor" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.key_usuario) ?
+                            <SView col={"xs-12"} center row>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.usuario?.Nombres}</SText>
+                            </SView> : null}
+                    </>}
                 />
+
+
+
+
+                <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" width={80}
+                    data={(e) => e.row?.tipo_pago ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.tipo_pago) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+
                 <DinamicTable.Col key="estado_venta" label="Estado Venta" width={120} center data={(e) => e.row?.facturar ? "Facturado" : "No facturada"}
                     customComponent={e => {
                         const facturado = Boolean(e.row?.facturar);
@@ -364,17 +398,8 @@ export default class tabla extends Component {
                         </SView>
                     }}
                 />
-                <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" width={80}
-                    data={(e) => e.row?.tipo_pago ?? ""}
-                    customComponent={e => <>
-                        {(e.row?.tipo_pago) ?
-                            <SView col={"xs-12"} center row>
-                                <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
-                            </SView> : null}
-                    </>}
-                />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+
+
                 <DinamicTable.Col key="cuf" label="CUF" width={100} data={(e) => e.row?.factura?.cuf ?? ""}
                     customComponent={e => <>
                         {(e.row?.facturar) ?
@@ -384,7 +409,25 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="factura" label="Factura" width={90} data={(e) => e.row?.factura?.numero}
+
+
+                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} data={(e) => e.row?.factura?.leyenda ?? ""} />
+                <DinamicTable.Col key="detalles_" label="Detalle" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="descripcion" label="Descripción" width={210} data={(e) => e.row?.descripcion ?? ""} />
+
+
+
+
+                <DinamicTable.Col key="cuotas_total" label="Total" wrap width={80}
+                    data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
+                    cellStyle={{ alignItems: "flex-end" }}
+                    format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
+                />
+
+
+
+
+                {/* <DinamicTable.Col key="factura" label="Factura" width={90} data={(e) => e.row?.factura?.numero}
                     customComponent={e => <>
                         {(e.row?.factura?.numero) ?
                             <SView col={"xs-12"} center row>
@@ -392,7 +435,7 @@ export default class tabla extends Component {
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>facturado</SText>
                             </SView> : null}
                     </>}
-                />
+                /> */}
 
                 <DinamicTable.Col key="facturar" wrap label="Venta contabilizar aaaaaaaaaaalavaro" width={90} center data={(e) => e.row?.facturar}
                     customComponent={e => <>
@@ -430,8 +473,7 @@ export default class tabla extends Component {
                     </>}
                 />
 
-                <DinamicTable.Col key="state" label="Estado alvaro" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
-                <DinamicTable.Col key="descripcion" label="Descripción" width={210} data={(e) => e.row?.descripcion ?? ""} />
+                {/* <DinamicTable.Col key="state" label="Estado alvaro" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} /> */}
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
                     alignItems: "center"
                 }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
@@ -489,18 +531,8 @@ export default class tabla extends Component {
                         backgroundColor: STheme.color.danger + "33"
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
-                /><DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
-                    customComponent={e => <>
-                        {(e.row?.key_usuario) ?
-                            <SView col={"xs-12"} center row>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.usuario?.Nombres}</SText>
-                            </SView> : null}
-                    </>}
                 />
+
             </DinamicTable>
         );
     }
