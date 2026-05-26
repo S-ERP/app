@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
+import { Dimensions } from 'react-native';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
@@ -14,13 +15,13 @@ import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
 
 export default class tabla extends Component {
 
-    renderUsuario(srcKey) {
-        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-            <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>;
-        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return srcKey ? pintar : nulo;
-    };
+    // renderUsuario(srcKey) {
+    //     const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+    //         <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
+    //     </SView>;
+    //     const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
+    //     return srcKey ? pintar : nulo;
+    // };
 
     renderCliente(srcKey) {
         const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
@@ -174,6 +175,75 @@ export default class tabla extends Component {
         })
     }
 
+    renderMenuVentas(row) {
+        const RenderOption = ({ label, icon, iconProps, onPress }) => {
+            return (
+                <>
+                    <SView col={"xs-11"} row center onPress={() => {
+                        if (onPress) onPress();
+                        SPopup.close("popup_menu_ventas");
+                    }}>
+                        <SView col={"xs-2"} center height={32}>
+                            {typeof icon === "string" ? <SIconApp name={icon} height={18} fill={iconProps?.fill || STheme.color.text} stroke={iconProps?.stroke} /> : icon}
+                        </SView>
+                        <SView width={8} />
+                        <SView flex>
+                            <SText fontSize={14}>{label}</SText>
+                        </SView>
+                    </SView>
+                    <SHr height={1} color={STheme.color.card} />
+                </>
+            );
+        };
+
+        const groups = [
+            row?.factura?.cuf && {
+                title: "FACTURACIÓN",
+                items: [
+                    // { label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: async () => { try { this.imprimirFactura(row?.factura?.cuf); } catch (error) { console.error("Error:", error); SPopup.alert("❌ Error. Intenta nuevamente."); } } },
+                    row?.factura?.cuf && { label: "Imprimir (Carta)", icon: "Ajustes", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta" }); } },
+                    row?.factura?.cuf && { label: "Imprimir (Rollo)", icon: "Ajustes", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo" }); } },
+                ].filter(Boolean)
+            },
+            {
+                title: "RECIBO",
+                items: [
+                    { label: "Imprimir (Rollo)", icon: "imprimir", onPress: () => { ReciboRollo.imprimir(row?.key); } },
+                    { label: "Imprimir (Carta)", icon: "imprimir", onPress: () => { ReciboCarta.imprimir(row?.key); } },
+                ]
+            },
+            {
+                title: "VERIFICACIÓN",
+                items: [
+                    { label: "Ver venta", icon: "World", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+
+                    row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key }); } },
+                ].filter(Boolean)
+            },
+            {
+                title: "GESTIÓN",
+                items: [
+                    { label: "Anular venta", icon: "cancelado", iconProps: { fill: 'rgb(224, 102, 32)', stroke: 'rgb(224, 102, 32)' }, onPress: () => { MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => { if (this.DinamicTable) this.DinamicTable.loadData(); SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, }); }).catch(error => { console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, }); }); } },
+                    { label: "Anular factura", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } },
+                ]
+            }
+        ];
+
+        return (
+            <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
+                {groups.map((group, gi) => (
+                    <SView key={gi} col={"xs-12"}>
+                        <SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }} >
+                            <SText color={STheme.color.text + "99"}>{group.title}</SText>
+                        </SView>
+                        {group.items.map((opt, i) => (<RenderOption key={i} {...opt} />))}
+                        {gi !== groups.length - 1 && <SHr height={1} color={STheme.color.card} />}
+                    </SView>
+                ))}
+            </SView>
+        );
+    }
+
     mostrarTabla() {
         return (
             <DinamicTable
@@ -188,93 +258,23 @@ export default class tabla extends Component {
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 onSelect={(e) => {
-                    FloatMenu.open({
-                        e: e.evt,
-                        label: "Tabla de ventas",
-                        options: [
-                            {
-                                label: "Ver venta",
-                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
-                                onPress: () => {
-                                    SNavigation.navigate("/venta/profile2", { pk: e?.row?.key })
-                                }
-                            }, {
-                                label: "Imprimir Factura tamaño carta",
-                                icon: <SIconApp name='imprimir' fill="#e4e4e4ff" />,
-                                onPress: async () => {
-                                    try {
-                                        this.imprimirFactura(e.row?.factura?.cuf)
-                                    } catch (error) {
-                                        console.error("Error al facturar:", error);
-                                        SPopup.alert("❌ Error al crear la factura. Intenta nuevamente.");
-                                    }
-                                }
-                            }, {
-                                label: "Imprimir Recibo tamaño rollo",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    ReciboRollo.imprimir(e?.row?.key)
-                                }
-                            }, {
-                                label: "Imprimir Recibo tamaño carta",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    ReciboCarta.imprimir(e?.row?.key)
-                                }
-                            }, {
-                                label: "Anular la venta",
-                                icon: <SIconApp name='Delete' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    MDL.caja.anular_venta({
-                                        key_compra_venta: e.row.key
-                                    }).then(resp => {
-                                        if (this.DinamicTable) {
-                                            this.DinamicTable.loadData();
-                                        }
-                                        SNotification.send({
-                                            key: "anular_" + e.row.key, // key único por fila
-                                            title: "Venta anulada",
-                                            body: "La venta se anuló correctamente.",
-                                            color: STheme.color.success,
-                                            time: 5000,
-                                        });
-                                    }).catch(error => {
-                                        console.error("Error al Anular la venta:", error);
-                                        SNotification.send({
-                                            key: "anular_error_" + e.row.key,
-                                            title: "Error al anular",
-                                            body: "No se pudo anular la venta, intente nuevamente.",
-                                            color: STheme.color.danger,
-                                            time: 5000,
-                                        });
-                                    });
-                                }
-                            }, {
-                                label: "Anular factura",
-                                icon: <SIconApp name='Delete' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    SNotification.send({
-                                        key: "anular_factura_" + e.row.key,
-                                        title: "Anular factura",
-                                        body: "Proceso de anulación ejecutado.",
-                                        color: STheme.color.warning,
-                                        time: 5000,
-                                    });
-                                }
-                            }, {
-                                label: "Imprimir factura",
-                                icon: <SIconApp name='Ajustes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    MDL.factura.imprimir({ cuf: e.row?.factura?.cuf, tipo: "carta" });
-                                }
-                            }
-                        ]
-                    });
+                    let top = e.evt.nativeEvent.pageY;
+                    const h = Dimensions.get("window").height;
+                    if (h < top + 300) {
+                        top = h - 300;
+                    }
+                    SPopup.open({
+                        key: "popup_menu_ventas",
+                        type: "2",
+                        content: <SView withoutFeedback style={[{ position: "absolute", top: top, left: e.evt.nativeEvent.pageX, width: 250, }]} center>
+                            {this.renderMenuVentas(e.row)}
+                        </SView>
+                    })
                 }}
                 loadInitialState={async () => {
                     return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
                 }}
->
+            >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"-keyprofile"} label='Acciones' width={40} data={(e) => e.row?.key} customComponent={e => <>
                     <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile2", { pk: e.row.key }) }} backgroundColor={STheme.color.background}>
@@ -343,7 +343,7 @@ export default class tabla extends Component {
                 />
                 <DinamicTable.Col key="estado_pago" wrap label="Estado Pago" width={80}
                     data={(e) => {
-                        if (e.row?.cuotas_en_mora?.monto> 0) {
+                        if (e.row?.cuotas_en_mora?.monto > 0) {
                             return "En Mora";
                         }
                         if (e.row?.cuotas?.total <= e.row?.monto_amortizado) {
@@ -423,7 +423,7 @@ export default class tabla extends Component {
                                             this.__pressed = false;
                                         }
                                     }}
->
+                                >
                                     <SText flex style={e.textStyle}>switch</SText>
                                 </SView>
                             </SView> : null}
@@ -518,7 +518,7 @@ export default class tabla extends Component {
                     />
                 </SView>
                     <SView width={8} height={"100%"} />
-                    <SView col={"xs-12 sm-5 lg-1"} row center>
+                    {/* <SView col={"xs-12 sm-5 lg-1"} row center>
                         <FiltroSelector
                             ref={ref => this.filtroStockRef = ref}
                             label="Stock alvaro"
@@ -531,7 +531,7 @@ export default class tabla extends Component {
                                 if (this.table) this.table.loadData();
                             })}
                         />
-                    </SView>
+                    </SView> */}
                 </SView>{this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>
