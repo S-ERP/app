@@ -341,9 +341,9 @@ export default class tabla extends Component {
 
                             {
                                 label: "Imprimir factura",
-                                icon: <SIconApp name='Delete' fill={STheme.color.text} />,
+                                icon: <SIconApp name='Ajustes' fill={STheme.color.text} />,
                                 onPress: () => {
-                                    MDL.factura.imprimir({ cuf: "dddddd", tipo: "carta" });
+                                    MDL.factura.imprimir({ cuf: e.row?.factura?.cuf, tipo: "carta" });
                                 }
                             },
 
@@ -414,11 +414,11 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 /> */}
-
+{/* razon_social */}
                 <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.factura?.nit ?? ""} />
-                <DinamicTable.Col key="nit" label="NIT CLIENTE" width={100} data={(e) => e.row?.cliente?.nit ?? ""} />
+                {/* <DinamicTable.Col key="nit_" label="NIT CLIENTE" width={100} data={(e) => e.row?.cliente?.nit ?? ""} /> */}
                 <DinamicTable.Col key="razon_social" label="Razón social" width={100} data={(e) => e.row?.factura?.razon_social ?? ""} />
-                <DinamicTable.Col key="razon_social" label="Razón social CLIENTE" width={100} data={(e) => e.row?.cliente?.razon_social ?? ""} />
+                {/* <DinamicTable.Col key="razon_social_" label="Razón social CLIENTE" width={100} data={(e) => e.row?.cliente?.razon_social ?? ""} /> */}
 
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>

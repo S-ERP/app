@@ -34,7 +34,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
-    inputCliente = null;
+    inputCliente: SInput | null = null;
+    inputRazonSocial: SInput | null = null;
+    inputNit: SInput | null = null;
+    inputDescuento: SInput | null = null;
+    inputDescripcionVenta: SInput | null = null;
+    evento: any;
     state: { almacen: any, moneda: any, factura: boolean, razon_social: string, nit: string, clientes: any[], key_cliente: string | null, cliente_texto: string, descuentos: any[], descuentoSeleccionado: any | null, esCredito: boolean, } = {
         almacen: null,
         moneda: null,
@@ -109,7 +114,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             }
             if (!almacen) {
                 console.error("Debe seleccionar un almacén");
-                
+
                 // SNotification.send({
                 //     title: "Almacén requerido",
                 //     body: "Debe seleccionar un almacén.",
@@ -130,6 +135,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             }
 
             const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
+            const cliente = {
+                ...(this.proveedor || {}),
+                nit: this.state.nit || this.proveedor?.nit || "",
+                razon_social: this.state.razon_social || this.proveedor?.razon_social || "",
+            };
             PopupCarritoConfirmarResumen.open({
                 subtotal,
                 montoMaximo: montoFinal,
@@ -137,10 +147,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 porcentajeDescuento,
                 descuentoSeleccionado: descuentos,
 
-// creo que aqui deberia ir el descuento
+                // creo que aqui deberia ir el descuento
 
                 solo_para_caja: false,
-                cliente: this.proveedor,
+                cliente,
                 factura: !!factura,
                 moneda,
                 almacen,
@@ -222,6 +232,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     this.setState({
                                         key_cliente: encontrado.key,
                                         cliente_texto: t,
+                                        razon_social: encontrado?.razon_social || encontrado?.nombres || "",
+                                        nit: encontrado?.nit || "",
                                     });
 
                                     this.inputRazonSocial?.setValue?.(
@@ -281,6 +293,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                     ],
                                                     key_cliente: resp.key,
                                                     cliente_texto: resp?.razon_social || resp?.nombres || nombre,
+                                                    razon_social: resp?.razon_social || resp?.nombres || "",
+                                                    nit: resp?.nit || "",
                                                 }));
                                                 this.inputCliente?.setSelect?.(resp);
                                                 this.inputRazonSocial?.setValue?.(
@@ -341,6 +355,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                             cliente?.razon_social ||
                                                             cliente?.nombres ||
                                                             "",
+                                                        razon_social: cliente?.razon_social || cliente?.nombres || "",
+                                                        nit: cliente?.nit || "",
                                                     }));
 
                                                     this.inputCliente?.setSelect?.(cliente);
@@ -368,7 +384,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SView row>
                             <SInput
                                 inputStyle={this.state.factura ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
-                                ref={ref => this.inputRazonSocial = ref} icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>} placeholder={"Razón Social"} />
+                                ref={ref => this.inputRazonSocial = ref}
+                                icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>}
+                                placeholder={"Razón Social"}
+                                onChangeText={(valor) => this.setState({ razon_social: valor || "" })}
+                                value={this.state.razon_social}
+                        />
                         </SView>
                         <SHr h={10} />
                         <SView row><SInput
@@ -382,6 +403,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             ref={ref => (this.inputNit = ref)}
                             onChangeText={(e) => {
                                 const nit = (e || "").trim();
+                                this.setState({ nit });
                                 if (nit.length < 6) {
                                     this.proveedor = null;
                                     return;
@@ -393,6 +415,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             return;
                                         }
                                         this.proveedor = proveedor;
+                                        this.setState({
+                                            razon_social: proveedor?.razon_social || proveedor?.nombres || "",
+                                            nit: proveedor?.nit || "",
+                                        });
                                         this.inputCliente?.setSelect?.(proveedor);
                                         this.inputRazonSocial?.setValue?.(
                                             proveedor?.razon_social || proveedor?.nombres || ""

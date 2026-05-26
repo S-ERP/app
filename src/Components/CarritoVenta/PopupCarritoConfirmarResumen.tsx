@@ -15,14 +15,18 @@ interface ClienteType {
     razon_social?: string;
 }
 
-interface PopupCarritoConfirmarResumenProps {
+export interface PopupCarritoConfirmarResumenProps {
     descripcion?: string;
     factura?: boolean;
     cliente?: ClienteType;
     descuentoSeleccionado?: any[];
-}
-
-export type PopupCarritoConfirmarResumenProps = {
+    subtotal?: number;
+    montoMaximo?: number;
+    key_moneda?: string;
+    porcentajeDescuento?: number;
+    solo_para_caja?: boolean;
+    moneda?: any;
+    almacen?: any;
     onTipoPagoChange: (esCredito: boolean) => void;
 }
 
@@ -53,7 +57,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
-    inputCliente = null;
+    inputCliente: SInput | null = null;
+    evento: any;
+    handleChange = () => { };
     state: {
         almacen: any,
         moneda: any,
@@ -276,8 +282,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     ? {
                         nro_factura: this.generateRandomCode(),
                         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
-                        nit: this.props.cliente?.nit || "",
-                        razon_social: this.props.cliente?.razon_social || "",
+                        nit: clientefull?.nit || "",
+                        razon_social: clientefull?.razon_social || "",
                         leyenda: "alvaro",
                     }
                     : null,
@@ -286,8 +292,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 facturar_luego: this.props.factura,
 
                 cliente: {
-                    nit: this.props.cliente?.nit || "",
-                    razon_social: this.props.cliente?.razon_social || "",
+                    nit: clientefull?.nit || "",
+                    razon_social: clientefull?.razon_social || "",
                 },
 
                 descuentos: this.props.descuentoSeleccionado || [],
