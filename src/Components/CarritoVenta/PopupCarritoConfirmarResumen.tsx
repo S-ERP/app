@@ -169,15 +169,18 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 key_punto_venta: keyPuntoVenta,
                 montoMaximo,
                 key_moneda: selectedMoneda.key,
-                onSelect: (tipos_pago: any[]) =>
+                onSelect: (tipos_pago: any[]) => {
+                    console.log("Tipo de pago seleccionado antes de registrar:", tipos_pago);
                     this.handleSubmit(
                         tipos_pago,
+                        selectedMoneda.key,
                         cliente,
                         factura,
                         almacen,
                         porcentajeDescuento,
                         descuentoSeleccionado
-                    ),
+                    );
+                },
                 solo_para_caja: false,
                 venta: true,
             });
@@ -229,8 +232,12 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const monedaActual = MDL.carrito.selectedMoneda;
             const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
+            const esCredito = Object.values(tipos_pago).some((tp: any) =>
+                tp?.tipo_pago?.key === "credito" ||
+                tp?.tipo_pago?.descripcion?.toLowerCase() === "credito"
+            );
             const clientefull = this.props.cliente;
-            if (keyPago === "credito" && !clientefull) {
+            if (esCredito && !clientefull) {
                 this.props.onTipoPagoChange(true);
                 SelectTipoPago.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
@@ -284,11 +291,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
                         nit: clientefull?.nit || "",
                         razon_social: clientefull?.razon_social || "",
-                        leyenda: "alvaro",
+                        leyenda: "alvaro es probando la leyenda",
                     }
                     : null,
 
-                tipo_pago: this.props.factura ? "credito" : "contado",
+                tipo_pago: esCredito ? "credito" : "contado",
                 facturar_luego: this.props.factura,
 
                 cliente: {
@@ -307,32 +314,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 detalle,
                 tipos_pago,
             };
-            // const data = {
-            //     "descripcion": this.props.descripcion || "",
-            //     "observacion": "Observación",
-            //     "facturar": this.props.factura,
-            //     "factura": this.props.factura ? {
-            //         nro_factura: this.generateRandomCode(),
-            //         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
-            //         nit: this.props.cliente?.nit || "",
-            //         razon_social: this.props.cliente?.razon_social || "",
-            //         leyenda: "alvaro"
-            //     } : {},
-            //     "tipo_pago": this.props.factura ? "credito" : "contado",
-            //     "facturar_luego": this.props.factura,
-            //     cliente: {
-            //         nit: this.props.cliente?.nit || "",
-            //         razon_social: this.props.cliente?.razon_social || ""
-            //     },
-            //     descuentos: this.props.descuentoSeleccionado || [],
-            //     "key_cliente": this.props.cliente?.key,
-            //     "key_usuario": MDL.usuario.session?.key,
-            //     "key_caja": MDL.caja.activa?.key,
-            //     "key_almacen": almacen.key,
-            //     "key_moneda": monedaActual.key,
-            //     "detalle": detalle,
-            //     tipos_pago: tipos_pago,
-            // }
+
+            console.clear();
+            console.log("%c" + JSON.stringify(data), `color: #382ecc; font-weight: bold;`);
+
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
