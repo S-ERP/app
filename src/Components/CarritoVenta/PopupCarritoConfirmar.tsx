@@ -107,18 +107,18 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             if (!moneda) {
                 console.error("Debe seleccionar una moneda antes de continuar.");
                 // SNotification.send({
-                //     title: "Moneda requerida",
-                //     body: "Debe seleccionar una moneda antes de continuar.",
-                //     color: STheme.color.danger,
+                //title: "Moneda requerida",
+                //body: "Debe seleccionar una moneda antes de continuar.",
+                //color: STheme.color.danger,
                 // });
             }
             if (!almacen) {
                 console.error("Debe seleccionar un almacén");
 
                 // SNotification.send({
-                //     title: "Almacén requerido",
-                //     body: "Debe seleccionar un almacén.",
-                //     color: STheme.color.danger,
+                //title: "Almacén requerido",
+                //body: "Debe seleccionar un almacén.",
+                //color: STheme.color.danger,
                 // });
             }
 
@@ -146,9 +146,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 key_moneda: moneda?.key,
                 porcentajeDescuento,
                 descuentoSeleccionado: descuentos,
-
-                // creo que aqui deberia ir el descuento
-
                 solo_para_caja: false,
                 cliente,
                 factura: !!factura,
@@ -192,7 +189,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SView row col={"xs-12"}>
                         <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente:"}</SText>
                         <SView col={"xs-6"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
-                            <SInput height={20} style={{ marginTop: 0 }} labelStyle={{ left: 12 }}
+                            <SInput height={20} style={{ marginTop: 0 }} labelstyle={{ left: 12 }}
                                 label={"Con factura"}
                                 type="checkBox"
                                 onChangeText={(val) => {
@@ -323,7 +320,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                 });
                                             }
                                         }}
-                                    >
+>
                                         <SIconApp name="Add" />
                                     </SView>
 
@@ -371,7 +368,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                 }
                                             });
                                         }}
-                                    >
+>
                                         <SIconApp name="Search" />
                                     </SView>
                                 )
@@ -389,7 +386,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 placeholder={"Razón Social"}
                                 onChangeText={(valor) => this.setState({ razon_social: valor || "" })}
                                 value={this.state.razon_social}
-                        />
+                            />
                         </SView>
                         <SHr h={10} />
                         <SView row><SInput
@@ -434,7 +431,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             iconR={
                                 <SView
                                     card
-                                    style={{ width: 40, height: 40 }}
+                                    style={{ width: 40, 
+                                        height: 40 }}
                                     onPress={() => {
                                         SNavigation.navigate("/cliente", {
                                             onSelect: (proveedor: any) => {
@@ -447,7 +445,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             }
                                         });
                                     }}
-                                >
+>
                                     <SIconApp name="Search" />
                                 </SView>
                             }
@@ -458,7 +456,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SHr height={20} />
                     <SView row col={"xs-12"}>
                         <SText col={"xs-12"} color={STheme.color.lightGray}>{"Seleccione si hay descuento:"}</SText>
-                        <SView col={"xs-12"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
+                        <SView col={"xs-12"} row style={{ alignItems: "flex-end",
+                        
+                        justifyContent: "flex-end", 
+                            
+                            alignContent: "flex-start" }}>
                             <SInput
                                 ref={ref => this.inputDescuento = ref}
                                 icon={<SText color={STheme.color.lightGray} bold>{"Descuento:"}</SText>}
@@ -493,13 +495,18 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         }} />
                 </SView>
                 <SHr />
-                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
+                <SView style={{ padding: 10,
+                 paddingBottom: 5, 
+                    paddingTop: 5 }}>
                     <SText color={STheme.color.lightGray}>{"Descripcion"}</SText>
                     <SInput
                         type="textArea"
                         ref={ref => this.inputDescripcionVenta = ref}
                         placeholder={"Descripción de la venta"}
-                        style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
+                        style={{ minHeight: 20, height: 50, 
+                            borderWidth: 1,
+                            
+                            borderColor: STheme.color.gray, marginVertical: 4 }}
                     />
                 </SView>
                 <SHr />
@@ -507,12 +514,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
-
                     this.handleOnPress();
                 }}>
                     <SText>{"Confirmar la venta"}</SText>
                 </SView>
             </SView>
-        </SView >
+        </SView>
     }
 }
