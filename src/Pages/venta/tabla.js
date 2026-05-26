@@ -15,7 +15,7 @@ import PopupDetalleVenta from './Components/PopupDetalleVenta';
 export default class tabla extends Component {
 
 
- 
+
     renderUsuario(srcKey) {
         const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
@@ -341,7 +341,8 @@ export default class tabla extends Component {
 
                             {
                                 label: "Imprimir factura",
-                                icon: <SIconApp name='Ajustes' fill={STheme.color.text} />,
+                                icon: <SIconApp name='Ajustes
+                                ' fill={STheme.color.text} />,
                                 onPress: () => {
                                     MDL.factura.imprimir({ cuf: e.row?.factura?.cuf, tipo: "carta" });
                                 }
@@ -402,10 +403,12 @@ export default class tabla extends Component {
                     </>}
                 /> */}
 
-                {/* <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
+                <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.cliente?.key) ?
-                            <SView col={"xs-12"} center row  >
+                            <SView col={"xs-12"} center row onPress={() => {
+                                SNavigation.navigate("/cliente/perfil", { key: e.row?.cliente?.key });
+                            }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
@@ -413,11 +416,12 @@ export default class tabla extends Component {
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.cliente?.nombres}</SText>
                             </SView> : null}
                     </>}
-                /> */}
-{/* razon_social */}
+                />
+                {/* razon_social */}
                 <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.factura?.nit ?? ""} />
                 {/* <DinamicTable.Col key="nit_" label="NIT CLIENTE" width={100} data={(e) => e.row?.cliente?.nit ?? ""} /> */}
                 <DinamicTable.Col key="razon_social" label="Razón social" width={100} data={(e) => e.row?.factura?.razon_social ?? ""} />
+                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} data={(e) => e.row?.factura?.leyenda ?? ""} />
                 {/* <DinamicTable.Col key="razon_social_" label="Razón social CLIENTE" width={100} data={(e) => e.row?.cliente?.razon_social ?? ""} /> */}
 
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
