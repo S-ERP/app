@@ -65,6 +65,7 @@ export default class BarraRechartsBd extends Component {
       valueKey = "pv",
       valueKey2 = "uv",
       height = 300,
+      onClick = null,
     } = this.props;
 
     if (!Array.isArray(data) || data.length === 0) {
@@ -78,11 +79,12 @@ export default class BarraRechartsBd extends Component {
             width={300}
             height={300}
             data={data}
-            onClick={(data) => {
-              SNavigation.navigate("/sucursal", {
-                key: data?.activePayload[0]?.payload?.key
-              });
-            }}
+            // onClick={(data) => {
+            //   SNavigation.navigate("/sucursal", {
+            //     key: data?.activePayload[0]?.payload?.key
+            //   });
+            // }}
+            onClick= {onClick}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={nameKey} fontSize={10} tick={{ fill: STheme.color.text }} />

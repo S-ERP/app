@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SButtom } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -7,6 +7,7 @@ import FechaFullFilter from "../../Components/FechaFullFilter";
 import BarraRechartsBd from "../recharts/Components/BarraRechartsBd";
 import LineaRechartsBd from "../recharts/Components/LineaRechartsBd";
 import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
+import DetalleTabla from "./Components/DetalleTabla";
 
 export default class ventas extends React.Component {
     state = {
@@ -111,7 +112,7 @@ export default class ventas extends React.Component {
             const sucursales = await MDL.empresa.getAllSucursales();
             console.log("sucursales disponibles:", sucursales);
             const res = await MDL.compra_venta.execute_function("ventas_por_dia2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            console.log("Respuesta cruda de ventas_por_dia2:", res);
+            console.log("BASE DE DATOS:", res);
             // const rescompleto = res.find((item) => item.key_sucursal === sucursales?.key) || res.find((item) => item.key_sucursal == null) || res;
             // const itemSucursal = res.filter(
             //     (item) => item.key_sucursal === sucursales?.key
@@ -311,6 +312,7 @@ export default class ventas extends React.Component {
 
         console.log("dataBranchShare 2", dataBranchShare);
         console.log("dataBranchShareBarras", dataBranchShareBarras);
+        console.log("dataTopProducts", dataTopProducts);
 
         const renderResumenTarjetas = () => {
             const totalMonto = dataTimeSeries.reduce((sum, item) => sum + Number(item.monto_total || 0), 0);
@@ -339,7 +341,7 @@ export default class ventas extends React.Component {
                                 card
                                 style={{ padding: 15, minHeight: 110, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
                             >
-                                <SText fontSize={12} color={STheme.color.gray}>{item.label}</SText>
+                                <SText fontSize={14} bold color={STheme.color.lightGray}>{item.label}</SText>
                                 <SText fontSize={18} bold>{item.value}</SText>
                             </SView>
                         </SView>
@@ -350,6 +352,7 @@ export default class ventas extends React.Component {
         console.log("dataBranchShare", dataBranchShare);
         console.log("dataTopProducts", dataTopProducts);
         console.log("dataBranchShareBarras", dataBranchShareBarras);
+        console.log("dataTimeSeries", dataTimeSeries);
         return (
             <SPage title="Dashboard de Ventas">
                 <ScrollView>
@@ -452,7 +455,7 @@ export default class ventas extends React.Component {
                                 </SView>
                             </SView>
                             <SView col="xs-12 lg-4" row padding={5} >
-                                <SView card
+                                {/* <SView card
                                     col="xs-12"
                                     style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }} >
                                     <SText fontSize={16} bold>Participación por sucursal</SText>
@@ -466,6 +469,26 @@ export default class ventas extends React.Component {
                                             data={dataBranchShare}
                                             nameKey="name"
                                             valueKey="value"
+                                            height={320}
+                                        />
+                                    )}
+                                </SView> */}
+                                <SView
+                                    col="xs-12"
+                                    card
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                >
+                                    <SText fontSize={16} bold>Ventas por método de pago</SText>
+                                    <SHr />
+                                    {loading ? (
+                                        <SText>Cargando datos...</SText>
+                                    ) : dataMetodoPago.length === 0 ? (
+                                        <SText>No hay datos disponibles.</SText>
+                                    ) : (
+                                        <CircularRechartsBd
+                                            data={dataMetodoPago}
+                                            nameKey="metodo_pago"
+                                            valueKey="total_bs"
                                             height={320}
                                         />
                                     )}
@@ -498,31 +521,47 @@ export default class ventas extends React.Component {
                                             valueKey2="cantidad"
                                             key="key"
                                             height={320}
+                                            onClick={(data) => {
+                                                const keySucursal = data?.activePayload[0]?.payload?.key;
+                                                // const sucursalSeleccionada = sucursales.find(s => s.key === keySucursal);
+                                                // this.handleSucursalSelect(sucursalSeleccionada || null);
+                                                console.log("Sucursal seleccionada en gráfico de barras:", keySucursal);
+                                                // SNavigation.navigate("/sucursal", {
+                                                //     key: keySucursal
+                                                // });
+                                                DetalleTabla.openPopup({
+                                                    // estado: "por_cerrar",
+                                                    estado: "fuera_tiempo",
+                                                    fecha_inicio: this.state.fecha_inicio,
+                                                    fecha_fin: this.state.fecha_fin,
+                                                    // estado:"falta_matricula",
+                                                })
+
+                                            }}
                                         />
                                     )}
                                 </SView>
                             </SView>
                             <SView col="xs-12 lg-6" padding={5}>
-                                <SView
+                                <SView card
                                     col="xs-12"
-                                    card
-                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
-                                >
-                                    <SText fontSize={16} bold>Ventas por método de pago</SText>
+                                    style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }} >
+                                    <SText fontSize={16} bold>Participación por sucursal</SText>
                                     <SHr />
                                     {loading ? (
                                         <SText>Cargando datos...</SText>
-                                    ) : dataMetodoPago.length === 0 ? (
-                                        <SText>No hay datos disponibles.</SText>
+                                    ) : dataBranchShare.length === 0 ? (
+                                        <SText>No hay datos por sucursal.</SText>
                                     ) : (
                                         <CircularRechartsBd
-                                            data={dataMetodoPago}
-                                            nameKey="metodo_pago"
-                                            valueKey="total_bs"
+                                            data={dataBranchShare}
+                                            nameKey="name"
+                                            valueKey="value"
                                             height={320}
                                         />
                                     )}
                                 </SView>
+
                             </SView>
                         </SView>
 
@@ -617,10 +656,10 @@ export default class ventas extends React.Component {
                                             data={e => e.row.cantidad_total_vendida}
                                         />
                                         <DinamicTable.Col
-                                            key="total_bs_ganado"
+                                            key="total"
                                             label='Total Bs'
                                             width={120}
-                                            data={e => `Bs. ${Number(e.row.total_bs_ganado).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                            data={e => `Bs. ${Number(e.row.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
                                         />
                                     </DinamicTable>
                                 )}
