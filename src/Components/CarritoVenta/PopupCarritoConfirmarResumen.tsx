@@ -225,7 +225,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
 
-                        console.clear();
+            console.clear();
             console.log("%c" + JSON.stringify(cliente), `color: #ccc92e; font-weight: bold;`);
 
             const almacen = this.props.almacen;
@@ -234,11 +234,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 tp?.tipo_pago?.key === "credito" ||
                 tp?.tipo_pago?.descripcion?.toLowerCase() === "credito"
             );
-            const clientefull = this.props.cliente;
+            const clientefull = this.props.cliente || {};
 
             console.log("%c" + JSON.stringify(clientefull), `color: rgb(27, 210, 235); font-weight: bold;`);
 
-            if (esCredito && !clientefull) {
+            if (esCredito && !clientefull?.key) {
                 this.props.onTipoPagoChange(true);
                 SelectTipoPago.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
@@ -290,15 +290,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         nro_factura: this.generateRandomCode(),
                         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
                         nit: clientefull?.nit || "",
-                        razon_social: clientefull?.razon_social || "",
+                        razon_social: clientefull?.razon_social || clientefull?.nombres || "",
                         leyenda: "alvaro es probando la leyenda",
                     }
                     : null,
                 tipo_pago: esCredito ? "credito" : "contado",
                 facturar_luego: this.props.factura,
                 cliente: {
+                    key: clientefull?.key || null,
                     nit: clientefull?.nit || "",
-                    razon_social: clientefull?.razon_social || "",
+                    razon_social: clientefull?.razon_social || clientefull?.nombres || "",
                 },
                 descuentos: this.props.descuentoSeleccionado || [],
                 key_cliente: clientefull?.key || null,
@@ -414,12 +415,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         <SView
                             col={"xs-12"}
                             border={STheme.color.card}
-                            style={{ borderRadius: 8,
-                                 padding: 8,
-                                  borderWidth: 2 }}
+                            style={{
+                                borderRadius: 8,
+                                padding: 8,
+                                borderWidth: 2
+                            }}
                             height={100}>
-                            <SView col={"xs-12"} row style={{ justifyContent: "space-between",
-                                marginBottom: 4 }}>
+                            <SView col={"xs-12"} row style={{
+                                justifyContent: "space-between",
+                                marginBottom: 4
+                            }}>
                                 <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
                                 <SText fontSize={13} bold color={STheme.color.text}>
                                     {monedaActual.observacion} {SMath.formatMoney(subtotal2, 2)}

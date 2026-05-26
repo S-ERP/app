@@ -137,8 +137,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
             const cliente = {
                 ...(this.proveedor || {}),
+                key: this.proveedor?.key || this.state.key_cliente || null,
                 nit: this.state.nit || this.proveedor?.nit || "",
-                razon_social: this.state.razon_social || this.proveedor?.razon_social || "",
+                razon_social: this.state.razon_social || this.proveedor?.razon_social || this.proveedor?.nombres || "",
             };
             PopupCarritoConfirmarResumen.open({
                 subtotal,
