@@ -224,6 +224,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
+
+                        console.clear();
+            console.log("%c" + JSON.stringify(cliente), `color: #ccc92e; font-weight: bold;`);
+
             const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
             const esCredito = Object.values(tipos_pago).some((tp: any) =>
@@ -231,6 +235,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 tp?.tipo_pago?.descripcion?.toLowerCase() === "credito"
             );
             const clientefull = this.props.cliente;
+
+            console.log("%c" + JSON.stringify(clientefull), `color: rgb(27, 210, 235); font-weight: bold;`);
+
             if (esCredito && !clientefull) {
                 this.props.onTipoPagoChange(true);
                 SelectTipoPago.closePopup();
@@ -294,7 +301,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     razon_social: clientefull?.razon_social || "",
                 },
                 descuentos: this.props.descuentoSeleccionado || [],
-                key_cliente: this.props.cliente?.key || null,
+                key_cliente: clientefull?.key || null,
                 key_usuario: MDL.usuario.session?.key || null,
                 key_caja: MDL.caja.activa?.key || null,
                 key_almacen: almacen.key,
@@ -302,6 +309,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 detalle,
                 tipos_pago,
             };
+            console.log("%c" + JSON.stringify(data), `color: #2ECC40; font-weight: bold;`);
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
@@ -374,7 +382,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente"}</SText>
                         <SHr />
                         <SView col={"xs-12"} row>
-                            <SText color={STheme.color.lightGray}>Nombre:</SText>
+                            <SText color={STheme.color.lightGray}>Nombrssse:</SText>
                             <SView width={8} />
                             <SText>{cliente?.nombres}</SText>
                         </SView>

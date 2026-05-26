@@ -344,30 +344,51 @@ export default class tabla extends Component {
                 />
 
 
+                {/* background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); */}
+                {/* background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); */}
+                {/* background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); */}
 
 
                 <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" width={80}
                     data={(e) => e.row?.tipo_pago ?? ""}
-                    customComponent={e => <>
-                        {(e.row?.tipo_pago) ?
-                            <SView col={"xs-12"} center row>
-                                <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
-                            </SView> : null}
-                    </>}
+                    customComponent={e => {
+                        const tipoPagoMap = {
+                            "contado": { color: "#2563eb", label: "Contado" },
+                            "credito": { color: "#16a34a", label: "Crédito" },
+                            "transferencia": { color: "#6b7280", label: "Transferencia" },
+                        };
+                        const estilo = tipoPagoMap[e.data?.toLowerCase()] || { color: STheme.color.lightGray, label: e.data };
+                        return (
+                            <>
+                                {(e.row?.tipo_pago) ?
+                                    <SView col={"xs-12"} center row>
+                                        <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5 }}>
+                                            <SText color={STheme.color.text} fontSize={10}>{estilo.label}</SText>
+                                        </SView>
+                                    </SView> : null}
+                            </>
+                        );
+                    }}
                 />
 
+                {/* "contado": {color: "#2563eb", label: "Contado" },
+                "credito": {color: "#16a34a", label: "Crédito" },
+                "transferencia": {color: "#6b7280", label: "Transferencia" },
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); */}
 
                 <DinamicTable.Col key="estado_venta" label="Estado Venta" width={120} center data={(e) => e.row?.facturar ? "Facturado" : "No facturada"}
                     customComponent={e => {
                         const facturado = Boolean(e.row?.facturar);
                         return <SView col={"xs-12"} center row>
                             <SView style={{
-                                borderRadius: 16,
-                                backgroundColor: facturado ? STheme.color.success : STheme.color.warning,
-                                paddingHorizontal: 10,
-                                paddingVertical: 4,
+                                borderRadius: 4,
+                                backgroundColor: facturado ? "#16a34a" : "#6b7280",
+                                // paddingHorizontal: 10,
+                                padding: 5,
                             }}>
+                                {/* <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}> */}
+
                                 <SText center style={{ color: STheme.color.text, fontSize: 11, fontWeight: "bold" }}>
                                     {facturado ? "Facturado" : "No facturada"}
                                 </SText>
@@ -387,9 +408,9 @@ export default class tabla extends Component {
                     }}
                     customComponent={(e) => {
                         const statesTipo = {
-                            "Al Día": { color: STheme.color.warning, label: "Al Día" },
-                            "En Mora": { color: STheme.color.danger, label: "En Mora" },
-                            "Pagado": { color: STheme.color.success, label: "Pagado" },
+                            "Al Día": { color: "#f59e0b", label: "Al Día" },
+                            "En Mora": { color: "#dc2626", label: "En Mora" },
+                            "Pagado": { color: "#16a34a", label: "Pagado" },
                         }[e.data] || {};
                         return <SView row center>
                             <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
@@ -418,7 +439,7 @@ export default class tabla extends Component {
 
 
 
-                <DinamicTable.Col key="cuotas_total" label="Total" wrap width={80}
+                <DinamicTable.Col key="cuotas_total" label="Total" wrap bold width={80}
                     data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
