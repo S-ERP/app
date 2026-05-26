@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { PieChart, Pie, Sector, ResponsiveContainer, Cell, Tooltip, Legend } from "recharts";
-import { SText, SView } from "servisofts-component";
+import { SText, STheme, SView } from "servisofts-component";
 
 const defaultData = [
     // { name: "Group A", value: 400 },
@@ -79,6 +79,13 @@ export default class CircularRechartsBd extends Component {
                             layout="vertical"
                             align="right"
                             verticalAlign="middle"
+                            wrapperStyle={{
+                                backgroundColor: STheme.color.background,
+                                border: `1px solid ${STheme.color.gray}`,
+                                borderRadius: 10,
+                                padding: 15,
+                                right: 0,
+                            }}
                         />
                     </PieChart>
                 </ResponsiveContainer>
