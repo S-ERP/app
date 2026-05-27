@@ -293,6 +293,18 @@ export default class ventas extends React.Component {
     };
 
     render() {
+        // let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
+        let permiso = MDL.rolesPermisos.getPermiso({ url: "/dashboard", permiso: 'ver' })
+        if (!permiso) {
+            return (
+                <SPage title="Dashboard de Ventas" center>
+                    <SView col="xs-12" center>
+                        <SText fontSize={16} color={STheme.color.danger}>No tienes permiso para ver este contenido.</SText>
+                    </SView>
+                </SPage>
+            );
+        }
+
         const {
             periodo,
             fecha_inicio,
@@ -523,6 +535,8 @@ export default class ventas extends React.Component {
                                             height={320}
                                             onClick={(data) => {
                                                 const keySucursal = data?.activePayload[0]?.payload?.key;
+                                                console.log("barraaaas:", data);
+                                                console.log(keySucursal);
                                                 // const sucursalSeleccionada = sucursales.find(s => s.key === keySucursal);
                                                 // this.handleSucursalSelect(sucursalSeleccionada || null);
                                                 console.log("Sucursal seleccionada en gráfico de barras:", keySucursal);
@@ -531,7 +545,8 @@ export default class ventas extends React.Component {
                                                 // });
                                                 DetalleTabla.openPopup({
                                                     // estado: "por_cerrar",
-                                                    estado: "fuera_tiempo",
+                                                    estado: "fuera_tiempo_",
+                                                    key_sucursal: keySucursal,
                                                     fecha_inicio: this.state.fecha_inicio,
                                                     fecha_fin: this.state.fecha_fin,
                                                     // estado:"falta_matricula",
