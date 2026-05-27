@@ -348,6 +348,7 @@ export default class cuentas_anidadas extends React.Component {
         const isOpen = !!this.state.openItems[item.codigo];
         const isSelected = this.state.selectedItem === item.key;
         const isHover = this.hoveredItemLocal === item.codigo;
+        const showSelectButton = this.props.btnSelect && isSelected;
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
         if (this.props.select) {
@@ -500,18 +501,9 @@ export default class cuentas_anidadas extends React.Component {
                         this.forceUpdate();
                     }}
                 >
-                    <SView
-                        style={{
-                            flex: 1,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingLeft: level * 15,
-                        }}
-                    >
+                    <SView style={{ flex: 1, flexDirection: "row", alignItems: "center", paddingLeft: level * 15, }} >
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
                         <SText numberOfLines={1}>{item.codigo} - {item.descripcion || item.tipo}</SText>
-                        {/* > {item.codigo} - {item.descripcion || item.tipo} www </SText> */}
-
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
                             <SText clean style={{
@@ -545,6 +537,19 @@ export default class cuentas_anidadas extends React.Component {
                     <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.haber ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.haber || 0)}</SText> </SView>
                     <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.saldo ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.saldo || 0)}</SText> </SView>
                     <SView style={{ width: 60, alignItems: "center" }} onPress={(evt) => { FloatMenu.open({ e: evt, label: nombreCuenta, options, }); }}> <SIconApp name="drive-menu" width={10} height={10} fill={STheme.color.text} /> </SView>
+                    {showSelectButton && (
+                        <SView row onPress={() => {
+                            const cuenta = this.state.cuentas.find(c => c.key === item.key);
+                            if (this.props.select && cuenta) {
+                                this.props.select(cuenta);
+                            }
+                            this.setState({ selectPosition: null });
+                        }} style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: STheme.color.primary, borderRadius: 8, marginLeft: 8, alignItems: "center", justifyContent: "center" }}>
+                            <SIconApp width={16} height={16} name="vineta1" fill={STheme.color.success} />
+                            <SView width={6} />
+                            <SText color={STheme.color.white}>Seleccionar</SText>
+                        </SView>
+                    )}
                 </SView>
                 {isOpen && item.children.map(child => this.renderItem(child, level + 1))}
             </SView>
@@ -753,35 +758,6 @@ export default class cuentas_anidadas extends React.Component {
                 <FloatButtom onPress={() => {
                     this.registraNuevo();
                 }} />
-                {this.props.btnSelect && this.state.selectedItem && this.state.selectPosition && (
-                    <SView style={{ position: "absolute", top: this.state.selectPosition.y - 65, left: this.state.selectPosition.x + 10, zIndex: 999 }}>
-                        <SView row
-                            onPress={() => {
-                                const cuenta = this.state.cuentas.find(
-                                    c => c.key === this.state.selectedItem
-                                );
-                                if (this.props.select && cuenta) {
-                                    this.props.select(cuenta);
-                                }
-                                this.setState({ selectPosition: null });
-                            }}
-                            style={{
-                                paddingHorizontal: 16,
-                                paddingVertical: 16,
-                                backgroundColor: STheme.color.primary,
-                                borderRadius: 8,
-                                shadowColor: "#000",
-                                shadowOpacity: 0.3,
-                                shadowRadius: 5,
-                                elevation: 5
-                            }}
-                        >
-                            <SIconApp width={18} height={18} name="vineta1" fill={STheme.color.success} />
-                            <SView width={10} />
-                            <SText color={STheme.color.white}>Seleccionar</SText>
-                        </SView>
-                    </SView>
-                )}
             </SPage>
         );
     }
