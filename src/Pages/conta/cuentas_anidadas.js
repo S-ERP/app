@@ -22,7 +22,7 @@ export default class cuentas_anidadas extends React.Component {
     cachedFilteredTree = null;
     cachedFilteredSearch = null;
     hoveredItemLocal = null;
-
+// ss
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/cuentas", permiso: "ver" }).then((permit) => {
             if (!permit) {

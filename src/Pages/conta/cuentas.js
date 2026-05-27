@@ -33,7 +33,7 @@ export default class cuentas extends React.Component {
     }
     len = 1;
     eq = "Desde";
-
+// ss
     state = {
         ajustes: []
     }
@@ -54,7 +54,7 @@ export default class cuentas extends React.Component {
             options: [
                 ... (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' }) ? [
                     {
-                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
+                        label: "Agregar Sub CueWWWnta", icon: <SIconApp name="Add" />, onPress: () => {
                             const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
                             const cuenta = grafo.find(n => n.codigo === e.row.codigo);
                             const hijos = cuenta.childrens || [];
@@ -273,8 +273,8 @@ export default class cuentas extends React.Component {
                 //     return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                 // }}
                 />
-                <DinamicTable.Col key={"codigo_s"} label="Código Start" width={30} 
-                data={e => parseFloat((e.row?.codigo ?? "").split(".")?.[0])}
+                <DinamicTable.Col key={"codigo_s"} label="Código Start" width={30}
+                    data={e => parseFloat((e.row?.codigo ?? "").split(".")?.[0])}
                     dataType="number"
                 />
                 <DinamicTable.Col key={"codigo"} label="Código" width={120} data={e => e.row.codigo}

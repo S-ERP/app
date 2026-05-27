@@ -22,8 +22,12 @@ export default class CuentaContableForm extends React.Component<Props> {
 
     state: any = {
         base: "",
+        submitting: false,
     }
     monedas: any = []
+    isSubmitting: boolean = false;
+
+    _ref: any = {}
 
     monedaToString(a: any) {
         return a?.descripcion
@@ -46,6 +50,10 @@ export default class CuentaContableForm extends React.Component<Props> {
         console.log(monedas)
     }
     submit() {
+        if (this.isSubmitting) return;
+        this.isSubmitting = true;
+        this.setState({ submitting: true });
+
         const monedaStr = this._ref.moneda.getValue();
         const moneda = this.monedas.find((a: any) => a.descripcion == monedaStr);
         const cuenta_contable = {
@@ -67,31 +75,19 @@ export default class CuentaContableForm extends React.Component<Props> {
             if (this.props.onChange) {
                 this.props.onChange(e);
             }
-
+            // No need to set submitting to false here because the popup is closed and the component will unmount.
         }).catch(e => {
+            this.isSubmitting = false;
+            this.setState({ submitting: false });
             console.error("Error saving cuenta_contable:", e);
-             SNotification.send({
+            SNotification.send({
                 title: "Error",
                 body: "Sub cuenta no agregada correctamente",
                 color: STheme.color.danger,
                 time: 3000,
             })
-            // SPopup.alert({
-            //     title: "Error",
-            //     message: "No se pudo guardar la cuenta contable. Intente nuevamente.",
-            // });
         })
-        // MDL.contabilidad.saveAjusteEmpresa({
-        //     key: this.props?.ajuste?.ajuste_empresa?.key,
-        //     estado: 0,
-        // }).then(e => {
-        //     if (this.props.onPress) {
-        //         this.props.onPress();
-        //     }
-        //     SPopup.close("CuentaContableForm");
-        // })
     }
-    _ref: any = {}
     render() {
         const { cuenta_contable, onPress } = this.props;
         return <View
@@ -143,15 +139,18 @@ export default class CuentaContableForm extends React.Component<Props> {
                     type="select2"
                     options={this.monedas.map((e: any) => e.descripcion)}
                 />
-
+{/* ss */}
                 <SHr height={32} />
-                <SView row col={"xs-12"}>
+                <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "center" }}>
                     <SView flex />
-                    <SText card padding={8} onPress={() => {
-                        SPopup.close("CuentaContableForm");
-                    }}>{"CANCELAR"}</SText>
+                    <SView center style={{ backgroundColor: STheme.color.danger, borderRadius: 4, minWidth: 85, width: 90, height: 32 }} onPress={() => { SPopup.close("CuentaContableForm"); }} >
+                        <SText center   >CANCELAR</SText>
+                    </SView>
                     <SView flex />
-                    <SText card padding={8} onPress={this.submit.bind(this)}>{"ACEPTAR"}</SText>
+
+                    <SView center style={{ backgroundColor: STheme.color.card, borderRadius: 4, minWidth: 85, width: 90, height: 32 }} onPress={this.state.submitting ? undefined : () => this.submit()} >
+                        <SText center  >{this.state.submitting ? "Cargando..." : "ACEPTAR"}</SText>
+                    </SView>
                     <SView flex />
                 </SView>
             </SView>
