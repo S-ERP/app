@@ -22,7 +22,7 @@ export default class cuentas_anidadas extends React.Component {
     cachedFilteredTree = null;
     cachedFilteredSearch = null;
     hoveredItemLocal = null;
-// ss
+
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/cuentas", permiso: "ver" }).then((permit) => {
             if (!permit) {
@@ -103,7 +103,6 @@ export default class cuentas_anidadas extends React.Component {
 
     async getBaseData(forceRefresh = false) {
         if (!forceRefresh && this.baseDataCache) return this.baseDataCache;
-
         const [resp, ajustes, empresa] = await Promise.all([
             MDL.contabilidad.getCuentas(),
             MDL.contabilidad.getAjustes(),
@@ -124,7 +123,6 @@ export default class cuentas_anidadas extends React.Component {
             moneda: cuenta.key_moneda ? monedas.find((m) => m.key == cuenta.key_moneda) : null,
             ajustes: ajustesPorCuenta[cuenta.key] || [],
         }));
-
         this.baseDataCache = { cuentasBase, ajustes: ajustesArr };
         return this.baseDataCache;
     }
@@ -141,17 +139,14 @@ export default class cuentas_anidadas extends React.Component {
             this.reporteTodosPorCodigo = reportePorCodigo;
             return reportePorCodigo;
         }
-
         const tipoLower = (tipoComprobante || "").toLowerCase();
         if (!forceRefresh && this.reporteTipoPorCodigo[tipoLower]) {
             return this.reporteTipoPorCodigo[tipoLower];
         }
-
         if (forceRefresh || !this.reporteTipoRaw) {
             this.reporteTipoRaw = await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
             this.reporteTipoPorCodigo = {};
         }
-
         const reportePorCodigo = {};
         (this.reporteTipoRaw || []).forEach((cuenta) => {
             if (!cuenta?.codigo) return;
@@ -168,7 +163,6 @@ export default class cuentas_anidadas extends React.Component {
             this.getBaseData(forceRefresh),
             this.getReportePorCodigo(this.tipoComprobante, forceRefresh),
         ]);
-
         let arr = cuentasBase.map((cuenta) => {
             const reporte = reportePorCodigo[cuenta.codigo] || {};
             const debe = parseFloat(reporte.debe || 0);
@@ -178,9 +172,7 @@ export default class cuentas_anidadas extends React.Component {
                 ...reporte,
                 debe,
                 haber,
-                saldo: ["ACTIVO", "GASTO"].includes(cuenta.tipo)
-                    ? (debe - haber)
-                    : (haber - debe),
+                saldo: ["ACTIVO", "GASTO"].includes(cuenta.tipo) ? (debe - haber) : (haber - debe),
             };
         });
         const uniqueByCodigo = {};
@@ -218,24 +210,12 @@ export default class cuentas_anidadas extends React.Component {
                 openItems[code] = true;
             });
         }
-        this.setState({
-            cuentas: arr,
-            openItems,
-            selectedItem
-        });
+        this.setState({ cuentas: arr, openItems, selectedItem });
     }
 
     constructor(props) {
         super(props);
-        this.state = {
-            openItems: {},
-            cuentas: [],
-            search: "",
-            tipoComprobante: "Todos",
-            hoveredItem: null,
-            selectedItem: null,
-            selectPosition: null
-        };
+        this.state = { openItems: {}, cuentas: [], search: "", tipoComprobante: "Todos", hoveredItem: null, selectedItem: null, selectPosition: null };
         this.keyEditApplied = false;
     }
 
@@ -266,7 +246,6 @@ export default class cuentas_anidadas extends React.Component {
         } else {
             codigo = ".1"
         }
-
         CuentaContableForm.open({
             cuenta_contable: {
                 codigo: codigo,
@@ -385,12 +364,7 @@ export default class cuentas_anidadas extends React.Component {
                         codigo = item.codigo + ".1";
                     }
                     CuentaContableForm.open({
-                        cuenta_contable: {
-                            tipo: item.tipo,
-                            codigo: codigo,
-                            descripcion: "",
-                            key_moneda: item.key_moneda,
-                        },
+                        cuenta_contable: { tipo: item.tipo, codigo: codigo, descripcion: "", key_moneda: item.key_moneda, },
                         onChange: (e) => {
                             const newCuenta = e?.cuenta_contable || e;
                             const parts = newCuenta.codigo.split(".");
@@ -416,9 +390,7 @@ export default class cuentas_anidadas extends React.Component {
             })
         }
         if (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'edit' })) {
-            options.push({
-                label: 'Editar',
-                icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
+            options.push({ label: 'Editar', icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
                 onPress: () => {
                     CuentaContableForm.open({
                         cuenta_contable: item,
@@ -434,14 +406,9 @@ export default class cuentas_anidadas extends React.Component {
                 label: 'Eliminar',
                 icon: <SIconApp name="Delete" fill={STheme.color.text} />,
                 onPress: () => {
-                    SPopup.confirm({
-                        title: "Eliminar Cuenta Contable",
-                        message: "¿Estás seguro de eliminar la cuenta contable?",
+                    SPopup.confirm({ title: "Eliminar Cuenta Contable", message: "¿Estás seguro de eliminar la cuenta contable?",
                         onPress: () => {
-                            MDL.contabilidad.cuenta_contable.save({
-                                key: item.key,
-                                estado: 0,
-                            }).then(e => {
+                            MDL.contabilidad.cuenta_contable.save({ key: item.key, estado: 0, }).then(e => {
                                 SNotification.send({
                                     title: "Cuenta eliminada",
                                     body: "La cuenta contable ha sido eliminada correctamente.",
@@ -482,16 +449,7 @@ export default class cuentas_anidadas extends React.Component {
                             this.toggleItem(item.codigo);
                         }
                     }}
-                    style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-
-                        paddingVertical: 8,
-                        minHeight: 32,
-                        borderBottomWidth: 0.2,
-                        borderColor: STheme.color.card,
-                        backgroundColor,
-                    }}
+                    style={{ flexDirection: "row", alignItems: "center", paddingVertical: 8, minHeight: 32, borderBottomWidth: 0.2, borderColor: STheme.color.card, backgroundColor, }}
                     onMouseEnter={() => {
                         this.hoveredItemLocal = item.codigo;
                         this.forceUpdate();
@@ -501,20 +459,12 @@ export default class cuentas_anidadas extends React.Component {
                         this.forceUpdate();
                     }}
                 >
-                    <SView style={{ flex: 1, flexDirection: "row", alignItems: "center", paddingLeft: level * 15, }} >
+                    <SView style={{ flex: 1, flexDirection: "row", alignItems: "center", paddingLeft: level * 15, }}>
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
                         <SText numberOfLines={1}>{item.codigo} - {item.descripcion || item.tipo}</SText>
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
-                            <SText clean style={{
-                                borderWidth: 1,
-                                borderColor: MDL.contabilidad.color_tipo[item.tipo],
-                                backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55",
-                                fontSize: 10,
-                                paddingHorizontal: 6,
-                                paddingVertical: 3,
-                                borderRadius: 10,
-                            }}>{item.tipo}</SText>
+                            <SText clean style={{ borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[item.tipo], backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55", fontSize: 10, paddingHorizontal: 6, paddingVertical: 3, borderRadius: 10, }}>{item.tipo}</SText>
                         </SView>
                         <SView width={10} />
                         <SView style={{ alignItems: "center" }}>
@@ -631,14 +581,12 @@ export default class cuentas_anidadas extends React.Component {
     render() {
         let tree = this.cachedTree;
         let filteredTree = this.cachedFilteredTree || [];
-
         if (!tree && this.state.cuentas.length > 0) {
             const dataArray = [...this.state.cuentas];
             dataArray.sort(this.compareCodigos);
             tree = this.buildTree(dataArray);
             this.cachedTree = tree;
         }
-
         if (this.state.search) {
             if (this.cachedFilteredSearch !== this.state.search && tree) {
                 filteredTree = this.filterTree(tree, this.state.search);
@@ -650,7 +598,6 @@ export default class cuentas_anidadas extends React.Component {
             this.cachedFilteredTree = null;
             this.cachedFilteredSearch = null;
         }
-
         const currentTree = filteredTree;
         return (
             <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false}>
@@ -666,21 +613,11 @@ export default class cuentas_anidadas extends React.Component {
                                     value={this.state.search}
                                     onChangeText={(tx) => this.handleSearch(tx)}
                                     onKeyPress={this.handleSearchKeyDown}
-                                    style={{
-                                        top: 4,
-                                        paddingLeft: 28,
-                                        height: 33,
-                                        borderRadius: 4,
-                                        color: "#ecfeff",
-                                    }}
+                                    style={{ top: 4, paddingLeft: 28, height: 33, borderRadius: 4, color: "#ecfeff", }}
                                 />
-                            </SView>
-
-
-
-                            <SView width={10} />
+                            </SView><SView width={10} />
                             <SView row style={{ alignItems: "center" }}>
-                                <SView width={110} height={30} >
+                                <SView width={110} height={30}>
                                     <SInput
                                         type="select2"
                                         label={"Tipo comprobaneete"}
@@ -697,7 +634,6 @@ export default class cuentas_anidadas extends React.Component {
                                     />
                                 </SView>
                                 <SView width={10} />
-
                                 <SView onPress={() => this.registraNuevo()} row card padding={8}>
                                     <SIconApp name="addFoto" width={15} height={15} fill={STheme.color.text} />
                                     <SView width={5} />
@@ -719,19 +655,8 @@ export default class cuentas_anidadas extends React.Component {
                         </SView>
                     </SView>
                     <SView col={"xs-12"} style={{ flex: 1 }} padding={15}>
-
-
-                        <SView style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            backgroundColor: STheme.color.background,
-                            borderTopLeftRadius: 8,
-                            borderTopRightRadius: 8,
-                            paddingVertical: 8,
-                            height: 36,
-                        }}>
+                        <SView style={{ flexDirection: "row", alignItems: "center", backgroundColor: STheme.color.background, borderTopLeftRadius: 8, borderTopRightRadius: 8, paddingVertical: 8, height: 36, }}>
                             <SView style={{ flex: 1, }}>
-                                {/* alvaro */}
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
                             </SView>
                             <SView style={{ width: 100, alignItems: "center", justifyContent: "center", minHeight: 32, paddingVertical: 8 }}>

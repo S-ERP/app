@@ -1,14 +1,14 @@
 import React from "react";
-import { TextStyle, View, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
 import { SHr, SInput, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../../MDL";
-import tipo from "../../whatsapp/tipo";
 
 type Props = {
     cuenta_contable: any,
     onChange?: (cuenta_contable: any) => void,
     style?: ViewStyle,
 }
+
 export default class CuentaContableForm extends React.Component<Props> {
     static open(props: Props) {
         SPopup.open({
@@ -16,17 +16,14 @@ export default class CuentaContableForm extends React.Component<Props> {
             content: <CuentaContableForm {...props} />,
         })
     }
+
     componentDidMount(): void {
         this.loadData();
     }
 
-    state: any = {
-        base: "",
-        submitting: false,
-    }
+    state: any = { base: "", submitting: false, }
     monedas: any = []
     isSubmitting: boolean = false;
-
     _ref: any = {}
 
     monedaToString(a: any) {
@@ -36,7 +33,6 @@ export default class CuentaContableForm extends React.Component<Props> {
         const empresa = await MDL.empresa.getFull();
         const monedas = empresa.monedas;
         this.monedas = monedas ?? [];
-
         const mob = this.monedas.find((a: any) => a.tipo == "base")
         this.state.base = this.monedaToString(mob);
         if (this.props.cuenta_contable?.key_moneda) {
@@ -45,15 +41,13 @@ export default class CuentaContableForm extends React.Component<Props> {
         } else {
             this._ref.moneda.setValue(this.state.base)
         }
-
         this.forceUpdate();
-        console.log(monedas)
     }
+
     submit() {
         if (this.isSubmitting) return;
         this.isSubmitting = true;
         this.setState({ submitting: true });
-
         const monedaStr = this._ref.moneda.getValue();
         const moneda = this.monedas.find((a: any) => a.descripcion == monedaStr);
         const cuenta_contable = {
@@ -63,7 +57,6 @@ export default class CuentaContableForm extends React.Component<Props> {
             descripcion: this._ref.descripcion.getValue(),
             key_moneda: moneda?.key ?? "",
         };
-        console.log("CuentaContableForm.submit", cuenta_contable);
         MDL.contabilidad.cuenta_contable.save(cuenta_contable).then(e => {
             SPopup.close("CuentaContableForm");
             SNotification.send({
@@ -75,7 +68,6 @@ export default class CuentaContableForm extends React.Component<Props> {
             if (this.props.onChange) {
                 this.props.onChange(e);
             }
-            // No need to set submitting to false here because the popup is closed and the component will unmount.
         }).catch(e => {
             this.isSubmitting = false;
             this.setState({ submitting: false });
@@ -88,15 +80,10 @@ export default class CuentaContableForm extends React.Component<Props> {
             })
         })
     }
+
     render() {
         const { cuenta_contable, onPress } = this.props;
-        return <View
-            style={{
-                width: 500,
-                maxWidth: "100%",
-                borderRadius: 8,
-                backgroundColor: STheme.color.background,
-            }}>
+        return <View style={{ width: 500, maxWidth: "100%", borderRadius: 8, backgroundColor: STheme.color.background, }}>
             <SView flex col={"xs-12"} withoutFeedback padding={16} center>
                 <SText fontSize={14} bold>{"Datos de la cuenta"}</SText>
                 <SHr height={8} />
@@ -106,55 +93,29 @@ export default class CuentaContableForm extends React.Component<Props> {
                             customStyle={"erp"}
                             label={"Tipo"}
                             defaultValue={cuenta_contable?.tipo} placeholder={"Tipo"}
-                            style={{
-                                padding: 2,
-                            }}
+                            style={{ padding: 2, }}
                             type="select2"
                             options={["ACTIVO", "PASIVO", "PATRIMONIO", "INGRESO", "GASTO"]}
                         />
                     </SView>
                     <SView width={4} />
                     <SView flex>
-                        <SInput ref={ref => this._ref.codigo = ref}
-
-                            customStyle={"erp"}
-                            label={"Codigo"}
-                            defaultValue={cuenta_contable?.codigo} placeholder={"Codigo"} />
+                        <SInput ref={ref => this._ref.codigo = ref} customStyle={"erp"} label={"Codigo"} defaultValue={cuenta_contable?.codigo} placeholder={"Codigo"} />
                     </SView>
                 </SView>
                 <SHr height={16} />
-                <SInput ref={ref => this._ref.descripcion = ref}
-                    customStyle={"erp"}
-                    label={"Descripcion"}
-                    defaultValue={cuenta_contable?.descripcion} placeholder={"Descripcion de la cuenta"} />
+                <SInput ref={ref => this._ref.descripcion = ref} customStyle={"erp"} label={"Descripcion"} defaultValue={cuenta_contable?.descripcion} placeholder={"Descripcion de la cuenta"} />
                 <SHr height={16} />
-                <SInput width={150}
-                    customStyle={"erp"}
-                    label={"Moneda"}
-                    ref={ref => this._ref.moneda = ref}
-                    defaultValue={(cuenta_contable?.key_moneda || this.state.base)} placeholder={"Moneda"}
-                    style={{
-                        padding: 2,
-                    }}
-                    type="select2"
-                    options={this.monedas.map((e: any) => e.descripcion)}
-                />
-{/* ss */}
+                <SInput width={150} customStyle={"erp"} label={"Moneda"} ref={ref => this._ref.moneda = ref} defaultValue={(cuenta_contable?.key_moneda || this.state.base)} placeholder={"Moneda"} style={{ padding: 2, }} type="select2" options={this.monedas.map((e: any) => e.descripcion)} />
                 <SHr height={32} />
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "center" }}>
                     <SView flex />
-                    <SView center style={{ backgroundColor: STheme.color.danger, borderRadius: 4, minWidth: 85, width: 90, height: 32 }} onPress={() => { SPopup.close("CuentaContableForm"); }} >
-                        <SText center   >CANCELAR</SText>
-                    </SView>
+                    <SView center style={{ backgroundColor: STheme.color.danger, borderRadius: 4, minWidth: 85, width: 90, height: 32 }} onPress={() => { SPopup.close("CuentaContableForm"); }}> <SText center>CANCELAR</SText> </SView>
                     <SView flex />
-
-                    <SView center style={{ backgroundColor: STheme.color.card, borderRadius: 4, minWidth: 85, width: 90, height: 32 }} onPress={this.state.submitting ? undefined : () => this.submit()} >
-                        <SText center  >{this.state.submitting ? "Cargando..." : "ACEPTAR"}</SText>
-                    </SView>
+                    <SView center style={{ backgroundColor: STheme.color.card, borderRadius: 4, minWidth: 85, width: 90, height: 32 }} onPress={this.state.submitting ? undefined : () => this.submit()}> <SText center>{this.state.submitting ? "Cargando..." : "ACEPTAR"}</SText> </SView>
                     <SView flex />
                 </SView>
             </SView>
-
         </View>
     }
 }
