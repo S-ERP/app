@@ -5,6 +5,8 @@ import NewFolder from './NewFolder';
 import SUpload from '../../../Components/SUpload';
 import SSocket from 'servisofts-socket';
 import { Actions } from '..';
+import FloatMenu from '../../../Components/FloatMenu';
+import SIconApp from '../../../Assets/SIconApp';
 
 const PopupSubir = ({ path, onEvent }) => {
     return <SView col={"xs-12"} backgroundColor={STheme.color.background} withoutFeedback padding={16} style={{
@@ -67,10 +69,54 @@ export default class AddButtom extends Component {
         };
     }
 
-    handlePress = () => {
-        SPopup.open({
-            key: AddButtom.KEY_POPUP,
-            content: <PopupSubir path={Actions.root_path + "" +this.props.path} onEvent={this.props.onEvent} />
+    handlePress = (e) => {
+        // SPopup.open({
+        //     key: AddButtom.KEY_POPUP,
+        //     content: <PopupSubir path={Actions.root_path + "" +this.props.path} onEvent={this.props.onEvent} />
+        // })
+        FloatMenu.open({
+            e: e,
+            label:"Nuevo",
+            options: [
+                { label: "Nueva Carpeta",
+                    icon: <SIconApp name='drive-folder' width={20} height={20} fill={STheme.color.text} />,
+                    onPress: () => {
+                    // AddButtom.close();
+                    NewFolder.open({ path: Actions.root_path + "" + this.props.path, onEvent: this.props.onEvent })
+                } },
+                { label: "Subir Archivo",
+                    icon: <SIconApp name='drive-file' width={20} height={20} fill={STheme.color.text} />,
+                    onPress: () => {
+                    // AddButtom.close();
+                    SUpload.choose({
+                        accept: "*/*",
+                        multiple: true
+                    }).then(e => {
+                        if (!e) return;
+                        for (let i = 0; i < e.length; i++) {
+                            const file = e[i];
+                            const submite = SUpload.submitFile({
+                                host: SSocket.api.drive + "uploadv2",   
+                                path: Actions.root_path + this.props.path + "/" + encodeURI(file?.name),
+                                file: file
+                            })
+                            if (this.props.onEvent) {
+                                this.props.onEvent("submit_file", {
+                                    "size": file.size,
+                                    "name": file?.name,
+                                    "lastModified": file.lastModified ?? new SDate().getTime(),
+                                    "type": file.type,
+                                    "submite_key": submite.key
+                                })
+                            }
+                        }
+
+                    }).catch(e => {
+                        console.error(e);
+                    })  
+                } },
+                // { label: "Subir Foto", onPress: () => {} },
+            ]
         })
     }
     render() {
