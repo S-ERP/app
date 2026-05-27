@@ -183,6 +183,13 @@ export default class cuentas_anidadas extends React.Component {
                     : (haber - debe),
             };
         });
+        const uniqueByCodigo = {};
+        arr.forEach(item => {
+            if (!uniqueByCodigo[item.codigo]) {
+                uniqueByCodigo[item.codigo] = item;
+            }
+        });
+        arr = Object.values(uniqueByCodigo);
         this.setState({ ajustes: ajustes });
         if (this.props.filtroTipo) {
             arr = arr.filter((dat) => dat.tipo === this.props.filtroTipo);
@@ -196,7 +203,7 @@ export default class cuentas_anidadas extends React.Component {
             this.keyEditApplied = true;
             const cuentaSelected = arr.find(c => c.key == this.props.keyEdit);
             if (cuentaSelected) {
-                selectedItem = cuentaSelected.codigo;
+                selectedItem = cuentaSelected.key;
                 const parts = cuentaSelected.codigo.split(".");
                 while (parts.length > 1) {
                     parts.pop();
@@ -279,7 +286,7 @@ export default class cuentas_anidadas extends React.Component {
                         newOpenItems[parent] = true;
                     }
                     return {
-                        selectedItem: newCuenta.codigo,
+                        selectedItem: newCuenta.key,
                         openItems: newOpenItems
                     };
                 });
@@ -339,7 +346,7 @@ export default class cuentas_anidadas extends React.Component {
     renderItem = (item, level = 0) => {
         const hasChildren = item.children && item.children.length > 0;
         const isOpen = !!this.state.openItems[item.codigo];
-        const isSelected = this.state.selectedItem === item.codigo;
+        const isSelected = this.state.selectedItem === item.key;
         const isHover = this.hoveredItemLocal === item.codigo;
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
@@ -397,7 +404,7 @@ export default class cuentas_anidadas extends React.Component {
                                     newOpenItems[parent] = true;
                                 }
                                 return {
-                                    selectedItem: newCuenta.codigo,
+                                    selectedItem: newCuenta.key,
                                     openItems: newOpenItems
                                 };
                             });
@@ -467,7 +474,7 @@ export default class cuentas_anidadas extends React.Component {
                     onPress={(evt) => {
                         const { pageX, pageY } = evt.nativeEvent;
                         this.setState({
-                            selectedItem: item.codigo,
+                            selectedItem: item.key,
                             selectPosition: { x: pageX, y: pageY }
                         });
                         if (hasChildren) {
@@ -502,8 +509,9 @@ export default class cuentas_anidadas extends React.Component {
                         }}
                     >
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
-                        <SText numberOfLines={1}
-                        > {item.codigo} - {item.descripcion || item.tipo} www </SText>
+                        <SText numberOfLines={1}>{item.codigo} - {item.descripcion || item.tipo}</SText>
+                        {/* > {item.codigo} - {item.descripcion || item.tipo} www </SText> */}
+
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
                             <SText clean style={{
@@ -611,21 +619,21 @@ export default class cuentas_anidadas extends React.Component {
         this.setState({ openItems: {} });
     };
 
-    selectItem = (codigo) => {
-        this.setState({ selectedItem: codigo });
+    selectItem = (key) => {
+        this.setState({ selectedItem: key });
     };
 
     render() {
         let tree = this.cachedTree;
         let filteredTree = this.cachedFilteredTree || [];
-        
+
         if (!tree && this.state.cuentas.length > 0) {
             const dataArray = [...this.state.cuentas];
             dataArray.sort(this.compareCodigos);
             tree = this.buildTree(dataArray);
             this.cachedTree = tree;
         }
-        
+
         if (this.state.search) {
             if (this.cachedFilteredSearch !== this.state.search && tree) {
                 filteredTree = this.filterTree(tree, this.state.search);
@@ -637,7 +645,7 @@ export default class cuentas_anidadas extends React.Component {
             this.cachedFilteredTree = null;
             this.cachedFilteredSearch = null;
         }
-        
+
         const currentTree = filteredTree;
         return (
             <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false}>
@@ -646,7 +654,7 @@ export default class cuentas_anidadas extends React.Component {
                         <SView style={{ justifyContent: "space-between", alignItems: "center" }} row>
                             <SView style={{ flex: 1, position: "relative", top: -3 }}>
                                 <SView width={18} height={18} style={{ position: "absolute", top: 12, left: 2, zIndex: 1 }}>
-                                    <SIconApp name="Girl" width={25} height={25} fill={STheme.color.text} />
+                                    <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
                                 </SView>
                                 <SInput
                                     placeholder={"Buscar cuenta..."}
@@ -722,7 +730,7 @@ export default class cuentas_anidadas extends React.Component {
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
                             </SView>
                             <SView style={{ width: 100, alignItems: "center", justifyContent: "center", minHeight: 32, paddingVertical: 8 }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 10, fontWeight: "700", textAlign: "center" }}>TIPO COMPROBANTEwwww</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 10, fontWeight: "700", textAlign: "center" }}>TIPO COMPROBANTE</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>DEBE</SText>
@@ -750,7 +758,7 @@ export default class cuentas_anidadas extends React.Component {
                         <SView row
                             onPress={() => {
                                 const cuenta = this.state.cuentas.find(
-                                    c => c.codigo === this.state.selectedItem
+                                    c => c.key === this.state.selectedItem
                                 );
                                 if (this.props.select && cuenta) {
                                     this.props.select(cuenta);
