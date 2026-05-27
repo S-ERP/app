@@ -17,6 +17,11 @@ export default class cuentas_anidadas extends React.Component {
     reporteTipoRaw = null;
     reporteTipoPorCodigo = {};
     searchDebounceTimeout = null;
+    cachedTree = null;
+    cachedTreeData = null;
+    cachedFilteredTree = null;
+    cachedFilteredSearch = null;
+    hoveredItemLocal = null;
 
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/cuentas", permiso: "ver" }).then((permit) => {
@@ -68,21 +73,21 @@ export default class cuentas_anidadas extends React.Component {
     filterTree = (nodes, search) => {
         if (!search) return nodes;
         const searchLower = search.toLowerCase();
-        return nodes
-            .map(node => {
-                const match =
-                    node.descripcion?.toLowerCase().includes(searchLower) ||
-                    node.codigo.includes(search);
-                const childrenFiltered = this.filterTree(node.children, search);
-                if (match || childrenFiltered.length > 0) {
-                    return {
-                        ...node,
-                        children: childrenFiltered,
-                    };
-                }
-                return null;
-            })
-            .filter(Boolean);
+        const filtered = [];
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const match =
+                node.descripcion?.toLowerCase().includes(searchLower) ||
+                node.codigo.includes(search);
+            const childrenFiltered = node.children?.length ? this.filterTree(node.children, search) : [];
+            if (match || childrenFiltered.length > 0) {
+                filtered.push({
+                    ...node,
+                    children: childrenFiltered,
+                });
+            }
+        }
+        return filtered;
     };
 
     invalidateCaches = () => {
@@ -90,6 +95,10 @@ export default class cuentas_anidadas extends React.Component {
         this.reporteTodosPorCodigo = null;
         this.reporteTipoRaw = null;
         this.reporteTipoPorCodigo = {};
+        this.cachedTree = null;
+        this.cachedTreeData = null;
+        this.cachedFilteredTree = null;
+        this.cachedFilteredSearch = null;
     };
 
     async getBaseData(forceRefresh = false) {
@@ -179,6 +188,8 @@ export default class cuentas_anidadas extends React.Component {
             arr = arr.filter((dat) => dat.tipo === this.props.filtroTipo);
         }
         const tree = this.buildTree(arr);
+        this.cachedTree = tree;
+        this.cachedTreeData = arr;
         let openItems = { ...(this.state.openItems || {}) };
         let selectedItem = this.state.selectedItem || null;
         if (this.props.keyEdit && !this.keyEditApplied) {
@@ -329,7 +340,7 @@ export default class cuentas_anidadas extends React.Component {
         const hasChildren = item.children && item.children.length > 0;
         const isOpen = !!this.state.openItems[item.codigo];
         const isSelected = this.state.selectedItem === item.codigo;
-        const isHover = this.state.hoveredItem === item.codigo;
+        const isHover = this.hoveredItemLocal === item.codigo;
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
         if (this.props.select) {
@@ -473,14 +484,14 @@ export default class cuentas_anidadas extends React.Component {
                         borderColor: STheme.color.card,
                         backgroundColor,
                     }}
-                    onPressIn={() => this.setState({ hoveredItem: item.codigo })}
-                    onPressOut={() => this.setState({ hoveredItem: null })}
-                    onMouseEnter={() =>
-                        this.setState({ hoveredItem: item.codigo })
-                    }
-                    onMouseLeave={() =>
-                        this.setState({ hoveredItem: null })
-                    }
+                    onMouseEnter={() => {
+                        this.hoveredItemLocal = item.codigo;
+                        this.forceUpdate();
+                    }}
+                    onMouseLeave={() => {
+                        this.hoveredItemLocal = null;
+                        this.forceUpdate();
+                    }}
                 >
                     <SView
                         style={{
@@ -492,7 +503,7 @@ export default class cuentas_anidadas extends React.Component {
                     >
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
                         <SText numberOfLines={1}
-                        > {item.codigo} - {item.descripcion || item.tipo} </SText>
+                        > {item.codigo} - {item.descripcion || item.tipo} www </SText>
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
                             <SText clean style={{
@@ -535,28 +546,33 @@ export default class cuentas_anidadas extends React.Component {
     handleSearch = (text) => {
         if (this.searchDebounceTimeout) {
             clearTimeout(this.searchDebounceTimeout);
-            this.searchDebounceTimeout = null;
         }
         if (!text) {
+            this.cachedFilteredTree = null;
+            this.cachedFilteredSearch = null;
             this.setState({
                 search: "",
                 openItems: {}
             });
+            this.searchDebounceTimeout = null;
             return;
         }
         this.setState({ search: text });
         this.searchDebounceTimeout = setTimeout(() => {
-            const dataArray = this.state.cuentas;
-            const tree = this.buildTree(dataArray);
-            const filteredTree = this.filterTree(tree, text);
-            const allCodes = this.getAllCodesWithChildren(filteredTree);
-            const openItems = {};
-            allCodes.forEach(code => {
-                openItems[code] = true;
-            });
-            this.setState({ openItems });
+            const tree = this.cachedTree;
+            if (tree) {
+                const filteredTree = this.filterTree(tree, text);
+                this.cachedFilteredTree = filteredTree;
+                this.cachedFilteredSearch = text;
+                const allCodes = this.getAllCodesWithChildren(filteredTree);
+                const openItems = {};
+                for (let i = 0; i < allCodes.length; i++) {
+                    openItems[allCodes[i]] = true;
+                }
+                this.setState({ openItems });
+            }
             this.searchDebounceTimeout = null;
-        }, 120);
+        }, 300);
     };
 
     handleSearchKeyDown = (e) => {
@@ -569,15 +585,15 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     getAllCodesWithChildren = (nodes) => {
-        let result = [];
-        nodes.forEach(node => {
+        const result = [];
+        const stack = [...nodes];
+        while (stack.length > 0) {
+            const node = stack.pop();
             if (node.children && node.children.length > 0) {
                 result.push(node.codigo);
-                result = result.concat(
-                    this.getAllCodesWithChildren(node.children)
-                );
+                stack.push(...node.children);
             }
-        });
+        }
         return result;
     };
 
@@ -600,11 +616,29 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     render() {
-        const dataArray = [...this.state.cuentas];
-        dataArray.sort(this.compareCodigos);
-        const tree = this.buildTree(dataArray);
-        const filteredTree = this.filterTree(tree, this.state.search);
-        const currentTree = this.state.search ? filteredTree : tree;
+        let tree = this.cachedTree;
+        let filteredTree = this.cachedFilteredTree || [];
+        
+        if (!tree && this.state.cuentas.length > 0) {
+            const dataArray = [...this.state.cuentas];
+            dataArray.sort(this.compareCodigos);
+            tree = this.buildTree(dataArray);
+            this.cachedTree = tree;
+        }
+        
+        if (this.state.search) {
+            if (this.cachedFilteredSearch !== this.state.search && tree) {
+                filteredTree = this.filterTree(tree, this.state.search);
+                this.cachedFilteredTree = filteredTree;
+                this.cachedFilteredSearch = this.state.search;
+            }
+        } else {
+            filteredTree = tree || [];
+            this.cachedFilteredTree = null;
+            this.cachedFilteredSearch = null;
+        }
+        
+        const currentTree = filteredTree;
         return (
             <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false}>
                 <SView col={"xs-12"} style={{ flex: 1 }}>
@@ -612,7 +646,7 @@ export default class cuentas_anidadas extends React.Component {
                         <SView style={{ justifyContent: "space-between", alignItems: "center" }} row>
                             <SView style={{ flex: 1, position: "relative", top: -3 }}>
                                 <SView width={18} height={18} style={{ position: "absolute", top: 12, left: 2, zIndex: 1 }}>
-                                    <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
+                                    <SIconApp name="Girl" width={25} height={25} fill={STheme.color.text} />
                                 </SView>
                                 <SInput
                                     placeholder={"Buscar cuenta..."}
@@ -636,7 +670,7 @@ export default class cuentas_anidadas extends React.Component {
                                 <SView width={110} height={30} >
                                     <SInput
                                         type="select2"
-                                        label={"Tipo comprobante"}
+                                        label={"Tipo comprobaneete"}
                                         customStyle={"erp"}
                                         style={{ height: 30, width: "100%", borderRadius: 4 }}
                                         value={this.state.tipoComprobante}
@@ -688,7 +722,7 @@ export default class cuentas_anidadas extends React.Component {
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
                             </SView>
                             <SView style={{ width: 100, alignItems: "center", justifyContent: "center", minHeight: 32, paddingVertical: 8 }}>
-                                <SText style={{ color: STheme.color.text, fontSize: 10, fontWeight: "700", textAlign: "center" }}>TIPO COMPROBANTE</SText>
+                                <SText style={{ color: STheme.color.text, fontSize: 10, fontWeight: "700", textAlign: "center" }}>TIPO COMPROBANTEwwww</SText>
                             </SView>
                             <SView style={{ width: 80, alignItems: "center" }}>
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700" }}>DEBE</SText>
