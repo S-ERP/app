@@ -46,7 +46,7 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
             options: [
                 ... (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' }) ? [
                     {
-                        label: "Agregar Sub CueWWWnta", icon: <SIconApp name="Add" />, onPress: () => {
+                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
                             const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
                             const cuenta = grafo.find(n => n.codigo === e.row.codigo);
                             const hijos = cuenta.childrens || [];
