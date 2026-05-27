@@ -21,7 +21,7 @@ export default class CuentaContableForm extends React.Component<Props> {
         this.loadData();
     }
 
-    state: any = { base: "", submitting: false, }
+    state: any = { base: "", submitting: false}
     monedas: any = []
     isSubmitting: boolean = false;
     _ref: any = {}
@@ -83,7 +83,7 @@ export default class CuentaContableForm extends React.Component<Props> {
 
     render() {
         const { cuenta_contable, onPress } = this.props;
-        return <View style={{ width: 500, maxWidth: "100%", borderRadius: 8, backgroundColor: STheme.color.background, }}>
+        return <View style={{ width: 500, maxWidth: "100%", borderRadius: 8, backgroundColor: STheme.color.background}}>
             <SView flex col={"xs-12"} withoutFeedback padding={16} center>
                 <SText fontSize={14} bold>{"Datos de la cuenta"}</SText>
                 <SHr height={8} />
@@ -93,7 +93,7 @@ export default class CuentaContableForm extends React.Component<Props> {
                             customStyle={"erp"}
                             label={"Tipo"}
                             defaultValue={cuenta_contable?.tipo} placeholder={"Tipo"}
-                            style={{ padding: 2, }}
+                            style={{ padding: 2}}
                             type="select2"
                             options={["ACTIVO", "PASIVO", "PATRIMONIO", "INGRESO", "GASTO"]}
                         />
@@ -106,7 +106,7 @@ export default class CuentaContableForm extends React.Component<Props> {
                 <SHr height={16} />
                 <SInput ref={ref => this._ref.descripcion = ref} customStyle={"erp"} label={"Descripcion"} defaultValue={cuenta_contable?.descripcion} placeholder={"Descripcion de la cuenta"} />
                 <SHr height={16} />
-                <SInput width={150} customStyle={"erp"} label={"Moneda"} ref={ref => this._ref.moneda = ref} defaultValue={(cuenta_contable?.key_moneda || this.state.base)} placeholder={"Moneda"} style={{ padding: 2, }} type="select2" options={this.monedas.map((e: any) => e.descripcion)} />
+                <SInput width={150} customStyle={"erp"} label={"Moneda"} ref={ref => this._ref.moneda = ref} defaultValue={(cuenta_contable?.key_moneda || this.state.base)} placeholder={"Moneda"} style={{ padding: 2}} type="select2" options={this.monedas.map((e: any) => e.descripcion)} />
                 <SHr height={32} />
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "center" }}>
                     <SView flex />

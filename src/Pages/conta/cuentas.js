@@ -39,7 +39,7 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
         FloatMenu.open({
             e: e.evt,
             label: e.row.codigo + "" + e.row.descripcion,
-            style: { maxWidth: 200, },
+            style: { maxWidth: 200},
             onClose: () => {
                 e.dinamicTable.clearSelect()
             },
@@ -178,13 +178,13 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                     this.handleSelect(e);
                 }}
             >
-                <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center", }} textStyle={{ fontSize: 7 }}
+                <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center"}} textStyle={{ fontSize: 7 }}
                     customComponent={e => {
-                        const aditionalStyle = { borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[e.row.tipo], backgroundColor: MDL.contabilidad.color_tipo[e.row.tipo] + "55", padding: 3, borderRadius: 4, };
+                        const aditionalStyle = { borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[e.row.tipo], backgroundColor: MDL.contabilidad.color_tipo[e.row.tipo] + "55", padding: 3, borderRadius: 4};
                         return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                     }}
                 />
-                <DinamicTable.Col key={"key_moneda"} label="Moneda" width={60} data={e => e.row?.moneda?.descripcion} cellStyle={{ alignItems: "center", justifyContent: "center", }} textStyle={{ fontSize: 10 }} />
+                <DinamicTable.Col key={"key_moneda"} label="Moneda" width={60} data={e => e.row?.moneda?.descripcion} cellStyle={{ alignItems: "center", justifyContent: "center"}} textStyle={{ fontSize: 10 }} />
                 <DinamicTable.Col key={"codigo_s"} label="Código Start" width={30}
                     data={e => parseFloat((e.row?.codigo ?? "").split(".")?.[0])}
                     dataType="number"
@@ -205,7 +205,7 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                 <DinamicTable.Col key={"ajuste"} label="Tipo"
                     width={200}
                     data={e => (e.row.ajustes ?? []).map(r => r.key_ajuste)}
-                    cellStyle={{ padding: 0, }}
+                    cellStyle={{ padding: 0}}
                     customComponent={e => {
                         return <AjusteTagDropBox onDrop={dropTag => {
                             if (dropTag?.ajuste_empresa?.key) {
@@ -255,7 +255,7 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                     }}
                 />
             </DinamicTable>
-            <SView style={{ position: "absolute", top: 8, right: 8, }}>
+            <SView style={{ position: "absolute", top: 8, right: 8}}>
                 <InformacionDeAjustes ajustes={this.state.ajustes} />
             </SView>
         </SPage>
