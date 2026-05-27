@@ -39,7 +39,7 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
         FloatMenu.open({
             e: e.evt,
             label: e.row.codigo + "" + e.row.descripcion,
-            style: { maxWidth: 200},
+            style: { maxWidth: 200 },
             onClose: () => {
                 e.dinamicTable.clearSelect()
             },
@@ -148,11 +148,27 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                     const ajustes = await MDL.contabilidad.getAjustes();
                     const empresa = await MDL.empresa.getFull();
                     this.setState({ ajustes: ajustes });
+
+                    // Detectar códigos duplicados
+                    const codigoCount = {};
+                    const descripcionCount = {};
+
+                    arr.forEach(cuenta => {
+                        if (cuenta.codigo) {
+                            codigoCount[cuenta.codigo] = (codigoCount[cuenta.codigo] || 0) + 1;
+                        }
+                        if (cuenta.descripcion) {
+                            descripcionCount[cuenta.descripcion] = (descripcionCount[cuenta.descripcion] || 0) + 1;
+                        }
+                    });
+
                     arr.map((cuenta) => {
                         if (cuenta.key_moneda) {
                             cuenta.moneda = empresa.monedas.find((m) => m.key == cuenta.key_moneda);
                         }
                         cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
+                        cuenta.isDuplicado = codigoCount[cuenta.codigo] > 1;
+                        cuenta.isDescripcionDuplicada = descripcionCount[cuenta.descripcion] > 1;
                     })
                     return arr.filter(e => {
                         if (!e.codigo) return false;
@@ -178,19 +194,42 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                     this.handleSelect(e);
                 }}
             >
-                <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center"}} textStyle={{ fontSize: 7 }}
+                <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center" }} textStyle={{ fontSize: 7 }}
                     customComponent={e => {
-                        const aditionalStyle = { borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[e.row.tipo], backgroundColor: MDL.contabilidad.color_tipo[e.row.tipo] + "55", padding: 3, borderRadius: 4};
+                        const aditionalStyle = { borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[e.row.tipo], backgroundColor: MDL.contabilidad.color_tipo[e.row.tipo] + "55", padding: 3, borderRadius: 4 };
                         return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                     }}
                 />
-                <DinamicTable.Col key={"key_moneda"} label="Moneda" width={60} data={e => e.row?.moneda?.descripcion} cellStyle={{ alignItems: "center", justifyContent: "center"}} textStyle={{ fontSize: 10 }} />
+                <DinamicTable.Col key={"key_moneda"} label="Moneda" width={60} data={e => e.row?.moneda?.descripcion} cellStyle={{ alignItems: "center", justifyContent: "center" }} textStyle={{ fontSize: 10 }} />
                 <DinamicTable.Col key={"codigo_s"} label="Código Start" width={30}
                     data={e => parseFloat((e.row?.codigo ?? "").split(".")?.[0])}
                     dataType="number"
                 />
                 <DinamicTable.Col key={"codigo"} label="Código" width={120} data={e => e.row.codigo}
                     textStyle={{ fontWeight: "bold", letterSpacing: 1.1 }} />
+
+                {/* quiero crear una columna que diga duplicado si key={"codigo"} */}
+
+                <DinamicTable.Col
+                    key={"duplicado"}
+                    label="Duplicado Código"
+                    width={110}
+                    data={e => (e.row.isDuplicado ? "SI" : "NO")}
+                    cellStyle={{ alignItems: "center", justifyContent: "center" }}
+                    customComponent={(e) => {
+                        return (
+                            <SText
+                                style={{
+                                    color: e.row.isDuplicado ? "red" : "green",
+                                    fontWeight: "bold"
+                                }}
+                            >
+                                {e.row.isDuplicado ? "DUPLICADO" : ""}
+                            </SText>
+                        );
+                    }}
+                />
+
                 <DinamicTable.Col key={"descripcion"} label="Descripción" width={350}
                     data={e => e.row.descripcion}
                     customComponent={(e) => {
@@ -202,10 +241,29 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                         return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle, textTransform: "uppercase" }}>{e.data}</SText>
                     }}
                 />
+                {/* <DinamicTable.Col
+                    key={"duplicado2"}
+                    label="Duplicado Descripción"
+                    width={128}
+                    data={e => (e.row.isDescripcionDuplicada ? "SI" : "NO")}
+                    cellStyle={{ alignItems: "center", justifyContent: "center" }}
+                    customComponent={(e) => {
+                        return (
+                            <SText
+                                style={{
+                                    color: e.row.isDescripcionDuplicada ? "red" : "green",
+                                    fontWeight: "bold"
+                                }}
+                            >
+                                {e.row.isDescripcionDuplicada ? "DUPLICADO" : ""}
+                            </SText>
+                        );
+                    }}
+                /> */}
                 <DinamicTable.Col key={"ajuste"} label="Tipo"
                     width={200}
                     data={e => (e.row.ajustes ?? []).map(r => r.key_ajuste)}
-                    cellStyle={{ padding: 0}}
+                    cellStyle={{ padding: 0 }}
                     customComponent={e => {
                         return <AjusteTagDropBox onDrop={dropTag => {
                             if (dropTag?.ajuste_empresa?.key) {
@@ -255,7 +313,7 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
                     }}
                 />
             </DinamicTable>
-            <SView style={{ position: "absolute", top: 8, right: 8}}>
+            <SView style={{ position: "absolute", top: 8, right: 8 }}>
                 <InformacionDeAjustes ajustes={this.state.ajustes} />
             </SView>
         </SPage>
