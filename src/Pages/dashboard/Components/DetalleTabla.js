@@ -21,7 +21,7 @@ const StorageGetItem = (key) => {
 
 export default class DetalleTabla extends Component {
 
-    static openPopup = (props: { F_Descarga?: any, lUsuario_id?: any, valor: any, estado: any, tipo: "gestor" | null, fecha_inicio?: string, fecha_fin?: string }) => {
+    static openPopup = (props: { F_Descarga?: any, lUsuario_id?: any, valor: any, estado: any, tipo: "gestor" | null, key_sucursal?: string, fecha_inicio?: string, fecha_fin?: string }) => {
         SPopup.open({
             key: "popup_detalleTabla",
             content: <SView col={"xs-12"}
@@ -48,11 +48,12 @@ export default class DetalleTabla extends Component {
         this.F_Descarga = this.props.F_Descarga ?? SNavigation.getParam("F_Descarga", false);
         this.valor = this.props.valor ?? SNavigation.getParam("valor", false);
         this.estado = this.props.estado ?? SNavigation.getParam("estado", false);
-
+        this.key = this.props.key_sucursal ?? this.props.keySucursal ?? SNavigation.getParam("key_sucursal", false) ?? SNavigation.getParam("key", false);
+        console.log("props en DetalleTabla:", props);
         console.log("F_Descarga", this.F_Descarga);
         console.log("valor", this.valor);
         console.log("estado", this.estado);
-
+        console.log("key", this.key);
 
     }
 
@@ -158,9 +159,11 @@ export default class DetalleTabla extends Component {
             <SView col={"xs-12"} row center>
                 <SView col={"xs-6"} center>
                     <SText color={STheme.color.text} fontSize={12} >POPUP</SText>
+                    <SText color={STheme.color.text} fontSize={12} >{this.key} -aaa</SText>
                 </SView>
                 <SView col={"xs-6"} center>
                     <SText color={STheme.color.text} fontSize={12} >AQUI</SText>
+                    <SText color={STheme.color.text} fontSize={12} >{this.estado}</SText>
                 </SView>
             </SView>
         </SPage>
