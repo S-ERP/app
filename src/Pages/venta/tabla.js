@@ -209,7 +209,6 @@ export default class tabla extends Component {
                 title: "RECIBOS",
                 items: [
                     { label: "Imprimir Recibo (Rollo)", icon: "imprimir", onPress: () => { ReciboRollo.imprimir(row?.key); } },
-                    // { label: "Imprimir Recibo (Carta)", icon: "drive-file", onPress: () => { ReciboCarta.imprimir(row?.key); } },
                     { label: "Imprimir Recibo (Carta)", icon: "iconLista", onPress: () => { ReciboCarta.imprimir(row?.key); } },
                 ]
             },
@@ -226,9 +225,42 @@ export default class tabla extends Component {
             {
                 title: "GESTIÓN",
                 items: [
-                    { label: "Anular venta", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => { if (this.DinamicTable) this.DinamicTable.loadData(); SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, }); }).catch(error => { console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, }); }); } },
-                    row?.factura?.cuf ? { label: "Anular factura", icon: "Close", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
-                    // row?.factura?.cuf ? { label: "Anular factura", icon: "eliminar", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
+                    {
+                        label: "Anular venta", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => {
+                            SPopup.confirm({
+                                icon: "cancelado",
+                                title: "Anular venta",
+                                message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
+                                cancel: { label: "Cancelar", color: STheme.color.lightGray },
+                                onPress: () => {
+                                    SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
+
+                                    // MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
+                                    //     if (this.DinamicTable) this.DinamicTable.loadData();
+                                    //     SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
+                                    // }).catch(error => {
+                                    //     console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
+                                    // });
+                                }
+                            });
+                        }
+                    },
+
+                    row?.factura?.cuf ? {
+                        label: "Anular factura", icon: "eliminar", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => {
+                            SPopup.confirm({
+                                icon: <SIconApp name="eliminar" height={24} fill="#db0606ff" />,
+                                style: { padding: 10, paddingBottom: 5, paddingTop: 5 },
+                                title: "Anular factura " + row?.factura?.nro_factura,
+                                message: "¿Está seguro de que desea anular la factura? Esta acción no se puede deshacer.",
+                                onPress: () => {
+                                    SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, });
+                                    // MDL.factura.anular({ key_compra_venta: row.key }).then(resp => {
+                                    // le paso la key compra y borro facturar el json de compra_venta
+                                }
+                            });
+                        }
+                    } : null,
                 ].filter(Boolean)
             }
         ].filter(Boolean);
@@ -302,9 +334,6 @@ export default class tabla extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 8 }} width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 8 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-
-
-
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 8 }} width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
@@ -335,9 +364,9 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 8 }} width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.cliente?.key) ?
-                            <SView col={"xs-12"} center row onPress={() => {
-                                SNavigation.navigate("/cliente/perfil", { key: e.row?.cliente?.key });
-                            }}>
+                            <SView col={"xs-12"} center row 
+                            // onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row?.cliente?.key }); }}
+                            >
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33", }} border={STheme.color.text} center     >
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
@@ -352,7 +381,7 @@ export default class tabla extends Component {
                     customComponent={e => {
                         const tipoPagoMap = {
                             "contado": { color: "#2563eb", label: "Contado" },
-                            "credito": { color: "#16a34a", label: "Crédito" },
+                            "credito": { color: "#8007c5", label: "Crédito" },
                             "transferencia": { color: "#6b7280", label: "Transferencia" },
                         };
                         const estilo = tipoPagoMap[e.data?.toLowerCase()] || { color: STheme.color.lightGray, label: e.data };
