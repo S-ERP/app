@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SInput, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import { Dimensions } from 'react-native';
 import SSocket from 'servisofts-socket';
@@ -122,6 +122,10 @@ export default class tabla extends Component {
         </SView>
     }
 
+    generateRandomCode() {
+        return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    }
+
     openPdfFromBase64(base64) {
         const base64Content = base64.split(",")[1];
         const byteCharacters = atob(base64Content);
@@ -177,6 +181,86 @@ export default class tabla extends Component {
     }
 
     renderMenuVentas(row) {
+        const openRegistrarFacturaPopup = (venta) => {
+            let nit = "";
+            let razon_social = "";
+            return SPopup.open({
+                key: "registrar_factura_" + venta.key,
+                content: (
+                    <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>Registrar factura</SText>
+                        <SHr height={12} />
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Ingrese el NIT y la razón social para generar la factura.</SText>
+                        <SHr height={16} />
+                        <SInput
+                            label="NIT / CI"
+                            placeholder="Ingrese NIT o CI"
+                            onChangeText={val => nit = val}
+                            style={{
+                                height: 40,
+                                borderRadius: 6,
+                                backgroundColor: STheme.color.lightGray + "22",
+                                color: STheme.color.text,
+                            }}
+                        />
+                        <SHr height={10} />
+                        <SInput
+                            label="Razón social"
+                            placeholder="Ingrese razón social"
+                            onChangeText={val => razon_social = val}
+                            style={{
+                                height: 40,
+                                borderRadius: 6,
+                                backgroundColor: STheme.color.lightGray + "22",
+                                color: STheme.color.text,
+                            }}
+                        />
+                        <SHr height={16} />
+                        <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
+                            <SView style={{ marginRight: 8 }} onPress={() => SPopup.close("registrar_factura_" + venta.key)}>
+                                <SText color={STheme.color.text}>Cancelar</SText>
+                            </SView>
+                            <SView onPress={async () => {
+                                if (!nit.trim() || !razon_social.trim()) {
+                                    SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
+                                    return;
+                                }
+                                const facturaData = {
+                                    nro_factura: this.generateRandomCode(),
+                                    cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+                                    nit,
+                                    razon_social,
+                                    leyenda: "alvaro es probando la leyenda",
+                                    detalles: (venta.detalles ?? []).map(d => d.descripcion).join(", "),
+                                };
+                                const updatedVenta = {
+                                    ...venta,
+                                    facturar: true,
+                                    factura: facturaData,
+                                    nit,
+                                    razon_social,
+                                };
+                                try {
+                                    await Model.compra_venta.Action.editar({
+                                        data: updatedVenta,
+                                        key_usuario: Model.usuario.Action.getKey(),
+                                    });
+                                    if (this.DinamicTable) this.DinamicTable.loadData();
+                                    SNotification.send({ key: "factura_registrar_ok", title: "Factura registrada", body: "NIT: " + nit + ", Razón social: " + razon_social, color: STheme.color.success, time: 5000, });
+                                } catch (error) {
+                                    console.error("Error al editar la venta:", error);
+                                    SNotification.send({ key: "factura_registrar_error", title: "Error al registrar factura", body: "Intente de nuevo.", color: STheme.color.danger, time: 5000, });
+                                } finally {
+                                    SPopup.close("registrar_factura_" + venta.key);
+                                }
+                            }}>
+                                <SText color={STheme.color.success}>Registrar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                )
+            });
+        };
         const RenderOption = ({ label, icon, iconProps, onPress }) => {
             return (
                 <>
@@ -198,12 +282,14 @@ export default class tabla extends Component {
         };
 
         const groups = [
-            row?.factura?.cuf && {
+            {
                 title: "FACTURACIÓN",
-                items: [
-                    row?.factura?.cuf && { label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta" }); } },
-                    row?.factura?.cuf && { label: "Imprimir Factura (Rollo)", icon: "iconLista", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo" }); } },
-                ].filter(Boolean)
+                items: row?.factura?.cuf ? [
+                    { label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta" }); } },
+                    { label: "Imprimir Factura (Rollo)", icon: "iconLista", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo" }); } },
+                ] : [
+                    { label: "Registrar factura", iconProps: { fill: "#2563eb", stroke: 'rgb(126, 17, 250)' }, icon: "imprimir", onPress: () => openRegistrarFacturaPopup(row) },
+                ]
             },
             {
                 title: "RECIBOS",
@@ -216,9 +302,13 @@ export default class tabla extends Component {
                 title: "CONSULTA",
                 // title: "VERIFICACIÓN",
                 items: [
-                    { label: "Ver Detalle de venta", icon: "Eyes", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    // carritoproducto
+                    // ventaCarro
+                    { label: "Ver Detalle de venta", icon: "ventaCarro", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
                     // { label: "Ver venta", icon: "Eyes", iconProps: { fill: 'rgb(224, 102, 32)', stroke: 'rgb(224, 102, 32)' }, onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
                     // { label: "Ver venta", icon: "World", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    row?.sucursal?.key && { label: "Ver sucursal", icon: "iconEdifcio", iconProps: { fill: STheme.color.text, stroke: 'rgb(97, 97, 97)' }, onPress: () => { SNavigation.navigate("/sucursal", { key: row?.sucursal?.key }); } },
+                    row?.usuario?.key && { label: "Ver vendedor", icon: "cajero", iconProps: { fill: STheme.color.text, }, onPress: () => { SNavigation.navigate("/usuario", { key: row?.usuario?.key }); } },
                     row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key }); } },
                 ].filter(Boolean)
             },
@@ -235,28 +325,41 @@ export default class tabla extends Component {
                                 onPress: () => {
                                     SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
 
-                                    // MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
-                                    //     if (this.DinamicTable) this.DinamicTable.loadData();
-                                    //     SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
-                                    // }).catch(error => {
-                                    //     console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
-                                    // });
+                                    MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
+                                        if (this.DinamicTable) this.DinamicTable.loadData();
+                                        SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
+                                    }).catch(error => {
+                                        console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
+                                    });
                                 }
                             });
                         }
                     },
 
                     row?.factura?.cuf ? {
-                        label: "Anular factura", icon: "eliminar", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => {
+                        label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text }, onPress: () => {
                             SPopup.confirm({
                                 icon: <SIconApp name="eliminar" height={24} fill="#db0606ff" />,
                                 style: { padding: 10, paddingBottom: 5, paddingTop: 5 },
                                 title: "Anular factura " + row?.factura?.nro_factura,
                                 message: "¿Está seguro de que desea anular la factura? Esta acción no se puede deshacer.",
-                                onPress: () => {
-                                    SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, });
-                                    // MDL.factura.anular({ key_compra_venta: row.key }).then(resp => {
-                                    // le paso la key compra y borro facturar el json de compra_venta
+                                onPress: async () => {
+                                    const updatedVenta = {
+                                        ...row,
+                                        facturar: false,
+                                        factura: {},
+                                    };
+                                    try {
+                                        await Model.compra_venta.Action.editar({
+                                            data: updatedVenta,
+                                            key_usuario: Model.usuario.Action.getKey(),
+                                        });
+                                        SNotification.send({ key: "anular_factura_" + row.key, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
+                                        if (this.DinamicTable) this.DinamicTable.loadData();
+                                    } catch (error) {
+                                        console.error("Error al anular factura:", error);
+                                        SNotification.send({ key: "anular_factura_error_" + row.key, title: "Error al anular factura", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
+                                    }
                                 }
                             });
                         }
@@ -364,7 +467,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 8 }} width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.cliente?.key) ?
-                            <SView col={"xs-12"} center row 
+                            <SView col={"xs-12"} center row
                             // onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row?.cliente?.key }); }}
                             >
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33", }} border={STheme.color.text} center     >
