@@ -8,10 +8,8 @@ import Config from '../../Config';
 import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
-import FloatMenu from '../../Components/FloatMenu';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import FechaFullFilter from '../../Components/FechaFullFilter';
-import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
 
 export default class tabla extends Component {
 
@@ -23,27 +21,27 @@ export default class tabla extends Component {
     //     return srcKey ? pintar : nulo;
     // };
 
-    renderCliente(srcKey) {
-        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-            {/* <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} /> */}
-            <SIconApp name='profile2' height={18} width={18} fill={STheme.color.text} />
-        </SView>;
-        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return srcKey ? pintar : nulo;
-    };
+    // renderCliente(srcKey) {
+    //     const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+    //         {/* <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} /> */}
+    //         <SIconApp name='profile2' height={18} width={18} fill={STheme.color.text} />
+    //     </SView>;
+    //     const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
+    //     return srcKey ? pintar : nulo;
+    // };
 
-    renderSucursal(srcKey) {
-        const pintar = <>
-            <SView style={{ width: 60 }}>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
-                </SView>
-                <SText color='red'> sucursal </SText>
-            </SView>
-        </>
-        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return srcKey ? pintar : nulo;
-    };
+    // renderSucursal(srcKey) {
+    //     const pintar = <>
+    //         <SView style={{ width: 60 }}>
+    //             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+    //                 <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
+    //             </SView>
+    //             <SText color='red'> sucursal </SText>
+    //         </SView>
+    //     </>
+    //     const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
+    //     return srcKey ? pintar : nulo;
+    // };
 
     async loadInitialData() {
         try {
@@ -96,89 +94,89 @@ export default class tabla extends Component {
         }
     }
 
-    renderState(state) {
-        const statesInfo = MDL.compra_venta.getStateInfo()[state];
-        return <SView row center>
-            <SView backgroundColor={statesInfo?.color} style={{ borderRadius: 4, padding: 5 }}>
-                <SText color={STheme.color.text} fontSize={10}>{statesInfo?.label}</SText>
-            </SView>
-        </SView>
-    }
+    // renderState(state) {
+    //     const statesInfo = MDL.compra_venta.getStateInfo()[state];
+    //     return <SView row center>
+    //         <SView backgroundColor={statesInfo?.color} style={{ borderRadius: 4, padding: 5 }}>
+    //             <SText color={STheme.color.text} fontSize={10}>{statesInfo?.label}</SText>
+    //         </SView>
+    //     </SView>
+    // }
 
-    renderTipoPago(values) {
-        const statesTipo = MDL.compra_venta.getTipoPago()[values];
-        return <SView row center>
-            <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
-                <SText color={STheme.color.text} fontSize={10}>{statesTipo?.label}</SText>
-            </SView>
-        </SView>
-    }
+    // renderTipoPago(values) {
+    //     const statesTipo = MDL.compra_venta.getTipoPago()[values];
+    //     return <SView row center>
+    //         <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
+    //             <SText color={STheme.color.text} fontSize={10}>{statesTipo?.label}</SText>
+    //         </SView>
+    //     </SView>
+    // }
 
-    renderCodigo(codigo) {
-        return <SView row center>
-            <SView border={STheme.color.card} style={{ borderRadius: 8, padding: 6, borderWidth: 1 }}>
-                <SText color={STheme.color.text} fontSize={10} bold>{codigo}</SText>
-            </SView>
-        </SView>
-    }
+    // renderCodigo(codigo) {
+    //     return <SView row center>
+    //         <SView border={STheme.color.card} style={{ borderRadius: 8, padding: 6, borderWidth: 1 }}>
+    //             <SText color={STheme.color.text} fontSize={10} bold>{codigo}</SText>
+    //         </SView>
+    //     </SView>
+    // }
 
     generateRandomCode() {
         return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     }
 
-    openPdfFromBase64(base64) {
-        const base64Content = base64.split(",")[1];
-        const byteCharacters = atob(base64Content);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        const blobUrl = URL.createObjectURL(blob);
-        const width = 512;
-        const height = 512;
-        const left = (screen.width / 2) - (width / 2);
-        const top = (screen.height / 2) - (height / 2);
-        window.open(blobUrl, "fact", `width=${width},height=${height},top=${top},left=${left}`);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); // 60s
-    }
+    // openPdfFromBase64(base64) {
+    //     const base64Content = base64.split(",")[1];
+    //     const byteCharacters = atob(base64Content);
+    //     const byteNumbers = new Array(byteCharacters.length);
+    //     for (let i = 0; i < byteCharacters.length; i++) {
+    //         byteNumbers[i] = byteCharacters.charCodeAt(i);
+    //     }
+    //     const byteArray = new Uint8Array(byteNumbers);
+    //     const blob = new Blob([byteArray], { type: 'application/pdf' });
+    //     const blobUrl = URL.createObjectURL(blob);
+    //     const width = 512;
+    //     const height = 512;
+    //     const left = (screen.width / 2) - (width / 2);
+    //     const top = (screen.height / 2) - (height / 2);
+    //     window.open(blobUrl, "fact", `width=${width},height=${height},top=${top},left=${left}`);
+    //     setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); // 60s
+    // }
 
-    imprimirFactura(cuf) {
-        SNotification.send({
-            key: "imprimir",
-            title: "Imprimiendo factura",
-            type: "loading"
-        })
-        SSocket.sendPromise({
-            service: "facturacion",
-            component: "factura",
-            type: "imprimir",
-            key_empresa: Model.empresa.Action.getKey(),
-            key_usuario: Model.usuario.Action.getKey(),
-            cuf: cuf,
-        }).then(e => {
-            const b64 = e.data.pdf
-            const pdf = `data:application/pdf;base64,${b64}`
-            this.openPdfFromBase64(pdf)
-            SNotification.send({
-                key: "imprimir",
-                title: "Factura impresa con éxito",
-                body: cuf,
-                color: STheme.color.success,
-                time: 5000,
-            })
-        }).catch(e => {
-            console.error("No se pudo imprimir la factura:", e.error);
-            SNotification.send({
-                key: "imprimir",
-                title: "No se pudo imprimir la factura.",
-                body: e.error,
-                color: STheme.color.error,
-                time: 5000,
-            })
-        })
-    }
+    // imprimirFactura(cuf) {
+    //     SNotification.send({
+    //         key: "imprimir",
+    //         title: "Imprimiendo factura",
+    //         type: "loading"
+    //     })
+    //     SSocket.sendPromise({
+    //         service: "facturacion",
+    //         component: "factura",
+    //         type: "imprimir",
+    //         key_empresa: Model.empresa.Action.getKey(),
+    //         key_usuario: Model.usuario.Action.getKey(),
+    //         cuf: cuf,
+    //     }).then(e => {
+    //         const b64 = e.data.pdf
+    //         const pdf = `data:application/pdf;base64,${b64}`
+    //         this.openPdfFromBase64(pdf)
+    //         SNotification.send({
+    //             key: "imprimir",
+    //             title: "Factura impresa con éxito",
+    //             body: cuf,
+    //             color: STheme.color.success,
+    //             time: 5000,
+    //         })
+    //     }).catch(e => {
+    //         console.error("No se pudo imprimir la factura:", e.error);
+    //         SNotification.send({
+    //             key: "imprimir",
+    //             title: "No se pudo imprimir la factura.",
+    //             body: e.error,
+    //             color: STheme.color.error,
+    //             time: 5000,
+    //         })
+    //     })
+    // }
 
     renderMenuVentas(row) {
         const openRegistrarFacturaPopup = (venta) => {
@@ -300,13 +298,8 @@ export default class tabla extends Component {
             },
             {
                 title: "CONSULTA",
-                // title: "VERIFICACIÓN",
                 items: [
-                    // carritoproducto
-                    // ventaCarro
                     { label: "Ver Detalle de venta", icon: "ventaCarro", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
-                    // { label: "Ver venta", icon: "Eyes", iconProps: { fill: 'rgb(224, 102, 32)', stroke: 'rgb(224, 102, 32)' }, onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
-                    // { label: "Ver venta", icon: "World", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
                     row?.sucursal?.key && { label: "Ver sucursal", icon: "iconEdifcio", iconProps: { fill: STheme.color.text, stroke: 'rgb(97, 97, 97)' }, onPress: () => { SNavigation.navigate("/sucursal", { key: row?.sucursal?.key }); } },
                     row?.usuario?.key && { label: "Ver vendedor", icon: "cajero", iconProps: { fill: STheme.color.text, }, onPress: () => { SNavigation.navigate("/usuario", { key: row?.usuario?.key }); } },
                     row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key }); } },
@@ -335,7 +328,6 @@ export default class tabla extends Component {
                             });
                         }
                     },
-
                     row?.factura?.cuf ? {
                         label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text }, onPress: () => {
                             SPopup.confirm({
