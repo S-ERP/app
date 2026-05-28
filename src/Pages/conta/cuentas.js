@@ -46,30 +46,67 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
             options: [
                 ... (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' }) ? [
                     {
-                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
-                            const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
-                            const cuenta = grafo.find(n => n.codigo === e.row.codigo);
-                            const hijos = cuenta.childrens || [];
-                            let index = "01";
-                            let childSize = 0;
-                            if (hijos.length > 0) {
-                                index = hijos.length + 1
-                                if (index.length < 2) {
-                                    index = "0" + index
-                                }
-                                childSize = hijos[0].codigo.length
-                            } else {
-                                const niveles = MDL.contabilidad.armarNiveles(e.dinamicTable.data);
-                                const lvlPadre = e.row.codigo.length;
-                                const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
-                                if (indexLvl > 0 && niveles[indexLvl]) {
-                                    childSize = niveles[indexLvl];
-                                }
-                            }
-                            let codigo = e.row.codigo + "." + index
-                            if (codigo.length < childSize) {
-                                codigo = e.row.codigo + "." + "0".repeat(childSize - codigo.length) + index;
-                            }
+                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress:  async () => {
+                            const respCuentas = await MDL.contabilidad.getCuentas();
+const dataCompleta = Object.values(respCuentas);
+
+const grafo = MDL.contabilidad.getCuentasGrafo(dataCompleta);
+const cuenta = grafo.find(n => n.codigo === e.row.codigo);
+
+const hijos = dataCompleta.filter(c => {
+    if (!c.codigo) return false;
+
+    const partesPadre = e.row.codigo.split(".");
+    const partesHijo = c.codigo.split(".");
+
+    // Debe ser hijo directo, no nieto
+    if (partesHijo.length !== partesPadre.length + 1) return false;
+
+    // Debe comenzar con el código del padre
+    return c.codigo.startsWith(e.row.codigo + ".");
+});
+
+let childSize = 0;
+let nuevoNumero = 1;
+let digitos = 2;
+
+if (hijos.length > 0) {
+    const numeros = hijos
+        .map(hijo => {
+            const partes = hijo.codigo.split(".");
+            return parseInt(partes[partes.length - 1], 10);
+        })
+        .filter(n => !isNaN(n));
+
+    const mayor = Math.max(...numeros);
+    nuevoNumero = mayor + 1;
+
+    digitos = Math.max(
+        2,
+        ...hijos.map(hijo => {
+            const partes = hijo.codigo.split(".");
+            return partes[partes.length - 1].length;
+        })
+    );
+
+    childSize = Math.max(...hijos.map(hijo => hijo.codigo.length));
+} else {
+    const niveles = MDL.contabilidad.armarNiveles(dataCompleta);
+    const lvlPadre = e.row.codigo.length;
+    const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
+
+    if (indexLvl > 0 && niveles[indexLvl]) {
+        childSize = niveles[indexLvl];
+    }
+}
+
+let index = String(nuevoNumero).padStart(digitos, "0");
+let codigo = e.row.codigo + "." + index;
+
+if (childSize && codigo.length < childSize) {
+    const faltantes = childSize - codigo.length;
+    codigo = e.row.codigo + "." + "0".repeat(faltantes) + index;
+}
                             let key_moneda = cuenta.key_moneda;
                             if (!key_moneda) {
                                 let cc = cuenta;
