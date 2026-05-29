@@ -10,38 +10,9 @@ import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import FechaFullFilter from '../../Components/FechaFullFilter';
+import PopupUploadFactura from './Components/PopupUploadFactura';
 
 export default class tabla extends Component {
-
-    // renderUsuario(srcKey) {
-    //     const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-    //         <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
-    //     </SView>;
-    //     const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-    //     return srcKey ? pintar : nulo;
-    // };
-
-    // renderCliente(srcKey) {
-    //     const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-    //         {/* <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} /> */}
-    //         <SIconApp name='profile2' height={18} width={18} fill={STheme.color.text} />
-    //     </SView>;
-    //     const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-    //     return srcKey ? pintar : nulo;
-    // };
-
-    // renderSucursal(srcKey) {
-    //     const pintar = <>
-    //         <SView style={{ width: 60 }}>
-    //             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-    //                 <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
-    //             </SView>
-    //             <SText color='red'> sucursal </SText>
-    //         </SView>
-    //     </>
-    //     const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-    //     return srcKey ? pintar : nulo;
-    // };
 
     async loadInitialData() {
         try {
@@ -86,6 +57,10 @@ export default class tabla extends Component {
                     };
                 })
             );
+
+            console.clear();
+            console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
+
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -94,149 +69,211 @@ export default class tabla extends Component {
         }
     }
 
-    // renderState(state) {
-    //     const statesInfo = MDL.compra_venta.getStateInfo()[state];
-    //     return <SView row center>
-    //         <SView backgroundColor={statesInfo?.color} style={{ borderRadius: 4, padding: 5 }}>
-    //             <SText color={STheme.color.text} fontSize={10}>{statesInfo?.label}</SText>
-    //         </SView>
-    //     </SView>
-    // }
-
-    // renderTipoPago(values) {
-    //     const statesTipo = MDL.compra_venta.getTipoPago()[values];
-    //     return <SView row center>
-    //         <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
-    //             <SText color={STheme.color.text} fontSize={10}>{statesTipo?.label}</SText>
-    //         </SView>
-    //     </SView>
-    // }
-
-    // renderCodigo(codigo) {
-    //     return <SView row center>
-    //         <SView border={STheme.color.card} style={{ borderRadius: 8, padding: 6, borderWidth: 1 }}>
-    //             <SText color={STheme.color.text} fontSize={10} bold>{codigo}</SText>
-    //         </SView>
-    //     </SView>
-    // }
-
     generateRandomCode() {
         return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     }
 
-    // openPdfFromBase64(base64) {
-    //     const base64Content = base64.split(",")[1];
-    //     const byteCharacters = atob(base64Content);
-    //     const byteNumbers = new Array(byteCharacters.length);
-    //     for (let i = 0; i < byteCharacters.length; i++) {
-    //         byteNumbers[i] = byteCharacters.charCodeAt(i);
-    //     }
-    //     const byteArray = new Uint8Array(byteNumbers);
-    //     const blob = new Blob([byteArray], { type: 'application/pdf' });
-    //     const blobUrl = URL.createObjectURL(blob);
-    //     const width = 512;
-    //     const height = 512;
-    //     const left = (screen.width / 2) - (width / 2);
-    //     const top = (screen.height / 2) - (height / 2);
-    //     window.open(blobUrl, "fact", `width=${width},height=${height},top=${top},left=${left}`);
-    //     setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); // 60s
-    // }
-
-    // imprimirFactura(cuf) {
-    //     SNotification.send({
-    //         key: "imprimir",
-    //         title: "Imprimiendo factura",
-    //         type: "loading"
-    //     })
-    //     SSocket.sendPromise({
-    //         service: "facturacion",
-    //         component: "factura",
-    //         type: "imprimir",
-    //         key_empresa: Model.empresa.Action.getKey(),
-    //         key_usuario: Model.usuario.Action.getKey(),
-    //         cuf: cuf,
-    //     }).then(e => {
-    //         const b64 = e.data.pdf
-    //         const pdf = `data:application/pdf;base64,${b64}`
-    //         this.openPdfFromBase64(pdf)
-    //         SNotification.send({
-    //             key: "imprimir",
-    //             title: "Factura impresa con éxito",
-    //             body: cuf,
-    //             color: STheme.color.success,
-    //             time: 5000,
-    //         })
-    //     }).catch(e => {
-    //         console.error("No se pudo imprimir la factura:", e.error);
-    //         SNotification.send({
-    //             key: "imprimir",
-    //             title: "No se pudo imprimir la factura.",
-    //             body: e.error,
-    //             color: STheme.color.error,
-    //             time: 5000,
-    //         })
-    //     })
-    // }
-
     renderMenuVentas(row) {
-        const openRegistrarFacturaPopup = (venta) => {
-            let nit = "";
-            let razon_social = "";
-            return SPopup.open({
-                key: "registrar_factura_" + venta.key,
-                content: (
-                    <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
-                        <SText fontSize={18} bold>Registrar factura</SText>
+        const openRegistrarFacturaTypePopup = (venta, tipoFactura) => {
+            const tipoLabels = {
+                manual: "Factura Manual",
+                siat: "Factura SIAT",
+                paraguay: "Factura Paraguay (Quatiy)",
+                colombia: "Factura Colombia (Sasuki)",
+            };
+            const tipoLabel = tipoLabels[tipoFactura] || tipoFactura;
+            if (tipoFactura === "paraguay" || tipoFactura === "colombia") {
+                // if (tipoFactura === "manual" || tipoFactura === "paraguay" || tipoFactura === "colombia") {
+                return SPopup.open({
+                    key: "registrar_factura_" + tipoFactura + "_" + venta.key, content: (<SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>{tipoLabel}</SText>
                         <SHr height={12} />
-                        <SText fontSize={13} color={STheme.color.text + "99"}>Ingrese el NIT y la razón social para generar la factura.</SText>
-                        <SHr height={16} />
-                        <SInput
-                            label="NIT / CI"
-                            placeholder="Ingrese NIT o CI"
-                            onChangeText={val => nit = val}
-                            style={{
-                                height: 40,
-                                borderRadius: 6,
-                                backgroundColor: STheme.color.lightGray + "22",
-                                color: STheme.color.text,
-                            }}
-                        />
-                        <SHr height={10} />
-                        <SInput
-                            label="Razón social"
-                            placeholder="Ingrese razón social"
-                            onChangeText={val => razon_social = val}
-                            style={{
-                                height: 40,
-                                borderRadius: 6,
-                                backgroundColor: STheme.color.lightGray + "22",
-                                color: STheme.color.text,
-                            }}
-                        />
+                        <SText fontSize={14} color={STheme.color.text + "99"}>Estamos trabajando en esta funcionalidad.</SText>
                         <SHr height={16} />
                         <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
-                            <SView style={{ marginRight: 8 }} onPress={() => SPopup.close("registrar_factura_" + venta.key)}>
+                            <SView onPress={() => SPopup.close("registrar_factura_" + tipoFactura + "_" + venta.key)}>
+                                <SText color={STheme.color.text}>Cerrar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                    ),
+                });
+            }
+            let nit = "";
+            let razon_social = "";
+            let nroFactura = "";
+            let pdfFile = null;
+            const onFileChange = (files) => {
+                pdfFile = files?.[0]?.file || null;
+            };
+            const isManual = tipoFactura === "manual";
+
+            console.log("venta seleccionada para facturar:", venta);
+            console.log(venta);
+            return SPopup.open({
+                key: "registrar_factura_" + tipoFactura + "_" + venta.key,
+                content: (
+                    <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>{tipoLabel}</SText>
+                        <SHr height={12} />
+                        <SText fontSize={13} color={STheme.color.text + "99"}> {isManual ? "Ingrese el número de factura y adjunte el PDF de la factura." : "Ingrese el NIT y la razón social para generar la factura SIAT."} </SText>
+                        <SHr height={16} />
+
+
+                        {/* {tipoLabel === "Factura Manual" && (
+                            <>
+                                <SInput
+                                    label="Nro. factura"
+                                    placeholder="Ingrese el número de factura"
+                                    onChangeText={val => nroFactura = val}
+                                    style={{
+                                        height: 40,
+                                        borderRadius: 6,
+                                        backgroundColor: STheme.color.lightGray + "22",
+                                        color: STheme.color.text,
+                                    }}
+                                />
+                                <SHr height={10} />
+                                <SInput
+                                    type="file"
+                                    label="PDF de factura"
+                                    placeholder="Seleccione un archivo PDF"
+                                    onChangeText={onFileChange}
+                                    accept="application/pdf"
+                                />
+                            </>
+                        )} */}
+
+                        {tipoLabel === "Factura Manual" && (
+                            <>
+                                <SInput label="Nro. factura" placeholder="Ingrese el número de factura"
+                                    onChangeText={val => nroFactura = val}
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
+
+                                <SHr height={10} />
+
+                                <SView row center
+                                    style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8, padding: 10, backgroundColor: STheme.color.card + "22", }} >
+                                    <SView flex>
+                                        <SText fontSize={13} bold>
+                                            PDF de factura
+                                        </SText>
+
+                                        <SHr h={4} />
+
+                                        <SText fontSize={11} color={STheme.color.lightGray}>
+                                            {pdfFile?.name ?? "Ningún archivo seleccionado"}
+                                        </SText>
+                                    </SView>
+
+                                    <SView
+                                        style={{
+                                            paddingHorizontal: 12,
+                                            paddingVertical: 8,
+                                            borderRadius: 6,
+                                            backgroundColor: STheme.color.primary,
+                                        }}
+                                        onPress={() => {
+                                            PopupUploadFactura.open({
+                                                key_empresa: venta?.empresa?.key,
+                                                key_compra_venta: venta?.key,
+                                                onSuccess: (fileData) => {
+                                                    pdfFile = fileData;
+
+                                                    SNotification.send({
+                                                        title: "PDF seleccionado",
+                                                        body: fileData?.name,
+                                                        color: STheme.color.success,
+                                                        time: 2000,
+                                                    });
+
+                                                    this.forceUpdate();
+                                                }
+                                            });
+                                        }}
+                                    >
+                                        <SText color={STheme.color.text} bold>
+                                            Seleccionar PDF
+                                        </SText>
+                                    </SView>
+                                </SView>
+                            </>
+                        )}
+
+                        {tipoLabel === "Factura SIAT" && (
+                            <>
+                                <SInput
+                                    label="NIT / CI"
+                                    placeholder="Ingrese NIT o CI"
+                                    onChangeText={val => nit = val}
+                                    style={{
+                                        height: 40,
+                                        borderRadius: 6,
+                                        backgroundColor: STheme.color.lightGray + "22",
+                                        color: STheme.color.text,
+                                    }}
+                                />
+                                <SHr height={10} />
+                                <SInput
+                                    label="Razón social"
+                                    placeholder="Ingrese razón social"
+                                    onChangeText={val => razon_social = val}
+                                    style={{
+                                        height: 40,
+                                        borderRadius: 6,
+                                        backgroundColor: STheme.color.lightGray + "22",
+                                        color: STheme.color.text,
+                                    }}
+                                />
+                            </>
+                        )}
+
+
+                        <SHr height={16} />
+                        <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
+                            <SView style={{ marginRight: 8 }} onPress={() => SPopup.close("registrar_factura_" + tipoFactura + "_" + venta.key)}>
                                 <SText color={STheme.color.text}>Cancelar</SText>
                             </SView>
                             <SView onPress={async () => {
-                                if (!nit.trim() || !razon_social.trim()) {
-                                    SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
-                                    return;
+                                if (isManual) {
+                                    // if (!nroFactura.trim()) {
+                                    //     SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar el número de factura y subir el PDF.", color: STheme.color.danger, time: 4000, });
+                                    //     return;
+                                    // }
+                                    // if (!nroFactura.trim() || !pdfFile) {
+                                    //     SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar el número de factura y subir el PDF.", color: STheme.color.danger, time: 4000, });
+                                    //     return;
+                                    // }
+                                } else {
+                                    if (!nit.trim() || !razon_social.trim()) {
+                                        SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
+                                        return;
+                                    }
                                 }
+
+
                                 const facturaData = {
-                                    nro_factura: this.generateRandomCode(),
+                                    tipo: tipoFactura,
+                                    nro_factura: isManual ? nroFactura : this.generateRandomCode(),
                                     cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
-                                    nit,
-                                    razon_social,
+                                    nit: isManual ? "" : nit,
+                                    razon_social: isManual ? "" : razon_social,
                                     leyenda: "alvaro es probando la leyenda",
                                     detalles: (venta.detalles ?? []).map(d => d.descripcion).join(", "),
+
+                                    archivo_pdf: isManual ? { name: pdfFile?.name, type: pdfFile?.type } : undefined,
+                                    // 🔥 ESTA ES LA LÍNEA QUE TE FALTA
+                                    link_factura: isManual ? pdfFile?.url || pdfFile?.link || null : undefined,
+                                    factura_seleccionada: tipoLabel,
                                 };
+
+
                                 const updatedVenta = {
                                     ...venta,
                                     facturar: true,
                                     factura: facturaData,
-                                    nit,
-                                    razon_social,
+                                    nit: isManual ? venta.nit : nit,
+                                    razon_social: isManual ? venta.razon_social : razon_social,
                                 };
                                 try {
                                     await Model.compra_venta.Action.editar({
@@ -244,12 +281,12 @@ export default class tabla extends Component {
                                         key_usuario: Model.usuario.Action.getKey(),
                                     });
                                     if (this.DinamicTable) this.DinamicTable.loadData();
-                                    SNotification.send({ key: "factura_registrar_ok", title: "Factura registrada", body: "NIT: " + nit + ", Razón social: " + razon_social, color: STheme.color.success, time: 5000, });
+                                    SNotification.send({ key: "factura_registrar_ok_" + tipoFactura, title: tipoLabel + " registrada", body: isManual ? "Factura manual agregada." : "NIT: " + nit + ", Razón social: " + razon_social, color: STheme.color.success, time: 5000, });
                                 } catch (error) {
                                     console.error("Error al editar la venta:", error);
-                                    SNotification.send({ key: "factura_registrar_error", title: "Error al registrar factura", body: "Intente de nuevo.", color: STheme.color.danger, time: 5000, });
+                                    SNotification.send({ key: "factura_registrar_error_" + tipoFactura, title: "Error al registrar factura", body: "Intente de nuevo.", color: STheme.color.danger, time: 5000, });
                                 } finally {
-                                    SPopup.close("registrar_factura_" + venta.key);
+                                    SPopup.close("registrar_factura_" + tipoFactura + "_" + venta.key);
                                 }
                             }}>
                                 <SText color={STheme.color.success}>Registrar</SText>
@@ -259,6 +296,42 @@ export default class tabla extends Component {
                 )
             });
         };
+
+        const openRegistrarFacturaPopup = (venta) => {
+            const opcionesFactura = [
+                { label: "Factura manual", tipo: "manual" },
+                { label: "Factura SIAT", tipo: "siat" },
+                { label: "Factura Paraguay (Quatiy)", tipo: "paraguay" },
+                { label: "Factura Colombia (Sasuki)", tipo: "colombia" },
+            ];
+            return SPopup.open({
+                key: "registrar_factura_tipo_" + venta.key,
+                content: (
+                    <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>Registrar factura</SText>
+                        <SHr height={12} />
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Seleccione el tipo de factura a generar.</SText>
+                        <SHr height={16} />
+                        {opcionesFactura.map((item) => (
+                            <SView key={item.tipo} col={"xs-12"} style={{ marginBottom: 10 }}>
+                                <SView onPress={() => {
+                                    SPopup.close("registrar_factura_tipo_" + venta.key);
+                                    openRegistrarFacturaTypePopup(venta, item.tipo);
+                                }} style={{ borderRadius: 8, padding: 14, backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.border, }}>
+                                    <SText fontSize={15} bold>{item.label}</SText>
+                                </SView>
+                            </SView>
+                        ))}
+                        <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
+                            <SView onPress={() => SPopup.close("registrar_factura_tipo_" + venta.key)}>
+                                <SText color={STheme.color.text}>Cerrar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                )
+            });
+        };
+
         const RenderOption = ({ label, icon, iconProps, onPress }) => {
             return (
                 <>
@@ -492,6 +565,29 @@ export default class tabla extends Component {
                         );
                     }}
                 />
+                {/* e.row?.factura?.nro_factura */}
+                <DinamicTable.Col key="dfsdfsd" wrap label="Link archivo" headerStyle={{ paddingLeft: 8 }} width={80}
+                    data={(e) => e.row?.tipo_pago ?? ""}
+                    customComponent={e => {
+                        const tipoPagoMap = {
+                            "contado": { color: "#2563eb", label: "Contado" },
+                            "credito": { color: "#8007c5", label: "Crédito" },
+                            "transferencia": { color: "#6b7280", label: "Transferencia" },
+                        };
+                        const estilo = tipoPagoMap[e.data?.toLowerCase()] || { color: STheme.color.lightGray, label: e.data };
+                        return (
+                            <>
+                                {(e.row?.tipo_pago) ?
+                                    <SView col={"xs-12"} center row>
+                                        <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5 }}>
+                                            <SText color={STheme.color.text} fontSize={10}>{estilo.label}</SText>
+                                        </SView>
+                                    </SView> : null}
+                            </>
+                        );
+                    }}
+                />
+
                 <DinamicTable.Col key="estado_venta" label="Estado Venta" headerStyle={{ paddingLeft: 8 }} width={120} center data={(e) => e.row?.facturar ? "Facturado" : "No facturada"}
                     customComponent={e => {
                         const facturado = Boolean(e.row?.facturar);
@@ -537,11 +633,32 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="nit" label="NIT / CI" width={100} data={(e) => e.row?.factura?.nit ?? ""} />
+
+                <DinamicTable.Col key="link_factura" label="link Factura" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.link_factura}
+                    customComponent={e => <>
+                        {(e.row?.factura?.link_factura) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                <DinamicTable.Col key="factura_seleccionada" label="Tipo Factura" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.factura_seleccionada ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.factura?.nro_factura) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                <DinamicTable.Col key="nit" label="NIT / CI" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.nit ?? ""} />
                 <DinamicTable.Col key="razon_social" label="Razón social" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.razon_social ?? ""} />
 
 
-                <DinamicTable.Col key="cuf" label="CUF" width={100} data={(e) => e.row?.factura?.cuf ?? ""}
+                <DinamicTable.Col key="cuf" label="CUF" headerStyle={{ paddingLeft: 8 }} width={100} data={(e) => e.row?.factura?.cuf ?? ""}
                     customComponent={e => <>
                         {(e.row?.facturar) ?
                             <SView col={"xs-12"} center row>
@@ -551,10 +668,10 @@ export default class tabla extends Component {
                     </>}
                 />
 
-                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} data={(e) => e.row?.factura?.leyenda ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.leyenda ?? ""} />
+                <DinamicTable.Col key="detalles_" label="Detalle" width={220} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
                 {/* <DinamicTable.Col key="descripcion" label="Descripción" width={210} data={(e) => e.row?.descripcion ?? ""} /> */}
-                <DinamicTable.Col key="cuotas_total" label="Total" wrap bold width={80}
+                <DinamicTable.Col key="cuotas_total" label="Total" headerStyle={{ paddingLeft: 8 }} wrap bold width={80}
                     data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
@@ -595,7 +712,7 @@ export default class tabla extends Component {
                     </>}
                 /> */}
 
-                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
+                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{
                     alignItems: "center"
                 }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
@@ -604,7 +721,7 @@ export default class tabla extends Component {
                 }}
                     data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
                 />
-                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60}
+                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }}
                     data={(e) => e.row?.moneda?.descripcion ?? ""}
                 />
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
