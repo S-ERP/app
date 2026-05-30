@@ -291,7 +291,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
                         nit: clientefull?.nit || "",
                         razon_social: clientefull?.razon_social || clientefull?.nombres || "",
+                        detalle_factura: detalle.map((d: any) => `${d.descripcion} x${d.cantidad}`).join(", "),
                         leyenda: "alvaro es probando la leyenda",
+                        factura_seleccionada: "Factura SIAT",
+
                     }
                     : null,
                 tipo_pago: esCredito ? "credito" : "contado",

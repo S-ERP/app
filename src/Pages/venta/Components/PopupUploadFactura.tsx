@@ -13,6 +13,7 @@ import {
 
 import { SDate } from "servisofts-component";
 import SIconApp from "../../../Assets/SIconApp";
+import SSocket from "servisofts-socket";
 
 type Props = {
     key_empresa: string;
@@ -148,17 +149,15 @@ export default class PopupUploadFactura extends Component<Props, State> {
                 `${this.props.key_compra_venta}_${Date.now()}_${this.state.factura.name}`;
 
             // 🔥 UPLOAD URL (TU FORMATO EXACTO)
-            const uploadUrl =
-                `https://serp.servisofts.com/upload/${this.props.key_empresa}/factura/${this.props.key_compra_venta}/${encodeURIComponent(fileName)}`;
-
-            console.log("%cUPLOAD URL:", "color:#2ecc71;font-weight:bold;", uploadUrl);
-
+            const uploadUrl = `${SSocket.api.root}/upload/empresa/${this.props.key_empresa}/factura/${this.props.key_compra_venta}/${encodeURIComponent(fileName)}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+            // const uploadUrl = `https://serp.servisofts.com/upload/${this.props.key_empresa}/factura/${this.props.key_compra_venta}/${encodeURIComponent(fileName)}`;
             // 🔥 DOWNLOAD URL
-            const downloadUrl = `https://serp.servisofts.com/factura/${this.props.key_empresa}/${this.props.key_compra_venta}/${encodeURIComponent(fileName)}`;
+            const downloadUrl = `${SSocket.api.root}/empresa/${this.props.key_empresa}/factura/${this.props.key_compra_venta}/${encodeURIComponent(fileName)}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+            // const downloadUrl = `https://serp.servisofts.com/factura/${this.props.key_empresa}/${this.props.key_compra_venta}/${encodeURIComponent(fileName)}`;
 
             console.log("%cDOWNLOAD URL:", "color:#3498db;font-weight:bold;", downloadUrl);
 
-            console.log( "%cABRIR ARCHIVO:", "color:#9b59b6;font-weight:bold;", `window.open('${downloadUrl}')` );
+            console.log("%cABRIR ARCHIVO:", "color:#9b59b6;font-weight:bold;", `window.open('${downloadUrl}')`);
 
             await Upload.sendPromise(
                 {
@@ -214,9 +213,8 @@ export default class PopupUploadFactura extends Component<Props, State> {
         const { factura } = this.state;
         if (!factura) return null;
 
-        const url =
-            factura.url ??
-            `https://serp.servisofts.com/factura/${this.props.key_empresa}/${this.props.key_compra_venta}/${factura.name}`;
+        const url = factura.url ?? `${SSocket.api.root}/empresa/${this.props.key_empresa}/factura/${this.props.key_compra_venta}/${factura.name}`;
+        // const url = factura.url ?? `https://serp.servisofts.com/factura/${this.props.key_empresa}/${this.props.key_compra_venta}/${factura.name}`;
 
         return (
             <SView
