@@ -18,13 +18,14 @@ export default class ventas extends React.Component {
         selectedSucursal: null,
         selectedTipoProducto: null,
         sucursales: [],
-        tipoProducto: [],
+        tipoProducto: {},
         dataTimeSeries: [],
         dataTopProducts: [],
         dataBranchShare: [],
         dataBranchShareBarras: [],
         dataMetodoPago: [],
         tipoProductoLista: [],
+        tipoProducto: [],
         loading: true,
         empresaSeleccionada: null,
     };
@@ -114,9 +115,10 @@ export default class ventas extends React.Component {
 
     loadTimeSeries = async (keyEmpresa) => {
         try {
-            const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
+            const { fecha_inicio, fecha_fin, selectedSucursal } = this.state;
             const sucursales = await MDL.empresa.getAllSucursales();
             console.log("sucursales disponibles:", sucursales);
+            // const res = await MDL.compra_venta.execute_function("ventas_por_dia2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
             const res = await MDL.compra_venta.execute_function("ventas_por_dia_por_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
             
             console.log("BASE DE DATOS:", res);
@@ -149,19 +151,13 @@ export default class ventas extends React.Component {
             console.log("Respuesta de ventas_por_dia2:", raw);
             console.log("sucursal seleccionada para serie temporal:", selectedSucursal);
 
-            const data = this.transformTimeSeries(raw, sucursales, selectedSucursal?.key, selectedTipoProducto);
-            const branchShare = this.transformBranchShare(raw, selectedTipoProducto);
-            const branchShareBarras = this.transformBranchShareBarras(raw, selectedTipoProducto);
-            const tipoProductoLista = this.extractTipoProductoLista(raw);
+            const data = this.transformTimeSeries(raw, sucursales, selectedSucursal?.key);
+            const branchShare = this.transformBranchShare(raw);
+            const branchShareBarras = this.transformBranchShareBarras(raw);
             console.log("Datos transformados para participación por sucursal:", branchShare);
             console.log("Datos transformados para participación por sucursal (barras):", branchShareBarras);
             if (this._mounted) {
-                this.setState({
-                    dataTimeSeries: data,
-                    dataBranchShare: branchShare,
-                    dataBranchShareBarras: branchShareBarras,
-                    tipoProductoLista: tipoProductoLista.length ? tipoProductoLista : this.state.tipoProductoLista,
-                });
+                this.setState({ dataTimeSeries: data, dataBranchShare: branchShare, dataBranchShareBarras: branchShareBarras });
             }
         } catch (e) {
             console.error("Error en ventas_por_dia2:", e);
@@ -173,19 +169,39 @@ export default class ventas extends React.Component {
 
     loadTopProducts = async (keyEmpresa) => {
         try {
-            const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
+            const { fecha_inicio, fecha_fin, selectedSucursal, tipoProducto } = this.state;
             const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
             console.log("PRODUCTOS MÁS VENDIDOS:", res);
-            
-             const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+            const modelos = await MDL.inventario.getAllModelo();
+            const rawModelos = res.map((item) => {
+                const modelo = modelos.find((m) => m.key === item.key_modelo);
+                return {
+                    ...item,
+                    key_tipo_producto: modelo ? modelo.key_tipo_producto : null,
+                };
+            });
+            console.log("Modelos de inventario:", rawModelos);
+            const keyTiposProducto = [
+                ...new Set(rawModelos.map(item => item.key_tipo_producto))
+            ];
+            console.log("keyTiposProducto_:", keyTiposProducto);
+            // this.setState({ tipoProductoLista: keyTiposProducto.reduce((acc, key) => {
+            //     const tipo = tipoProducto.find(t => t.key === key);
+            //     acc[key] = tipo ? tipo.descripcion : "N/A";
+            //     return acc;
+            // }, {}) });
+
+            this.setState({ tipoProductoLista: keyTiposProducto });
+
+            const raw = Array.isArray(rawModelos) ? rawModelos : rawModelos?.data ?? rawModelos?.result ?? [];
             const products = raw
                 .map((item) => ({
                     producto: item.producto ?? item.nombre ?? "Sin nombre",
                     cantidad_total_vendida: Number(item.cantidad_total_vendida ?? item.cantidad ?? item.total_ventas ?? 0),
                     total: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
-                    sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],  
+                    sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],
+                    key_tipo_producto: item.key_tipo_producto,
                 }))
-              
                 .filter((item) => {
                     if (!selectedSucursal?.key) return true;
                     return item.sucursales.length === 0 || item.sucursales.includes(selectedSucursal.key);
@@ -225,27 +241,9 @@ export default class ventas extends React.Component {
         }
     };
 
-    extractTipoProductoLista = (raw) => {
+    transformTimeSeries = (raw, sucursales, selectedSucursalKey) => {
         if (!Array.isArray(raw)) return [];
-        const tipos = raw.flatMap((row) => {
-            const dias = Array.isArray(row.dias) ? row.dias : [row];
-            return dias.flatMap((item) => {
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                console.log("detalles tipo_producto:", detalles);
-                return detalles.map((tipo) => tipo?.tipo_producto).filter(Boolean);
-            });
-        });
-        return [...new Set(tipos)];
-    };
-
-    getTipoProductoLabel = (tipoKey) => {
-        const tipo = (this.state.tipoProducto || []).find((item) => item.key === tipoKey);
-        return tipo?.descripcion ?? tipoKey;
-    };
-
-    transformTimeSeries = (raw, sucursales, selectedSucursalKey, selectedTipoProducto) => {
-        if (!Array.isArray(raw)) return [];
-        console.log("Transformando datos para serie temporal:", { raw, selectedSucursalKey, sucursales, selectedTipoProducto });
+        console.log("Transformando datos para serie temporal:", { raw, selectedSucursalKey, sucursales });
         const seriesMap = {};
         const rows = selectedSucursalKey ? raw.filter((row) => row.key_sucursal === selectedSucursalKey) : raw;
 
@@ -254,10 +252,6 @@ export default class ventas extends React.Component {
             dias.forEach((item) => {
                 const label = item.hora || item.fecha || item.mes || (item.dia != null ? String(item.dia) : null);
                 if (!label) return;
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                const filtered = detalles.filter((tipo) => !selectedTipoProducto || tipo.tipo_producto === selectedTipoProducto);
-                const totalVentas = filtered.reduce((sum, tipo) => sum + Number(tipo.cantidad_ventas ?? tipo.cantidad ?? 0), 0);
-                const totalMonto = filtered.reduce((sum, tipo) => sum + Number(tipo.monto_total ?? tipo.total_bs ?? tipo.total ?? 0), 0);
                 const key = String(label);
                 if (!seriesMap[key]) {
                     seriesMap[key] = {
@@ -266,8 +260,8 @@ export default class ventas extends React.Component {
                         monto_total: 0,
                     };
                 }
-                seriesMap[key].cantidad_ventas += totalVentas;
-                seriesMap[key].monto_total += totalMonto;
+                seriesMap[key].cantidad_ventas += Number(item.cantidad_ventas ?? item.total_ventas ?? item.cantidad ?? 0);
+                seriesMap[key].monto_total += Number(item.monto_total ?? item.total_bs ?? item.total ?? 0);
             });
         });
 
@@ -279,8 +273,8 @@ export default class ventas extends React.Component {
         });
     };
 
-    transformBranchShare = (raw, selectedTipoProducto) => {
-        console.log("Transformando datos para participación por sucursal:", raw, selectedTipoProducto);
+    transformBranchShare = (raw) => {
+        console.log("Transformando datos para participación por sucursal:", raw);
         if (!Array.isArray(raw)) return [];
         const branchTotals = {};
         raw.forEach((row) => {
@@ -288,14 +282,7 @@ export default class ventas extends React.Component {
             const key = row.key_sucursal || row.key;
             const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
             const dias = Array.isArray(row.dias) ? row.dias : [row];
-            const total = dias.reduce((sum, item) => {
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                return sum + detalles.reduce((sub, tipo) => {
-                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
-                    return sub + Number(tipo.monto_total ?? tipo.total_bs ?? tipo.total ?? 0);
-                }, 0);
-            }, 0);
-            if (total <= 0) return;
+            const total = dias.reduce((sum, item) => sum + Number(item.monto_total ?? item.total_bs ?? item.total ?? 0), 0);
             console.log("total", total, "para sucursal", name);
             if (!branchTotals[key]) {
                 branchTotals[key] = { name, value: 0, total: 0 };
@@ -307,8 +294,8 @@ export default class ventas extends React.Component {
             .slice(0, 6);
     };
 
-    transformBranchShareBarras = (raw, selectedTipoProducto) => {
-        console.log("Transformando datos para participación por sucursal (barras):", raw, selectedTipoProducto);
+    transformBranchShareBarras = (raw) => {
+        console.log("Transformando datos para participación por sucursal (barras):", raw);
         if (!Array.isArray(raw)) return [];
         const branchTotals = {};
         raw.forEach((row) => {
@@ -316,21 +303,8 @@ export default class ventas extends React.Component {
             const key = row.key_sucursal || row.key;
             const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
             const dias = Array.isArray(row.dias) ? row.dias : [row];
-            const total = dias.reduce((sum, item) => {
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                return sum + detalles.reduce((sub, tipo) => {
-                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
-                    return sub + Number(tipo.monto_total ?? tipo.total_bs ?? tipo.total ?? 0);
-                }, 0);
-            }, 0);
-            const cantidad = dias.reduce((sum, item) => {
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                return sum + detalles.reduce((sub, tipo) => {
-                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
-                    return sub + Number(tipo.cantidad_ventas ?? tipo.total_ventas ?? tipo.cantidad ?? 0);
-                }, 0);
-            }, 0);
-            if (total <= 0) return;
+            const total = dias.reduce((sum, item) => sum + Number(item.monto_total ?? item.total_bs ?? item.total ?? 0), 0);
+            const cantidad = dias.reduce((sum, item) => sum + Number(item.cantidad_ventas ?? item.total_ventas ?? item.cantidad ?? 0), 0);
             console.log("total", total, "para sucursal", name);
             if (!branchTotals[key]) {
                 branchTotals[key] = { name, value: 0, cantidad: 0, key: null };
@@ -509,14 +483,14 @@ export default class ventas extends React.Component {
                                 >
                                     <SText>Todos</SText>
                                 </SButtom>
-                                {(tipoProductoLista || []).map((tipoKey) => (
+                                {(tipoProductoLista || []).map((tipoProducto) => (
                                     <SButtom
-                                        key={tipoKey}
-                                        type={selectedTipoProducto === tipoKey ? 'danger' : 'outline'}
-                                        onPress={() => this.handleTipoProductoSelect(tipoKey)}
+                                        key={tipoProducto}
+                                        type={selectedTipoProducto === tipoProducto ? 'danger' : 'outline'}
+                                        onPress={() => this.handleTipoProductoSelect(tipoProducto)}
                                         style={{ minWidth: 130, padding: 8, }}
                                     >
-                                        <SText>{this.getTipoProductoLabel(tipoKey)}</SText>
+                                        <SText>{tipoProducto}</SText>
                                     </SButtom>
                                 ))}
                             </SView>
@@ -674,7 +648,7 @@ export default class ventas extends React.Component {
 
 
                         <SView col="xs-12" row>
-                            <SView col="xs-12 lg-12" row padding={5} >
+                            <SView col="xs-12 lg-6" row padding={5} >
                                 <SView
                                     col="xs-12"
                                     card
@@ -696,7 +670,7 @@ export default class ventas extends React.Component {
                                     )}
                                 </SView>
                             </SView>
-                            {/* <SView col="xs-12 lg-6" padding={5}>
+                            <SView col="xs-12 lg-6" padding={5}>
                                 <SView
                                     col="xs-12"
                                     card
@@ -717,7 +691,7 @@ export default class ventas extends React.Component {
                                         />
                                     )}
                                 </SView>
-                            </SView> */}
+                            </SView>
                         </SView>
 
 
@@ -773,5 +747,9 @@ export default class ventas extends React.Component {
                 </ScrollView>
             </SPage>
         );
+    }
+
+    componentWillUnmount() {
+        this._mounted = false;
     }
 }

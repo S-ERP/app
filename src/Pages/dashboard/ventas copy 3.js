@@ -176,16 +176,40 @@ export default class ventas extends React.Component {
             const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
             const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
             console.log("PRODUCTOS MÁS VENDIDOS:", res);
+            const modelos = await MDL.inventario.getAllModelo();
+            const rawModelos = res.map((item) => {
+                const modelo = modelos.find((m) => m.key === item.key_modelo);
+                return {
+                    ...item,
+                    tipo_producto: item.tipo_producto ?? (modelo ? modelo.key_tipo_producto : null),
+                    // key_tipo_producto: item.tipo_producto ?? (modelo ? modelo.key_tipo_producto : null),
+                };
+            });
+            console.log("Modelos de inventario:", rawModelos);
+            const keyTiposProducto = [
+                ...new Set(rawModelos.map(item => item.tipo_producto).filter(Boolean))
+            ];
+            console.log("keyTiposProducto_:", keyTiposProducto);
             
-             const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+
+            this.setState({ tipoProductoLista: keyTiposProducto.length ? keyTiposProducto : this.state.tipoProductoLista });
+
+            const raw = Array.isArray(rawModelos) ? rawModelos : rawModelos?.data ?? rawModelos?.result ?? [];
             const products = raw
                 .map((item) => ({
                     producto: item.producto ?? item.nombre ?? "Sin nombre",
                     cantidad_total_vendida: Number(item.cantidad_total_vendida ?? item.cantidad ?? item.total_ventas ?? 0),
                     total: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
-                    sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],  
+                    sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],
+                    // tipo_producto: item.tipo_producto ?? item.key_tipo_producto,
+                    tipo_producto: item.tipo_producto ?? null,
                 }))
-              
+                .filter((item) => {
+                    if (selectedTipoProducto) {
+                        return item.tipo_producto === selectedTipoProducto;
+                    }
+                    return true;
+                })
                 .filter((item) => {
                     if (!selectedSucursal?.key) return true;
                     return item.sucursales.length === 0 || item.sucursales.includes(selectedSucursal.key);
@@ -674,7 +698,7 @@ export default class ventas extends React.Component {
 
 
                         <SView col="xs-12" row>
-                            <SView col="xs-12 lg-12" row padding={5} >
+                            <SView col="xs-12 lg-6" row padding={5} >
                                 <SView
                                     col="xs-12"
                                     card
@@ -696,7 +720,7 @@ export default class ventas extends React.Component {
                                     )}
                                 </SView>
                             </SView>
-                            {/* <SView col="xs-12 lg-6" padding={5}>
+                            <SView col="xs-12 lg-6" padding={5}>
                                 <SView
                                     col="xs-12"
                                     card
@@ -717,7 +741,7 @@ export default class ventas extends React.Component {
                                         />
                                     )}
                                 </SView>
-                            </SView> */}
+                            </SView>
                         </SView>
 
 
