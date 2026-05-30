@@ -418,7 +418,7 @@ export default class ventas extends React.Component {
                             <SView
 
                                 card
-                                style={{ padding: 15, minHeight: 110, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                style={{ padding: 15, minHeight: 80, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
                             >
                                 <SText fontSize={14} bold color={STheme.color.lightGray}>{item.label}</SText>
                                 <SText fontSize={18} bold>{item.value}</SText>
@@ -474,7 +474,7 @@ export default class ventas extends React.Component {
                                 <SButtom
                                     type={!selectedSucursal ? 'danger' : 'outline'}
                                     onPress={() => this.handleSucursalSelect(null)}
-                                    style={{ minWidth: 100, height: 50 }}
+                                    style={{ minWidth: 80, height:40 }}
                                 >
                                     <SText>Todos</SText>
                                 </SButtom>
@@ -483,7 +483,7 @@ export default class ventas extends React.Component {
                                         key={sucursal.key}
                                         type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
                                         onPress={() => this.handleSucursalSelect(sucursal)}
-                                        style={{ minWidth: 130, padding: 8, }}
+                                        style={{ minWidth: 130, padding: 5, height: 40 }}
                                     >
                                         <SText>{sucursal.descripcion}</SText>
                                     </SButtom>
@@ -501,11 +501,11 @@ export default class ventas extends React.Component {
                                 <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
                                 <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
                             </SView>
-                            <SView col="xs-12 md-6 lg-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
+                            <SView col="xs-12" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                 <SButtom
                                     type={!selectedTipoProducto ? 'danger' : 'outline'}
                                     onPress={() => this.handleTipoProductoSelect(null)}
-                                    style={{ minWidth: 100, height: 50 }}
+                                    style={{ minWidth: 80, height: 40 }}
                                 >
                                     <SText>Todos</SText>
                                 </SButtom>
@@ -514,7 +514,7 @@ export default class ventas extends React.Component {
                                         key={tipoKey}
                                         type={selectedTipoProducto === tipoKey ? 'danger' : 'outline'}
                                         onPress={() => this.handleTipoProductoSelect(tipoKey)}
-                                        style={{ minWidth: 130, padding: 8, }}
+                                        style={{ minWidth: 130, padding: 5, height: 40 }}
                                     >
                                         <SText>{this.getTipoProductoLabel(tipoKey)}</SText>
                                     </SButtom>
