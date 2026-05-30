@@ -88,6 +88,8 @@ export default class tabla extends Component {
                     };
                 })
             );
+            console.clear();
+            console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -232,7 +234,6 @@ export default class tabla extends Component {
                 ].filter(Boolean)
             }
         ].filter(Boolean);
-
         return (
             <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
                 {groups.map((group, gi) => (
@@ -259,8 +260,6 @@ export default class tabla extends Component {
                 language="es"
                 center
                 {...Config.table.applyTheme()}
-
-
                 // headerStyle={{
                 // backgroundColor:STheme.color.danger,
                 // paddingLeft:50,
@@ -269,17 +268,8 @@ export default class tabla extends Component {
                 // height: 28,
                 // alignContent: "center",
                 // alignItems: "center",
-                // }}
-
-                // headerTextStyle={{
-                //     height: 40,
-                //     alignContent: "center",
-                //     textAlign: "center",
-                //     fontSize: 14,
                 //     textTransform: "uppercase",
-                //     paddingLeft: 10,
                 // }}
-
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 onSelect={(e) => {
@@ -419,11 +409,10 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
-                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} data={(e) => e.row?.factura?.leyenda ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="leyenda" label="Leyenda" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.leyenda ?? ""} />
+                <DinamicTable.Col key="detalles_" label="Detalle" width={220} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
                 {/* <DinamicTable.Col key="descripcion" label="Descripción" width={210} data={(e) => e.row?.descripcion ?? ""} /> */}
-                <DinamicTable.Col key="cuotas_total" label="Total" wrap bold width={80}
+                <DinamicTable.Col key="cuotas_total" label="Total" headerStyle={{ paddingLeft: 8 }} wrap bold width={80}
                     data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
@@ -464,7 +453,7 @@ export default class tabla extends Component {
                     </>}
                 /> */}
 
-                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
+                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{
                     alignItems: "center"
                 }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
@@ -473,7 +462,7 @@ export default class tabla extends Component {
                 }}
                     data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
                 />
-                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60}
+                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }}
                     data={(e) => e.row?.moneda?.descripcion ?? ""}
                 />
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
@@ -522,7 +511,6 @@ export default class tabla extends Component {
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 />
-
             </DinamicTable>
         );
     }
@@ -540,22 +528,7 @@ export default class tabla extends Component {
                     />
                 </SView>
                     <SView width={8} height={"100%"} />
-                    {/* <SView col={"xs-12 sm-5 lg-1"} row center>
-                        <FiltroSelector
-                            ref={ref => this.filtroStockRef = ref}
-                            label="Stock alvaro"
-                            loadData={async () => [
-                                { key: "con_stock", nombre: "Con stock" },
-                                { key: "sin_stock", nombre: "Sin stock" },
-                            ]}
-                            mapOption={a => ({ key: a.key, nombre: a.nombre })}
-                            onSelect={item => this.setState({ selectedStock: item }, () => {
-                                if (this.table) this.table.loadData();
-                            })}
-                        />
-                    </SView> */}
                 </SView>{this.mostrarTabla()}
-                <SHr height={20} />
             </SPage>
         );
     }
