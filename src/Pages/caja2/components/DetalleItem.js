@@ -274,9 +274,9 @@ export default class DetalleItem extends Component<{
             <SView row flexWrap>
               <SView style={styles.botonSubir} onPress={() =>
 
-                console.log("miraa " + JSON.stringify(item))
+                // console.log("miraa " + JSON.stringify(item))
 
-                // PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
+                PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
               }>
                 <SIconApp name='upImgNube' fill={STheme.color.text} width={12} />
                 <SView width={4} />
