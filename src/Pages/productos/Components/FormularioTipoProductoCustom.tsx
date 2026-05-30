@@ -199,7 +199,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable_ganancia") ? {
                             key_cuenta_contable_ganancia: {
-                                col: "xs-12",
+                                col: "xs-8",
                                 // type: "select2",
                                 label: "Cuenta de Ganancia",
                                 // defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable_ganancia)),
@@ -241,7 +241,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
                                 },
                             },
                             modo_key_cuenta_contable_ganancia: {
-                                col: "xs-12",
+                                col: "xs-3.5",
                                 type: "select2",
                                 label: "Acción (Ganancia)",
                                 defaultValue: this.props.editObject?.data?.modo_key_cuenta_contable_ganancia ?? "copiar",
@@ -252,7 +252,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable_costo") ? {
                             key_cuenta_contable_costo: {
-                                col: "xs-12",
+                                col: "xs-8",
                                 label: "Cuenta de Costo",
                                 value:
                                     this.state.cuentaSeleccionadaC
@@ -291,7 +291,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
                                 },
                             },
                             modo_key_cuenta_contable_costo: {
-                                col: "xs-12",
+                                col: "xs-3.5",
                                 type: "select2",
                                 label: "Acción (Costo)",
                                 defaultValue: this.props.editObject?.data?.modo_key_cuenta_contable_costo ?? "copiar",
@@ -302,7 +302,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable") ? {
                             key_cuenta_contable: {
-                                col: "xs-12",
+                                col: "xs-8",
                                 label: "Cuenta de Inventario",
                                 value:
                                     this.state.cuentaSeleccionadaI
@@ -341,7 +341,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
                                 },
                             },
                             modo_key_cuenta_contable: {
-                                col: "xs-12",
+                                col: "xs-3.5",
                                 type: "select2",
                                 label: "Acción (Inventario)",
                                 defaultValue: this.props.editObject?.data?.modo_key_cuenta_contable ?? "copiar",
@@ -352,7 +352,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable_depreciacion_activo") ? {
                             key_cuenta_contable_depreciacion_activo: {
-                                col: "xs-12",
+                                col: "xs-8",
                                 label: "Cuenta de Depreciación de Activo",
                                 value:
                                     this.state.cuentaSeleccionadaDA
@@ -391,7 +391,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
                                 },
                             },
                             modo_key_cuenta_contable_depreciacion_activo: {
-                                col: "xs-12",
+                                col: "xs-3.5",
                                 type: "select2",
                                 label: "Acción (Dep. Activo)",
                                 defaultValue: this.props.editObject?.data?.modo_key_cuenta_contable_depreciacion_activo ?? "copiar",
@@ -402,7 +402,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable_depreciacion_gasto") ? {
                             key_cuenta_contable_depreciacion_gasto: {
-                                col: "xs-12",
+                                col: "xs-8",
                                 label: "Cuenta de Depreciación de Gasto",
                                 value:
                                     this.state.cuentaSeleccionadaDG
@@ -441,7 +441,7 @@ export default class FormularioTipoProductoCustom extends Component<Props> {
                                 },
                             },
                             modo_key_cuenta_contable_depreciacion_gasto: {
-                                col: "xs-12",
+                                col: "xs-3.5",
                                 type: "select2",
                                 label: "Acción (Dep. Gasto)",
                                 defaultValue: this.props.editObject?.data?.modo_key_cuenta_contable_depreciacion_gasto ?? "copiar",
