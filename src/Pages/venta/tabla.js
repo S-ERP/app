@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SInput, SMath, SNotification } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import { Dimensions } from 'react-native';
 import SSocket from 'servisofts-socket';
@@ -8,20 +8,14 @@ import Config from '../../Config';
 import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
+import FloatMenu from '../../Components/FloatMenu';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import FechaFullFilter from '../../Components/FechaFullFilter';
-import PopupUploadFactura from './Components/PopupUploadFactura';
-import { Linking } from 'react-native'
+import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
 
 export default class tabla extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = { pdfFiles: {} };
-    }
-
-
-    async loadInitialData() {
+    async loadInitialData() { 
         try {
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
             if (!registros) throw new Error("No se encontraron registros.");
@@ -107,8 +101,14 @@ export default class tabla extends Component {
             let nit = "";
             let razon_social = "";
             let nroFactura = "";
+            let pdfFile = null;
+            const onFileChange = (files) => {
+                pdfFile = files?.[0]?.file || null;
+            };
             const isManual = tipoFactura === "manual";
-            const _pdf = this.state.pdfFiles?.[venta.key];
+
+            console.log("venta seleccionada para facturar:", venta);
+            console.log(venta);
             return SPopup.open({
                 key: "registrar_factura_" + tipoFactura + "_" + venta.key,
                 content: (
@@ -126,9 +126,13 @@ export default class tabla extends Component {
                                 <SView row center
                                     style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8, padding: 10, backgroundColor: STheme.color.card + "22", }} >
                                     <SView flex>
-                                        <SText fontSize={13} bold> PDF de factura </SText>
+                                        <SText fontSize={13} bold>
+                                            PDF de factura
+                                        </SText>
                                         <SHr h={4} />
-                                        <SText fontSize={11}> {_pdf?.name ? "se ha seleccionado: " + _pdf.name : "Ningún archivo seleccionado"} </SText>
+                                        <SText fontSize={11} color={STheme.color.lightGray}>
+                                            {pdfFile?.name ?? "Ningún archivo seleccionado"}
+                                        </SText>
                                     </SView>
                                     <SView style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6, backgroundColor: STheme.color.primary, }}
                                         onPress={() => {
@@ -136,19 +140,23 @@ export default class tabla extends Component {
                                                 key_empresa: venta?.empresa?.key,
                                                 key_compra_venta: venta?.key,
                                                 onSuccess: (fileData) => {
-                                                    this.setState({
-                                                        pdfFiles: {
-                                                            ...this.state.pdfFiles,
-                                                            [venta.key]: fileData
-                                                        }
-                                                    }, () => {
-                                                        console.log("PDF guardado:", this.state.pdfFiles[venta.key]);
+                                                    pdfFile = fileData;
+
+                                                    SNotification.send({
+                                                        title: "PDF seleccionado",
+                                                        body: fileData?.name,
+                                                        color: STheme.color.success,
+                                                        time: 2000,
                                                     });
+
+                                                    this.forceUpdate();
                                                 }
                                             });
                                         }}
                                     >
-                                        <SText color={STheme.color.text} bold> Seleccionar PDF </SText>
+                                        <SText color={STheme.color.text} bold>
+                                            Seleccionar PDF
+                                        </SText>
                                     </SView>
                                 </SView>
                             </>
@@ -179,30 +187,6 @@ export default class tabla extends Component {
                                         color: STheme.color.text,
                                     }}
                                 />
-                                {/* <SHr height={10} />
-                                <SInput
-                                    label="Correo electrónico"
-                                    placeholder="Ingrese correo electrónico"
-                                    onChangeText={val => correo_electronico = val}
-                                    style={{
-                                        height: 40,
-                                        borderRadius: 6,
-                                        backgroundColor: STheme.color.lightGray + "22",
-                                        color: STheme.color.text,
-                                    }}
-                                />
-                                <SHr height={10} />
-                                <SInput
-                                    label="Telefono"
-                                    placeholder="Ingrese número de teléfono"
-                                    onChangeText={val => telefono = val}
-                                    style={{
-                                        height: 40,
-                                        borderRadius: 6,
-                                        backgroundColor: STheme.color.lightGray + "22",
-                                        color: STheme.color.text,
-                                    }}
-                                /> */}
                             </>
                         )}
                         <SHr height={16} />
@@ -212,10 +196,10 @@ export default class tabla extends Component {
                             </SView>
                             <SView onPress={async () => {
                                 if (isManual) {
-                                    if (!nroFactura.trim()) {
-                                        SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar el número de factura.", color: STheme.color.danger, time: 4000, });
-                                        return;
-                                    }
+                                    // if (!nroFactura.trim() || !pdfFile) {
+                                    //     SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar el número de factura y subir el PDF.", color: STheme.color.danger, time: 4000, });
+                                    //     return;
+                                    // }
                                 } else {
                                     if (!nit.trim() || !razon_social.trim()) {
                                         SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
@@ -228,12 +212,11 @@ export default class tabla extends Component {
                                     cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
                                     nit: isManual ? "" : nit,
                                     razon_social: isManual ? "" : razon_social,
-                                    // correo_electronico: isManual ? "" : correo_electronico,
-                                    // telefono: isManual ? "" : telefono,
                                     leyenda: "alvaro es probando la leyenda",
                                     detalles: (venta.detalles ?? []).map(d => d.descripcion).join(", "),
-                                    archivo_pdf: isManual ? { name: this.state.pdfFiles?.[venta.key]?.name, type: this.state.pdfFiles?.[venta.key]?.type } : {},
-                                    link_factura: isManual ? this.state.pdfFiles?.[venta.key]?.link || null : "",
+                                    archivo_pdf: isManual ? { name: pdfFile?.name, type: pdfFile?.type } : undefined,
+                                    // 🔥 ESTA ES LA LÍNEA QUE TE FALTA
+                                    link_factura: isManual ? pdfFile?.url || pdfFile?.link || null : undefined,
                                     factura_seleccionada: tipoLabel,
                                 };
                                 const updatedVenta = {
@@ -242,8 +225,6 @@ export default class tabla extends Component {
                                     factura: facturaData,
                                     nit: isManual ? venta.nit : nit,
                                     razon_social: isManual ? venta.razon_social : razon_social,
-                                    // correo_electronico: isManual ? venta.correo_electronico : correo_electronico,
-                                    // telefono: isManual ? venta.telefono : telefono,
                                 };
                                 try {
                                     await Model.compra_venta.Action.editar({
@@ -323,11 +304,11 @@ export default class tabla extends Component {
         };
 
         const groups = [
-            {
+            row?.factura?.cuf && {
                 title: "FACTURACIÓN",
                 items: row?.factura?.cuf
                     ? [
-                        ...(row?.factura?.factura_seleccionada === "Factura Manual"
+                        ...(row?.factura?.factura_seleccionada === "Factura Manual" && row?.factura?.link_factura
                             ? [
                                 { label: "Descargar Archivo (PDF)", icon: "iconPdf", iconProps: { fill: STheme.color.text }, onPress: () => { Linking.openURL(row?.factura?.link_factura); }, },]
                             : [{ label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta", }); }, },
@@ -343,69 +324,26 @@ export default class tabla extends Component {
                 title: "RECIBOS",
                 items: [
                     { label: "Imprimir Recibo (Rollo)", icon: "imprimir", onPress: () => { ReciboRollo.imprimir(row?.key); } },
+                    // { label: "Imprimir Recibo (Carta)", icon: "drive-file", onPress: () => { ReciboCarta.imprimir(row?.key); } },
                     { label: "Imprimir Recibo (Carta)", icon: "iconLista", onPress: () => { ReciboCarta.imprimir(row?.key); } },
                 ]
             },
             {
                 title: "CONSULTA",
+                // title: "VERIFICACIÓN",
                 items: [
-                    { label: "Ver Detalle de venta", icon: "ventaCarro", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
-                    row?.sucursal?.key && { label: "Ver sucursal", icon: "iconEdifcio", iconProps: { fill: STheme.color.text, stroke: 'rgb(97, 97, 97)' }, onPress: () => { SNavigation.navigate("/sucursal", { key: row?.sucursal?.key }); } },
-                    row?.usuario?.key && { label: "Ver vendedor", icon: "cajero", iconProps: { fill: STheme.color.text, }, onPress: () => { SNavigation.navigate("/usuario", { key: row?.usuario?.key }); } },
+                    { label: "Ver Detalle de venta", icon: "Eyes", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    // { label: "Ver venta", icon: "Eyes", iconProps: { fill: 'rgb(224, 102, 32)', stroke: 'rgb(224, 102, 32)' }, onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    // { label: "Ver venta", icon: "World", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
                     row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key }); } },
                 ].filter(Boolean)
             },
             {
                 title: "GESTIÓN",
                 items: [
-                    {
-                        label: "Anular venta", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => {
-                            SPopup.confirm({
-                                icon: "cancelado",
-                                title: "Anular venta",
-                                message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
-                                cancel: { label: "Cancelar", color: STheme.color.lightGray },
-                                onPress: () => {
-                                    SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
-
-                                    MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
-                                        if (this.DinamicTable) this.DinamicTable.loadData();
-                                        SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
-                                    }).catch(error => {
-                                        console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
-                                    });
-                                }
-                            });
-                        }
-                    },
-                    row?.factura?.cuf ? {
-                        label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text }, onPress: () => {
-                            SPopup.confirm({
-                                icon: <SIconApp name="eliminar" height={24} fill="#db0606ff" />,
-                                style: { padding: 10, paddingBottom: 5, paddingTop: 5 },
-                                title: "Anular factura " + row?.factura?.nro_factura,
-                                message: "¿Está seguro de que desea anular la factura? Esta acción no se puede deshacer.",
-                                onPress: async () => {
-                                    const updatedVenta = {
-                                        ...row,
-                                        facturar: false,
-                                        factura: {},
-                                    };
-                                    try {
-                                        await Model.compra_venta.Action.editar({
-                                            data: updatedVenta,
-                                            key_usuario: Model.usuario.Action.getKey(),
-                                        });
-                                        SNotification.send({ key: "anular_factura_" + row.key, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
-                                        if (this.DinamicTable) this.DinamicTable.loadData();
-                                    } catch (error) {
-                                        console.error("Error al anular factura:", error);
-                                        SNotification.send({ key: "anular_factura_error_" + row.key, title: "Error al anular factura", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
-                                    }
-                                }
-                            });
-                        }
-                    } : null,
+                    { label: "Anular venta", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => { if (this.DinamicTable) this.DinamicTable.loadData(); SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, }); }).catch(error => { console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, }); }); } },
+                    row?.factura?.cuf ? { label: "Anular factura", icon: "Close", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
+                    // row?.factura?.cuf ? { label: "Anular factura", icon: "eliminar", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => { SNotification.send({ key: "anular_factura_" + row.key, title: "Anular factura", body: "Proceso de anulación ejecutado.", color: STheme.color.warning, time: 5000, }); } } : null,
                 ].filter(Boolean)
             }
         ].filter(Boolean);
@@ -465,9 +403,33 @@ export default class tabla extends Component {
                     return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
                 }}
             >
-                <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 8 }} width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 8 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 8 }} width={180} data={(e) => e.row?.sucursal?.descripcion}
+                <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
+                <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" /><DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} data={(e) => e.row?.factura?.nro_factura}
+                    customComponent={e => <>
+                        {(e.row?.factura?.nro_factura) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
+                />
+                <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.cliente?.key) ?
+                            <SView col={"xs-12"} center row onPress={() => {
+                                SNavigation.navigate("/cliente/perfil", { key: e.row?.cliente?.key });
+                            }}>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33", }} border={STheme.color.text} center     >
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.cliente?.nombres}</SText>
+                            </SView> : null}
+                    </>}
+                />
+                <DinamicTable.Col key="nit" label="NIT / CI" width={100} data={(e) => e.row?.factura?.nit ?? ""} />
+                <DinamicTable.Col key="razon_social" label="Razón social" width={100} data={(e) => e.row?.factura?.razon_social ?? ""} />
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
                             <SView col={"xs-12"} center row>
@@ -479,7 +441,9 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="admin" label="Vendedor" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+
+
+                <DinamicTable.Col key="admin" label="Vendedor" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
                             <SView col={"xs-12"} center row>
@@ -491,24 +455,12 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 8 }} width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
-                    customComponent={e => <>
-                        {(e.row?.cliente?.key) ?
-                            <SView col={"xs-12"} center row >
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33", }} border={STheme.color.text} center     >
-                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.cliente?.nombres}</SText>
-                            </SView> : null}
-                    </>}
-                />
-                <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" headerStyle={{ paddingLeft: 8 }} width={80}
+                <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" width={80}
                     data={(e) => e.row?.tipo_pago ?? ""}
                     customComponent={e => {
                         const tipoPagoMap = {
                             "contado": { color: "#2563eb", label: "Contado" },
-                            "credito": { color: "#f59e0b", label: "Crédito" },
+                            "credito": { color: "#8007c5", label: "Crédito" },
                             "transferencia": { color: "#6b7280", label: "Transferencia" },
                         };
                         const estilo = tipoPagoMap[e.data?.toLowerCase()] || { color: STheme.color.lightGray, label: e.data };
@@ -524,7 +476,19 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-                <DinamicTable.Col key="estado_pago" wrap label="Estado Pago" headerStyle={{ paddingLeft: 8 }} width={80}
+                <DinamicTable.Col key="estado_venta" label="Estado Venta" width={120} center data={(e) => e.row?.facturar ? "Facturado" : "No facturada"}
+                    customComponent={e => {
+                        const facturado = Boolean(e.row?.facturar);
+                        return <SView col={"xs-12"} center row>
+                            <SView style={{ borderRadius: 4, backgroundColor: facturado ? "#16a34a" : "#6b7280", padding: 5, }}>
+                                <SText center style={{ color: STheme.color.text, fontSize: 11, fontWeight: "bold" }}>
+                                    {facturado ? "Facturado" : "No facturada"}
+                                </SText>
+                            </SView>
+                        </SView>
+                    }}
+                />
+                <DinamicTable.Col key="estado_pago" wrap label="Estado Pago" width={80}
                     data={(e) => {
                         if (e.row?.cuotas_en_mora?.monto > 0) {
                             return "En Mora";
@@ -551,41 +515,22 @@ export default class tabla extends Component {
                     customComponent={e => {
                         const facturado = Boolean(e.row?.facturar);
                         return <SView col={"xs-12"} center row>
-                            <SView style={{ borderRadius: 4, backgroundColor: facturado ? "#15803d" : "transparent", padding: 5, }}>
-                                <SText center style={{ color: STheme.color.text, fontSize: 12, }}>
-                                    {facturado ? "Facturado" : ""}
+                            <SView style={{ borderRadius: 4, backgroundColor: facturado ? "#16a34a" : "#6b7280", padding: 5, }}>
+                                <SText center style={{ color: STheme.color.text, fontSize: 11, fontWeight: "bold" }}>
+                                    {facturado ? "Facturado" : "No facturada"}
                                 </SText>
                             </SView>
                         </SView>
                     }}
                 />
-                <DinamicTable.Col
-                    key="factura_seleccionada"
-                    label="Tipo Factura"
-                    width={120}
-                    headerStyle={{ paddingLeft: 8 }}
-                    data={(e) => e.row?.factura?.factura_seleccionada ?? ""}
-                    customComponent={(e) => {
-                        const tipo = e.row?.factura?.factura_seleccionada;
-                        const statesTipo = {
-                            "Factura Manual": { color: "#ea580c", label: "Factura Manual" },
-                            "Factura SIAT": { color: "#0891b2", label: "Factura SIAT" },
-                            "Factura Paraguay (Quatiy)": { color: "#16a34a", label: "F. Paraguay" },
-                            "Factura Colombia (Sasuki)": { color: "#3b82f6", label: "F. Colombia" },
-                        };
-
-                        const config = statesTipo[tipo];
-
-                        if (!config) return null;
-
-                        return (
-                            <SView row center>
-                                <SView backgroundColor={config.color} style={{ borderRadius: 4, padding: 5 }} >
-                                    <SText color={STheme.color.text} fontSize={12}> {config.label} </SText>
-                                </SView>
-                            </SView>
-                        );
-                    }}
+                <DinamicTable.Col key="factura_seleccionada" label="Tipo Factura" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.factura_seleccionada ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.factura?.nro_factura) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
                 />
                 <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.factura?.nro_factura}
                     customComponent={e => <>
