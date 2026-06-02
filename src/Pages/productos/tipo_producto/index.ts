@@ -7,6 +7,7 @@ import profile from "./profile";
 import edit from "./edit";
 import _delete from "./delete";
 import _options from "./options";
+import custom from "./custom";
 
 const model = Model.tipo_producto;
 
@@ -24,4 +25,5 @@ export default SPage.combinePages(Parent.name, {
     "edit": edit,
     "delete": _delete,
     "options": _options,
+    custom
 })

@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import SPageMenu from '../../Components/SPageMenu';
-import { DinamicTableSQL } from 'servisofts-table/DinamicTableSQL';
 import MDL from '../../../MDL';
 import { SDate, SHr, SIcon, SImage, SLanguage, SMath, SNavigation, SNotification, SPage, SPopup, SStorage, SText, STheme, SView } from 'servisofts-component';
 // import Config from '../../Config';
-import SIconApp from '../../Assets/SIconApp';
-import ExpedicionEstado from '../../Components/ExpedicionEstado';
-import FiltroTabla from '../../Components/FiltroTabla';
 import { DinamicTable } from 'servisofts-table';
 import Model from '../../../Model';
 import Config from '../../../Config';

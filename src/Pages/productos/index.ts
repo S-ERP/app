@@ -15,12 +15,13 @@ import RegistroInventarios from "../inventario/almacen/RegistroInventarios";
 import tipo_costo from "./tipo_costo";
 import tabla from "./tipo_costo/tabla";
 import traspaso_inventario from "./traspaso_inventario";
-
+import test from "./test";
 
 
 export default SPage.combinePages("productos",
     {
         "": root,
+        test,
         catalogo,
         "carrito":carrito,
         "tipo_costo":tabla,

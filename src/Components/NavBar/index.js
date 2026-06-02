@@ -11,7 +11,12 @@ export default class NavBar extends React.Component {
       justifyContent: 'center',
     }}>
       <SView onPress={() => {
-        SNavigation.goBack();
+        console.log("go back", this.props)
+        if (this.props.backAlternative) {
+          this.props.backAlternative();
+          return;
+        }
+         SNavigation.goBack();
       }} style={{
         maxWidth: 35,
       }} center height>
@@ -22,7 +27,7 @@ export default class NavBar extends React.Component {
   render() {
     return (
       <SView col={"xs-12"} height={40} backgroundColor={STheme.color.barColor} style={{
-        overflow:"hidden"
+        overflow: "hidden"
       }}>
         <SView col={"xs-12"} height row>
           <SView width={90}>
