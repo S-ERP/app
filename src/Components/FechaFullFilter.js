@@ -91,17 +91,17 @@ export default class FechaFullFilter extends Component {
 
     render() {
         return (
-            <SView col="xs-12" row  height={40}>
+            <SView col="xs-12" row height={40}>
                 <SView flex backgroundColor="transparent" height={40}>
                     <SForm
-                        key={this.state.entre_fecha ? "entre" : "normal"}
+                        // key={`${this.state.key_opciones}-${this.state.entre_fecha ? "entre" : "normal"}`}
                         ref={ref => this.form = ref}
                         row
-                        style={{ justifyContent: 'flex-start', marginTop: -30, alignItems: "center", height:30 }}
+                        style={{ justifyContent: 'flex-start', marginTop: -30, alignItems: "center", height: 30 }}
                         inputs={{
                             key_opciones: {
                                 placeholder: "Filtro tiempo",
-                                placeholderTextColor:"red",
+                                placeholderTextColor: "red",
                                 type: "custom",
                                 col: this.state.entre_fecha ? "xs-4" : "xs-12",
                                 customInputClass: InputSelector,
@@ -115,7 +115,11 @@ export default class FechaFullFilter extends Component {
                                     this.setState({
                                         entre_fecha: val.value === "entre",
                                         key_opciones: val.value
-                                    })
+                                    }
+                                        // , () => {
+                                        //     this.form?.submit();
+                                        // }
+                                    );
                                 }
                             },
                             fecha_inicio: {

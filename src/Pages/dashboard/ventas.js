@@ -68,11 +68,35 @@ export default class ventas extends React.Component {
                 return { fecha_inicio: this.formatDate(today), fecha_fin: this.formatDate(today) };
             case "semana":
                 return { fecha_inicio: this.formatDate(this.startOfWeek(today)), fecha_fin: this.formatDate(today) };
+            case "este_mes":
+                return { fecha_inicio: this.formatDate(this.startOfMonth(today)), fecha_fin: this.formatDate(this.endOfMonth(today)) };
             case "año":
                 return { fecha_inicio: this.formatDate(this.startOfYear(today)), fecha_fin: this.formatDate(this.endOfYear(today)) };
             default:
                 return { fecha_inicio: this.formatDate(this.startOfWeek(today)), fecha_fin: this.formatDate(today) };
         }
+    };
+
+    getPeriodoFromKeyOpciones = (key_opciones) => {
+        switch (key_opciones) {
+            case "hoy":
+                return "hoy";
+            case "esta_semana":
+                return "semana";
+            case "este_mes":
+                return "este_mes";
+            case "este_año":
+                return "año";
+            default:
+                return this.state.periodo;
+        }
+    };
+
+    getTimeSeriesFunctionName = (periodo) => {
+        if (periodo === "semana") return "ventas_por_dia_por_tipo2";
+        if (periodo === "este_mes") return "ventas_por_dia_por_tipo";
+        if (periodo === "año") return "ventas_por_mes_por_tipo";
+        return "ventas_por_hora_por_tipo";
     };
 
     initDashboard = async () => {
@@ -114,10 +138,15 @@ export default class ventas extends React.Component {
 
     loadTimeSeries = async (keyEmpresa) => {
         try {
-            const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
+            const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto, periodo } = this.state;
             const sucursales = await MDL.empresa.getAllSucursales();
             console.log("sucursales disponibles:", sucursales);
-            const res = await MDL.compra_venta.execute_function("ventas_por_dia_por_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            
+            console.log("PERIODO", periodo);
+            const functionName = this.getTimeSeriesFunctionName(periodo);
+            console.log("PERIODO", periodo, "función a ejecutar:", functionName);
+            
+            const res = await MDL.compra_venta.execute_function(functionName, [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
             
             console.log("BASE DE DATOS:", res);
             // const rescompleto = res.find((item) => item.key_sucursal === sucursales?.key) || res.find((item) => item.key_sucursal == null) || res;
@@ -175,6 +204,7 @@ export default class ventas extends React.Component {
         try {
             const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
             const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            // const res = await MDL.compra_venta.execute_function("productos_mas_vendidos_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
             console.log("PRODUCTOS MÁS VENDIDOS:", res);
             
              const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
@@ -184,6 +214,7 @@ export default class ventas extends React.Component {
                     cantidad_total_vendida: Number(item.cantidad_total_vendida ?? item.cantidad ?? item.total_ventas ?? 0),
                     total: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
                     sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],  
+                    tipos_producto: Array.isArray(item.tipos_producto) ? item.tipos_producto : [] // Aseguramos que sea un array, incluso si viene como null o string
                 }))
               
                 .filter((item) => {
@@ -444,11 +475,21 @@ export default class ventas extends React.Component {
                         <SView col="xs-12" row card center padding={8}>
                             <SView row col="xs-12 md-6 lg-4" style={{}}  >
                                 <FechaFullFilter
-                                    key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
+                                    key_opciones={
+                                        periodo === 'hoy' ? 'hoy' :
+                                        periodo === 'este_mes' ? 'este_mes' :
+                                        periodo === 'año' ? 'este_año' :
+                                        'esta_semana'
+                                    }
                                     fecha_inicio={fecha_inicio}
                                     fecha_fin={fecha_fin}
                                     onChange={(dates) => {
-                                        this.setState({ fecha_inicio: dates.fecha_inicio, fecha_fin: dates.fecha_fin }, this.loadDashboardData);
+                                        const newPeriodo = this.getPeriodoFromKeyOpciones(dates.key_opciones);
+                                        this.setState({
+                                            fecha_inicio: dates.fecha_inicio,
+                                            fecha_fin: dates.fecha_fin,
+                                            periodo: newPeriodo,
+                                        }, this.loadDashboardData);
                                     }}
                                 />
                             </SView>
