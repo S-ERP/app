@@ -68,7 +68,7 @@ export default class LineaRechartsBd extends Component {
 
     constructor(props) {
         super(props);
-        isAnimationActive = true;
+        // isAnimationActive = true;
     }
 
     render() {
