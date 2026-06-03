@@ -94,7 +94,7 @@ export default class FechaFullFilter extends Component {
             <SView col="xs-12" row height={40}>
                 <SView flex backgroundColor="transparent" height={40}>
                     <SForm
-                        // key={`${this.state.key_opciones}-${this.state.entre_fecha ? "entre" : "normal"}`}
+                        key={`${this.state.key_opciones}-${this.state.entre_fecha ? "entre" : "normal"}`}
                         ref={ref => this.form = ref}
                         row
                         style={{ justifyContent: 'flex-start', marginTop: -30, alignItems: "center", height: 30 }}
