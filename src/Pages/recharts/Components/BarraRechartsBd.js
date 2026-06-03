@@ -84,10 +84,14 @@ export default class BarraRechartsBd extends Component {
             //     key: data?.activePayload[0]?.payload?.key
             //   });
             // }}
-            onClick= {onClick}
+            onClick={onClick}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={nameKey} fontSize={10} tick={{ fill: STheme.color.text }} />
+            <XAxis dataKey={nameKey} fontSize={10} 
+            tick={{ fill: STheme.color.text }} 
+            // angle={-90}
+            // textAnchor="end"
+            />
             <YAxis tick={{ fill: STheme.color.text }} />
             <Tooltip content={this.CustomTooltip} />
             <Legend />

@@ -96,7 +96,10 @@ export default class LineaRechartsBd extends Component {
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" stroke={STheme.color.white} />
-                        <XAxis dataKey={nameKey} fontSize={10} stroke={STheme.color.white} tick={{ fill: STheme.color.text }} />
+                        <XAxis dataKey={nameKey} fontSize={9} stroke={STheme.color.white} tick={{ fill: STheme.color.text }}
+                            angle={-45}
+                            textAnchor="end"
+                        />
                         <YAxis width={100} stroke={STheme.color.white} />
                         <Tooltip
                             cursor={{

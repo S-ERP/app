@@ -248,7 +248,7 @@ export default class ventas extends React.Component {
         if (periodo === "semana") return "ventas_por_dia_por_tipo2";
         if (periodo === "este_mes") return "ventas_por_dia_por_tipo";
         if (periodo === "año") return "ventas_por_mes_por_tipo";
-        if (periodo === "entre") return "ventas_entre_fecha_por_tipo";
+        if (periodo === "entre") return "ventas_entre_fechas_por_tipo";
         return "ventas_por_hora_por_tipo";
     };
 
