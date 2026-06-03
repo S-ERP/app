@@ -160,9 +160,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "descuento": 0,
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
-                    "moneda": key_moneda
+                    "moneda": key_moneda,
+
+                    "fecha_vencimiento": ci.modelo?.fecha_vencimiento || null,
+
                 }
             })
+            console.clear();
+
             const data: any = {
                 "descripcion": descripcionVenta,
                 "observacion": "Observacion compras",
@@ -215,6 +220,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         }
                     }
                 })
+                console.log("%c" + JSON.stringify(compraResp), `color: #e9682d; font-weight: bold;`);
+
                 SelectTipoPago.closePopup();
                 SNotification.remove("compra_rapida");
             } else {
@@ -225,6 +232,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "estado": "cargando",
                     "data": data
                 })
+
+                console.log("%c" + JSON.stringify(compraResp), `color: #d81de9; font-weight: bold;`);
+
 
                 MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
                 SelectTipoPago.closePopup();
