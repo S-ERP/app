@@ -41,17 +41,35 @@ export default class PopupDesglose extends Component {
             // loadData={this.loadData.bind(this)}
             loadData={async () => {
                 const produc = await MDL.inventario.getAllProductos(this.props.key_modelo);
+                console.clear();
+                console.log("%c" + JSON.stringify(produc, null, 2), "color: #2ECC40; font-weight: bold;");
                 return produc;
             }}
         >
             <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray }} width={40} data={(e) => e.index + 1} />
             <DinamicTable.Col key={"nombre"} label='Nombre' width={220} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key={"precio"} label='P. venta' width={70} data={(e) => e.row?.precio} />
-            <DinamicTable.Col key={"precio_compra"} label='P. compra' width={70} data={(e) => e.row?.precio_compra} />
+            <DinamicTable.Col key={"precio_costo"} label='P. compra' width={70} data={(e) => e.row?.precio_costo} />
+
+            <DinamicTable.Col
+                key={"fecha_vencimiento"}
+                label="Fecha de vencimiento"
+                width={150}
+                textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
+                dataType="date"
+                data={(e) =>
+                    e.row?.fecha_vencimiento
+                        ? new SDate(e.row.fecha_vencimiento, "yyyy-MM-ddThh:mm:ss").date
+                        : null
+                }
+                dateFormat="yyyy-MM-dd a las hh:mm"
+            />
+
+
             <DinamicTable.Col key={"cantidad"} label='Cantidad' width={70} data={(e) => e.row?.cantidad} />
             <DinamicTable.Col key={"almacen"} label='Almacen' width={150} data={(e) => e.row?.almacen?.descripcion} />
             <DinamicTable.Col key={"depreciacion"} label='Depreciacion' width={150} data={(e) => e.row?.depreciacion} />
-            <DinamicTable.Col key={"fecha_on"} label='Fecha de On' width={100} data={(e) => new SDate(e.row?.fecha_on,"yyyy-MM-ddThh:mm:ss").date} />
+            <DinamicTable.Col key={"fecha_on"} label='Fecha de On' width={100} data={(e) => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} />
         </DinamicTable>
 
     }

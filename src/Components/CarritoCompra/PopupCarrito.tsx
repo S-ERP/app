@@ -214,10 +214,17 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         const tipoCambioSeleccionada = moneda.tipo_cambio || 1;
         return item.modelo.precio_compra * (tipoCambioVenta / tipoCambioSeleccionada);
     };
-    React.useEffect(() => {
-        setPrecio(calcularPrecio());
-    }, [moneda, item.modelo.precio_compra]);
+    React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, item.modelo.precio_compra]);
     const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
+
+    const formatFecha = (dateStr: string) => {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "";
+        return d.toLocaleString("es-BO");
+    };
+
+
     return (
         <SView padding={8}>
             <SView row>
@@ -285,6 +292,21 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             />
                         </SView>
                         <SView flex />
+
+                        <SView width={120}>
+                            <SInput
+                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date" icon={<SText width={50} fontSize={10} color={STheme.color.lightGray} numberOfLines={1} > Vencimiento </SText>}
+                                value={formatFecha(item.modelo.fecha_vencimiento)}
+                                onChangeText={(e) => {
+                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
+                                    MDL.carrito.calcularValoresCarritDeCompras();
+                                }}
+                            />
+                        </SView>
+
+                        <SView flex />
+
+
                         <SView width={80} style={{ justifyContent: "center" }}>
                             <SText fontSize={12} bold style={{ textAlign: "right" }}>
                                 {SMath.formatMoney(precio * item.cantidad)}
