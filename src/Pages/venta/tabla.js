@@ -24,6 +24,21 @@ export default class tabla extends Component {
     async loadInitialData() {
         try {
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+
+            const bd_suscriptres = await SSocket.sendPromise({
+                service: "inventario",
+                component: "suscripcion",
+                type: "getByKeyCompraVentaDetalle",
+                key_compra_venta_detalle: "fa0931be-8969-4de6-9e48-ad6735e65cfc",
+                // key_compra_venta_detalle: this.props.data.key,
+                estado: "cargando",
+            });
+
+            console.clear();
+
+            const cantidad_suscriptores = bd_suscriptres.data ? Object.keys(bd_suscriptres.data).length : 0;
+            console.log("Cantidad de suscriptores para el detalle:", cantidad_suscriptores);
+
             if (!registros) throw new Error("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
             if (!empresa) throw new Error("No se pudo obtener la empresa.");
@@ -50,10 +65,14 @@ export default class tabla extends Component {
             } catch (e) {
                 console.error("No se pudieron obtener los totales de la primera venta:", e);
             }
+
             const ventasEnriquecidas = await Promise.all(
                 ventas.map(async (cv) => {
                     return {
-                        ...cv,
+                        key_compra_venta_detalle: cv?.detalles?.[0]?.key || "",
+                        total_suscriptores: 10,
+                        suscriptores: 4,
+                        // cantidad_suscriptores: bd_suscriptres.data ? Object.values(bd_suscriptres.data).filter(s => s.key_compra_venta_detalle === cv?.detalles?.[0]?.key).length : 0,
                         moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
                         sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
                         usuario: usuariosMap[cv?.key_usuario] || {},
@@ -61,10 +80,10 @@ export default class tabla extends Component {
                         proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
                         cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
                         subtotal: totales?.subtotal || "0",
+                        ...cv,
                     };
                 })
             );
-            // console.clear();
             console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
@@ -447,6 +466,7 @@ export default class tabla extends Component {
                 // }}
                 selectType="single"
                 keyExtractor={(e) => e.key}
+                pageLimit={10}
                 onSelect={(e) => {
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height;
@@ -466,6 +486,13 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 8 }} width={30} data={(e) => e.index + 1} />
+
+
+                <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta_detalle" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.key_compra_venta_detalle} />
+                <DinamicTable.Col key="comprala" label="Cupos Totales" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.total_suscriptores} />
+                <DinamicTable.Col key="cantidad_suscriptores" label="Suscritores" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.suscriptores} />
+                <DinamicTable.Col key="cupos_disponibles" label="Cupos Disponibles" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => (e.row?.total_suscriptores || 0) - (e.row?.suscriptores || 0)} />
+
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 8 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 8 }} width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
@@ -720,7 +747,7 @@ export default class tabla extends Component {
 
     render() {
         return (
-            <SPage title="Tabla Gestión de Ventas" disableScroll>
+            <SPage title="Tabla ddddddd de Ventas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
