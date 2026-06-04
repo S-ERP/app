@@ -685,3 +685,28 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
         </SView>
     );
 };
+
+
+
+
+
+
+
+            // await SSocket.sendPromise({
+            //     service: "inventario",
+            //     component: "suscripcion",
+            //     type: "registro",
+            //     data: {
+            //         key_producto: data.key,
+            //         key_cliente: selectedCliente.value,
+            //         fecha_inicio,
+            //         fecha_fin,
+            //         key_sucursal: item.sucursal?.key
+            //     },
+            //     key_usuario: MDL.usuario.session.key
+            // });
+            // SNotification.send({
+            //     title: "¡Suscriptor registrado!",
+            //     color: STheme.color.success,
+            //     time: 4000
+            // });
