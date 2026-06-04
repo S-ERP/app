@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Lotes e Inventario</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --primary:#0f766e;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#dc2626;
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --text:#1e293b;
+    --border:#e2e8f0;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    padding:30px;
+}
+
+.header{
+    background:linear-gradient(135deg,#0f766e,#14b8a6);
+    color:white;
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.header p{
+    opacity:.9;
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:var(--card);
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+
+.card h3{
+    font-size:14px;
+    color:#64748b;
+    margin-bottom:8px;
+}
+
+.card .value{
+    font-size:28px;
+    font-weight:700;
+}
+
+.table-container{
+    background:white;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 2px 12px rgba(0,0,0,.05);
+}
+
+.table-header{
+    padding:20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.search{
+    padding:10px 15px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    width:300px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+thead{
+    background:#f1f5f9;
+}
+
+th{
+    text-align:left;
+    padding:14px;
+    font-size:14px;
+    color:#475569;
+}
+
+td{
+    padding:14px;
+    border-top:1px solid #f1f5f9;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+.badge{
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.warning{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.danger{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.stock{
+    font-weight:700;
+}
+
+.footer{
+    padding:15px 20px;
+    background:#fafafa;
+    color:#64748b;
+    font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>📦 Control de Lotes e Inventario</h1>
+    <p>Consulta rápida del stock disponible, fechas de vencimiento y estado de cada lote.</p>
+</div>
+
+<div class="summary">
+
+    <div class="card">
+        <h3>Total de Lotes</h3>
+        <div class="value">15</div>
+    </div>
+
+    <div class="card">
+        <h3>Unidades Disponibles</h3>
+        <div class="value">21</div>
+    </div>
+
+    <div class="card">
+        <h3>Próximos a Vencer</h3>
+        <div class="value" style="color:#f59e0b;">3</div>
+    </div>
+
+    <div class="card">
+        <h3>Lotes Vencidos</h3>
+        <div class="value" style="color:#dc2626;">1</div>
+    </div>
+
+</div>
+
+<div class="table-container">
+
+    <div class="table-header">
+        <h2>Detalle de Lotes</h2>
+
+        <input
+            class="search"
+            type="text"
+            placeholder="Buscar producto..."
+        >
+    </div>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio Venta</th>
+            <th>Vencimiento</th>
+            <th>Cantidad</th>
+            <th>Ubicación</th>
+            <th>Estado</th>
+            <th>Registrado</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr>
+            <td>Agua 2L</td>
+            <td>Bs. 7.00</td>
+            <td>03 Jul 2027</td>
+            <td class="stock">3</td>
+            <td>Almacén Principal</td>
+            <td>
+                <span class="badge success">
+                    Vigente
+                </span>
+            </td>
+            <td>03 Jun 2026 - 18:56</td>
+        </tr>
+
+        <tr>
+            <td>Agua 2L</td>
+            <td>Bs. 7.00</td>
+            <td>03 Jun 2026</td>
+            <td class="stock">1</td>
+            <td>Almacén Principal</td>
+            <td>
+                <span class="badge warning">
+                    Próximo a vencer
+                </span>
+            </td>
+            <td>03 Jun 2026 - 18:47</td>
+        </tr>
+
+        <tr>
+            <td>Agua 2L</td>
+            <td>Bs. 7.00</td>
+            <td>01 Jan 2021</td>
+            <td class="stock">1</td>
+            <td>Almacén Principal</td>
+            <td>
+                <span class="badge danger">
+                    Vencido
+                </span>
+            </td>
+            <td>03 Jun 2026 - 18:51</td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+    <div class="footer">
+        Última actualización: 03/06/2026 19:54
+    </div>
+
+</div>
+
+</body>
+</html>

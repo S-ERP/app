@@ -217,13 +217,38 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, item.modelo.precio_compra]);
     const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
 
+    // const formatFecha = (dateStr: string) => {
+    //     if (!dateStr) return "";
+    //     const d = new Date(dateStr);
+    //     if (isNaN(d.getTime())) return "";
+    //     return d.toLocaleString("es-BO");
+    // };
+
+    // const formatFecha = (dateStr: string) => {
+    //     if (!dateStr) return "";
+    //     const d = new Date(dateStr);
+    //     if (isNaN(d.getTime())) return "";
+    //     return d.toLocaleDateString("es-BO", {
+    //         day: "2-digit",
+    //         month: "2-digit",
+    //         year: "numeric",
+    //     });
+    // };
+
     const formatFecha = (dateStr: string) => {
         if (!dateStr) return "";
+
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return "";
-        return d.toLocaleString("es-BO");
-    };
 
+        d.setDate(d.getDate() + 1);
+
+        return d.toLocaleDateString("es-BO", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    };
 
     return (
         <SView padding={8}>
@@ -292,8 +317,25 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             />
                         </SView>
                         <SView flex />
+                        {/* alvaro */}
 
-                        <SView width={120}>
+
+                        {/* <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }}   >
+                            <SHr />
+                            <SText fontSize={12}  >Fecha de Vencimiento</SText>
+                            <SView flex />
+                            <SInput
+                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date"
+                                value={formatFecha(item.modelo.fecha_vencimiento)}
+                                onChangeText={(e) => {
+                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
+                                    console.log("Fecha de vencimiento actualizada:", item.modelo.fecha_vencimiento);
+                                    MDL.carrito.calcularValoresCarritDeCompras();
+                                }}
+                            />
+                        </SView> */}
+
+                        {/* <SView width={120}>
                             <SInput
                                 style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date" icon={<SText width={50} fontSize={10} color={STheme.color.lightGray} numberOfLines={1} > Vencimiento </SText>}
                                 value={formatFecha(item.modelo.fecha_vencimiento)}
@@ -302,7 +344,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
-                        </SView>
+                        </SView> */}
 
                         <SView flex />
 
@@ -312,6 +354,64 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 {SMath.formatMoney(precio * item.cantidad)}
                             </SText>
                         </SView>
+
+                        <SView flex />
+                        <SHr height={8} />
+
+                        {/* <SView width={128}>
+                            <SInput
+                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date" icon={<SText width={50} fontSize={10} color={STheme.color.lightGray} numberOfLines={1} > Vencimiento </SText>}
+                                value={formatFecha(item.modelo.fecha_vencimiento)}
+                                onChangeText={(e) => {
+                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
+                                    MDL.carrito.calcularValoresCarritDeCompras();
+                                }}
+                            />
+                        </SView> */}
+                        <SHr />
+                        <SHr />
+
+
+                        {/* <SView col={"xs-12"} row>
+                            <SInput
+                                style={{ height: 16, fontSize: 11, padding: 0 }} type="date" icon={<SText width={110} fontSize={10} color={STheme.color.text} numberOfLines={1} padding={4} >Fecha de Vencimiento </SText>}
+                                value={formatFecha(item.modelo.fecha_vencimiento)}
+                                onChangeText={(e) => {
+                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
+                                    MDL.carrito.calcularValoresCarritDeCompras();
+                                }}
+                            />
+                        </SView> */}
+
+
+                        <SView col={"xs-12"} padding={1}>
+                            <SInput type="date" style={{ height: 32, fontSize: 12, borderRadius: 4, paddingHorizontal: 8, }}
+                                icon={<SText width={128} fontSize={12} color={STheme.color.text} padding={4} numberOfLines={1} > Fecha de vencimiento </SText>}
+                                value={formatFecha(item.modelo.fecha_vencimiento)}
+                                onChangeText={(e) => {
+                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
+                                    MDL.carrito.calcularValoresCarritDeCompras();
+                                }}
+                            />
+                        </SView>
+
+
+                        {/* <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }}   >
+                            <SHr />
+                            <SText fontSize={12}  >Fecha de Vencimiento</SText>
+                            <SView flex />
+                            <SInput
+                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date"
+                                value={formatFecha(item.modelo.fecha_vencimiento)}
+                                onChangeText={(e) => {
+                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
+                                    console.log("Fecha de vencimiento actualizada:", item.modelo.fecha_vencimiento);
+                                    MDL.carrito.calcularValoresCarritDeCompras();
+                                }}
+                            />
+                        </SView> */}
+
+
                     </SView>
                 </SView>
             </SView>
