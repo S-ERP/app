@@ -25,11 +25,15 @@ const convertirADias = (tipo: string, cantidad: number) => {
 };
 
 const normalizeSuscriptores = (item: any) => {
-    const suscriptores = Array.isArray(item.modelo.suscriptores)
-        ? item.modelo.suscriptores
-        : Array.isArray(item.modelo.Suscritores)
-            ? item.modelo.Suscritores
-            : [];
+    let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
+    
+    // Convertir a array si es un objeto JSON único
+    if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
+        suscriptores = [suscriptores];
+    } else if (!Array.isArray(suscriptores)) {
+        suscriptores = [];
+    }
+    
     item.modelo.suscriptores = suscriptores;
     if (item.modelo.Suscritores) {
         delete item.modelo.Suscritores;
@@ -302,7 +306,15 @@ const ListaSuscripciones = ({ item }: any) => {
     const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo.cantidad_suscriptores || 0);
     console.log("cantidadMiembros", JSON.stringify(item));
     if (!cantidadMiembros) return null;
-    const suscriptores = Array.isArray(item.modelo.suscriptores) ? item.modelo.suscriptores : Array.isArray(item.modelo.Suscritores) ? item.modelo.Suscritores : [];
+    let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
+    
+    // Convertir a array si es un objeto JSON único
+    if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
+        suscriptores = [suscriptores];
+    } else if (!Array.isArray(suscriptores)) {
+        suscriptores = [];
+    }
+    
     item.modelo.suscriptores = suscriptores;
     if (item.modelo.Suscritores) {
         delete item.modelo.Suscritores;
@@ -384,11 +396,15 @@ const SuscripcionItem = ({ index, item, suscriptor }: any) => {
     }, [item.modelo.clientes]);
 
     const saveSuscriptor = (updates: any) => {
-        const suscriptores = Array.isArray(item.modelo.suscriptores)
-            ? item.modelo.suscriptores
-            : Array.isArray(item.modelo.Suscritores)
-                ? item.modelo.Suscritores
-                : [];
+        let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
+        
+        // Convertir a array si es un objeto JSON único
+        if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
+            suscriptores = [suscriptores];
+        } else if (!Array.isArray(suscriptores)) {
+            suscriptores = [];
+        }
+        
         item.modelo.suscriptores = suscriptores;
         if (item.modelo.Suscritores) {
             delete item.modelo.Suscritores;
