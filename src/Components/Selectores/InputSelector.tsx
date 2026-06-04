@@ -6,15 +6,16 @@ import SIconApp from "../../Assets/SIconApp";
 type Option = {
     label: string;
     value: string;
-    customComponent?: React.ReactNode;
+    customComponent?: React.ReactNode | ((option: Option) => React.ReactNode);
     data?: any;
 };
 export type InputSelectorProps = {
     placeholder?: string;
     style?: TextInputProps["style"];
+    customStyle?: string;
     options: Option[];
-    value?: string;
-    defaultValue?: string;
+    value?: string | null;
+    defaultValue?: string | null;
     required?: boolean;
     autoSelectOnBlur?: boolean;
     onCreate?: (value: string) => Promise<Option>;
@@ -535,7 +536,7 @@ class ListSelectorContent extends React.Component<{
                         onClick={() => onSelect(item)}
                     >
                         <SText style={{ color: STheme.color.text, ...isCreateOptionStyleText }}>{item.label}</SText>
-                        {item.customComponent ? item.customComponent(item) : null}
+                        {item.customComponent ? (typeof item.customComponent === 'function' ? item.customComponent(item) : item.customComponent) : null}
                     </View>
                 }}
             />
