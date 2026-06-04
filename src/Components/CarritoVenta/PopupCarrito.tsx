@@ -16,6 +16,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         options: [] as any[],
         contactosSeleccionados: [] as any[],
         tipoCostosSeleccionados: [] as any[],
+        suscriptoresSeleccionados: [] as any[],
     };
     rapido: any;
     evento: any;
@@ -107,7 +108,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SView row col={"xs-12"} style={{ paddingHorizontal: 8 }}>
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_venta.cantidad_items})</SText>
                 <SView flex />
-                <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
+                <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Totaaaaaal"}</SText>
             </SView>
             <SHr h={1} color={STheme.color.card} />
             <FlatList
@@ -167,6 +168,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 });
                                 return; // detener confirmación
                             }
+                            console.clear();
+                            console.log("%c" + JSON.stringify(items), `color: #16e4eb; font-weight: bold;`);
+
                             PopupCarritoConfirmar.open({});
                         }}
                     >
@@ -193,6 +197,18 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         setPrecio(calcularPrecio());
     }, [moneda, item.modelo.precio_venta]);
     const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
+
+    // console.clear();
+    console.log("%c" + JSON.stringify(item.modelo.tipo_producto), `color: #2ECC40; font-weight: bold;`);
+    console.log("%c" + item.modelo.cantidad_suscriptores, `color: #f523e3; font-weight: bold;`);
+    console.log("%c" + item.modelo.duracion, `color: #e9830f; font-weight: bold;`);
+    console.log("%c" + item.modelo.duracion_medida, `color: #23f546; font-weight: bold;`);
+    // console.log("%c" + JSON.stringify(item), `color: #2ECC40; font-weight: bold;`);
+
+    console.log("%c" + item.cantidad, `color: #f52323; font-weight: bold;`);
+    console.log("%c" + "miembros a registrar", `color: #2ECC40; font-weight: bold;`);
+    console.log("%c" + (item.cantidad * item.modelo.cantidad_suscriptores), `color: #f52323; font-weight: bold;`);
+// item.modelo.tipoCostos
     return (
         <SView padding={8}>
             <SView row>
@@ -212,7 +228,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         <SView width={70}>
                             <SInput
                                 style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} >{moneda ? moneda.observacion : "BS"}</SText>}
+                                // icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} >{moneda ? moneda.observacion : "BS"}</SText>}
                                 type="money2"
                                 value={precioFormateado}
                                 onChangeText={(e) => {
@@ -242,11 +258,18 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             </SText>
                         </SView>
                     </SView>
+
                     <ListaCostos
                         item={item}
                         moneda={moneda}
                         totalItem={precio * item.cantidad}
                     />
+
+                    <ListaSuscripciones
+                        item={item}
+                    />
+
+                    {/* aqui lista de suscripciones */}
                 </SView>
             </SView>
         </SView>
@@ -275,6 +298,189 @@ const ListaCostos = ({ item, moneda, totalItem }: any) => {
         </>
     );
 };
+
+
+const ListaSuscripciones = ({ item }: any) => {
+
+    const [isOpen, setIsOpen] = React.useState(true);
+
+    const cantidadMiembros =
+        Number(item.cantidad || 0) *
+        Number(item.modelo.cantidad_suscriptores || 0);
+
+    if (!cantidadMiembros) return null;
+
+    const suscriptores = Array.isArray(item.modelo.suscriptores)
+        ? item.modelo.suscriptores
+        : Array.isArray(item.modelo.Suscritores)
+            ? item.modelo.Suscritores
+            : [];
+
+    item.modelo.suscriptores = suscriptores;
+    if (item.modelo.Suscritores) {
+        delete item.modelo.Suscritores;
+    }
+
+    return (
+        <>
+            <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }} onPress={() => setIsOpen(!isOpen)} >
+                <SHr />
+                <SText fontSize={12} bold>Miembros</SText>
+                <SView flex />
+                <SText fontSize={10} color={STheme.color.lightGray}> ({cantidadMiembros}) </SText>
+                <SView width={4} />
+                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center" }} >
+                    <SIconApp name="Back" fill={STheme.color.card} width={8} style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+                </SView>
+            </SView>
+
+            {isOpen && (
+                <SView col={"xs-12"} style={{ paddingVertical: 4 }}>
+                    {Array.from({ length: cantidadMiembros }, (_, i) => (
+                        <SuscripcionItem
+                            key={`suscripcion-${item.modelo.key}-${i}`}
+                            index={i}
+                            item={item}
+                            suscriptor={item.modelo.suscriptores[i] || null}
+                        />
+                    ))}
+                </SView>
+            )}
+        </>
+    );
+};
+
+
+
+const SuscripcionItem = ({ index, item, suscriptor }: any) => {
+    const [fechaInicio, setFechaInicio] = React.useState(suscriptor?.fecha_inicio || "");
+    const [fechaFin, setFechaFin] = React.useState(suscriptor?.fecha_fin || "");
+    const [cliente, setCliente] = React.useState(suscriptor?.cliente || null);
+    const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
+    const [loadingClientes, setLoadingClientes] = React.useState(false);
+
+    React.useEffect(() => {
+        setCliente(suscriptor?.cliente || null);
+        setFechaInicio(suscriptor?.fecha_inicio || "");
+        setFechaFin(suscriptor?.fecha_fin || "");
+    }, [suscriptor]);
+
+    React.useEffect(() => {
+        let mounted = true;
+        if (Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
+            setClientes(item.modelo.clientes);
+            return () => { mounted = false; };
+        }
+        setLoadingClientes(true);
+        MDL.crm.cliente.getAll()
+            .then((resp: any) => {
+                if (!mounted) return;
+                const allClientes = Array.isArray(resp)
+                    ? resp
+                    : Object.values(resp || {}).filter((c: any) => !!c);
+                setClientes(allClientes);
+            })
+            .catch((err: any) => {
+                console.error("Error cargando clientes:", err);
+            })
+            .finally(() => {
+                if (!mounted) return;
+                setLoadingClientes(false);
+            });
+        return () => { mounted = false; };
+    }, [item.modelo.clientes]);
+
+    const saveSuscriptor = (updates: any) => {
+        const suscriptores = Array.isArray(item.modelo.suscriptores)
+            ? item.modelo.suscriptores
+            : Array.isArray(item.modelo.Suscritores)
+                ? item.modelo.Suscritores
+                : [];
+
+        item.modelo.suscriptores = suscriptores;
+        if (item.modelo.Suscritores) {
+            delete item.modelo.Suscritores;
+        }
+
+        const current = item.modelo.suscriptores[index] || {};
+        const updated = {
+            ...current,
+            key: current.key || `suscriptor-${item.modelo.key}-${index}`,
+            cliente: updates.cliente !== undefined ? updates.cliente : cliente,
+            key_cliente: updates.key_cliente !== undefined ? updates.key_cliente : cliente?.key,
+            fecha_inicio: updates.fecha_inicio !== undefined ? updates.fecha_inicio : fechaInicio,
+            fecha_fin: updates.fecha_fin !== undefined ? updates.fecha_fin : fechaFin,
+        };
+        item.modelo.suscriptores[index] = updated;
+    };
+
+    const options = clientes.length > 0 ? clientes.map((c: any) => {
+        const clienteData = c?.cliente ? c.cliente : c;
+        return {
+            label: clienteData?.nombres || clienteData?.razon_social || "Sin cliente",
+            value: c?.key || clienteData?.key || "",
+            data: c,
+            customComponent: (
+                <SText fontSize={10} color={STheme.color.lightGray}>
+                    {c?.comision ? `${c.comision} %` : clienteData?.nit ? clienteData?.nit : "Cliente"}
+                </SText>
+            ),
+        };
+    }) : [{ label: loadingClientes ? "Cargando clientes..." : "No hay clientes", value: "", data: null }];
+
+    return (
+        <SView col={"xs-12"} style={{ paddingVertical: 6, borderBottomWidth: 1, borderColor: STheme.color.card, }} >
+            <SText fontSize={10} bold> Miembro {index + 1} </SText>
+
+            <SView style={{ width: "100%" }} row>
+                <SView style={{ flex: 1, height: 18, backgroundColor: STheme.color.card }}>
+                    <InputSelector
+                        customStyle="erp"
+                        placeholder="Selecciona un cliente"
+                        options={options}
+                        defaultValue={cliente?.key || null}
+                        onSelect={(selected: any) => {
+                            const selectedCliente = selected?.data?.cliente || selected?.data;
+                            setCliente(selectedCliente);
+                            saveSuscriptor({ cliente: selectedCliente, key_cliente: selected?.value });
+                        }}
+                    />
+                </SView>
+                <SView width={4} />
+                <SView style={{ width: 70 }}>
+                    <SInput
+                        style={{ height: 18, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                        type="date"
+                        icon={
+                            <SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}> Fecha inicio </SText>
+                        }
+                        value={fechaInicio}
+                        onChangeText={(e: string) => {
+                            setFechaInicio(e);
+                            saveSuscriptor({ fecha_inicio: e });
+                        }}
+                    />
+                </SView>
+                <SView width={4} />
+                <SView style={{ width: 70 }}>
+                    <SInput
+                        style={{ height: 18, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                        type="date"
+                        icon={
+                            <SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}> Fecha fin </SText>
+                        }
+                        value={fechaFin}
+                        onChangeText={(e: string) => {
+                            setFechaFin(e);
+                            saveSuscriptor({ fecha_fin: e });
+                        }}
+                    />
+                </SView>
+            </SView>
+        </SView>
+    );
+};
+
 
 const CostoItem = ({ costo, moneda, totalItem }: any) => {
     const [monto, setMonto] = React.useState(costo.monto || 0);
