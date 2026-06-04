@@ -270,6 +270,21 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         })
                     })
                 }
+                const suscriptoresRaw = Array.isArray(ci.modelo?.suscriptores)
+                    ? ci.modelo.suscriptores
+                    : Array.isArray(ci.modelo?.Suscritores)
+                        ? ci.modelo.Suscritores
+                        : [];
+                const suscriptores = suscriptoresRaw.map((suscriptor: any) => ({
+                    key: suscriptor.key,
+                    key_cliente: suscriptor.key_cliente || suscriptor?.cliente?.key || suscriptor?.cliente?.value || null,
+                    cliente: suscriptor.cliente || null,
+                    fecha_inicio: suscriptor.fecha_inicio,
+                    fecha_fin: suscriptor.fecha_fin,
+                }));
+                if (!Array.isArray(ci.modelo?.suscriptores)) {
+                    ci.modelo.suscriptores = suscriptoresRaw;
+                }
                 return {
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci?.precio ?? 0,
@@ -278,8 +293,15 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
                     "costos": costos,
+                    suscriptores,
                 }
             })
+            const suscripciones = detalle
+                .flatMap((item: any) => (Array.isArray(item.suscriptores) ? item.suscriptores.map((suscripcion: any) => ({
+                    ...suscripcion,
+                    key_modelo: item.key_modelo,
+                    cantidad: item.cantidad,
+                })) : []));
 
             const data = {
                 descripcion: this.props.descripcion || "",
@@ -311,6 +333,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 key_almacen: almacen.key,
                 key_moneda: monedaActual.key,
                 detalle,
+                suscripciones,
                 tipos_pago,
             };
             console.log("%c" + JSON.stringify(data), `color: #2ECC40; font-weight: bold;`);
