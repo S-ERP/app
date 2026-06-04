@@ -245,9 +245,9 @@ export default class ventas extends React.Component {
     // };
 
     getTimeSeriesFunctionName = (periodo) => {
-        if (periodo === "semana") return "ventas_por_dia_por_tipo2";
-        if (periodo === "este_mes") return "ventas_por_dia_por_tipo";
-        if (periodo === "año") return "ventas_por_mes_por_tipo";
+        if (periodo === "semana") return "ventas_por_dia_por_tipo_all";
+        if (periodo === "este_mes") return "ventas_por_dia_mes_por_tipo_all";
+        if (periodo === "año") return "ventas_por_mes_por_tipo_all";
         if (periodo === "entre") return "ventas_entre_fecha_por_tipo";
         return "ventas_por_hora_por_tipo";
     };
@@ -668,23 +668,36 @@ export default class ventas extends React.Component {
                         <SView col="xs-12" row center style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} >
 
                             <SView col="xs-12 md-6 lg-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
-                                <SButtom
-                                    type={!selectedSucursal ? 'danger' : 'outline'}
-                                    onPress={() => this.handleSucursalSelect(null)}
-                                    style={{ minWidth: 80, height: 40 }}
+                                <ScrollView
+                                    horizontal={true}
+                                    showsHorizontalScrollIndicator={true}
+                                    style={{
+                                        width: "100%",
+                                    }}
+                                    contentContainerStyle={{
+                                        paddingHorizontal: 8,
+                                        gap: 8,
+                                    }}
                                 >
-                                    <SText>Todos</SText>
-                                </SButtom>
-                                {(sucursales || []).slice(0, 4).map((sucursal) => (
                                     <SButtom
-                                        key={sucursal.key}
-                                        type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
-                                        onPress={() => this.handleSucursalSelect(sucursal)}
-                                        style={{ minWidth: 130, padding: 5, height: 40 }}
+                                        type={!selectedSucursal ? 'danger' : 'outline'}
+                                        onPress={() => this.handleSucursalSelect(null)}
+                                        style={{ minWidth: 80, height: 40 }}
                                     >
-                                        <SText>{sucursal.descripcion}</SText>
+                                        <SText>Todos</SText>
                                     </SButtom>
-                                ))}
+                                    {/* {(sucursales || []).slice(0, 6).map((sucursal) => ( */}
+                                    {(sucursales || []).map((sucursal) => (
+                                        <SButtom
+                                            key={sucursal.key}
+                                            type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
+                                            onPress={() => this.handleSucursalSelect(sucursal)}
+                                            style={{ minWidth: 125, padding: 5, height: 40 }}
+                                        >
+                                            <SText>{sucursal.descripcion}</SText>
+                                        </SButtom>
+                                    ))}
+                                </ScrollView>
                             </SView>
                             <SView col="xs-12 md-6 lg-4" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
                                 {/* <FechaFullFilter
@@ -698,7 +711,7 @@ export default class ventas extends React.Component {
                                 <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
                                 <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
                             </SView>
-                            <SView col="xs-12" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
+                            {/* <SView col="xs-12" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                 <SButtom
                                     type={!selectedTipoProducto ? 'danger' : 'outline'}
                                     onPress={() => this.handleTipoProductoSelect(null)}
@@ -716,7 +729,7 @@ export default class ventas extends React.Component {
                                         <SText>{this.getTipoProductoLabel(tipoKey)}</SText>
                                     </SButtom>
                                 ))}
-                            </SView>
+                            </SView> */}
                         </SView>
 
                         {/* <SHr style={{ marginVertical: 0 }} /> */}
