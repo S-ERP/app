@@ -227,6 +227,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
             console.clear();
             console.log("%c" + JSON.stringify(cliente), `color: #ccc92e; font-weight: bold;`);
+            const sucursalKey = MDL.caja.activa ? MDL.caja.activa.key_sucursal : null;
 
             const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
@@ -276,11 +277,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         ? ci.modelo.Suscritores
                         : [];
                 const suscriptores = suscriptoresRaw.map((suscriptor: any) => ({
-                    key: suscriptor.key,
                     key_cliente: suscriptor.key_cliente || suscriptor?.cliente?.key || suscriptor?.cliente?.value || null,
-                    cliente: suscriptor.cliente || null,
                     fecha_inicio: suscriptor.fecha_inicio,
                     fecha_fin: suscriptor.fecha_fin,
+                    key_producto: "edbafa69-dafa-4519-9147-42a994ae2e61",
+                    key_sucursal: sucursalKey,
                 }));
                 if (!Array.isArray(ci.modelo?.suscriptores)) {
                     ci.modelo.suscriptores = suscriptoresRaw;
@@ -296,13 +297,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     suscriptores,
                 }
             })
+
             const suscripciones = detalle
                 .flatMap((item: any) => (Array.isArray(item.suscriptores) ? item.suscriptores.map((suscripcion: any) => ({
                     ...suscripcion,
-                    key_modelo: item.key_modelo,
-                    cantidad: item.cantidad,
                 })) : []));
-
             const data = {
                 descripcion: this.props.descripcion || "",
                 observacion: "Observación",
