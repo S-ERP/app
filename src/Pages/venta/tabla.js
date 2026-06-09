@@ -496,21 +496,42 @@ export default class tabla extends Component {
 
 
                 <DinamicTable.Col key="tipo_producto_" label="Tipo servicio" headerStyle={{ paddingLeft: 8 }} width={120}
-                    data={(e) => (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").join(", ")} />
+                    data={(e) => {
+                        const tipos = (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean);
+                        return [...new Set(tipos)].join(", ");
+                    }} />
+
+
+
 
 
                 <DinamicTable.Col key="cupos_disponibles_" label="Cupos Disponibles" headerStyle={{ paddingLeft: 8 }} width={120}
-                    data={(e) => (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? "").join(", ")} />
+                    data={(e) => {
+                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
+                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        return totalCupos;
+                    }} />
 
 
-                <DinamicTable.Col key="suscriptios_" label="Suscritores" headerStyle={{ paddingLeft: 8 }} width={120}
-                    data={(e) => (e.row?.detalles ?? []).map(d => d.data?.suscriptios ?? "").join(", ")} />
+                <DinamicTable.Col key="cupos_suscritos_" label="Suscritores" headerStyle={{ paddingLeft: 8 }} width={120}
+                    data={(e) => {
+                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
+                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        return totalSuscriptores;
+                    }} />
 
 
 
-                <DinamicTable.Col key="comprala" label="Cupos Totales" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.total_suscriptores} />
-                <DinamicTable.Col key="cantidad_suscriptores" label="Suscritores" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.suscriptores} />
-                <DinamicTable.Col key="cupos_disponibles" label="Cupos Disponibles" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => (e.row?.total_suscriptores || 0) - (e.row?.suscriptores || 0)} />
+                <DinamicTable.Col key="cupos_pendientes_" label="Cupos Pendientes" headerStyle={{ paddingLeft: 8 }} width={120}
+                    data={(e) => {
+                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
+                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
+                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        const cuposPendientes = totalCupos - totalSuscriptores;
+                        return cuposPendientes;
+
+                    }} />
 
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 8 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 8 }} width={180} data={(e) => e.row?.sucursal?.descripcion}
