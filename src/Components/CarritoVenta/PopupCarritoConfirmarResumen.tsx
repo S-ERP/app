@@ -258,6 +258,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 SPopup.alert("Debe seleccionar un almacen");
             }
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
+                console.log("%c" + JSON.stringify(ci), `color: #e22b2b; font-weight: bold;`);
                 const costos: any = []
                 const tcostos = ci?.modelo?.tipoCostos;
                 if (tcostos) {
@@ -292,6 +293,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "precio_unitario_base": ci.modelo?.precio_venta_moneda ?? 0,
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
+                    "data": {
+                        "tipo_producto": ci.modelo?.tipo_producto?.tipo,
+                        "suscriptios": ci.modelo?.cantidad_suscriptores || 0,
+                        "cupos_disponibles": 10
+                    },
                     "key_modelo": ci.modelo.key,
                     "costos": costos,
                     suscriptores,
