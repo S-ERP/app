@@ -84,7 +84,9 @@ export default class tabla extends Component {
                     };
                 })
             );
-            console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
+
+            // console.log("Primer registro:", ventasEnriquecidas?.[0]);
+            console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -489,6 +491,23 @@ export default class tabla extends Component {
 
 
                 <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta_detalle" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.key_compra_venta_detalle} />
+                {/* <DinamicTable.Col key="tipo_producto_" label="Tipo servicio" headerStyle={{ paddingLeft: 8 }} width={120}
+                    data={(e) => (e.row?.detalles.data ?? []).map(d => d.tipo_modelo)} /> */}
+
+
+                <DinamicTable.Col key="tipo_producto_" label="Tipo servicio" headerStyle={{ paddingLeft: 8 }} width={120}
+                    data={(e) => (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").join(", ")} />
+
+
+                <DinamicTable.Col key="cupos_disponibles_" label="Cupos Disponibles" headerStyle={{ paddingLeft: 8 }} width={120}
+                    data={(e) => (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? "").join(", ")} />
+
+
+                <DinamicTable.Col key="suscriptios_" label="Suscritores" headerStyle={{ paddingLeft: 8 }} width={120}
+                    data={(e) => (e.row?.detalles ?? []).map(d => d.data?.suscriptios ?? "").join(", ")} />
+
+
+
                 <DinamicTable.Col key="comprala" label="Cupos Totales" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.total_suscriptores} />
                 <DinamicTable.Col key="cantidad_suscriptores" label="Suscritores" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.suscriptores} />
                 <DinamicTable.Col key="cupos_disponibles" label="Cupos Disponibles" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => (e.row?.total_suscriptores || 0) - (e.row?.suscriptores || 0)} />
