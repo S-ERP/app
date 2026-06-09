@@ -24,6 +24,21 @@ export default class tabla extends Component {
     async loadInitialData() {
         try {
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+
+            const bd_suscriptres = await SSocket.sendPromise({
+                service: "inventario",
+                component: "suscripcion",
+                type: "getByKeyCompraVentaDetalle",
+                key_compra_venta_detalle: "fa0931be-8969-4de6-9e48-ad6735e65cfc",
+                // key_compra_venta_detalle: this.props.data.key,
+                estado: "cargando",
+            });
+
+            console.clear();
+
+            const cantidad_suscriptores = bd_suscriptres.data ? Object.keys(bd_suscriptres.data).length : 0;
+            console.log("Cantidad de suscriptores para el detalle:", cantidad_suscriptores);
+
             if (!registros) throw new Error("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
             if (!empresa) throw new Error("No se pudo obtener la empresa.");
@@ -50,10 +65,14 @@ export default class tabla extends Component {
             } catch (e) {
                 console.error("No se pudieron obtener los totales de la primera venta:", e);
             }
+
             const ventasEnriquecidas = await Promise.all(
                 ventas.map(async (cv) => {
                     return {
-                        ...cv,
+                        key_compra_venta_detalle: cv?.detalles?.[0]?.key || "",
+                        total_suscriptores: 10,
+                        suscriptores: 4,
+                        // cantidad_suscriptores: bd_suscriptres.data ? Object.values(bd_suscriptres.data).filter(s => s.key_compra_venta_detalle === cv?.detalles?.[0]?.key).length : 0,
                         moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
                         sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
                         usuario: usuariosMap[cv?.key_usuario] || {},
@@ -61,11 +80,13 @@ export default class tabla extends Component {
                         proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
                         cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
                         subtotal: totales?.subtotal || "0",
+                        ...cv,
                     };
                 })
             );
-            // console.clear();
-            console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
+
+            // console.log("Primer registro:", ventasEnriquecidas?.[0]);
+            console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -447,6 +468,7 @@ export default class tabla extends Component {
                 // }}
                 selectType="single"
                 keyExtractor={(e) => e.key}
+                pageLimit={10}
                 onSelect={(e) => {
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height;
@@ -466,6 +488,205 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 8 }} width={30} data={(e) => e.index + 1} />
+
+                <DinamicTable.Col key="detalles__" label="Detalle" width={220} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+
+                {/* <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta_detalle" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.key_compra_venta_detalle} /> */}
+
+                <DinamicTable.Col key="tipo_producto_" label="Tipo servicio" headerStyle={{ paddingLeft: 8 }} width={74}
+                    data={(e) => {
+                        const tipos = (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean);
+                        return [...new Set(tipos)].join(", ");
+                    }}
+                    customComponent={e => {
+                        const tipoPagoMap = {
+                            "servicio": { color: "#2563eb", label: "Servicio" },
+                            "inventario": { color: "#f59e0b", label: "Inventario" },
+                        };
+                        const tipos = [...new Set((e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean))];
+                        return (
+                            <>
+                                {tipos.map((tipo, index) => {
+                                    const estilo = tipoPagoMap[tipo.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
+                                    return (
+                                        <SView key={index} col={"xs-12"} center row>
+                                            <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5, marginBottom: 4 }}>
+                                                <SText color={STheme.color.text} fontSize={12}>{estilo.label}</SText>
+                                            </SView>
+                                        </SView>
+                                    );
+                                })}
+                            </>
+                        );
+                    }}
+                />
+
+
+
+
+
+                <DinamicTable.Col key="cupos_disponibles_" label="Cupos" headerStyle={{ paddingLeft: 8 }} width={74}
+                    data={(e) => {
+                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
+                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        return totalCupos;
+                    }} />
+
+
+                <DinamicTable.Col key="cupos_suscritos_" label="Registrados" headerStyle={{ paddingLeft: 8 }} width={74}
+                    data={(e) => {
+                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
+                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        return totalSuscriptores;
+                    }} />
+
+
+
+                <DinamicTable.Col key="cupos_pendientes_" label=" Pendientes" headerStyle={{ paddingLeft: 8 }} width={74}
+                    data={(e) => {
+                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
+                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
+                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        return totalCupos - totalSuscriptores;
+                    }}
+                    customComponent={e => {
+                        const pendientes = parseInt(e.data || 0);
+                        return (
+                            <SView col={"xs-12"} center row>
+                                <SView
+                                    style={{
+                                        borderRadius: 4,
+                                        backgroundColor: pendientes > 0 ? "#fc500c" : "transparent",
+                                        padding: 5,
+                                    }}
+                                >
+                                    <SText
+                                        center
+                                        style={{
+                                            color: pendientes > 0 ? "#FFF" : STheme.color.text,
+                                            fontSize: 12,
+                                        }}
+                                    >
+                                        {pendientes > 0 ? pendientes : ""}
+                                    </SText>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
+
+
+
+                <DinamicTable.Col
+                    key="ocupacion_"
+                    label="Ocupación"
+                    headerStyle={{ paddingLeft: 8 }}
+                    width={120}
+                    data={(e) => {
+                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
+                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        return totalCupos;
+                    }}
+
+                    customComponent={(e) => {
+
+                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
+                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
+                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+
+
+                        console.log("%c" + totalCupos, `color: #2ECC40; font-rgb(46, 49, 204) bold;`);
+                        console.log("%c" + totalSuscriptores, `color: #2ECC40; font-weight: bold;`);
+
+
+
+                        if (!totalCupos) {
+                            return (
+                                <SText style={e.textStyle}>
+                                    -
+                                </SText>
+                            );
+                        }
+
+                        const porcentaje = Math.min(
+                            (totalSuscriptores / totalCupos) * 100,
+                            100
+                        );
+
+                        let color = "#ea580c";
+                        let fondo = "#ea580c22";
+                        let icono = "🔴";
+
+                        if (porcentaje >= 100) {
+                            color = "#16a34a";
+                            fondo = "#16a34a22";
+                            icono = "🟢";
+                        } else if (porcentaje >= 50) {
+                            color = "#eab308";
+                            fondo = "#eab30822";
+                            icono = "🟡";
+                        } else if (porcentaje > 0) {
+                            color = "#f97316";
+                            fondo = "#f9731622";
+                            icono = "🟠";
+                        }
+
+                        return (
+                            <SView
+                                col={"xs-12"}
+                                center
+                                style={{
+                                    padding: 4,
+                                    borderRadius: 6,
+                                    backgroundColor: fondo,
+                                }}
+                            >
+                                <SText
+                                    style={{
+                                        color,
+                                        fontWeight: "bold",
+                                        fontSize: 12
+                                    }}
+                                >
+                                    {icono} {totalSuscriptores}/{totalCupos}
+                                </SText>
+
+                                <SView
+                                    style={{
+                                        width: 70,
+                                        height: 6,
+                                        borderRadius: 20,
+                                        overflow: "hidden",
+                                        backgroundColor: "#ffffff22",
+                                        marginTop: 4
+                                    }}
+                                >
+                                    <SView
+                                        style={{
+                                            width: 50,
+                                            width: `${porcentaje}%`,
+                                            height: "100%",
+                                            backgroundColor: color
+                                        }}
+                                    />
+                                </SView>
+
+                                <SText
+                                    fontSize={10}
+                                    color={color}
+                                    style={{
+                                        marginTop: 2
+                                    }}
+                                >
+                                    {porcentaje.toFixed(0)}%
+                                </SText>
+                            </SView>
+                        );
+                    }}
+                />
+
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 8 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 8 }} width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
@@ -720,7 +941,7 @@ export default class tabla extends Component {
 
     render() {
         return (
-            <SPage title="Tabla Gestión de Ventas" disableScroll>
+            <SPage title="Tabla ddddddd de Ventas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
