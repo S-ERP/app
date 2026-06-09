@@ -195,14 +195,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 });
                                 return;
                             }
-                            if (!validarSuscripciones(items)) {
-                                SNotification.send({
-                                    title: "suscripciones_incompletas",
-                                    body: "Cada miembro debe tener cliente, fecha inicio y fecha fin.",
-                                    color: STheme.color.danger,
-                                });
-                                return;
-                            }
+                            // if (!validarSuscripciones(items)) {
+                            //     SNotification.send({
+                            //         title: "suscripciones_incompletas",
+                            //         body: "Cada miembro debe tener cliente, fecha inicio y fecha fin.",
+                            //         color: STheme.color.danger,
+                            //     });
+                            //     return;
+                            // }
                             PopupCarritoConfirmar.open({});
                         }}
                     >
