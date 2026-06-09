@@ -295,8 +295,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "descripcion": ci.modelo.descripcion,
                     "data": {
                         "tipo_producto": ci.modelo?.tipo_producto?.tipo,
-                        "suscriptios": ci.modelo?.cantidad_suscriptores || 0,
-                        "cupos_disponibles": 10
+                        "cupos_disponibles": (ci.modelo?.cantidad_suscriptores * ci.cantidad || 0),
+                        "cupos_suscritos": suscriptores.length,
                     },
                     "key_modelo": ci.modelo.key,
                     "costos": costos,
