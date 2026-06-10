@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SForm } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -9,6 +9,7 @@ import LineaRechartsBd from "../recharts/Components/LineaRechartsBd";
 import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
 import DetalleTabla from "./Components/DetalleTabla";
 import Model from "../../Model";
+import InputSelector from "../../Components/Selectores/InputSelector";
 
 export default class inventario extends React.Component {
 
@@ -614,16 +615,39 @@ export default class inventario extends React.Component {
 
                         {/* FILTROS */}
 
-                        <SView
-                            col="xs-12"
-                            row
-                            card
-                            center
-                            padding={8}
-                        >
-
+                        <SView col="xs-12" row card center padding={8} >
+                            <SView col={"xs-12 md-4"}>
+                                <SForm
+                                    style={{ zIndex: 99, height: 65, marginTop: -35 }}
+                                    inputs={{
+                                        sucursal: {
+                                            // label: "Sucursales",
+                                            placeholder: "Seleccione una sucursal",
+                                            type: "custom",
+                                            customInputClass: InputSelector,
+                                            defaultValue: selectedSucursal?.key ?? "todos",
+                                            options: [
+                                                {
+                                                    label: "Todas las sucursales",
+                                                    value: "todos",
+                                                    data: null
+                                                },
+                                                ...(sucursales || []).map(item => ({
+                                                    label: item.descripcion,
+                                                    value: item.key,
+                                                    data: item
+                                                }))
+                                            ],
+                                            onSelect: (val) => {
+                                                this.handleSucursalSelect(val.data);
+                                            }
+                                        }
+                                    }}
+                                />
+                            </SView>
+                            <SView row col="xs-2" />
                             <SView
-                                col="xs-12 md-6 lg-4"
+                                col="xs-12 md-4 lg-4"
                             >
 
                                 <FechaFullFilter
@@ -652,7 +676,7 @@ export default class inventario extends React.Component {
                             </SView>
 
                             <SView
-                                col="xs-12 md-6 lg-8"
+                                col="xs-12 md-2 lg-2"
                                 flex
                             >
                                 <SView style={{ alignItems: "flex-end", justifyContent: "flex-end" }} row center>
@@ -689,7 +713,7 @@ export default class inventario extends React.Component {
 
                         {/* SUCURSALES */}
 
-                        <SView
+                        {/* <SView
                             col="xs-12"
                             row
                             padding={8}
@@ -739,7 +763,7 @@ export default class inventario extends React.Component {
 
                             </ScrollView>
 
-                        </SView>
+                        </SView> */}
 
                         {/* TARJETAS */}
 
