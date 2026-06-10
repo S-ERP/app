@@ -131,6 +131,11 @@ export default class tabla extends Component {
             const clientes = await MDL.crm.cliente.getAll();
             if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
             if (!clientes) throw new Error("No se pudieron obtener clientes.");
+
+            const clientesMap = Array.isArray(clientes)
+    ? Object.fromEntries(clientes.map(c => [c.key, c]))
+    : clientes || {};
+    
             const keysCompraDetalles = [...new Set(ventas.flatMap(cv => cv.detalles?.map(d => d.key).filter(Boolean) || []))];
             const suscripcionesArray = await Promise.all(
                 keysCompraDetalles.map(async (key) => {
@@ -655,6 +660,40 @@ export default class tabla extends Component {
                     }}
 
                 />
+   
+
+                <DinamicTable.Col
+                    key="detalles__lista"
+                    label="Lista de suscriptores"
+                    width={200}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={(e) =>
+                        (e.row?.detalles || [])
+                            .flatMap(detalle => detalle.suscriptores || [])
+                            .map(s => s.key_cliente)
+                            .join(", ")
+                    }
+                    customComponent={(e) => {
+                        const suscriptores = (e.row?.detalles || [])
+                            .flatMap(detalle => detalle.suscriptores || []);
+
+                        return (
+                            <SView col>
+                                {suscriptores.map((s, index) => (
+                                    <SText
+                                        key={index}
+                                        flex
+                                        fontSize={11}
+                                        style={e.textStyle}
+                                    >
+                                        • {s.key_cliente}
+                                    </SText>
+                                ))}
+                            </SView>
+                        );
+                    }}
+                />
+
 
                 <DinamicTable.Col
                     key="ocupacion_"
