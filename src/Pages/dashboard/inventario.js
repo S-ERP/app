@@ -352,6 +352,8 @@ export default class inventario extends React.Component {
                 ]
             );
 
+        console.log("Productos mayor stock:", res);
+
         this.setState({
             dataProductosMayorStock: res
         });
@@ -395,10 +397,13 @@ export default class inventario extends React.Component {
         }
     };
     // loadStockByAlmacen = async (...) => { };
-    loadStockByAlmacen = async (keyEmpresa) => {
+    loadStockByAlmacen = async (keyEmpresa, fecha_inicio,
+        fecha_fin,
+        keySucursal) => {
         try {
             const almacenes = this.state.almacenes || [];
-            const productos = await MDL.inventario.getAllProducto?.() || [];
+            // const productos = await MDL.inventario.getAllProducto?.() || [];
+            const productos = await MDL.inventario.getAllModeloStock?.(keySucursal) || [];
 
             const stockPorAlmacen = {};
             console.log("Almacenes obtenidos:", almacenes);
@@ -409,17 +414,22 @@ export default class inventario extends React.Component {
                     cantidad: 0,
                 };
             });
-            console.log("Stock por almacén sin formato:", productos);
+            console.log("PRODUC_:", productos);
             productos.forEach(producto => {
                 const almacen = producto.key_almacen || producto.almacen;
-                const stock = Number(producto.stock ?? producto.cantidad ?? 0);
+                // const stock = Number(producto.stock ?? producto.cantidad ?? 0);
 
-                if (stockPorAlmacen[almacen]) {
-                    stockPorAlmacen[almacen].cantidad += stock;
-                }
+                // if (stockPorAlmacen[almacen]) {
+                //     console.log("entro")
+                //     stockPorAlmacen[almacen].cantidad += stock;
+                // }
+                console.log(producto.stock)
+                const stock = Number(producto.stock ?? producto.cantidad ?? 0);
+                stockPorAlmacen.cantidad += stock;
+
             });
             console.log("Stock por almacén sin formato:", productos);
-
+            console.log("ALMACEN", stockPorAlmacen)
             const data = Object.values(stockPorAlmacen)
                 .sort((a, b) => b.cantidad - a.cantidad)
                 .map(item => ({
@@ -644,15 +654,14 @@ export default class inventario extends React.Component {
                             <SView
                                 col="xs-12 md-6 lg-8"
                                 flex
-
                             >
                                 <SView style={{ alignItems: "flex-end", justifyContent: "flex-end" }} row center>
 
                                     {[
-                                        'hoy',
-                                        'semana',
+                                        'Día',
+                                        'Semana',
                                         // 'este_mes',
-                                        'año'
+                                        'Año'
                                     ].map(item => (
 
                                         <SButtom
@@ -755,22 +764,26 @@ export default class inventario extends React.Component {
 
                         {/* DOS GRAFICOS */}
 
-                        <SView row>
+                        <SView row col="xs-12" gap={16}>
 
-                            <SView
+                            <SView padding={10}
                                 col="xs-12 lg-6"
                             >
-                                <CircularRechartsBd
-                                    data={this.state.dataDistribucionProductos}
-                                />
+                                <SView center card padding={5}>
+                                    <CircularRechartsBd
+                                        data={this.state.dataDistribucionProductos}
+                                    />
+                                </SView>
                             </SView>
 
-                            <SView
+                            <SView padding={10}
                                 col="xs-12 lg-6"
                             >
-                                <CircularRechartsBd
-                                    data={this.state.dataStockByAlmacen}
-                                />
+                                <SView center card padding={5}>
+                                    <CircularRechartsBd
+                                        data={this.state.dataStockByAlmacen}
+                                    />
+                                </SView>
                             </SView>
 
                         </SView>
@@ -818,7 +831,6 @@ CardResumen = ({ label, value }) => (
         card
         padding={16}
         margin={8}
-        center
         style={{
             flex: 1,
             minWidth: 120,
@@ -826,7 +838,8 @@ CardResumen = ({ label, value }) => (
     >
         <SText
             fontSize={14}
-            color={STheme.color.gray}
+            color={STheme.color.lightGray}
+            bold
         >
             {label}
         </SText>

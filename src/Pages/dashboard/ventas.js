@@ -262,6 +262,7 @@ export default class ventas extends React.Component {
         };
 
         const selected = MDL.empresa.select || await waitForSelect();
+
         if (!selected) {
             if (this._mounted) {
                 this.setState({ loading: false });
@@ -269,11 +270,17 @@ export default class ventas extends React.Component {
             return;
         }
 
+        const empresa = await MDL.empresa.getFull();
+        if (!empresa) throw new Error("No se pudo obtener la empresa.");
+        console.log("EMPRESA_", empresa)
+        const monedaBase = empresa.monedas.find(
+            moneda => moneda.tipo === "base"
+        );
         const sucursales = await MDL.empresa.getAllSucursales();
 
         const tipoProducto = await MDL.inventario.getAllTipoProducto();
         if (this._mounted) {
-            this.setState({ empresaSeleccionada: selected, sucursales, tipoProducto }, this.loadDashboardData);
+            this.setState({ empresaSeleccionada: selected, sucursales, tipoProducto , monedaBase}, this.loadDashboardData);
         }
     };
 
@@ -568,6 +575,7 @@ export default class ventas extends React.Component {
             tipoProducto,
             tipoProductoLista,
             selectedTipoProducto,
+            monedaBase
         } = this.state;
 
         const selectedBranchName = selectedSucursal?.descripcion || "Todas las sucursales";
@@ -589,7 +597,7 @@ export default class ventas extends React.Component {
                         value: selectedBranchName,
                     }, {
                         label: "Total ventas",
-                        value: `Bs. ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+                        value: `${monedaBase?.observacion ?? ''} ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
                     }, {
                         label: "Cantidad de ventas",
                         value: totalTickets,
@@ -973,7 +981,7 @@ export default class ventas extends React.Component {
                                             key="total"
                                             label='Total Bs'
                                             width={120}
-                                            data={e => `Bs. ${Number(e.row.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                            data={e => `${monedaBase?.observacion ?? ''} ${Number(e.row.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
                                         />
                                     </DinamicTable>
                                 )}
