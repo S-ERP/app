@@ -21,124 +21,27 @@ export default class tabla extends Component {
         this.state = { pdfFiles: {} };
     }
 
-
-    // async loadInitialData() {
-    //     try {
-    //         const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-    //         if (!registros) throw new Error("No se encontraron registros.");
-    //         const empresa = await MDL.empresa.getFull();
-    //         if (!empresa) throw new Error("No se pudo obtener la empresa.");
-    //         const sucursales = empresa.sucursales || [];
-    //         const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-    //         if (ventas.length === 0) throw new Error("No se encontraron ventas.");
-    //         const keysUsuarios = [];
-    //         ventas.forEach(cv => {
-    //             if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-    //                 keysUsuarios.push(cv.key_usuario);
-    //             }
-    //         });
-    //         const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-    //         if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
-    //         const clientes = await MDL.crm.cliente.getAll();
-    //         if (!clientes) throw new Error("No se pudieron obtener clientes.");
-    //         const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-    //         const usuariosMap = Array.isArray(usuarios)
-    //             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-    //             : usuarios || {};
-    //         let totales = {};
-    //         try {
-    //             totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
-    //         } catch (e) {
-    //             console.error("No se pudieron obtener los totales de la primera venta:", e);
-    //         }
-
-    //           const keysCompraDetalles = [
-    //         ...new Set(
-    //             ventas.flatMap(cv =>
-    //                 cv.detalles?.map(d => d.key).filter(Boolean) || []
-    //             )
-    //         )
-    //     ];
-
-    //     // =========================
-    //     // SUSCRIPCIONES (OPTIMIZADO)
-    //     // =========================
-    //     const suscripcionesArray = await Promise.all(
-    //         keysCompraDetalles.map(async (key) => {
-    //             try {
-    //                 const data = await MDL.compra_venta.getsuscripciones(key);
-    //                 return { key, data };
-    //             } catch (e) {
-    //                 return { key, data: null };
-    //             }
-    //         })
-    //     );
-
-    //     const suscripcionesMap = Object.fromEntries(
-    //         suscripcionesArray.map(s => [s.key, s.data])
-    //     );
-
-
-
-    //         // const suscripcionesMap = {};
-    //         const ventasEnriquecidas = await Promise.all(ventas.map(async cv => {
-    //             const detallesEnriquecidos = await Promise.all((cv.detalles || []).map(async d => ({
-    //                 ...d,
-    //                 suscripciones: suscripcionesMap?.[d.key]
-    //                     ? await MDL.compra_venta.getsuscripciones(suscripcionesMap[d.key])
-    //                     : [],
-    //             })));
-
-    //             return {
-    //                 ...cv,
-    //                 detalles: detallesEnriquecidos,
-    //                 total_suscriptores: 10,
-    //                 suscriptores: 4,
-    //                 cantidad_suscriptores: 3,
-    //                 moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
-    //                 sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
-    //                 usuario: usuariosMap[cv?.key_usuario] || {},
-    //                 empresa,
-    //                 proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
-    //                 cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
-
-    //                 subtotal: totales[cv.key]?.subtotal || "0"
-    //             };
-    //         }));
-
-
-    //         console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
-    //         return ventasEnriquecidas;
-    //     } catch (error) {
-    //         console.error("❌ Error en loadInitialData:", error?.message || error, error);
-    //         SPopup.alert("Error al cargar los datos. Intenta nuevamente.");
-    //         return [];
-    //     }
-    // }
     async loadInitialData() {
         try {
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-            if (!registros) throw new Error("No se encontraron registros.");
+            if (!registros) console.warn("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
-            if (!empresa) throw new Error("No se pudo obtener la empresa.");
+            if (!empresa) console.warn("No se pudo obtener la empresa.");
             const sucursales = empresa.sucursales || [];
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-            if (ventas.length === 0) throw new Error("No se encontraron ventas.");
+            if (ventas.length === 0) console.warn("No se encontraron ventas.");
             const keysUsuarios = [...new Set(ventas.map(v => v.key_usuario).filter(Boolean))];
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
             const usuariosMap = Array.isArray(usuarios) ? Object.fromEntries(usuarios.map(u => [u.key, u])) : usuarios || {};
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
             const clientes = await MDL.crm.cliente.getAll();
-            if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
-            if (!clientes) throw new Error("No se pudieron obtener clientes.");
-
-            const clientesMap = Array.isArray(clientes)
-    ? Object.fromEntries(clientes.map(c => [c.key, c]))
-    : clientes || {};
-    
+            if (!proveedores) console.warn("No se pudieron obtener proveedores.");
+            if (!clientes) console.warn("No se pudieron obtener clientes.");
+            // 🔥 MAPA CLIENTES
+            const clientesMap = Array.isArray(clientes) ? Object.fromEntries(clientes.map(c => [c.key, c])) : clientes || {};
             const keysCompraDetalles = [...new Set(ventas.flatMap(cv => cv.detalles?.map(d => d.key).filter(Boolean) || []))];
             const suscripcionesArray = await Promise.all(
-                keysCompraDetalles.map(async (key) => {
+                keysCompraDetalles.map(async key => {
                     try {
                         const data = await MDL.compra_venta.getsuscripciones(key);
                         return { key, data };
@@ -149,62 +52,46 @@ export default class tabla extends Component {
             );
             const suscripcionesMap = Object.fromEntries(suscripcionesArray.map(s => [s.key, s.data]));
             const totalesMap = {};
-            await Promise.all(
-                ventas.map(async (cv) => {
-                    try {
-                        const t = Model.compra_venta_detalle.Action.getTotales({
-                            key_compra_venta: cv.key
-                        }) || {};
-                        totalesMap[cv.key] = t;
-                    } catch (e) {
-                        totalesMap[cv.key] = {};
-                    }
-                })
-            );
+            ventas.forEach(cv => {
+                try {
+                    totalesMap[cv.key] = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: cv.key }) || {};
+                } catch (e) {
+                    totalesMap[cv.key] = {};
+                }
+            });
 
             // =========================
             // ENRIQUECER VENTAS
             // =========================
             const ventasEnriquecidas = ventas.map(cv => {
-                const detallesEnriquecidos = (cv.detalles || []).map(d => ({
-                    ...d,
-                    ...(suscripcionesMap[d.key]?.[0] || {})
-                }));
+                const detallesEnriquecidos = (cv.detalles || []).map(d => {
+                    const suscripcion = suscripcionesMap[d.key]?.[0] || {};
 
-                const total_disponibles = detallesEnriquecidos.reduce(
-                    (sum, d) => sum + (Number(d.disponibles) || 0),
-                    0
-                );
+                    return {
+                        ...d,
+                        ...suscripcion,
+                        suscriptores: (suscripcion.suscriptores || []).map(s => ({ ...s, cliente: clientesMap[s.key_cliente] || {} }))
+                    };
+                });
 
-                const total_suscriptos = detallesEnriquecidos.reduce(
-                    (sum, d) => sum + (Number(d.suscriptos) || 0),
-                    0
-                );
-
-                const total_cupos = detallesEnriquecidos.reduce(
-                    (sum, d) => sum + (Number(d.cupos) || 0),
-                    0
-                );
-
+                const total_disponibles = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.disponibles) || 0), 0);
+                const total_suscriptos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.suscriptos) || 0), 0);
+                const total_cupos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.cupos) || 0), 0);
                 return {
                     ...cv,
-
                     total_disponibles,
                     total_suscriptos,
                     total_cupos,
-
                     detalles: detallesEnriquecidos,
-
                     moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
                     sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
                     usuario: usuariosMap[cv?.key_usuario] || {},
                     empresa,
                     proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
-                    cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
+                    cliente: clientesMap[cv.key_cliente] || {},
                     subtotal: totalesMap[cv.key]?.subtotal || "0"
                 };
             });
-
             console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
@@ -213,9 +100,8 @@ export default class tabla extends Component {
             return [];
         }
     }
-    generateRandomCode() {
-        return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-    }
+
+    generateRandomCode() { return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`; }
 
     renderMenuVentas(row) {
         const openRegistrarFacturaTypePopup = (venta, tipoFactura) => {
@@ -227,7 +113,6 @@ export default class tabla extends Component {
             };
             const tipoLabel = tipoLabels[tipoFactura] || tipoFactura;
             if (tipoFactura === "paraguay" || tipoFactura === "colombia") {
-                // if (tipoFactura === "manual" || tipoFactura === "paraguay" || tipoFactura === "colombia") {
                 return SPopup.open({
                     key: "registrar_factura_" + tipoFactura + "_" + venta.key, content: (<SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
                         <SText fontSize={18} bold>{tipoLabel}</SText>
@@ -246,6 +131,8 @@ export default class tabla extends Component {
             let nit = "";
             let razon_social = "";
             let nroFactura = "";
+            let correo_electronico = "";
+            let telefono = "";
             const isManual = tipoFactura === "manual";
             const _pdf = this.state.pdfFiles?.[venta.key];
             return SPopup.open({
@@ -299,49 +186,25 @@ export default class tabla extends Component {
                                     label="NIT / CI"
                                     placeholder="Ingrese NIT o CI"
                                     onChangeText={val => nit = val}
-                                    style={{
-                                        height: 40,
-                                        borderRadius: 6,
-                                        backgroundColor: STheme.color.lightGray + "22",
-                                        color: STheme.color.text,
-                                    }}
-                                />
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
                                 <SHr height={10} />
                                 <SInput
                                     label="Razón social"
                                     placeholder="Ingrese razón social"
                                     onChangeText={val => razon_social = val}
-                                    style={{
-                                        height: 40,
-                                        borderRadius: 6,
-                                        backgroundColor: STheme.color.lightGray + "22",
-                                        color: STheme.color.text,
-                                    }}
-                                />
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
                                 <SHr height={10} />
                                 <SInput
                                     label="Correo electrónico"
                                     placeholder="Ingrese correo electrónico"
                                     onChangeText={val => correo_electronico = val}
-                                    style={{
-                                        height: 40,
-                                        borderRadius: 6,
-                                        backgroundColor: STheme.color.lightGray + "22",
-                                        color: STheme.color.text,
-                                    }}
-                                />
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
                                 <SHr height={10} />
                                 <SInput
                                     label="Telefono"
                                     placeholder="Ingrese número de teléfono"
                                     onChangeText={val => telefono = val}
-                                    style={{
-                                        height: 40,
-                                        borderRadius: 6,
-                                        backgroundColor: STheme.color.lightGray + "22",
-                                        color: STheme.color.text,
-                                    }}
-                                />
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
                             </>
                         )}
                         <SHr height={16} />
@@ -385,10 +248,7 @@ export default class tabla extends Component {
                                     telefono: isManual ? venta.telefono : telefono,
                                 };
                                 try {
-                                    await Model.compra_venta.Action.editar({
-                                        data: updatedVenta,
-                                        key_usuario: Model.usuario.Action.getKey(),
-                                    });
+                                    await Model.compra_venta.Action.editar({ data: updatedVenta, key_usuario: Model.usuario.Action.getKey() });
                                     if (this.DinamicTable) this.DinamicTable.loadData();
                                     SNotification.send({ key: "factura_registrar_ok_" + tipoFactura, title: tipoLabel + " registrada", body: isManual ? "Factura manual agregada." : "NIT: " + nit + ", Razón social: " + razon_social, color: STheme.color.success, time: 5000, });
                                 } catch (error) {
@@ -444,17 +304,10 @@ export default class tabla extends Component {
         const RenderOption = ({ label, icon, iconProps, onPress }) => {
             return (
                 <>
-                    <SView col={"xs-11"} row center onPress={() => {
-                        if (onPress) onPress();
-                        SPopup.close("popup_menu_ventas");
-                    }}>
-                        <SView col={"xs-2"} center height={32}>
-                            {typeof icon === "string" ? <SIconApp name={icon} height={18} fill={iconProps?.fill || STheme.color.text} stroke={iconProps?.stroke} /> : icon}
-                        </SView>
+                    <SView col={"xs-11"} row center onPress={() => { if (onPress) onPress(); SPopup.close("popup_menu_ventas"); }}>
+                        <SView col={"xs-2"} center height={32}> {typeof icon === "string" ? <SIconApp name={icon} height={18} fill={iconProps?.fill || STheme.color.text} stroke={iconProps?.stroke} /> : icon} </SView>
                         <SView width={8} />
-                        <SView flex>
-                            <SText fontSize={14}>{label}</SText>
-                        </SView>
+                        <SView flex> <SText fontSize={14}>{label}</SText> </SView>
                     </SView>
                     <SHr height={1} color={STheme.color.card} />
                 </>
@@ -468,10 +321,21 @@ export default class tabla extends Component {
                     ? [
                         ...(row?.factura?.factura_seleccionada === "Factura Manual"
                             ? [
-                                { label: "Descargar Archivo (PDF)", icon: "iconPdf", iconProps: { fill: STheme.color.text }, onPress: () => { Linking.openURL(row?.factura?.link_factura); }, },]
+                                {
+                                    label: "Descargar Archivo (PDF)", icon: "iconPdf", iconProps: { fill: STheme.color.text }, onPress: () => {
+                                        if (row?.factura?.link_factura) {
+                                            Linking.openURL(row.factura.link_factura);
+                                        } else {
+                                            SNotification.send({
+                                                title: "Error",
+                                                body: "No existe enlace para la factura."
+                                            });
+                                        }
+
+                                    },
+                                },]
                             : [{ label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta", }); }, },
                             { label: "Imprimir Factura (Rollo)", icon: "iconLista", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo", }); }, },
-
                             ]),
                     ]
                     : [
@@ -507,7 +371,6 @@ export default class tabla extends Component {
                                 onPress: () => {
                                     // aqui deberia decir procesando
                                     // SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
-
                                     MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
                                         if (this.DinamicTable) this.DinamicTable.loadData();
                                         SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
@@ -604,21 +467,10 @@ export default class tabla extends Component {
                         </SView>
                     })
                 }}
-                loadInitialState={async () => {
-                    return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
-                }}
+                loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 4 }} width={40} data={(e) => e.index + 1} />
-                {/* <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.key_compra_venta_detalle} /> */}
-
-
-                <DinamicTable.Col key="detalles__2" label="key_compra_venta_detalle" width={180} headerStyle={{ paddingLeft: 4 }}
-                    data={(e) => (e.row?.detalles ?? []).map(d => d.key)}
-
-
-                    customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.key}</SText>))} </SView>)} />
-
-
+                <DinamicTable.Col key="detalles__2" label="key_compra_venta_detalle" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.key)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.key}</SText>))} </SView>)} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" headerStyle={{ paddingLeft: 4 }} width={90}
                     data={(e) => {
                         const tipos = (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean);
@@ -644,7 +496,6 @@ export default class tabla extends Component {
                     }}
                 />
                 <DinamicTable.Col key="detalles__" label="Concepto" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
-
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
                 < DinamicTable.Col key="total_suscriptos" label="Registrados" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_suscriptos ?? ""} />
                 < DinamicTable.Col key="total_disponibles" label="Pendientes" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_disponibles ?? ""}
@@ -660,41 +511,14 @@ export default class tabla extends Component {
                     }}
 
                 />
-   
 
-                <DinamicTable.Col
-                    key="detalles__lista"
-                    label="Lista de suscriptores"
-                    width={200}
-                    headerStyle={{ paddingLeft: 4 }}
-                    data={(e) =>
-                        (e.row?.detalles || [])
-                            .flatMap(detalle => detalle.suscriptores || [])
-                            .map(s => s.key_cliente)
-                            .join(", ")
-                    }
+
+                <DinamicTable.Col key="detalles__lista" label="Lista de suscriptores" width={200} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
-                        const suscriptores = (e.row?.detalles || [])
-                            .flatMap(detalle => detalle.suscriptores || []);
-
-                        return (
-                            <SView col>
-                                {suscriptores.map((s, index) => (
-                                    <SText
-                                        key={index}
-                                        flex
-                                        fontSize={11}
-                                        style={e.textStyle}
-                                    >
-                                        • {s.key_cliente}
-                                    </SText>
-                                ))}
-                            </SView>
-                        );
+                        const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
+                        return (<SView col> {suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle} > • {s?.cliente?.nombres} </SText>))} </SView>);
                     }}
                 />
-
-
                 <DinamicTable.Col
                     key="ocupacion_"
                     label="Suscriptores"
@@ -705,21 +529,8 @@ export default class tabla extends Component {
                         const totalCupos = Number(e.row?.total_cupos || 0);
                         const totalSuscriptores = Number(e.row?.total_suscriptos || 0);
 
-                        if (totalCupos <= 0) {
-                            return (
-                                <SView center row>
-                                    <SText color={STheme.color.lightGray}>
-                                        Sin cupos
-                                    </SText>
-                                </SView>
-                            );
-                        }
-
-                        const porcentaje = Math.min(
-                            (totalSuscriptores / totalCupos) * 100,
-                            100
-                        );
-
+                        if (totalCupos <= 0) { return (<SView center row> <SText color={STheme.color.lightGray}> Sin cupos </SText> </SView>); }
+                        const porcentaje = Math.min((totalSuscriptores / totalCupos) * 100, 100);
                         let color = "#ea580c";
                         let icono = "🔴";
 
@@ -733,34 +544,11 @@ export default class tabla extends Component {
                             color = "#f97316";
                             icono = "🟠";
                         }
-
                         return (
                             <SView col={"xs-12"} center>
-                                <SText
-                                    style={{
-                                        color,
-                                        fontWeight: "bold",
-                                        fontSize: 12,
-                                    }}
-                                >
-                                    {icono} {totalSuscriptores}/{totalCupos}
-                                </SText>
-
-                                <SView
-                                    width={60}
-                                    height={6}
-                                    backgroundColor="#e5e7eb"
-                                    style={{
-                                        borderRadius: 3,
-                                        overflow: "hidden",
-                                        marginTop: 3,
-                                    }}
-                                >
-                                    <SView
-                                        width={`${porcentaje}%`}
-                                        height={6}
-                                        backgroundColor={color}
-                                    />
+                                <SText style={{ color, fontWeight: "bold", fontSize: 12, }} > {icono} {totalSuscriptores}/{totalCupos} </SText>
+                                <SView width={60} height={6} backgroundColor="#e5e7eb" style={{ borderRadius: 3, overflow: "hidden", marginTop: 3, }} >
+                                    <SView width={`${porcentaje}%`} height={6} backgroundColor={color} />
                                 </SView>
                             </SView>
                         );
@@ -826,12 +614,8 @@ export default class tabla extends Component {
                 />
                 <DinamicTable.Col key="estado_pago" wrap label="Estado Pago" headerStyle={{ paddingLeft: 8 }} width={80}
                     data={(e) => {
-                        if (e.row?.cuotas_en_mora?.monto > 0) {
-                            return "En Mora";
-                        }
-                        if (e.row?.cuotas?.total <= e.row?.monto_amortizado) {
-                            return "Pagado";
-                        }
+                        if ((e.row?.cuotas_en_mora?.monto || 0) > 0) return "En Mora";
+                        if ((e.row?.cuotas?.total || 0) <= (e.row?.monto_amortizado || 0)) return "Pagado";
                         return "Al Día";
                     }}
                     customComponent={(e) => {
@@ -894,18 +678,8 @@ export default class tabla extends Component {
                     data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)} />
-                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{
-                    alignItems: "center"
-                }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
-                <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
-                    alignItems: "center",
-                    backgroundColor: STheme.color.danger + "33"
-                }}
-                    data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
-                />
-                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }}
-                    data={(e) => e.row?.moneda?.descripcion ?? ""}
-                />
+                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas.cantidad ?? ""} /> <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""} />
+                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.moneda?.descripcion ?? ""} />
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
@@ -964,6 +738,11 @@ export default class tabla extends Component {
             onPress: async () => {
                 try {
                     const data = await this.DinamicTable?.getData?.() || [];
+
+                    if (!Array.isArray(data)) {
+                        console.warn("La tabla no devolvió un array");
+                    }
+
                     const updates = data.map(v => {
                         return Model.compra_venta.Action.editar({
                             data: {
@@ -1011,7 +790,6 @@ export default class tabla extends Component {
                         />
                     </SView>
                     <SView width={8} height={"100%"} />
-                    {/* <SView width={50} height={"100%"} center backgroundColor={STheme.color.danger} onPress={() => this.confirmarBorradoFacturas()} row  > <SText color={STheme.color.text} fontSize={12} center> Borrar facturas </SText> </SView> */}
                 </SView>{this.mostrarTabla()}
             </SPage>
         );
