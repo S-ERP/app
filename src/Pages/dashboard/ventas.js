@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SInput, SForm } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -9,6 +9,7 @@ import LineaRechartsBd from "../recharts/Components/LineaRechartsBd";
 import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
 import DetalleTabla from "./Components/DetalleTabla";
 import Model from "../../Model";
+import InputSelector from '../../Components/Selectores/InputSelector';
 
 export default class ventas extends React.Component {
     state = {
@@ -280,7 +281,7 @@ export default class ventas extends React.Component {
 
         const tipoProducto = await MDL.inventario.getAllTipoProducto();
         if (this._mounted) {
-            this.setState({ empresaSeleccionada: selected, sucursales, tipoProducto , monedaBase}, this.loadDashboardData);
+            this.setState({ empresaSeleccionada: selected, sucursales, tipoProducto, monedaBase }, this.loadDashboardData);
         }
     };
 
@@ -636,7 +637,37 @@ export default class ventas extends React.Component {
                         <SText fontSize={18} bold>Dashboard de Ventas</SText>
                         <SHr height={20} />
                         <SView col="xs-12" row card center padding={8}>
-                            <SView row col="xs-12 md-6 lg-4" style={{}}  >
+                            <SView col={"xs-12 md-4"}>
+                                <SForm
+                                    style={{ zIndex: 99, height: 65, marginTop: -35 }}
+                                    inputs={{
+                                        sucursal: {
+                                            // label: "Sucursales",
+                                            placeholder: "Seleccione una sucursal",
+                                            type: "custom",
+                                            customInputClass: InputSelector,
+                                            defaultValue: selectedSucursal?.key ?? "todos",
+                                            options: [
+                                                {
+                                                    label: "Todas las sucursales",
+                                                    value: "todos",
+                                                    data: null
+                                                },
+                                                ...(sucursales || []).map(item => ({
+                                                    label: item.descripcion,
+                                                    value: item.key,
+                                                    data: item
+                                                }))
+                                            ],
+                                            onSelect: (val) => {
+                                                this.handleSucursalSelect(val.data);
+                                            }
+                                        }
+                                    }}
+                                />
+                            </SView>
+                            <SView row col="xs-2" />
+                            <SView row col="xs-12 md-4" style={{ alignItems: "flex-end" }}  >
                                 <FechaFullFilter
                                     key_opciones={
                                         periodo === 'hoy' ? 'hoy' :
@@ -657,7 +688,8 @@ export default class ventas extends React.Component {
                                     }}
                                 />
                             </SView>
-                            <SView col="xs-12 md-6 lg-8" flex   >
+
+                            <SView col="xs-12 md-2"    >
                                 <SView style={{ alignItems: "flex-end", justifyContent: "flex-end" }} row center>
                                     {['hoy', 'semana', 'año'].map((item) => (
                                         <SButtom
@@ -673,52 +705,23 @@ export default class ventas extends React.Component {
                             </SView>
                         </SView>
 
-                        <SView col="xs-12" row center style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} >
+                        <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} card>
 
-                            <SView col="xs-12 md-6 lg-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
-                                <ScrollView
-                                    horizontal={true}
-                                    showsHorizontalScrollIndicator={true}
-                                    style={{
-                                        width: "100%",
-                                    }}
-                                    contentContainerStyle={{
-                                        paddingHorizontal: 8,
-                                        gap: 8,
-                                    }}
-                                >
-                                    <SButtom
-                                        type={!selectedSucursal ? 'danger' : 'outline'}
-                                        onPress={() => this.handleSucursalSelect(null)}
-                                        style={{ minWidth: 80, height: 40 }}
-                                    >
-                                        <SText>Todos</SText>
-                                    </SButtom>
-                                    {/* {(sucursales || []).slice(0, 6).map((sucursal) => ( */}
-                                    {(sucursales || []).map((sucursal) => (
-                                        <SButtom
-                                            key={sucursal.key}
-                                            type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
-                                            onPress={() => this.handleSucursalSelect(sucursal)}
-                                            style={{ minWidth: 125, padding: 5, height: 40 }}
-                                        >
-                                            <SText>{sucursal.descripcion}</SText>
-                                        </SButtom>
-                                    ))}
-                                </ScrollView>
+
+                            <SView col="xs-12 md-4" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
+                                <SView col="xs-12" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
+                                    <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
+                                    <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
+                                </SView>
+
+                                {/* </SView> */}
                             </SView>
-                            <SView col="xs-12 md-6 lg-4" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
-                                {/* <FechaFullFilter
-                                    key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
-                                    fecha_inicio={fecha_inicio}
-                                    fecha_fin={fecha_fin}
-                                    onChange={(dates) => {
-                                        this.setState({ fecha_inicio: dates.fecha_inicio, fecha_fin: dates.fecha_fin }, this.loadDashboardData);
-                                    }}
-                                /> */}
+                            {/* <SView col="xs-12 md-6 lg-4" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
+                               
                                 <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
                                 <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
-                            </SView>
+                            </SView> */}
+
                             {/* <SView col="xs-12" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                 <SButtom
                                     type={!selectedTipoProducto ? 'danger' : 'outline'}
@@ -739,7 +742,7 @@ export default class ventas extends React.Component {
                                 ))}
                             </SView> */}
                         </SView>
-
+                        <SHr height={5} />
                         {/* <SHr style={{ marginVertical: 0 }} /> */}
                         {/* <SView col="xs-12" style={{ marginVertical: 10 }}>
                             <SText fontSize={14} color={STheme.color.gray}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
