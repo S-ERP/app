@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SInput, SMath, SNotification } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SInput, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import { Dimensions } from 'react-native';
 import SSocket from 'servisofts-socket';
@@ -12,7 +12,6 @@ import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import FechaFullFilter from '../../Components/FechaFullFilter';
 import PopupUploadFactura from './Components/PopupUploadFactura';
 import { Linking } from 'react-native'
-import { color } from 'three/examples/jsm/nodes/Nodes';
 
 export default class tabla extends Component {
 
@@ -59,10 +58,6 @@ export default class tabla extends Component {
                     totalesMap[cv.key] = {};
                 }
             });
-
-            // =========================
-            // ENRIQUECER VENTAS
-            // =========================
             const ventasEnriquecidas = ventas.map(cv => {
                 const detallesEnriquecidos = (cv.detalles || []).map(d => {
                     const suscripcion = suscripcionesMap[d.key]?.[0] || {};
@@ -73,7 +68,6 @@ export default class tabla extends Component {
                         suscriptores: (suscripcion.suscriptores || []).map(s => ({ ...s, cliente: clientesMap[s.key_cliente] || {} }))
                     };
                 });
-
                 const total_disponibles = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.disponibles) || 0), 0);
                 const total_suscriptos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.suscriptos) || 0), 0);
                 const total_cupos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.cupos) || 0), 0);
@@ -150,7 +144,7 @@ export default class tabla extends Component {
                                     style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
                                 <SHr height={10} />
                                 <SView row center
-                                    style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8, padding: 10, backgroundColor: STheme.color.card + "22", }} >
+                                    style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8, padding: 10, backgroundColor: STheme.color.card + "22", }}>
                                     <SView flex>
                                         <SText fontSize={13} bold> PDF de factura </SText>
                                         <SHr h={4} />
@@ -212,54 +206,66 @@ export default class tabla extends Component {
                             <SView style={{ marginRight: 8 }} onPress={() => SPopup.close("registrar_factura_" + tipoFactura + "_" + venta.key)}>
                                 <SText color={STheme.color.text}>Cancelar</SText>
                             </SView>
-                            <SView onPress={async () => {
-                                if (isManual) {
-                                    if (!nroFactura.trim()) {
-                                        SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar el número de factura.", color: STheme.color.danger, time: 4000, });
-                                        return;
+
+                            <SView
+                                onPress={async () => {
+                                    const notificationKey = `factura_registrar_${tipoFactura}_${venta.key}`;
+
+                                    if (isManual) {
+                                        if (!nroFactura.trim()) {
+                                            SNotification.send({ key: notificationKey, title: "Complete los datos", body: "Debe ingresar el número de factura.", color: STheme.color.danger, time: 4000, });
+                                            return;
+                                        }
+                                    } else {
+                                        if (!nit.trim() || !razon_social.trim()) {
+                                            SNotification.send({ key: notificationKey, title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
+                                            return;
+                                        }
                                     }
-                                } else {
-                                    if (!nit.trim() || !razon_social.trim()) {
-                                        SNotification.send({ key: "factura_registrar_error", title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
-                                        return;
+
+                                    try {
+                                        SNotification.send({ key: notificationKey, title: "Registrando factura...", type: "loading", });
+                                        const facturaData = {
+                                            tipo: tipoFactura,
+                                            nro_factura: isManual ? nroFactura : this.generateRandomCode(), cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+                                            nit: isManual ? "" : nit,
+                                            razon_social: isManual ? "" : razon_social,
+                                            correo_electronico: isManual ? "" : correo_electronico,
+                                            telefono: isManual ? "" : telefono,
+                                            leyenda: "alvaro es probando la leyenda",
+                                            detalles: (venta.detalles ?? []).map((d) => d.descripcion).join(", "),
+                                            archivo_pdf: isManual ? { name: this.state.pdfFiles?.[venta.key]?.name, type: this.state.pdfFiles?.[venta.key]?.type, } : {},
+                                            link_factura: isManual ? this.state.pdfFiles?.[venta.key]?.link || null : "",
+                                            factura_seleccionada: tipoLabel,
+                                        };
+
+                                        const updatedVenta = {
+                                            ...venta,
+                                            facturar: true,
+                                            factura: facturaData,
+                                            nit: isManual ? venta.nit : nit,
+                                            razon_social: isManual ? venta.razon_social : razon_social,
+                                            correo_electronico: isManual ? venta.correo_electronico : correo_electronico,
+                                            telefono: isManual ? venta.telefono : telefono,
+                                        };
+
+                                        await Model.compra_venta.Action.editar({
+                                            data: updatedVenta,
+                                            key_usuario: Model.usuario.Action.getKey(),
+                                        });
+
+                                        this.DinamicTable?.loadData();
+                                        SNotification.send({ key: notificationKey, title: `${tipoLabel} registrada`, body: isManual ? "Factura manual agregada correctamente." : `NIT: ${nit}, Razón social: ${razon_social}`, color: STheme.color.success, time: 5000, });
+                                        SPopup.close(`registrar_factura_${tipoFactura}_${venta.key}`);
+                                    } catch (error) {
+                                        console.error("Error al editar la venta:", error);
+                                        SNotification.send({ key: notificationKey, title: "Error al registrar factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
                                     }
-                                }
-                                const facturaData = {
-                                    tipo: tipoFactura,
-                                    nro_factura: isManual ? nroFactura : this.generateRandomCode(),
-                                    cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
-                                    nit: isManual ? "" : nit,
-                                    razon_social: isManual ? "" : razon_social,
-                                    correo_electronico: isManual ? "" : correo_electronico,
-                                    telefono: isManual ? "" : telefono,
-                                    leyenda: "alvaro es probando la leyenda",
-                                    detalles: (venta.detalles ?? []).map(d => d.descripcion).join(", "),
-                                    archivo_pdf: isManual ? { name: this.state.pdfFiles?.[venta.key]?.name, type: this.state.pdfFiles?.[venta.key]?.type } : {},
-                                    link_factura: isManual ? this.state.pdfFiles?.[venta.key]?.link || null : "",
-                                    factura_seleccionada: tipoLabel,
-                                };
-                                const updatedVenta = {
-                                    ...venta,
-                                    facturar: true,
-                                    factura: facturaData,
-                                    nit: isManual ? venta.nit : nit,
-                                    razon_social: isManual ? venta.razon_social : razon_social,
-                                    correo_electronico: isManual ? venta.correo_electronico : correo_electronico,
-                                    telefono: isManual ? venta.telefono : telefono,
-                                };
-                                try {
-                                    await Model.compra_venta.Action.editar({ data: updatedVenta, key_usuario: Model.usuario.Action.getKey() });
-                                    if (this.DinamicTable) this.DinamicTable.loadData();
-                                    SNotification.send({ key: "factura_registrar_ok_" + tipoFactura, title: tipoLabel + " registrada", body: isManual ? "Factura manual agregada." : "NIT: " + nit + ", Razón social: " + razon_social, color: STheme.color.success, time: 5000, });
-                                } catch (error) {
-                                    console.error("Error al editar la venta:", error);
-                                    SNotification.send({ key: "factura_registrar_error_" + tipoFactura, title: "Error al registrar factura", body: "Intente de nuevo.", color: STheme.color.danger, time: 5000, });
-                                } finally {
-                                    SPopup.close("registrar_factura_" + tipoFactura + "_" + venta.key);
-                                }
-                            }}>
-                                <SText color={STheme.color.success}>Registrar</SText>
+                                }}
+                            >
+                                <SText color={STheme.color.success}> Registrar </SText>
                             </SView>
+
                         </SView>
                     </SView>
                 )
@@ -322,18 +328,32 @@ export default class tabla extends Component {
                         ...(row?.factura?.factura_seleccionada === "Factura Manual"
                             ? [
                                 {
-                                    label: "Descargar Archivo (PDF)", icon: "iconPdf", iconProps: { fill: STheme.color.text }, onPress: () => {
-                                        if (row?.factura?.link_factura) {
-                                            Linking.openURL(row.factura.link_factura);
-                                        } else {
+                                    label: "Descargar Archivo (PDF)",
+                                    icon: "iconPdf",
+                                    iconProps: {
+                                        fill: STheme.color.text,
+                                    },
+                                    onPress: async () => {
+                                        const notificationKey = `pdf_${row.key}`;
+
+                                        try {
+                                            if (!row?.factura?.link_factura) { SNotification.send({ key: notificationKey, title: "Archivo no disponible", body: "No existe un enlace para la factura.", color: STheme.color.danger, time: 4000, }); return; }
+                                            SNotification.send({ key: notificationKey, title: "Abriendo archivo...", type: "loading", });
+                                            await Linking.openURL(row.factura.link_factura);
+                                            SNotification.send({ key: notificationKey, title: "Archivo abierto", body: "La factura se abrió correctamente.", color: STheme.color.success, time: 3000, });
+                                        } catch (error) {
+                                            console.error("Error al abrir PDF:", error);
                                             SNotification.send({
-                                                title: "Error",
-                                                body: "No existe enlace para la factura."
+                                                key: notificationKey,
+                                                title: "Error al abrir archivo",
+                                                body: error?.message || "No se pudo abrir la factura.",
+                                                color: STheme.color.danger,
+                                                time: 5000,
                                             });
                                         }
-
                                     },
-                                },]
+                                },
+                            ]
                             : [{ label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta", }); }, },
                             { label: "Imprimir Factura (Rollo)", icon: "iconLista", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo", }); }, },
                             ]),
@@ -362,63 +382,69 @@ export default class tabla extends Component {
                 title: "GESTIÓN",
                 items: [
                     {
-                        label: "Anular venta", icon: "cancelado", iconProps: { fill: '#db0606ff', stroke: '#db0606ff' }, onPress: () => {
+                        label: "Anular venta", icon: "cancelado", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
+                        onPress: () => {
                             SPopup.confirm({
                                 icon: "cancelado",
                                 title: "Anular venta",
                                 message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
-                                cancel: { label: "Cancelar", color: STheme.color.lightGray },
+                                cancel: { label: "Cancelar", color: STheme.color.lightGray, },
                                 onPress: () => {
-                                    // aqui deberia decir procesando
-                                    // SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
-                                    MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
-                                        if (this.DinamicTable) this.DinamicTable.loadData();
-                                        SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
-                                    }).catch(error => {
-                                        // console.clear();
-                                        console.log("%c" + JSON.stringify(error, null, 2), "color: #0cd2f5; font-weight: bold;");
-                                        console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
-                                    });
-                                }
+                                    const notificationKey = `anular_v_${row.key}`;
+                                    SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading", });
+                                    MDL.caja.anular_venta({ key_compra_venta: row.key, })
+                                        .then(() => {
+                                            this.DinamicTable?.loadData();
+                                            SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success, });
+                                        })
+                                        .catch((error) => {
+                                            console.error("Error al anular venta:", error);
+                                            SNotification.send({ key: notificationKey, title: "Error", body: error?.message || String(error), color: STheme.color.danger, });
+                                        });
+                                },
                             });
-                        }
+                        },
                     },
+
                     row?.factura?.cuf ? {
-                        label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text }, onPress: () => {
+                        label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text, },
+                        onPress: () => {
                             SPopup.confirm({
-                                icon: <SIconApp name="eliminar" height={24} fill="#db0606ff" />,
-                                style: { padding: 10, paddingBottom: 5, paddingTop: 5 },
-                                title: "Anular factura " + row?.factura?.nro_factura,
+                                icon: (<SIconApp name="eliminar" height={24} fill="#db0606ff" />),
+                                style: { padding: 10, paddingBottom: 5, paddingTop: 5, },
+                                title: `Anular factura ${row?.factura?.nro_factura}`,
                                 message: "¿Está seguro de que desea anular la factura? Esta acción no se puede deshacer.",
+                                cancel: { label: "Cancelar", color: STheme.color.lightGray, },
                                 onPress: async () => {
-                                    const updatedVenta = {
-                                        ...row,
-                                        facturar: false,
-                                        factura: {},
-                                    };
+                                    const notificationKey = `anular_factura_${row.key}`;
                                     try {
+                                        SNotification.send({ key: notificationKey, title: "Anulando factura...", type: "loading", });
+                                        const updatedVenta = { ...row, facturar: false, factura: {}, };
                                         await Model.compra_venta.Action.editar({
                                             data: updatedVenta,
-                                            key_usuario: Model.usuario.Action.getKey(),
+                                            key_usuario:
+                                                Model.usuario.Action.getKey(),
                                         });
-                                        SNotification.send({ key: "anular_factura_" + row.key, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
-                                        if (this.DinamicTable) this.DinamicTable.loadData();
+                                        this.DinamicTable?.loadData();
+                                        SNotification.send({ key: notificationKey, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
                                     } catch (error) {
                                         console.error("Error al anular factura:", error);
-                                        SNotification.send({ key: "anular_factura_error_" + row.key, title: "Error al anular factura", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
+                                        SNotification.send({ key: notificationKey, title: "Error al anular factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
                                     }
-                                }
+                                },
                             });
-                        }
-                    } : null,
-                ].filter(Boolean)
+                        },
+                    }
+                        : null,
+                ].filter(Boolean),
             }
+
         ].filter(Boolean);
         return (
             <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
                 {groups.map((group, gi) => (
                     <SView key={gi} col={"xs-12"}>
-                        <SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }} >
+                        <SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }}>
                             <SText color={STheme.color.text + "99"}>{group.title}</SText>
                         </SView>
                         {group.items.map((opt, i) => (<RenderOption key={i} {...opt} />))}
@@ -496,27 +522,25 @@ export default class tabla extends Component {
                     }}
                 />
                 <DinamicTable.Col key="detalles__" label="Concepto" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
-                < DinamicTable.Col key="total_cupos" label="Cupos" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
+                < DinamicTable.Col key="total_cupos" label="Cupos" width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
                 < DinamicTable.Col key="total_suscriptos" label="Registrados" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_suscriptos ?? ""} />
                 < DinamicTable.Col key="total_disponibles" label="Pendientes" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_disponibles ?? ""}
                     customComponent={e => {
                         const pendientes = parseInt(e.data || 0);
                         return (
                             <SView col={"xs-12"} center row>
-                                <SView style={{ borderRadius: 2, backgroundColor: pendientes > 0 ? "#fc500c" : "transparent", padding: 1 }} >
-                                    <SText style={{ ...e.textStyle, textTransform: "uppercase", }}   > {pendientes > 0 ? pendientes : ""} </SText>
+                                <SView style={{ borderRadius: 2, backgroundColor: pendientes > 0 ? "#fc500c" : "transparent", padding: 1 }}>
+                                    <SText style={{ ...e.textStyle, textTransform: "uppercase", }}> {pendientes > 0 ? pendientes : ""} </SText>
                                 </SView>
                             </SView>
                         );
                     }}
 
                 />
-
-
-                <DinamicTable.Col key="detalles__lista" label="Lista de suscriptores" width={200} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
+                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
                         const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
-                        return (<SView col> {suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle} > • {s?.cliente?.nombres} </SText>))} </SView>);
+                        return (<SView col> {suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))} </SView>);
                     }}
                 />
                 <DinamicTable.Col
@@ -528,7 +552,6 @@ export default class tabla extends Component {
                     customComponent={(e) => {
                         const totalCupos = Number(e.row?.total_cupos || 0);
                         const totalSuscriptores = Number(e.row?.total_suscriptos || 0);
-
                         if (totalCupos <= 0) { return (<SView center row> <SText color={STheme.color.lightGray}> Sin cupos </SText> </SView>); }
                         const porcentaje = Math.min((totalSuscriptores / totalCupos) * 100, 100);
                         let color = "#ea580c";
@@ -546,8 +569,8 @@ export default class tabla extends Component {
                         }
                         return (
                             <SView col={"xs-12"} center>
-                                <SText style={{ color, fontWeight: "bold", fontSize: 12, }} > {icono} {totalSuscriptores}/{totalCupos} </SText>
-                                <SView width={60} height={6} backgroundColor="#e5e7eb" style={{ borderRadius: 3, overflow: "hidden", marginTop: 3, }} >
+                                <SText style={{ color, fontWeight: "bold", fontSize: 12, }}> {icono} {totalSuscriptores}/{totalCupos} </SText>
+                                <SView width={60} height={6} backgroundColor="#e5e7eb" style={{ borderRadius: 3, overflow: "hidden", marginTop: 3, }}>
                                     <SView width={`${porcentaje}%`} height={6} backgroundColor={color} />
                                 </SView>
                             </SView>
@@ -559,7 +582,7 @@ export default class tabla extends Component {
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
                             <SView col={"xs-12"} center row>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33" }} border={STheme.color.card} center     >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33" }} border={STheme.color.card} center>
                                     <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
@@ -571,7 +594,7 @@ export default class tabla extends Component {
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
                             <SView col={"xs-12"} center row>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33" }} border={STheme.color.text} center     >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33" }} border={STheme.color.text} center>
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
@@ -582,8 +605,8 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 4 }} width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.cliente?.key) ?
-                            <SView col={"xs-12"} center row >
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33", }} border={STheme.color.text} center     >
+                            <SView col={"xs-12"} center row>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.text + "33", }} border={STheme.color.text} center>
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
@@ -649,7 +672,7 @@ export default class tabla extends Component {
                         if (!config) return null;
                         return (
                             <SView col={"xs-12"} center row>
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, textTransform: "uppercase", color: config.color }} >{config.label}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, textTransform: "uppercase", color: config.color }}>{config.label}</SText>
                             </SView>
                         );
                     }} />
@@ -726,56 +749,32 @@ export default class tabla extends Component {
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 />
-            </DinamicTable >
+            </DinamicTable>
         );
     }
-
-    confirmarBorradoFacturas() {
+    async confirmarBorradoFacturas() {
+        const notificationKey = "borrar_facturas";
         SPopup.confirm({
             icon: "eliminar",
             title: "Borrar todas las facturas",
             message: "Esta acción eliminará las facturas de TODAS las ventas cargadas. ¿Desea continuar?",
             onPress: async () => {
                 try {
-                    const data = await this.DinamicTable?.getData?.() || [];
-
-                    if (!Array.isArray(data)) {
-                        console.warn("La tabla no devolvió un array");
-                    }
-
-                    const updates = data.map(v => {
-                        return Model.compra_venta.Action.editar({
-                            data: {
-                                ...v,
-                                facturar: false,
-                                factura: {},
-                            },
-                            key_usuario: Model.usuario.Action.getKey(),
-                        });
-                    });
+                    SNotification.send({ key: notificationKey, title: "Eliminando facturas...", type: "loading", });
+                    const data = (await this.DinamicTable?.getData?.()) || [];
+                    if (!Array.isArray(data)) { throw new Error("La tabla no devolvió un array"); }
+                    const updates = data.map((v) => Model.compra_venta.Action.editar({ data: { ...v, facturar: false, factura: {}, }, key_usuario: Model.usuario.Action.getKey(), })
+                    );
                     await Promise.all(updates);
-                    SNotification.send({
-                        key: "borrar_facturas_ok",
-                        title: "Facturas eliminadas",
-                        body: "Se eliminaron todas las facturas correctamente.",
-                        color: STheme.color.success,
-                        time: 5000,
-                    });
                     this.DinamicTable?.loadData?.();
+                    SNotification.send({ key: notificationKey, title: "Facturas eliminadas", body: "Se eliminaron todas las facturas correctamente.", color: STheme.color.success, });
                 } catch (error) {
-                    console.error(error);
-                    SNotification.send({
-                        key: "borrar_facturas_error",
-                        title: "Error",
-                        body: "No se pudieron borrar todas las facturas.",
-                        color: STheme.color.danger,
-                        time: 5000,
-                    });
+                    console.error("Error al borrar facturas:", error);
+                    SNotification.send({ key: notificationKey, title: "Error al eliminar facturas", body: error?.message || "No se pudieron borrar todas las facturas.", color: STheme.color.danger, time: 5000, });
                 }
-            }
+            },
         });
     }
-
     render() {
         return (
             <SPage title="Tabla de Ventas" disableScroll>
