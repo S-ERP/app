@@ -22,6 +22,12 @@ export default class tabla extends Component {
 
     async loadInitialData() {
         try {
+            SNotification.send({
+                key: "load_ventas",
+                title: "Cargando ventas...",
+                type: "loading",
+            });
+
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
             if (!registros) console.warn("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
@@ -86,10 +92,24 @@ export default class tabla extends Component {
                     subtotal: totalesMap[cv.key]?.subtotal || "0"
                 };
             });
-            console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
+            SNotification.send({
+                key: "load_ventas",
+                title: "Datos cargados",
+                body: `Se cargaron ${ventasEnriquecidas.length} ventas`,
+                color: STheme.color.success,
+                time: 2000,
+            });
+
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
+            SNotification.send({
+                key: "load_ventas",
+                title: "Error al cargar ventas",
+                body: error?.message || "Error desconocido",
+                color: STheme.color.danger,
+                time: 4000,
+            });
             SPopup.alert("Error al cargar los datos. Intenta nuevamente.");
             return [];
         }
@@ -391,6 +411,7 @@ export default class tabla extends Component {
                                 cancel: { label: "Cancelar", color: STheme.color.lightGray, },
                                 onPress: () => {
                                     const notificationKey = `anular_v_${row.key}`;
+                                    // cuando se anule una venta, verificar si existe una facrtura
                                     SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading", });
                                     MDL.caja.anular_venta({ key_compra_venta: row.key, })
                                         .then(() => {
@@ -399,7 +420,7 @@ export default class tabla extends Component {
                                         })
                                         .catch((error) => {
                                             console.error("Error al anular venta:", error);
-                                            SNotification.send({ key: notificationKey, title: "Error", body: error?.message || String(error), color: STheme.color.danger, });
+                                            SNotification.send({ key: notificationKey, title: "Error Anular Venta", body: error?.message || String(error), color: STheme.color.danger, });
                                         });
                                 },
                             });
@@ -762,7 +783,7 @@ export default class tabla extends Component {
                 try {
                     SNotification.send({ key: notificationKey, title: "Eliminando facturas...", type: "loading", });
                     const data = (await this.DinamicTable?.getData?.()) || [];
-                    if (!Array.isArray(data)) { throw new Error("La tabla no devolvió un array"); }
+                    if (!Array.isArray(data)) { console.error("La tabla no devolvió un array:", data); }
                     const updates = data.map((v) => Model.compra_venta.Action.editar({ data: { ...v, facturar: false, factura: {}, }, key_usuario: Model.usuario.Action.getKey(), })
                     );
                     await Promise.all(updates);
