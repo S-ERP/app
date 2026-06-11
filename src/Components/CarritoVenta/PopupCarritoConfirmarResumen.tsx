@@ -158,11 +158,21 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
             const selectedMoneda = MDL.carrito.selectedMoneda || moneda;
-            if (!selectedMoneda || !selectedMoneda.tipo_cambio) {
+            if (!selectedMoneda?.key) {
+                SNotification.send({
+                    key: "venta_rapida",
+                    title: "Moneda no seleccionada",
+                    body: "Debe seleccionar una moneda antes de continuar.",
+                    color: STheme.color.danger,
+                    time: 4000,
+                });
+                return;
+            }
+            if (!selectedMoneda?.tipo_cambio) {
                 console.warn("Moneda o tipo de cambio no definido");
             }
 
-            const montoMaximo = total * (selectedMoneda.tipo_cambio || 1);
+            const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
 
             SelectTipoPago.openPopup({
                 key_punto_venta: keyPuntoVenta,
@@ -223,13 +233,21 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
-            const monedaActual = MDL.carrito.selectedMoneda;
+            const monedaActual = MDL.carrito.selectedMoneda || this.props.moneda || { key: key_moneda };
+
+            if (!monedaActual?.key) {
+                console.error("Moneda no seleccionada para completar la venta");
+            }
+            const almacen = this.props.almacen || almacen_;
+            if (!almacen?.key) {
+                SPopup.alert("Debe seleccionar un almacén antes de completar la venta.");
+                return;
+            }
 
             console.clear();
             console.log("%c" + JSON.stringify(cliente), `color: #ccc92e; font-weight: bold;`);
             const sucursalKey = MDL.caja.activa ? MDL.caja.activa.key_sucursal : null;
 
-            const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
             const esCredito = Object.values(tipos_pago).some((tp: any) =>
                 tp?.tipo_pago?.key === "credito" ||
@@ -281,7 +299,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     key_cliente: suscriptor.key_cliente || suscriptor?.cliente?.key || suscriptor?.cliente?.value || null,
                     fecha_inicio: suscriptor.fecha_inicio,
                     fecha_fin: suscriptor.fecha_fin,
-                    key_producto: "edbafa69-dafa-4519-9147-42a994ae2e61",
+                    key_producto: "",
                     key_sucursal: sucursalKey,
                 }));
                 if (!Array.isArray(ci.modelo?.suscriptores)) {
@@ -335,8 +353,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 key_cliente: clientefull?.key || null,
                 key_usuario: MDL.usuario.session?.key || null,
                 key_caja: MDL.caja.activa?.key || null,
-                key_almacen: almacen.key,
-                key_moneda: monedaActual.key,
+                key_almacen: almacen?.key || null,
+                key_moneda: monedaActual?.key || null,
                 detalle,
                 suscripciones,
                 tipos_pago,
@@ -458,13 +476,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             }}>
                                 <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
                                 <SText fontSize={13} bold color={STheme.color.text}>
-                                    {monedaActual.observacion} {SMath.formatMoney(subtotal2, 2)}
+                                    {monedaActual?.observacion ?? "Bs"} {SMath.formatMoney(subtotal2, 2)}
                                 </SText>
                             </SView>
                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                                 <SText fontSize={12} color={STheme.color.text}>Descuentos:</SText>
                                 <SText fontSize={13} color={STheme.color.text}>
-                                    - {monedaActual.observacion} {SMath.formatMoney((totalDescuento) || 0, 2)}
+                                    - {monedaActual?.observacion ?? "Bs"} {SMath.formatMoney((totalDescuento) || 0, 2)}
                                 </SText>
                             </SView>
                             <SHr height={3} />
@@ -473,7 +491,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4, padding: 3 }}>
                                 <SText fontSize={18} color={STheme.color.text}>Total:</SText>
                                 <SText fontSize={18} bold color={STheme.color.text}>
-                                    {monedaActual.observacion} {SMath.formatMoney(total, 2)}
+                                    {monedaActual?.observacion ?? "Bs"} {SMath.formatMoney(total, 2)}
                                 </SText>
                             </SView>
                         </SView>
