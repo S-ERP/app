@@ -9,15 +9,24 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
-import FechaFullFilter from '../../Components/FechaFullFilter';
+import DateTimeBetween from '../../Components/DateTimeBetween';
 import PopupUploadFactura from './Components/PopupUploadFactura';
 import { Linking } from 'react-native'
+import { color } from 'three/examples/jsm/nodes/Nodes';
+import FechaFullFilter from '../../Components/FechaFullFilter';
 
 export default class tabla extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { pdfFiles: {} };
+        const hoy = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        this.state = {
+            pdfFiles: {},
+            fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+            fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
+        };
     }
 
     async loadInitialData() {

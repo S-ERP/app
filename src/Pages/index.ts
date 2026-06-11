@@ -95,6 +95,7 @@ import costos from "./costos";
 import recharts from "./recharts/recharts";
 import dashboard from "./dashboard";
 
+import SForm2Page from "../Components/SForm2/test";
 
 export default SPage.combinePages("/", {
   "": lobyRoot,
@@ -187,4 +188,5 @@ export default SPage.combinePages("/", {
   ...costos,
   recharts,
   ...dashboard,
+  "SForm2": SForm2Page,
 });

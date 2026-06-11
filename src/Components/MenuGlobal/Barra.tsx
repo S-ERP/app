@@ -101,7 +101,7 @@ export default class Barra extends React.Component {
                         <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas_t"} permiso="ver" />
                         <Page label={"Gestiones"} url={"/conta/gestion"} permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
-                        <Page label={"Plan de cuentas anidados"} url={"/conta/cuentas_anidadas"}  />
+                        <Page label={"Plan de cuentas anidados"} url={"/conta/cuentas_anidadas"}  permiso_url="/conta/cuentas" permiso="ver" />
                         {/* </Page> */}
 
                     </Page>
@@ -110,8 +110,9 @@ export default class Barra extends React.Component {
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" permiso_url="/inventario/almacen" />
                         <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto" />
                         <Page label={"Marcas"} url={"/productos/marca/tabla"} permiso="ver" permiso_url="/productos/tipo_producto" />
-                        <Page label={"Tipos de costos"} url={"/productos/tipo_costo"} />
+                        <Page label={"Tipos de costos"} url={"/productos/tipo_costo"} permiso="ver" permiso_url="/productos/tipo_producto" />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" />
+                        <Page label={"Stock2"} url={"/productos/modelo/table2"} permiso_url="/productos/modelo/table" permiso="ver" />
                         <Page label={"Pizarra"} url={"/productos/pizarra"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Traspaso entre almacenes"} url={"/productos/traspaso_inventario"} permiso="ver" permiso_url="/inventario/almacen" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
@@ -137,7 +138,7 @@ export default class Barra extends React.Component {
                     {/* <Page label={"Tipo de costo"} url={"/productos/tipo_costo"}  /> */}
                     <Page label={"Ventas"} icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />} >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
-                        <Page label={"Suscriptores"} url={"/suscriptores"}  />
+                        <Page label={"Suscriptores"} url={"/suscriptores"} permiso="ver"  />
                         <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                         <Page label={"Cotizaciones"} url={"/cotizacion"} permiso="ver" permiso_url="/venta" />
                         {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}

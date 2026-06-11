@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo } from "react";
-import { View, PanResponder, TouchableOpacity, StyleSheet } from "react-native";
+import { View, PanResponder, TouchableOpacity, StyleSheet, Animated } from "react-native";
 import { SNavigation, SText, SView, SPopup, SInput, SHr, STheme } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import { Actions } from "..";
@@ -9,6 +9,8 @@ const HANDLE_W = 16;
 // const FRAME_W      = 60;
 const FRAME_COUNT = 10;
 const GOLD = "#f5c518";
+
+const SPEED_OPTIONS = [0.25, 0.5, 1, 1.25, 1.5, 2];
 
 const QUALITY_OPTIONS = [
     { label: "2160p", desc: "4K", crf: 18 },
@@ -35,6 +37,25 @@ export default function VideoCut(props) {
     const [endRatio, setEndRatio] = useState(1);
     const [quality, setQuality] = useState(QUALITY_OPTIONS[2]);
     const [videoError, setVideoError] = useState(false);
+    const [playbackRate, setPlaybackRate] = useState(1);
+    const [seeking, setSeeking] = useState(false);
+    const [animIcon, setAnimIcon] = useState("▶");
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const animOpacity = useRef(new Animated.Value(0)).current;
+    const animScale = useRef(new Animated.Value(0.6)).current;
+
+    const triggerAnim = (icon) => {
+        setAnimIcon(icon);
+        animOpacity.setValue(1);
+        animScale.setValue(0.6);
+        Animated.parallel([
+            Animated.spring(animScale, { toValue: 1, useNativeDriver: true, speed: 30 }),
+            Animated.sequence([
+                Animated.delay(300),
+                Animated.timing(animOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
+            ]),
+        ]).start();
+    };
 
     // Thumbnail URLs derived from duration — no canvas needed
     const thumbUrls = useMemo(() => {
@@ -61,6 +82,56 @@ export default function VideoCut(props) {
         if (paused) vid.pause(); else vid.play();
     }, [paused]);
 
+    // ── Playback rate sync ───────────────────────────────────────────
+    useEffect(() => {
+        if (videoRef.current) videoRef.current.playbackRate = playbackRate;
+    }, [playbackRate]);
+
+    // ── Fullscreen sync ──────────────────────────────────────────────
+    useEffect(() => {
+        const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener("fullscreenchange", onChange);
+        return () => document.removeEventListener("fullscreenchange", onChange);
+    }, []);
+
+    const toggleFullscreen = () => {
+        const vid = videoRef.current;
+        if (!vid) return;
+        if (!document.fullscreenElement) {
+            vid.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    };
+
+    // ── Keyboard shortcuts ───────────────────────────────────────────
+    useEffect(() => {
+        const handleKey = (e) => {
+            const tag = e.target?.tagName;
+            if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+            if (e.key === "ArrowRight") {
+                e.preventDefault();
+                const vid = videoRef.current;
+                if (vid) {
+                    const t = Math.min(vid.currentTime + 5, durationRef.current);
+                    if (vid.fastSeek) vid.fastSeek(t); else vid.currentTime = t;
+                }
+            } else if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                const vid = videoRef.current;
+                if (vid) {
+                    const t = Math.max(vid.currentTime - 5, 0);
+                    if (vid.fastSeek) vid.fastSeek(t); else vid.currentTime = t;
+                }
+            } else if (e.key === " ") {
+                e.preventDefault();
+                setPaused(p => !p);
+            }
+        };
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, []);
+
     // ── Extract filmstrip frames ─────────────────────────────────────
     // Frames are derived from the server thumbnail API (see thumbUrls), no extraction needed.
 
@@ -76,7 +147,10 @@ export default function VideoCut(props) {
     // ── Seek ─────────────────────────────────────────────────────────
     const seekTo = (ratio) => {
         const t = Math.max(0, Math.min(ratio, 1)) * durationRef.current;
-        if (videoRef.current) videoRef.current.currentTime = t;
+        const vid = videoRef.current;
+        if (vid) {
+            if (vid.fastSeek) vid.fastSeek(t); else vid.currentTime = t;
+        }
         setCurrentTime(t);
     };
 
@@ -173,15 +247,32 @@ export default function VideoCut(props) {
                 <video
                     ref={videoRef}
                     src={url}
-                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "pointer" }}
+                    onClick={() => setPaused(p => { triggerAnim(p ? "▶" : "⏸"); return !p; })}
+                    onDoubleClick={toggleFullscreen}
                     onLoadedMetadata={e => {
                         durationRef.current = e.target.duration;
                         setDuration(e.target.duration);
                     }}
                     onTimeUpdate={e => setCurrentTime(e.target.currentTime)}
+                    onSeeking={() => setSeeking(true)}
+                    onSeeked={() => setSeeking(false)}
                     onEnded={() => setPaused(true)}
                     onError={() => setVideoError(true)}
                 />
+                {/* Play/Pause animation overlay */}
+                <Animated.View
+                    pointerEvents="none"
+                    style={[styles.playAnimOverlay, { opacity: animOpacity, transform: [{ scale: animScale }] }]}
+                >
+                    <SText style={styles.playAnimIcon}>{animIcon}</SText>
+                </Animated.View>
+
+                {seeking && (
+                    <View style={styles.seekingOverlay} pointerEvents="none">
+                        <SText style={styles.seekingText}>⏳</SText>
+                    </View>
+                )}
                 {videoError && (
                     <View style={styles.videoErrorOverlay} pointerEvents="none">
                         <SText style={styles.videoErrorText}>⚠️ Este formato no es compatible con el navegador.</SText>
@@ -194,6 +285,11 @@ export default function VideoCut(props) {
                         {formatTime(currentTime)}  /  {formatTime(duration)}
                     </SText>
                 </View>
+
+                {/* Fullscreen button */}
+                <TouchableOpacity onPress={toggleFullscreen} style={styles.fullscreenBtn}>
+                    <SText style={styles.fullscreenBtnText}>{isFullscreen ? "⊠" : "⛶"}</SText>
+                </TouchableOpacity>
             </SView>
 
             {/* ── Trimmer bar (QuickTime style) ── */}
@@ -298,6 +394,24 @@ export default function VideoCut(props) {
                     {"  "}
                     <SText style={styles.durationText}>({formatTime(endSec - startSec)})</SText>
                 </SText>
+                {/* Speed pills */}
+                <View style={styles.speedWrap}>
+                    {SPEED_OPTIONS.map(s => {
+                        const active = playbackRate === s;
+                        return (
+                            <TouchableOpacity
+                                key={s}
+                                onPress={() => setPlaybackRate(s)}
+                                style={active ? [styles.speedPill, styles.speedPillActive] : styles.speedPill}
+                            >
+                                <SText style={{ fontSize: 11, color: active ? "#fff" : "#aaa", fontWeight: "600" }}>
+                                    {s === 1 ? "1x" : `${s}x`}
+                                </SText>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
+
                 <View style={styles.selectWrap}>
                     <select
                         value={quality.crf}
@@ -342,6 +456,33 @@ const styles = StyleSheet.create({
         backgroundColor: "#000",
         position: "relative",
     },
+    playAnimOverlay: {
+        position: "absolute",
+        top: 0, left: 0, right: 0, bottom: 0,
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+    },
+    playAnimIcon: {
+        fontSize: 48,
+        color: "#fff",
+        width: 90,
+        height: 90,
+        borderRadius: 45,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        textAlign: "center",
+        lineHeight: 90,
+    },
+    seekingOverlay: {
+        position: "absolute",
+        top: 0, left: 0, right: 0, bottom: 0,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(0,0,0,0.25)",
+    },
+    seekingText: {
+        fontSize: 32,
+    },
     videoErrorOverlay: {
         position: "absolute",
         top: 0, left: 0, right: 0, bottom: 0,
@@ -375,6 +516,21 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 13,
     },
+    fullscreenBtn: {
+        position: "absolute",
+        top: 10,
+        right: 12,
+        backgroundColor: "rgba(0,0,0,0.55)",
+        width: 32,
+        height: 32,
+        borderRadius: 6,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    fullscreenBtnText: {
+        color: "#fff",
+        fontSize: 16,
+    },
 
     // ── Trimmer row ──────────────────────────────────────────────────
     trimmerBar: {
@@ -398,6 +554,18 @@ const styles = StyleSheet.create({
     playBtnText: {
         fontSize: 20,
         color: "#fff",
+    },
+    skipBtn: {
+        paddingHorizontal: 8,
+        paddingVertical: 6,
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+    },
+    skipBtnText: {
+        fontSize: 12,
+        color: "#aaa",
+        fontWeight: "600",
     },
 
     // ── Filmstrip ────────────────────────────────────────────────────
@@ -526,6 +694,28 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#888",
         fontWeight: "normal",
+    },
+    speedWrap: {
+        flexDirection: "row",
+        gap: 4,
+        alignItems: "center",
+    },
+    speedPill: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        backgroundColor: "#3a3a3c",
+    },
+    speedPillActive: {
+        backgroundColor: "#0a84ff",
+    },
+    speedPillText: {
+        fontSize: 11,
+        color: "#aaa",
+        fontWeight: "600",
+    },
+    speedPillTextActive: {
+        color: "#fff",
     },
     selectWrap: {
         alignItems: "flex-end",
