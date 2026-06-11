@@ -152,20 +152,17 @@ export default class factura extends MDLAbstract<EventListener> {
 
 
     imprimir({ cuf = "", tipo = "carta" }: { cuf: string, tipo?: "carta" | "rollo" }) {
-        SNotification.send({
-            key: "imprimirFactura" + cuf,
-            title: "Imprimiendo factura",
-            body: cuf,
-            type: "loading"
-        })
+        SNotification.send({ key: "imprimirFactura" + cuf, title: "Imprimiendo factura", body: cuf, type: "loading" })
         SSocket.sendPromise({
             service: "facturacion",
             component: "factura",
             type: "imprimir",
-            key_empresa: Model.empresa.Action.getKey(),
+            key_empresa: "12cf4b09-00b5-48af-b9f8-8ee2c1d8102e",
+            // key_empresa: Model.empresa.Action.getKey(),
             key_usuario: Model.usuario.Action.getKey(),
             tipo: tipo,
-            cuf: cuf,
+            cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+            // cuf: cuf,
         }, 1000 * 60).then((e: any) => {
 
             const b64 = e.data.pdf
@@ -173,21 +170,9 @@ export default class factura extends MDLAbstract<EventListener> {
             this.openPdfFromBase64(pdf)
 
             // this.componentDidMount()
-            SNotification.send({
-                key: "imprimirFactura" + cuf,
-                title: "Factura impresa con éxito",
-                body: cuf,
-                color: STheme.color.success,
-                time: 5000,
-            })
+            SNotification.send({ key: "imprimirFactura" + cuf, title: "Factura impresa con éxito", body: cuf, color: STheme.color.success, time: 5000, })
         }).catch(e => {
-            SNotification.send({
-                key: "imprimirFactura" + cuf,
-                title: "No se pudo imprimir la factura.",
-                body: e.error,
-                color: STheme.color.error,
-                time: 5000,
-            })
+            SNotification.send({ key: "imprimirFactura" + cuf, title: "No se pudo imprimir la factura.", body: e.error, color: STheme.color.error, time: 5000, })
         })
     }
     verificarEstado({ cuf = "" }) {
