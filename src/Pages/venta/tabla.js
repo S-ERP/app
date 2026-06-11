@@ -74,7 +74,7 @@ export default class tabla extends Component {
                         total_suscriptores: 10,
                         suscriptores: 4,
                         // cantidad_suscriptores: bd_suscriptres.data ? Object.values(bd_suscriptres.data).filter(s => s.key_compra_venta_detalle === cv?.detalles?.[0]?.key).length : 0,
-                        moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
+                        moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {}, //aqui
                         sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
                         usuario: usuariosMap[cv?.key_usuario] || {},
                         empresa,

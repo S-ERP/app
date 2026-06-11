@@ -87,8 +87,10 @@ export default class BarraRechartsBd extends Component {
             onClick={onClick}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={nameKey} fontSize={10} 
-            tick={{ fill: STheme.color.text }} 
+            <XAxis dataKey={nameKey.slice(0, 12)} fontSize={9}
+              tick={{ fill: STheme.color.text }}
+              // angle={-15}
+              // textAnchor="end"
             // angle={-90}
             // textAnchor="end"
             />

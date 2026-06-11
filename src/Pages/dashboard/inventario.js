@@ -32,6 +32,8 @@ export default class inventario extends React.Component {
         dataProductosMayorStock: [],
         dataProductosBajoStock: [],
         dataDistribucionProductos: [],
+        dataValorProductosPorSucursal: [],
+        dataValorProductos: [],
 
         loading: true,
     };
@@ -327,6 +329,19 @@ export default class inventario extends React.Component {
                 fecha_fin,
                 selectedSucursal?.key
             ),
+            this.loadValorInventario(
+                empresaSeleccionada.key,
+                // fecha_inicio,
+                // fecha_fin,
+                selectedSucursal?.key
+            ),
+            this.loadValorInventarioPorSucursal(
+                empresaSeleccionada.key,
+                // fecha_inicio,
+                // fecha_fin,
+                // selectedSucursal?.key
+            ),
+
         ]);
 
         this.setState({
@@ -402,16 +417,16 @@ export default class inventario extends React.Component {
         fecha_fin,
         keySucursal) => {
         try {
-            const almacenes = this.state.almacenes || [];
+            const sucursales = this.state.sucursales || [];
             // const productos = await MDL.inventario.getAllProducto?.() || [];
             const productos = await MDL.inventario.getAllModeloStock?.(keySucursal) || [];
 
             const stockPorAlmacen = {};
-            console.log("Almacenes obtenidos:", almacenes);
+            console.log("sucursales obtenidos:", sucursales);
 
-            almacenes.forEach(almacen => {
-                stockPorAlmacen[almacen.key] = {
-                    name: almacen.descripcion || almacen.nombre || "Almacén",
+            sucursales.forEach(sucursal => {
+                stockPorAlmacen[sucursal.key] = {
+                    name: sucursal.descripcion || sucursal.nombre || "Sucursal",
                     cantidad: 0,
                 };
             });
@@ -533,6 +548,130 @@ export default class inventario extends React.Component {
             }
         }
     };
+
+
+    loadValorInventarioPorSucursal = async (
+        keyEmpresa,
+        // fecha_inicio,
+        // fecha_fin,
+        // keySucursal
+    ) => {
+        console.log("keyEmpresa:", keyEmpresa);
+        try {
+            // const productos = await MDL.inventario.getAllProductos?.(keyEmpresa) || [];
+            const productos =
+                await MDL.compra_venta.execute_function(
+                    "get_valor_inventario_por_sucursal",
+                    // "productos_mayor_stock_compra_venta",
+                    [
+                        keyEmpresa,
+                        // fecha_inicio,
+                        // fecha_fin,
+                        // keySucursal
+                    ]
+                );
+            console.log("PROD__:", productos);
+            // Agrupar por categoría con conteo
+            const valor = {};
+
+            const data = productos.map(item => ({
+                producto: item.producto,
+                valor_inventario: item.valor_inventario
+            }));
+
+            console.log(data);
+
+            // productos.forEach(producto => {
+            //     const categoria = producto.categoria || "Sin categoría";
+            //     valor[categoria] = (valor[categoria] || 0) + 1;
+            // });
+
+            // console.log("VALOR INVENTARIO:", valor);
+            // const data = Object.entries(valor)
+            //     .map(([name, value]) => ({
+            //         name,
+            //         value,
+            //     }))
+            //     .sort((a, b) => b.value - a.value);
+
+            console.log("valor de productos:", data);
+
+            if (this._mounted) {
+                this.setState({ dataValorProductosPorSucursal: data });
+            }
+        } catch (e) {
+            console.error("Error en loadValorInventarioPorSucursal:", e);
+            if (this._mounted) {
+                this.setState({ dataValorProductosPorSucursal: [] });
+            }
+        }
+    };
+
+    loadValorInventario = async (
+        keyEmpresa,
+        // fecha_inicio,
+        // fecha_fin,
+        keySucursal
+    ) => {
+        console.log("keyEmpresa:", keyEmpresa);
+        try {
+            // const productos = await MDL.inventario.getAllProductos?.(keyEmpresa) || [];
+            const productos =
+                await MDL.compra_venta.execute_function(
+                    "valor_compra_venta_inventario",
+                    // "productos_mayor_stock_compra_venta",
+                    [
+                        keyEmpresa,
+                        // fecha_inicio,
+                        // fecha_fin,
+                        keySucursal
+                    ]
+                );
+            console.log("PROD__:", productos);
+            // Agrupar por categoría con conteo
+            const valor = {};
+
+            const data = productos.map(item => ({
+                producto: item.producto,
+                valor_inventario: item.valor_inventario
+            }));
+
+            console.log(data);
+
+            // productos.forEach(producto => {
+            //     const categoria = producto.categoria || "Sin categoría";
+            //     valor[categoria] = (valor[categoria] || 0) + 1;
+            // });
+
+            // console.log("VALOR INVENTARIO:", valor);
+            // const data = Object.entries(valor)
+            //     .map(([name, value]) => ({
+            //         name,
+            //         value,
+            //     }))
+            //     .sort((a, b) => b.value - a.value);
+
+            console.log("valor de productos:", data);
+
+            if (this._mounted) {
+                this.setState({ dataValorProductos: data });
+            }
+        } catch (e) {
+            console.error("Error en loadDistribucionProductos:", e);
+            if (this._mounted) {
+                this.setState({ dataValorProductos: [] });
+            }
+        }
+    };
+
+    //   const res = await MDL.compra_venta.execute_function("valor_compra_venta", [keyEmpresa]);
+    //             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
+    //             const data = raw.map(item => ({
+    //                 producto: item.producto ?? "Sin nombre",
+    //                 stock_actual: item.stock_actual ?? 0,
+    //                 precio_compra: item.precio_compra ?? 0,
+    //                 valor_inventario: item.valor_inventario ?? 0
+    //             }));
 
 
 
@@ -773,10 +912,10 @@ export default class inventario extends React.Component {
 
                         <SView card padding={15}>
 
-                            <SText bold>
+                            <SText bold fontSize={16}>
                                 Stock por Producto
                             </SText>
-
+                            <SHr />
                             <BarraRechartsBd
                                 data={this.state.dataProductosMayorStock}
                                 nameKey="producto"
@@ -791,24 +930,32 @@ export default class inventario extends React.Component {
                         <SView row col="xs-12" gap={16}>
 
                             <SView padding={10}
-                                col="xs-12 lg-6"
+                                col="xs-12"
                             >
-                                <SView center card padding={5}>
-                                    <CircularRechartsBd
-                                        data={this.state.dataDistribucionProductos}
+                                <SView card padding={15}>
+                                    <SText bold fontSize={16}>
+                                        Valor del Inventario
+                                    </SText>
+                                    <SHr />
+                                    {/* <CircularRechartsBd
+                                        data={this.state.dataValorProductos}
+                                    /> */}
+                                    <BarraRechartsBd
+                                        data={this.state.dataValorProductos}
+                                        nameKey="producto"
+                                        valueKey="valor_inventario"
+                                        height={320}
                                     />
                                 </SView>
                             </SView>
 
-                            <SView padding={10}
-                                col="xs-12 lg-6"
-                            >
-                                <SView center card padding={5}>
+                            {/* <SView padding={10} col="xs-12" >
+                                <SView center card padding={15} >
                                     <CircularRechartsBd
                                         data={this.state.dataStockByAlmacen}
                                     />
                                 </SView>
-                            </SView>
+                            </SView> */}
 
                         </SView>
 
@@ -816,22 +963,19 @@ export default class inventario extends React.Component {
 
                         <SView card padding={15}>
 
-                            <SText
-                                color={STheme.color.danger}
-                                bold
-                            >
+                            <SText color={STheme.color.text} bold fontSize={16}>
                                 Productos con Bajo Stock
                             </SText>
 
                             {/* listado */}
 
                         </SView>
-
+                        <SHr />
                         {/* TABLA */}
 
                         <SView card padding={15}>
 
-                            <SText bold>
+                            <SText bold fontSize={16}>
                                 Detalle Inventario
                             </SText>
 
