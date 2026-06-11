@@ -161,26 +161,45 @@ export default class tabla extends Component {
             // ENRIQUECER VENTAS
             // =========================
             const ventasEnriquecidas = ventas.map(cv => {
-                const detallesEnriquecidos = cv.detalles?.map(d => ({
+                const detallesEnriquecidos = (cv.detalles || []).map(d => ({
                     ...d,
                     ...(suscripcionesMap[d.key]?.[0] || {})
-                })) || [];
+                }));
+
+                const total_disponibles = detallesEnriquecidos.reduce(
+                    (sum, d) => sum + (Number(d.disponibles) || 0),
+                    0
+                );
+
+                const total_suscriptos = detallesEnriquecidos.reduce(
+                    (sum, d) => sum + (Number(d.suscriptos) || 0),
+                    0
+                );
+
+                const total_cupos = detallesEnriquecidos.reduce(
+                    (sum, d) => sum + (Number(d.cupos) || 0),
+                    0
+                );
+
                 return {
                     ...cv,
+
+                    total_disponibles,
+                    total_suscriptos,
+                    total_cupos,
+
                     detalles: detallesEnriquecidos,
-                    total_suscriptores: 10,
-                    suscriptores: 4,
-                    cantidad_suscriptores: 3,
+
                     moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
                     sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
                     usuario: usuariosMap[cv?.key_usuario] || {},
                     empresa,
                     proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
                     cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
-
                     subtotal: totalesMap[cv.key]?.subtotal || "0"
                 };
             });
+
             console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
@@ -621,34 +640,9 @@ export default class tabla extends Component {
                 />
                 <DinamicTable.Col key="detalles__" label="Concepto" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
 
-                <DinamicTable.Col key="cupos_disponibles_" label="Cupos" headerStyle={{ paddingLeft: 4 }} width={60}
-                    data={(e) => {
-                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
-                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        return totalCupos;
-                    }}
-                    customComponent={e => {
-                        return (<SView col={"xs-12"} center row> <SText style={{ ...e.textStyle, textTransform: "uppercase", }}   > {e.data} </SText> </SView>);
-                    }}
-                />
-                <DinamicTable.Col key="cupos_suscritos_" label="Registrados" headerStyle={{ paddingLeft: 4 }} width={80}
-                    data={(e) => {
-                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
-                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        return totalSuscriptores;
-                    }}
-                    customComponent={e => {
-                        return (<SView col={"xs-12"} center row> <SText style={{ ...e.textStyle, textTransform: "uppercase", }}   > {e.data} </SText> </SView>);
-                    }}
-                />
-                <DinamicTable.Col key="cupos_pendientes_" label=" Pendientes" headerStyle={{ paddingLeft: 4 }} width={80}
-                    data={(e) => {
-                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
-                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
-                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        return totalCupos - totalSuscriptores;
-                    }}
+                < DinamicTable.Col key="total_cupos" label="Cupos" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
+                < DinamicTable.Col key="total_suscriptos" label="Registrados" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_suscriptos ?? ""} />
+                < DinamicTable.Col key="total_disponibles" label="Pendientes" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_disponibles ?? ""}
                     customComponent={e => {
                         const pendientes = parseInt(e.data || 0);
                         return (
@@ -659,26 +653,37 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }}
+
                 />
+
                 <DinamicTable.Col
                     key="ocupacion_"
                     label="Suscriptores"
                     headerStyle={{ paddingLeft: 4 }}
-                    width={80}
-                    data={(e) => {
-                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
-                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        return totalCupos;
-                    }}
+                    width={120}
+                    data={(e) => e.row?.total_cupos ?? ""}
                     customComponent={(e) => {
-                        const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
-                        const totalCupos = cupos.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        const suscriptores = (e.row?.detalles ?? []).map(d => d.data?.cupos_suscritos ?? 0);
-                        const totalSuscriptores = suscriptores.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                        if (!totalCupos) return null;
-                        const porcentaje = Math.min((totalSuscriptores / totalCupos) * 100, 100);
+                        const totalCupos = Number(e.row?.total_cupos || 0);
+                        const totalSuscriptores = Number(e.row?.total_suscriptos || 0);
+
+                        if (totalCupos <= 0) {
+                            return (
+                                <SView center row>
+                                    <SText color={STheme.color.lightGray}>
+                                        Sin cupos
+                                    </SText>
+                                </SView>
+                            );
+                        }
+
+                        const porcentaje = Math.min(
+                            (totalSuscriptores / totalCupos) * 100,
+                            100
+                        );
+
                         let color = "#ea580c";
                         let icono = "🔴";
+
                         if (porcentaje >= 100) {
                             color = "#16a34a";
                             icono = "🟢";
@@ -689,9 +694,36 @@ export default class tabla extends Component {
                             color = "#f97316";
                             icono = "🟠";
                         }
-                        return (<SView center row  >
-                            <SText style={{ color, fontWeight: "bold", fontSize: 12 }} > {icono} {totalSuscriptores}/{totalCupos} </SText>
-                        </SView>
+
+                        return (
+                            <SView col={"xs-12"} center>
+                                <SText
+                                    style={{
+                                        color,
+                                        fontWeight: "bold",
+                                        fontSize: 12,
+                                    }}
+                                >
+                                    {icono} {totalSuscriptores}/{totalCupos}
+                                </SText>
+
+                                <SView
+                                    width={60}
+                                    height={6}
+                                    backgroundColor="#e5e7eb"
+                                    style={{
+                                        borderRadius: 3,
+                                        overflow: "hidden",
+                                        marginTop: 3,
+                                    }}
+                                >
+                                    <SView
+                                        width={`${porcentaje}%`}
+                                        height={6}
+                                        backgroundColor={color}
+                                    />
+                                </SView>
+                            </SView>
                         );
                     }}
                 />
