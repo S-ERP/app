@@ -22,71 +22,165 @@ export default class tabla extends Component {
     }
 
 
+    // async loadInitialData() {
+    //     try {
+    //         const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+    //         if (!registros) throw new Error("No se encontraron registros.");
+    //         const empresa = await MDL.empresa.getFull();
+    //         if (!empresa) throw new Error("No se pudo obtener la empresa.");
+    //         const sucursales = empresa.sucursales || [];
+    //         const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
+    //         if (ventas.length === 0) throw new Error("No se encontraron ventas.");
+    //         const keysUsuarios = [];
+    //         ventas.forEach(cv => {
+    //             if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
+    //                 keysUsuarios.push(cv.key_usuario);
+    //             }
+    //         });
+    //         const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+    //         if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
+    //         const clientes = await MDL.crm.cliente.getAll();
+    //         if (!clientes) throw new Error("No se pudieron obtener clientes.");
+    //         const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
+    //         const usuariosMap = Array.isArray(usuarios)
+    //             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
+    //             : usuarios || {};
+    //         let totales = {};
+    //         try {
+    //             totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
+    //         } catch (e) {
+    //             console.error("No se pudieron obtener los totales de la primera venta:", e);
+    //         }
+
+    //           const keysCompraDetalles = [
+    //         ...new Set(
+    //             ventas.flatMap(cv =>
+    //                 cv.detalles?.map(d => d.key).filter(Boolean) || []
+    //             )
+    //         )
+    //     ];
+
+    //     // =========================
+    //     // SUSCRIPCIONES (OPTIMIZADO)
+    //     // =========================
+    //     const suscripcionesArray = await Promise.all(
+    //         keysCompraDetalles.map(async (key) => {
+    //             try {
+    //                 const data = await MDL.compra_venta.getsuscripciones(key);
+    //                 return { key, data };
+    //             } catch (e) {
+    //                 return { key, data: null };
+    //             }
+    //         })
+    //     );
+
+    //     const suscripcionesMap = Object.fromEntries(
+    //         suscripcionesArray.map(s => [s.key, s.data])
+    //     );
+
+
+
+    //         // const suscripcionesMap = {};
+    //         const ventasEnriquecidas = await Promise.all(ventas.map(async cv => {
+    //             const detallesEnriquecidos = await Promise.all((cv.detalles || []).map(async d => ({
+    //                 ...d,
+    //                 suscripciones: suscripcionesMap?.[d.key]
+    //                     ? await MDL.compra_venta.getsuscripciones(suscripcionesMap[d.key])
+    //                     : [],
+    //             })));
+
+    //             return {
+    //                 ...cv,
+    //                 detalles: detallesEnriquecidos,
+    //                 total_suscriptores: 10,
+    //                 suscriptores: 4,
+    //                 cantidad_suscriptores: 3,
+    //                 moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
+    //                 sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
+    //                 usuario: usuariosMap[cv?.key_usuario] || {},
+    //                 empresa,
+    //                 proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
+    //                 cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
+
+    //                 subtotal: totales[cv.key]?.subtotal || "0"
+    //             };
+    //         }));
+
+
+    //         console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
+    //         return ventasEnriquecidas;
+    //     } catch (error) {
+    //         console.error("❌ Error en loadInitialData:", error?.message || error, error);
+    //         SPopup.alert("Error al cargar los datos. Intenta nuevamente.");
+    //         return [];
+    //     }
+    // }
     async loadInitialData() {
         try {
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-
-            const bd_suscriptres = await SSocket.sendPromise({
-                service: "inventario",
-                component: "suscripcion",
-                type: "getByKeyCompraVentaDetalle",
-                key_compra_venta_detalle: "fa0931be-8969-4de6-9e48-ad6735e65cfc",
-                // key_compra_venta_detalle: this.props.data.key,
-                estado: "cargando",
-            });
-
-            console.clear();
-
-            const cantidad_suscriptores = bd_suscriptres.data ? Object.keys(bd_suscriptres.data).length : 0;
-            console.log("Cantidad de suscriptores para el detalle:", cantidad_suscriptores);
-
             if (!registros) throw new Error("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
             if (!empresa) throw new Error("No se pudo obtener la empresa.");
             const sucursales = empresa.sucursales || [];
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
             if (ventas.length === 0) throw new Error("No se encontraron ventas.");
-            const keysUsuarios = [];
-            ventas.forEach(cv => {
-                if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-                    keysUsuarios.push(cv.key_usuario);
-                }
-            });
-            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-            if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
-            const clientes = await MDL.crm.cliente.getAll();
-            if (!clientes) throw new Error("No se pudieron obtener clientes.");
+            const keysUsuarios = [...new Set(ventas.map(v => v.key_usuario).filter(Boolean))];
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-            const usuariosMap = Array.isArray(usuarios)
-                ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-                : usuarios || {};
-            let totales = {};
-            try {
-                totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
-            } catch (e) {
-                console.error("No se pudieron obtener los totales de la primera venta:", e);
-            }
-
-            const ventasEnriquecidas = await Promise.all(
+            const usuariosMap = Array.isArray(usuarios) ? Object.fromEntries(usuarios.map(u => [u.key, u])) : usuarios || {};
+            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            const clientes = await MDL.crm.cliente.getAll();
+            if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
+            if (!clientes) throw new Error("No se pudieron obtener clientes.");
+            const keysCompraDetalles = [...new Set(ventas.flatMap(cv => cv.detalles?.map(d => d.key).filter(Boolean) || []))];
+            const suscripcionesArray = await Promise.all(
+                keysCompraDetalles.map(async (key) => {
+                    try {
+                        const data = await MDL.compra_venta.getsuscripciones(key);
+                        return { key, data };
+                    } catch (e) {
+                        return { key, data: null };
+                    }
+                })
+            );
+            const suscripcionesMap = Object.fromEntries(suscripcionesArray.map(s => [s.key, s.data]));
+            const totalesMap = {};
+            await Promise.all(
                 ventas.map(async (cv) => {
-                    return {
-                        key_compra_venta_detalle: cv?.detalles?.[0]?.key || "",
-                        total_suscriptores: 10,
-                        suscriptores: 4,
-                        // cantidad_suscriptores: bd_suscriptres.data ? Object.values(bd_suscriptres.data).filter(s => s.key_compra_venta_detalle === cv?.detalles?.[0]?.key).length : 0,
-                        moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
-                        sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
-                        usuario: usuariosMap[cv?.key_usuario] || {},
-                        empresa,
-                        proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
-                        cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
-                        subtotal: totales?.subtotal || "0",
-                        ...cv,
-                    };
+                    try {
+                        const t = Model.compra_venta_detalle.Action.getTotales({
+                            key_compra_venta: cv.key
+                        }) || {};
+                        totalesMap[cv.key] = t;
+                    } catch (e) {
+                        totalesMap[cv.key] = {};
+                    }
                 })
             );
 
-            // console.log("Primer registro:", ventasEnriquecidas?.[0]);
+            // =========================
+            // ENRIQUECER VENTAS
+            // =========================
+            const ventasEnriquecidas = ventas.map(cv => {
+                const detallesEnriquecidos = cv.detalles?.map(d => ({
+                    ...d,
+                    ...(suscripcionesMap[d.key]?.[0] || {})
+                })) || [];
+                return {
+                    ...cv,
+                    detalles: detallesEnriquecidos,
+                    total_suscriptores: 10,
+                    suscriptores: 4,
+                    cantidad_suscriptores: 3,
+                    moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
+                    sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
+                    usuario: usuariosMap[cv?.key_usuario] || {},
+                    empresa,
+                    proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
+                    cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
+
+                    subtotal: totalesMap[cv.key]?.subtotal || "0"
+                };
+            });
             console.log("%c" + JSON.stringify(ventasEnriquecidas?.[1], null, 2), "color: #1d07e2; font-weight: bold;");
             return ventasEnriquecidas;
         } catch (error) {
@@ -95,7 +189,6 @@ export default class tabla extends Component {
             return [];
         }
     }
-
     generateRandomCode() {
         return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     }
@@ -388,12 +481,15 @@ export default class tabla extends Component {
                                 message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
                                 cancel: { label: "Cancelar", color: STheme.color.lightGray },
                                 onPress: () => {
-                                    SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
+                                    // aqui deberia decir procesando
+                                    // SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
 
                                     MDL.caja.anular_venta({ key_compra_venta: row.key }).then(resp => {
                                         if (this.DinamicTable) this.DinamicTable.loadData();
                                         SNotification.send({ key: "anular_" + row.key, title: "Venta anulada", body: "Se anuló correctamente.", color: STheme.color.success, time: 5000, });
                                     }).catch(error => {
+                                        // console.clear();
+                                        console.log("%c" + JSON.stringify(error, null, 2), "color: #0cd2f5; font-weight: bold;");
                                         console.error("Error:", error); SNotification.send({ key: "anular_error_" + row.key, title: "Error al anular", body: "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
                                     });
                                 }
@@ -469,7 +565,7 @@ export default class tabla extends Component {
                 // }}
                 selectType="single"
                 keyExtractor={(e) => e.key}
-                pageLimit={10}
+                pageLimit={100}
                 onSelect={(e) => {
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height;
@@ -489,7 +585,16 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 4 }} width={40} data={(e) => e.index + 1} />
-                {/* <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta_detalle" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.key_compra_venta_detalle} /> */}
+                {/* <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta" headerStyle={{ paddingLeft: 8 }} width={120} data={(e) => e.row?.key_compra_venta_detalle} /> */}
+
+
+                <DinamicTable.Col key="detalles__2" label="key_compra_venta_detalle" width={180} headerStyle={{ paddingLeft: 4 }}
+                    data={(e) => (e.row?.detalles ?? []).map(d => d.key)}
+
+
+                    customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.key}</SText>))} </SView>)} />
+
+
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" headerStyle={{ paddingLeft: 4 }} width={90}
                     data={(e) => {
                         const tipos = (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean);
@@ -514,7 +619,8 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-                <DinamicTable.Col key="detalles__" label="Detalle" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="detalles__" label="Concepto" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+
                 <DinamicTable.Col key="cupos_disponibles_" label="Cupos" headerStyle={{ paddingLeft: 4 }} width={60}
                     data={(e) => {
                         const cupos = (e.row?.detalles ?? []).map(d => d.data?.cupos_disponibles ?? 0);
