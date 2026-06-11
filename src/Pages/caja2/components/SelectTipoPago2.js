@@ -132,7 +132,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                         pv.monto = Math.round(((this.props.montoMaximo || 0) / selecteds.length) * 100) / 100;
                         total += parseFloat(pv.monto);
                         if (pv.__ref) {
-                            pv.__ref.setValue(Math.round((pv.monto / pv.moneda.tipo_cambio) * 100) / 100);
+                            pv.__ref.setValue(Math.round((pv.monto / (pv.moneda?.tipo_cambio || 1)) * 100) / 100);
                         }
                     });
 
@@ -191,7 +191,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                                 type='money2'
                                 customStyle={"erp"}
                                 decimales={2}
-                                icon={<SText fontSize={10}>{item.moneda.observacion}</SText>}
+                                icon={<SText fontSize={10}>{item?.moneda?.observacion ?? ""}</SText>}
                                 defaultValue={MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1))} required
                                 style={{ marginBottom: 5 }}
                                 onChangeText={(e) => {
@@ -207,12 +207,12 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                                 }}
                             />
 
-                            {(item.moneda.tipo_cambio != 1) && < SInput
+                            {(item?.moneda?.tipo_cambio != 1) && < SInput
                                 customStyle={"erp"}
                                 ref={ref => item.__ref_extranjera = ref} type='money2' decimales={2}
                                 defaultValue={parseFloat(item.monto ?? "0")} required
                                 style={{ marginBottom: 5 }}
-                                icon={<SText fontSize={10}>{this.moneda_base?.observacion}</SText>}
+                                icon={<SText fontSize={10}>{this.moneda_base?.observacion ?? "Bs"}</SText>}
 
                             />}
                         </SView>
@@ -334,7 +334,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                         console.log(item);
                         elm[item.key] = {
                             monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
-                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1))),
+                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio ?? 1))),
                             tipo_pago: item.tipo_pago
                         }
                         // montoTotal += SMath.formatMoney((item.monto+2000), 2);
