@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { SMath, SView, SText, SDate, SImage } from 'servisofts-component';
+import { SMath, SView, SText, SDate, SImage, SNotification, STheme } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
@@ -23,6 +23,13 @@ export default class ReciboRollo extends Component {
 
     static async imprimir(key) {
         try {
+            const notificationKey = `pdf_rollo_${key}`;
+            SNotification.send({
+                key: notificationKey,
+                title: "Generando recibo...",
+                type: "loading",
+            });
+
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
             if (!data) {
                 console.error("No se encontraron datos para la venta con key:", key);
@@ -120,8 +127,23 @@ export default class ReciboRollo extends Component {
                     {/* {ReciboRollo.FooterRecibO(dataQR?.data?.b64)} */}
                 </SPDF.Page>
             );
+
+            SNotification.send({
+                key: notificationKey,
+                title: "Recibo generado",
+                body: "El PDF se generó correctamente.",
+                color: STheme.color.success,
+            });
         } catch (error) {
             console.error("Error al generar el recibo:", error);
+            SNotification.send({
+                key: notificationKey,
+                title: "Error al generar recibo",
+                body: error?.message || "Ocurrió un error inesperado.",
+                color: STheme.color.danger,
+                time: 5000,
+            });
+
         }
     }
 
