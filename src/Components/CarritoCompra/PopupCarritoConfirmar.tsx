@@ -70,25 +70,35 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
     handleOnPress2 = async (saveRecurrente: boolean) => {
         try {
-            const key_moneda = this.state.moneda?.key;
+            const key_moneda = this.state.moneda?.key || this.props.moneda?.key;
             const almacen = this.state.almacen;
-            const moneda = this.props.moneda;
+            const selectedMoneda = MDL.carrito.selectedMoneda || this.state.moneda || this.props.moneda;
             if (!almacen) {
-                console.error("%c" + "Debe seleccionar un almacen", `color: #ff0000; font-weight: bold;`);
+                SNotification.send({
+                    key: "compra_rapida",
+                    title: "Almacén requerido",
+                    body: "Debe seleccionar un almacén antes de continuar.",
+                    color: STheme.color.danger,
+                    time: 4000,
+                });
+                return;
             }
-            if (!key_moneda) {
-                console.error("%c" + "Debe seleccionar una moneda", `color: #ff0000; font-weight: bold;`);
+            if (!key_moneda || !selectedMoneda?.key) {
+                SNotification.send({
+                    key: "compra_rapida",
+                    title: "Moneda requerida",
+                    body: "Debe seleccionar una moneda antes de continuar.",
+                    color: STheme.color.danger,
+                    time: 4000,
+                });
+                return;
             }
             const subtotal = this.state.subtotal || 0;
-            const selectedMoneda = MDL.carrito.selectedMoneda || moneda;
-            if (!selectedMoneda) {
-                console.error("%c" + "No hay moneda seleccionada en el carrito compra", `color: #ff0000; font-weight: bold;`);
-            }
             const total = subtotal * (selectedMoneda.tipo_cambio || 1);
             SelectTipoPago2.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total,
-                key_moneda: selectedMoneda.key,
+                key_moneda: key_moneda,
                 onSelect: (tipos_pago: any) =>
                     this.handleSubmit(tipos_pago, key_moneda, saveRecurrente),
                 solo_para_caja: false,
@@ -149,21 +159,32 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             }
             const almacen = this.state.almacen;
             if (!almacen) {
-                throw "Debe seleccionar un almacen"
+                console.error("Debe seleccionar un almacen");
             }
-            const detalle = MDL.carrito.carrito_compra.items.map((ci) => {
+            const effectiveKeyMoneda = key_moneda || this.state.moneda?.key || this.props.moneda?.key;
+            if (!effectiveKeyMoneda) {
+                console.error("Debe seleccionar una moneda válida");
+            }
+            const keyUsuario = MDL.usuario.session?.key;
+            if (!keyUsuario) {
+                console.error("Usuario no autenticado");
+            }
+            const keyCaja = MDL.caja.activa?.key;
+            if (!keyCaja) {
+                console.error("Caja no activa");
+            }
+            const detalle = (MDL.carrito.carrito_compra?.items || []).map((ci) => {
+                const modelo = ci?.modelo || {};
                 return {
-                    "cantidad": ci.cantidad,
+                    "cantidad": ci?.cantidad || 0,
                     "precio_unitario": ci?.precio ?? 0,
-                    "precio_unitario_base": ci.modelo?.precio_compra_moneda ?? 0,
+                    "precio_unitario_base": modelo.precio_compra_moneda ?? 0,
                     "detalle": "",
                     "descuento": 0,
-                    "descripcion": ci.modelo.descripcion,
-                    "key_modelo": ci.modelo.key,
-                    "moneda": key_moneda,
-
-                    "fecha_vencimiento": ci.modelo?.fecha_vencimiento || null,
-
+                    "descripcion": modelo.descripcion || "",
+                    "key_modelo": modelo.key || null,
+                    "moneda": effectiveKeyMoneda,
+                    "fecha_vencimiento": modelo?.fecha_vencimiento || null,
                 }
             })
             console.clear();
@@ -171,8 +192,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const data: any = {
                 "descripcion": descripcionVenta,
                 "observacion": "Observacion compras",
-                "key_proveedor": this.proveedor?.key,
-                "key_usuario": MDL.usuario.session?.key,
+                "key_proveedor": this.proveedor?.key || null,
+                "key_usuario": keyUsuario,
                 "facturar": this.state.factura,
 
                 factura: this.state.factura
@@ -191,9 +212,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
 
                 "facturar_luego": this.state.factura,
-                "key_caja": MDL.caja.activa?.key,
+                "key_caja": keyCaja,
                 "key_almacen": almacen.key,
-                "key_moneda": key_moneda,
+                "key_moneda": effectiveKeyMoneda,
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
@@ -361,19 +382,21 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 <SView width={5} />
                 <SView padding={8} card onPress={() => {
                     if (this.state.factura) {
-                        if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
-                            this.proveedor.razon_social = this.inputRazonSocial.getValue();
-                            this.proveedor.nit = this.inputNit.getValue();
-                            MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
-                            }).catch((e: any) => {
-                                console.error("Error al guardar el cliente:", e);
-                                SNotification.send({
-                                    title: "Error",
-                                    body: "No se pudo guardar el cliente.",
-                                    time: 3000,
-                                    color: STheme.color.danger,
-                                });
-                            })
+                        if (this.proveedor) {
+                            if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
+                                this.proveedor.razon_social = this.inputRazonSocial?.getValue?.() || this.proveedor.razon_social;
+                                this.proveedor.nit = this.inputNit?.getValue?.() || this.proveedor.nit;
+                                MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
+                                }).catch((e: any) => {
+                                    console.error("Error al guardar el cliente:", e);
+                                    SNotification.send({
+                                        title: "Error",
+                                        body: "No se pudo guardar el cliente.",
+                                        time: 3000,
+                                        color: STheme.color.danger,
+                                    });
+                                })
+                            }
                         }
                     }
                     this.handleOnPress2(false);
