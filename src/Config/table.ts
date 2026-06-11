@@ -8,6 +8,7 @@ export default {
             cellStyle: this.cellStyle(p?.cellStyle ?? {}),
             textStyle: this.textStyle(p?.textStyle ?? {}),
             headerStyle: this.headerStyle(p?.headerStyle ?? {}),
+            headerTextStyle: this.headerTextStyle(p?.headerStyle ?? {}),
         }
     },
     colors: (override?: any) => {
@@ -43,5 +44,12 @@ export default {
     },
     headerStyle: (override?: any) => {
         return { alignItems: "center" }
+    },
+    headerTextStyle: (override?: any) => {
+        return {
+            fontSize: 10,
+            fontWeight: "bold",
+            ...(override || {}),
+        }
     }
 }

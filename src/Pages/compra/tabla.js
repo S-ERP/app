@@ -9,10 +9,16 @@ import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
 import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteCarta from '../../Components/PDF/compra/ComprobanteCarta';
+import DateTimeBetween from '../../Components/DateTimeBetween';
 export default class tabla extends Component {
     constructor(props) {
         super(props);
+        const hoy = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
         this.state = {
+            fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+            fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
         };
     }
     componentDidMount() {
@@ -59,7 +65,7 @@ export default class tabla extends Component {
         </SView>
     );
     async loadData() {
-        const registros = await MDL.compra_venta.getTransaccion("compra", "2025-01-01", "2030-09-05");
+        const registros = await MDL.compra_venta.getTransaccion("compra", this.state.fecha_inicio, this.state.fecha_fin);
         if (!registros) return [];
         const empresa = await MDL.empresa.getFull();
         const sucursales = empresa.sucursales;
@@ -396,6 +402,17 @@ export default class tabla extends Component {
     render() {
         return (
             <SPage title="Tabla Gestión de Compras" disableScroll>
+                <SView col={"xs-12"} style={{ paddingHorizontal: 8 }}>
+                    <DateTimeBetween
+                        fecha_inicio={this.state.fecha_inicio}
+                        fecha_fin={this.state.fecha_fin}
+                        onChange={({ fecha_inicio, fecha_fin }) => {
+                            this.setState({ fecha_inicio, fecha_fin }, () => {
+                                this.DinamicTable?.loadData();
+                            });
+                        }}
+                    />
+                </SView>
                 {this.mostrarTabla()}
             </SPage>
         );

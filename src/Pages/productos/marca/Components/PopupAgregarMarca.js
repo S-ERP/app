@@ -50,7 +50,7 @@ export default class PopupAgregarMarca extends Component<Props> {
         if (!this.state.modelosStock) return <SLoad />;
         return (
             <SView col="xs-12" padding={16}>
-                <SText fontSize={16} bold> {this.props.editObject ? "Editar" : "Crear"} Marca </SText>
+                <SText fontSize={16} bold> {this.props.editObject?.key ? "Editar" : "Crear"} Marca </SText>
                 <SHr h={16} />
                 <SForm row ref={(ref: any) => (this.form = ref)}
                     inputs={{
@@ -78,7 +78,7 @@ export default class PopupAgregarMarca extends Component<Props> {
                     }}
                     onSubmit={async (data: any) => {
                         const finalData = {
-                            ...(this.props.editObject ?? {
+                            ...(this.props.editObject?.key ? this.props.editObject : {
                                 key_empresa: MDL.empresa.select?.key,
                             }),
                             descripcion: data.descripcion,

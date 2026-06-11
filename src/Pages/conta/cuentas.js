@@ -46,67 +46,67 @@ import FiltroNiveles from "./Components/FiltroNiveles"; export default class cue
             options: [
                 ... (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' }) ? [
                     {
-                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress:  async () => {
+                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: async () => {
                             const respCuentas = await MDL.contabilidad.getCuentas();
-const dataCompleta = Object.values(respCuentas);
+                            const dataCompleta = Object.values(respCuentas);
 
-const grafo = MDL.contabilidad.getCuentasGrafo(dataCompleta);
-const cuenta = grafo.find(n => n.codigo === e.row.codigo);
+                            const grafo = MDL.contabilidad.getCuentasGrafo(dataCompleta);
+                            const cuenta = grafo.find(n => n.codigo === e.row.codigo);
 
-const hijos = dataCompleta.filter(c => {
-    if (!c.codigo) return false;
+                            const hijos = dataCompleta.filter(c => {
+                                if (!c.codigo) return false;
 
-    const partesPadre = e.row.codigo.split(".");
-    const partesHijo = c.codigo.split(".");
+                                const partesPadre = e.row.codigo.split(".");
+                                const partesHijo = c.codigo.split(".");
 
-    // Debe ser hijo directo, no nieto
-    if (partesHijo.length !== partesPadre.length + 1) return false;
+                                // Debe ser hijo directo, no nieto
+                                if (partesHijo.length !== partesPadre.length + 1) return false;
 
-    // Debe comenzar con el código del padre
-    return c.codigo.startsWith(e.row.codigo + ".");
-});
+                                // Debe comenzar con el código del padre
+                                return c.codigo.startsWith(e.row.codigo + ".");
+                            });
 
-let childSize = 0;
-let nuevoNumero = 1;
-let digitos = 2;
+                            let childSize = 0;
+                            let nuevoNumero = 1;
+                            let digitos = 2;
 
-if (hijos.length > 0) {
-    const numeros = hijos
-        .map(hijo => {
-            const partes = hijo.codigo.split(".");
-            return parseInt(partes[partes.length - 1], 10);
-        })
-        .filter(n => !isNaN(n));
+                            if (hijos.length > 0) {
+                                const numeros = hijos
+                                    .map(hijo => {
+                                        const partes = hijo.codigo.split(".");
+                                        return parseInt(partes[partes.length - 1], 10);
+                                    })
+                                    .filter(n => !isNaN(n));
 
-    const mayor = Math.max(...numeros);
-    nuevoNumero = mayor + 1;
+                                const mayor = Math.max(...numeros);
+                                nuevoNumero = mayor + 1;
 
-    digitos = Math.max(
-        2,
-        ...hijos.map(hijo => {
-            const partes = hijo.codigo.split(".");
-            return partes[partes.length - 1].length;
-        })
-    );
+                                digitos = Math.max(
+                                    2,
+                                    ...hijos.map(hijo => {
+                                        const partes = hijo.codigo.split(".");
+                                        return partes[partes.length - 1].length;
+                                    })
+                                );
 
-    childSize = Math.max(...hijos.map(hijo => hijo.codigo.length));
-} else {
-    const niveles = MDL.contabilidad.armarNiveles(dataCompleta);
-    const lvlPadre = e.row.codigo.length;
-    const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
+                                childSize = Math.max(...hijos.map(hijo => hijo.codigo.length));
+                            } else {
+                                const niveles = MDL.contabilidad.armarNiveles(dataCompleta);
+                                const lvlPadre = e.row.codigo.length;
+                                const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
 
-    if (indexLvl > 0 && niveles[indexLvl]) {
-        childSize = niveles[indexLvl];
-    }
-}
+                                if (indexLvl > 0 && niveles[indexLvl]) {
+                                    childSize = niveles[indexLvl];
+                                }
+                            }
 
-let index = String(nuevoNumero).padStart(digitos, "0");
-let codigo = e.row.codigo + "." + index;
+                            let index = String(nuevoNumero).padStart(digitos, "0");
+                            let codigo = e.row.codigo + "." + index;
 
-if (childSize && codigo.length < childSize) {
-    const faltantes = childSize - codigo.length;
-    codigo = e.row.codigo + "." + "0".repeat(faltantes) + index;
-}
+                            if (childSize && codigo.length < childSize) {
+                                const faltantes = childSize - codigo.length;
+                                codigo = e.row.codigo + "." + "0".repeat(faltantes) + index;
+                            }
                             let key_moneda = cuenta.key_moneda;
                             if (!key_moneda) {
                                 let cc = cuenta;
@@ -247,25 +247,6 @@ if (childSize && codigo.length < childSize) {
 
                 {/* quiero crear una columna que diga duplicado si key={"codigo"} */}
 
-                <DinamicTable.Col
-                    key={"duplicado"}
-                    label="Duplicado Código"
-                    width={110}
-                    data={e => (e.row.isDuplicado ? "SI" : "NO")}
-                    cellStyle={{ alignItems: "center", justifyContent: "center" }}
-                    customComponent={(e) => {
-                        return (
-                            <SText
-                                style={{
-                                    color: e.row.isDuplicado ? "red" : "green",
-                                    fontWeight: "bold"
-                                }}
-                            >
-                                {e.row.isDuplicado ? "DUPLICADO" : ""}
-                            </SText>
-                        );
-                    }}
-                />
 
                 <DinamicTable.Col key={"descripcion"} label="Descripción" width={350}
                     data={e => e.row.descripcion}
@@ -349,6 +330,26 @@ if (childSize && codigo.length < childSize) {
                         </AjusteTagDropBox>
                     }}
                 />
+                <DinamicTable.Col
+                    key={"duplicado"}
+                    label="Duplicado Código"
+                    width={110}
+                    data={e => (e.row.isDuplicado ? "SI" : "NO")}
+                    cellStyle={{ alignItems: "center", justifyContent: "center" }}
+                    customComponent={(e) => {
+                        return (
+                            <SText
+                                style={{
+                                    color: e.row.isDuplicado ? "red" : "green",
+                                    fontWeight: "bold"
+                                }}
+                            >
+                                {e.row.isDuplicado ? "DUPLICADO" : ""}
+                            </SText>
+                        );
+                    }}
+                />
+
             </DinamicTable>
             <SView style={{ position: "absolute", top: 8, right: 8 }}>
                 <InformacionDeAjustes ajustes={this.state.ajustes} />

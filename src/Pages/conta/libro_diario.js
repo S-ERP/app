@@ -63,6 +63,15 @@ export default class libro_diario extends React.Component {
                     loadInitialState={async () => {
                         return {
                             cols: {
+                                key: {
+                                    hidden: true,
+                                },
+                                diario: {
+                                    hidden: true,
+                                },
+                                cliente: {
+                                    hidden: true,
+                                },
                                 debe_sin_format: {
                                     hidden: true,
                                 },
@@ -110,7 +119,7 @@ export default class libro_diario extends React.Component {
                     />
                     <DinamicTable.Col key="key" label="key" data={e => e.row?.asiento_contable?.key} width={70} textStyle={{ color: STheme.color.text, }} />
 
-                    <DinamicTable.Col key="tipo_comprobante" label="tipo_comprobante" data={e => e.row?.asiento_contable?.tipo_comprobante} width={110}
+                    <DinamicTable.Col key="tipo_comprobante" label="Conta" data={e => e.row?.asiento_contable?.tipo_comprobante} width={60}
                         customComponent={e => {
                             let styles = { bg: "transparent", color: "transparent", border: "transparent" };
                             switch ((e.data || "").toLowerCase()) {

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/rickypazd/Documents/GitHub/servisofts-table/src/DinamicTable/**)",
+      "Bash(find /Users/rickypazd/Documents/GitHub/servisofts-table/src -name \"*.tsx\" -o -name \"*.ts\" | head -20)",
+      "Read(//Users/rickypazd/Documents/GitHub/servisofts-table/src/**)",
+      "Bash(grep -n \"react-window\\\\|react-virtual\" /Users/rickypazd/Documents/GitHub/servisofts-table/package.json 2>/dev/null; grep -n \"react-window\\\\|react-virtual\" /Users/rickypazd/Documents/GitHub/S-ERP/app/package.json 2>/dev/null)",
+      "Read(//Users/rickypazd/Documents/GitHub/servisofts-table/**)",
+      "Bash(npx tsc *)"
+    ],
+    "additionalDirectories": [
+      "/Users/rickypazd/Documents/GitHub/servisofts-table/src/DinamicTable",
+      "/Users/rickypazd/Documents/GitHub/servisofts-table/src/Components/SFlashList",
+      "/Users/rickypazd/Documents/GitHub/servisofts-table/src"
+    ]
+  }
+}

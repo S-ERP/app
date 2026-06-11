@@ -19,6 +19,7 @@ import FormularioTipoProducto from '../Components/FormularioTipoProducto';
 import PopupCrearProveedor from '../../proveedor/Components/PopupCrearProveedor';
 import PopupAgregarMarca from '../marca/Components/PopupAgregarMarca';
 import Model from '../../../Model';
+import FormularioModelo2 from '../Components/FormularioModelo2';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -240,6 +241,14 @@ export default class table extends Component {
                                 icon: <SIconApp name='Pencil' fill={STheme.color.text} />,
                                 // icon: <SIconApp name='Edit' />,
                                 onPress: () => {
+                                    // FormularioModelo2.open({
+                                    //     editObject: e.row,
+                                    //     onSuccess: () => {
+                                    //         if (this.table) {
+                                    //             this.table.loadData();
+                                    //         }
+                                    //     }
+                                    // })
                                     FormularioModelo.open({
                                         editObject: e.row,
                                         onSuccess: () => {

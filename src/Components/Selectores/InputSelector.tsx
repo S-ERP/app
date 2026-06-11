@@ -1,8 +1,88 @@
 import React from "react";
-import { TextInputProps, TextInput, NativeSyntheticEvent, TextInputFocusEventData, View, FlatList } from "react-native";
+import { TextInputProps, TextInput, NativeSyntheticEvent, TextInputFocusEventData, View, FlatList, TextStyle, ViewStyle } from "react-native";
 import { SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import Config from "../../Config";
 import SIconApp from "../../Assets/SIconApp";
+
+// Global undo stack shared by InputSelector and external callers (e.g. row deletion).
+// textChangesAfter = number of text input edits made AFTER this entry (and before the next one).
+// Non-text undos are blocked until those text changes are undone first.
+const _undoStack: Array<{ undo: () => void; owner?: any; textChangesAfter: number }> = [];
+let _currentTextChanges = 0; // text edits since the last push
+
+function _removListeners() {
+    // @ts-ignore
+    document.removeEventListener('keydown', _onGlobalKeyDown, true);
+    // @ts-ignore
+    document.removeEventListener('input', _onGlobalInput, true);
+}
+
+function _doUndo() {
+    const entry = _undoStack.pop();
+    if (!entry) return;
+    entry.undo();
+    // Restore the text-change count that belongs to the new top entry
+    _currentTextChanges = _undoStack.length > 0 ? _undoStack[_undoStack.length - 1].textChangesAfter : 0;
+    if (_undoStack.length === 0) _removListeners();
+}
+
+export function pushGlobalUndo(fn: () => void) {
+    if (_undoStack.length === 0) {
+        // @ts-ignore
+        document.addEventListener('keydown', _onGlobalKeyDown, true);
+        // @ts-ignore
+        document.addEventListener('input', _onGlobalInput, true);
+    } else {
+        _undoStack[_undoStack.length - 1].textChangesAfter = _currentTextChanges;
+    }
+    _undoStack.push({ undo: fn, textChangesAfter: 0 });
+    _currentTextChanges = 0;
+}
+
+function _onGlobalInput(e: any) {
+    const t: any = e.target;
+    if (!t || (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA')) return;
+    if (_undoStack.length === 0) return;
+    // Skip undo/redo events; count every other edit
+    if (e.inputType === 'historyUndo' || e.inputType === 'historyRedo') return;
+    _currentTextChanges++;
+    _undoStack[_undoStack.length - 1].textChangesAfter = _currentTextChanges;
+}
+
+function _onGlobalKeyDown(e: any) {
+    if (!(e.ctrlKey || e.metaKey) || e.key !== 'z' || _undoStack.length === 0) return;
+    // @ts-ignore
+    const activeEl: any = document.activeElement;
+    const isEditable = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+
+    if (_currentTextChanges > 0) {
+        if (isEditable) {
+            // Let browser undo the text; confirm via value change after 50 ms
+            const before = activeEl.value;
+            setTimeout(() => {
+                if (activeEl.value !== before) {
+                    // Browser applied one text undo
+                    _currentTextChanges = Math.max(0, _currentTextChanges - 1);
+                    if (_undoStack.length > 0) _undoStack[_undoStack.length - 1].textChangesAfter = _currentTextChanges;
+                } else {
+                    // Browser stack exhausted for this input — allow selector undo next
+                    _currentTextChanges = 0;
+                    if (_undoStack.length > 0) _undoStack[_undoStack.length - 1].textChangesAfter = 0;
+                }
+            }, 50);
+        } else {
+            // Not in a text field: consume the event to preserve order
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    } else {
+        if (!isEditable) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        _doUndo();
+    }
+}
 type Option = {
     label: string;
     value: string;
@@ -21,6 +101,9 @@ export type InputSelectorProps = {
     onCreate?: (value: string) => Promise<Option>;
     onSelect?: (option: Option) => void;
     onChangeText?: (text: string) => void;
+    listItemStyle?: ViewStyle;
+    listItemTextStyle?: TextStyle;
+    listHorizontalScroll?: boolean;
 }
 export default class InputSelector extends React.Component<InputSelectorProps> {
     scrollListener: (() => void) | null = null;
@@ -214,11 +297,31 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             if (selectedOption) {
                 this.selectOption(selectedOption);
             }
+        } else if (key === 'Escape') {
+            e.preventDefault();
+            this.setState({ displayValue: this.originalDisplayValue, filteredOptions: this.props.options });
+            this.hasEditedValue = false;
+            SPopup.close("InputSelector");
+            this.removeScrollListener();
+            if (this.inputRef) this.inputRef.blur();
         }
+    }
+    _revertSelection(prevValue: string, prevLabel: string) {
+        const option = this.props.options.find(o => o.value === prevValue) ?? { value: prevValue, label: prevLabel };
+        this.originalDisplayValue = prevLabel;
+        this.hasEditedValue = false;
+        this.setState({ inputValue: prevValue, displayValue: prevLabel, error: false });
+        if (this.props.onSelect) this.props.onSelect(option);
     }
     registerAndSelect = async (createValue: string) => {
         if (!this.props.onCreate) return;
-        const resp = await this.props.onCreate(createValue);
+        let resp: Option | null = null;
+        try {
+            resp = await this.props.onCreate(createValue);
+        } catch {
+            return;
+        }
+        if (!resp) return;
         this.setState({
             inputValue: resp.value,
             displayValue: resp.label,
@@ -246,6 +349,22 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             const createValue = option.data?.createValue || this.state.displayValue;
             this.registerAndSelect(createValue);
             return;
+        }
+        // Guardar selección actual en el stack global para Ctrl+Z
+        if (this.state.inputValue) {
+            const prevValue = this.state.inputValue;
+            const prevLabel = this.state.displayValue;
+            if (_undoStack.length === 0) {
+                // @ts-ignore
+                document.addEventListener('keydown', _onGlobalKeyDown, true);
+                // @ts-ignore
+                document.addEventListener('input', _onGlobalInput, true);
+            } else {
+                // Freeze the text-change count into the current top before pushing a new entry
+                _undoStack[_undoStack.length - 1].textChangesAfter = _currentTextChanges;
+            }
+            _undoStack.push({ owner: this, undo: () => this._revertSelection(prevValue, prevLabel), textChangesAfter: 0 });
+            _currentTextChanges = 0;
         }
         // Actualizar el valor original y resetear el flag de edición
         this.originalDisplayValue = option.label;
@@ -315,6 +434,9 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                     options={this.state.filteredOptions}
                     totalOptions={this.props.options.length}
                     initialSelectedValue={this.selectedValue}
+                    listItemStyle={this.props.listItemStyle}
+                    listItemTextStyle={this.props.listItemTextStyle}
+                    horizontalScroll={this.props.listHorizontalScroll}
                     onSelect={this.selectOption}
                 />
             </View>
@@ -323,8 +445,12 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
     handleFocus(e: NativeSyntheticEvent<TextInputFocusEventData>) {
         // Resetear el flag de edición al hacer focus
         this.hasEditedValue = false;
-        // Mostrar todas las opciones sin filtrar al hacer focus
+        // Mostrar todas las opciones con el valor seleccionado primero
         const finalOptions = [...this.props.options];
+        const selectedIdx = this.state.inputValue
+            ? finalOptions.findIndex(opt => opt.value === this.state.inputValue)
+            : -1;
+        if (selectedIdx > 0) finalOptions.unshift(finalOptions.splice(selectedIdx, 1)[0]);
         this.setState({ filteredOptions: finalOptions });
         this.selectedValue = this.state.inputValue || this.props.options[0]?.value || '';
         (e.target as any).measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
@@ -335,7 +461,11 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             };
             // @ts-ignore
             window.addEventListener('scroll', this.scrollListener, true);
-            this.openPopup(pageX, pageY, width, height);
+            let wf = width;
+            if (wf < 150) {
+                wf = 150;
+            }
+            this.openPopup(pageX, pageY, wf, height);
         });
     }
     removeScrollListener() {
@@ -374,6 +504,10 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
     }
     componentWillUnmount() {
         this.removeScrollListener();
+        let i = _undoStack.length;
+        while (i--) { if (_undoStack[i].owner === this) _undoStack.splice(i, 1); }
+        _currentTextChanges = _undoStack.length > 0 ? _undoStack[_undoStack.length - 1].textChangesAfter : 0;
+        if (_undoStack.length === 0) _removListeners();
     }
     render() {
         const configInputs = Config.inputs()[this.props?.customStyle ?? "default"];
@@ -399,6 +533,8 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 onFocus={this.handleFocus.bind(this)}
                 onBlur={this.handleOnBlur.bind(this)}
                 onKeyPress={this.handleKeyPress.bind(this)}
+                // @ts-ignore
+                onKeyDown={(e: any) => { if (e.key === 'Escape') { e.preventDefault(); this.setState({ displayValue: this.originalDisplayValue, filteredOptions: this.props.options }); this.hasEditedValue = false; SPopup.close("InputSelector"); this.removeScrollListener(); if (this.inputRef) this.inputRef.blur(); } }}
                 style={[style, this.props.style, this.state.error ? { borderColor: STheme.color.error, borderWidth: 1, } : {}]}
                 ref={(ref) => this.inputRef = ref}
                 selectTextOnFocus={!this.props.value}
@@ -408,7 +544,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             // numberOfLines={2}
             />
             <SView
-                width={20}
+                width={12}
                 height={"100%"}
                 center
                 onPress={() => {
@@ -432,7 +568,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 <SIconApp
                     name="Back"
                     fill={STheme.color.lightGray}
-                    width={8}
+                    width={4}
                     draggable={false}
                     // @ts-ignore
                     style={{
@@ -449,6 +585,9 @@ class ListSelectorContent extends React.Component<{
     totalOptions: number;
     initialSelectedValue: string;
     onSelect: (option: Option) => void;
+    listItemStyle?: ViewStyle;
+    listItemTextStyle?: TextStyle;
+    horizontalScroll?: boolean;
 }> {
     flatListRef = React.createRef<FlatList>();
     state = {
@@ -475,30 +614,18 @@ class ListSelectorContent extends React.Component<{
         });
     }
     render() {
-        const { onSelect, totalOptions } = this.props;
+        const { onSelect, totalOptions, horizontalScroll } = this.props;
         const { selectedValue, options } = this.state;
         const visibleOptions = options.length;
         const hiddenOptions = totalOptions - visibleOptions;
         return <>
-            {totalOptions > 0 && (
-                <SView style={{
-                    padding: 8,
-                    // backgroundColor: STheme.color.card,
-                    borderBottomWidth: 1,
-                    borderBottomColor: STheme.color.card
-                }}>
-                    <SText style={{
-                        fontSize: 8,
-                        color: STheme.color.text + '80'
-                    }}>
-                        Mostrando {visibleOptions} de {totalOptions} {hiddenOptions > 0 ? `(${hiddenOptions} ocultos)` : ''}
-                    </SText>
-                </SView>
-            )}
             <FlatList
                 ref={this.flatListRef}
                 data={options}
                 keyExtractor={(item, index) => `${item.value}-${index}`}
+                // @ts-ignore
+                style={horizontalScroll ? { overflowX: "auto" } : undefined}
+                contentContainerStyle={horizontalScroll ? { minWidth: "max-content" } as any : undefined}
                 onScrollToIndexFailed={(info) => {
                     // Fallback si falla el scroll
                     setTimeout(() => {
@@ -526,6 +653,10 @@ class ListSelectorContent extends React.Component<{
                             backgroundColor: isSelected ? STheme.color.card : 'transparent',
                             // @ts-ignore
                             cursor: 'pointer',
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            ...(horizontalScroll ? { flexShrink: 0 } : {}),
+                            ...this.props.listItemStyle,
                             ...isCreateOptionStyle
                         }}
                         // @ts-ignore
@@ -535,11 +666,27 @@ class ListSelectorContent extends React.Component<{
                         // @ts-ignore
                         onClick={() => onSelect(item)}
                     >
-                        <SText style={{ color: STheme.color.text, ...isCreateOptionStyleText }}>{item.label}</SText>
+                        <SText style={{ flex: 1, color: STheme.color.text, ...isCreateOptionStyleText }}>{item.label}</SText>
                         {item.customComponent ? (typeof item.customComponent === 'function' ? item.customComponent(item) : item.customComponent) : null}
                     </View>
                 }}
             />
+            {totalOptions > 0 && (
+                <SView style={{
+                    padding: 4,
+                    // backgroundColor: STheme.color.card,
+                    borderBottomWidth: 1,
+                    borderBottomColor: STheme.color.card
+                }}>
+                    <SText style={{
+                        fontSize: 8,
+                        color: STheme.color.text + '80',
+                        textAlign:"right"
+                    }}>
+                        Mostrando {visibleOptions} de {totalOptions} {hiddenOptions > 0 ? `(${hiddenOptions} ocultos)` : ''}
+                    </SText>
+                </SView>
+            )}
         </>
     }
 }

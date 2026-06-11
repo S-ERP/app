@@ -8,6 +8,8 @@ import InputFoto from '../../../Components/InputFoto';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
 import InputSelector from '../../../Components/Selectores/InputSelector';
+import Cuentas_anidadas from '../../conta/cuentas_anidadas';
+import CuentasAnidadas from '../../conta/cuentas_anidadas';
 
 type Props = {
     editObject?: any,
@@ -49,6 +51,7 @@ export default class FormularioModelo extends Component<Props> {
         descripcion_tipo_producto: "",
         descripcion_marca: "",
         tipoSeleccionado: this.props.editObject?.tipo_producto?.tipo || "",
+        key_cuenta_contable_inventario: this.props.editObject?.key_cuenta_contable_inventario || null,
 
     }
     qr_reader_listener: any;
@@ -91,7 +94,7 @@ export default class FormularioModelo extends Component<Props> {
         if (!this.state.monedas) return <SLoad />
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Modelo"}</SText>
-            <SText fontSize={16} style={{userSelect: "text"}}>{this.props.editObject?.key}</SText>
+            <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
             <SForm ref={(ref: any) => this.form = ref} row
                 style={{
                     justifyContent: "space-between",
@@ -465,7 +468,25 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("cantidad_suscriptores");
                         }
                     },
-                }}
+                    "key_cuenta_contable_inventario": {
+                        label: "Cuenta contable de inventario",
+                        value: this.state?.key_cuenta_contable_inventario,
+                        onPress: () => {
+                            CuentasAnidadas.open({
+                                select: (cuentaSelec: any) => {
+                                    console.log("SELECCIONADO:", cuentaSelec)
+                                    CuentasAnidadas.close();
+                                    this.setState({ key_cuenta_contable_inventario: cuentaSelec.key });
+                                    // this.setState({
+                                    //     cuentaSeleccionadaG: cuentaSelec
+                                    // });
+                                    // SPopup.close("popup-cuentas");
+                                }
+                            })
+                        }
+                    }
+                }
+                }
                 onSubmit={(data: any) => {
                     if (!this.state.key_marca) {
                         SNotification.send({
@@ -495,7 +516,7 @@ export default class FormularioModelo extends Component<Props> {
                         barcode: data.barcode,
                         precio_compra: parseFloat(data.precio_compra ?? 0),
                         precio_venta: parseFloat(data.precio_venta ?? 0),
-
+                        key_cuenta_contable_inventario: this.state.key_cuenta_contable_inventario,
                         // aqui estoy dejando pasar duracion medida y suscriptores vacio
                         duracion: parseInt(data.duracion ?? "0"),
                         duracion_medida: data.duracion_medida ?? "",
