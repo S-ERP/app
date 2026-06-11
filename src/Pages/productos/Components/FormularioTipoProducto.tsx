@@ -132,7 +132,7 @@ export default class FormularioTipoProducto extends Component<Props> {
         }
         return (
             <SView col="xs-12" center padding={16}>
-                <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"} Tipo Producto</SText>
+                <SText fontSize={16}>{this.props.editObject?.key ? "Editar" : "Crear"} Tipo Producto</SText>
 
                 <SForm
                     ref={(ref: any) => this.form = ref}
@@ -409,7 +409,7 @@ export default class FormularioTipoProducto extends Component<Props> {
 
                     onSubmit={(data: any) => {
                         const final_data = {
-                            ...(this.props.editObject ?? { key_empresa: MDL.empresa.select?.key }),
+                            ...(this.props.editObject?.key ? this.props.editObject : { key_empresa: MDL.empresa.select?.key }),
                             descripcion: data.descripcion,
                             tipo: data.tipo,
                             codigo_facturacion: this.state.codigoProductoSeleccionado,

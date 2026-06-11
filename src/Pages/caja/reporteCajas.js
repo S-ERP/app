@@ -388,7 +388,7 @@ export default class reporteCajas extends Component {
     render() {
         return (
             <SPage title="Reporte de Cajas por Sucursal" disableScroll>
-                <SView width={260} center>
+                <SView  center>
                     <DateTimeBetween
                         fecha_inicio={this.state.fecha_inicio}
                         fecha_fin={this.state.fecha_fin}

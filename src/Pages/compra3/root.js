@@ -14,7 +14,6 @@ export default class Root extends React.Component {
     selectedMoneda = this.props.selectedMoneda || null; // Moneda seleccionada
     selectedTipoKey = "all";
     searchText = "";
-    selectedMoneda = null;
     state = {
         almacenes: [],
         modelos: [],
@@ -168,32 +167,45 @@ export default class Root extends React.Component {
                 type: "loading",
             });
 
-            const almacenVal = this.inputs["almacen"].getValue();
-            const almacen = this.state.almacenes.find(a => a.descripcion === almacenVal);
-            const provValue = this.inputs["proveedor"].getValue();
-            const proveedor = this.state.proveedores.find(a => a.nombres === provValue);
+            const almacenVal = this.inputs["almacen"]?.getValue?.() || "";
+            const almacen = this.state.almacenes.find(a => a.descripcion === almacenVal) || null;
+            const provValue = this.inputs["proveedor"]?.getValue?.() || "";
+            const proveedor = this.state.proveedores.find(a => a.nombres === provValue) || null;
+            const keyCaja = MDL.caja.activa?.key || null;
+            const keyUsuario = MDL.usuario.session?.key || null;
+            const keyMoneda = this.selectedMoneda?.key || this.state.monedas[0]?.key || null;
+            if (!almacen?.key || !proveedor?.key || !keyCaja || !keyUsuario || !keyMoneda) {
+                SNotification.send({
+                    key: "compra_rapida",
+                    title: "Faltan datos requeridos",
+                    body: "Debe seleccionar almacén, proveedor, moneda y caja antes de continuar.",
+                    type: "warning",
+                    time: 4000,
+                });
+                return;
+            }
             console.log(this.selectedMoneda)
             const data = {
                 descripcion: "Compra rapida",
                 observacion: "Sin observacion",
                 key_proveedor: proveedor.key,
-                key_usuario: MDL.usuario.session.key,
+                key_usuario: keyUsuario,
                 facturar: this.facturar || false,
                 facturar_luego: this.facturar_luego || false,
-                key_caja: MDL.caja.activa.key,
-                key_almacen: almacen?.key,
+                key_caja: keyCaja,
+                key_almacen: almacen.key,
                 tipos_pago: tipos_pago,
-                key_moneda: this.selectedMoneda?.key || this.state.monedas[0]?.key, // Enviar moneda seleccionada
+                key_moneda: keyMoneda,
             };
             data.detalle = this.state.detalle.map(item => ({
                 cantidad: item.cantidad,
-                precio_unitario: Math.round((item.precioConvertido / item.cantidad) * 100) / 100,
-                precio_unitario_base: Math.round((item.precio / item.cantidad) * 100) / 100,
+                precio_unitario: Math.round(((item.precioConvertido || 0) / (item.cantidad || 1)) * 100) / 100,
+                precio_unitario_base: Math.round(((item.precio || 0) / (item.cantidad || 1)) * 100) / 100,
                 detalle: item.detalle,
                 descuento: 0,
                 descripcion: item.producto,
                 key_modelo: item.modelo?.key,
-                moneda: item.moneda?.key || this.selectedMoneda?.key, // Añadir moneda al detalle
+                moneda: item.moneda?.key || keyMoneda,
             }));
             console.log(data);
             const compraResp = await SSocket.sendPromise({
@@ -343,9 +355,10 @@ class Detalle extends React.Component {
             return true;
         });
 
-        const moneda = this.props.selectedMoneda || { key: "", descripcion: "Sin moneda" };
-        this.precio_compra_moneda = !this.props.data.precio ? "" : parseFloat(this.props.data.precio / this.props.selectedMoneda?.tipo_cambio).toFixed(2) || 0;
-        this.props.data.precioConvertido = this.precio_compra_moneda
+        const moneda = this.props.selectedMoneda || { key: "", descripcion: "Sin moneda", tipo_cambio: 1 };
+        const tipoCambioActual = this.props.selectedMoneda?.tipo_cambio ?? 1;
+        this.precio_compra_moneda = !this.props.data.precio ? "" : parseFloat(this.props.data.precio / tipoCambioActual).toFixed(2) || 0;
+        this.props.data.precioConvertido = this.precio_compra_moneda;
         console.log("tipo cambio ", this.props.selectedMoneda?.observacion);
         console.log("precio actualizado ", moneda.tipo_cambio);
         return (
@@ -374,12 +387,12 @@ class Detalle extends React.Component {
                                         time: 4000,
                                     });
                                 } else {
-                                    const tc = this.props.selectedMoneda.tipo_cambio
+                                    const tc = this.props.selectedMoneda?.tipo_cambio ?? 1;
                                     this.props.data.modelo = producto;
                                     this.props.data.precio = producto.precio_compra || 0;
                                     this.props.data.moneda = this.props.selectedMoneda; // Actualizar moneda al seleccionar producto
                                     this.props.data.precioConvertido = producto.precio_compra / tc;
-                                    this.inputs["precio"].setValue((parseFloat(this.props.data.precioConvertido || 0) * parseFloat(this.props.data.cantidad)).toString());
+                                    this.inputs["precio"].setValue((parseFloat(this.props.data.precioConvertido || 0) * parseFloat(this.props.data.cantidad || 1)).toString());
                                 }
                             });
                         }}

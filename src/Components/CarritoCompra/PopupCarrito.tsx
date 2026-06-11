@@ -44,7 +44,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     componentDidMount(): void {
-        MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
+        MDL.carrito.addEventListener("handleChange", this.handleChange)
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarMonedaSeleccionada(); });
         this.cargarMonedaSeleccionada();
         this.cargarMonedas();
@@ -75,11 +75,11 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     componentWillUnmount(): void {
-        MDL.carrito.removeEventListener(this.handleChange.bind(this))
+        MDL.carrito.removeEventListener(this.handleChange)
     }
 
     render() {
-        const items = MDL.carrito.carrito_compra.items;
+        const items = MDL.carrito.carrito_compra?.items || [];
         const { selectedMoneda } = this.state;
         return <SView col={"xs-12"} height>
             <SHr />
@@ -124,8 +124,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SHr h={1} color={STheme.color.card} />
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>
-                    {"Total:"} {selectedMoneda.observacion + " "}
-                    {SMath.formatMoney(MDL.carrito.carrito_compra.monto_total)}
+                    {"Total:"} {(selectedMoneda?.observacion ?? "") + " "}
+                    {SMath.formatMoney(MDL.carrito.carrito_compra?.monto_total || 0)}
                 </SText>
             </SView>
             <SHr h={1} color={STheme.color.card} />
@@ -204,17 +204,27 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 }
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
+    if (!item?.modelo) {
+        return (
+            <SView padding={8}>
+                <SText color={STheme.color.warning}>Producto inválido</SText>
+            </SView>
+        );
+    }
+    const modelo = item.modelo;
+    const precioBase = modelo?.precio_compra ?? 0;
+    const ventaMonedaKey = modelo?.venta_moneda?.key;
+    const tipoCambioVenta = modelo?.venta_moneda?.tipo_cambio || 1;
+    const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
     const [precio, setPrecio] = React.useState(0);
     const calcularPrecio = () => {
-        if (!moneda) return item.modelo.precio_compra;
-        if (item.modelo.venta_moneda.key === moneda.key) {
-            return item.modelo.precio_compra;
+        if (!moneda) return precioBase;
+        if (ventaMonedaKey === moneda.key) {
+            return precioBase;
         }
-        const tipoCambioVenta = item.modelo.venta_moneda.tipo_cambio || 1;
-        const tipoCambioSeleccionada = moneda.tipo_cambio || 1;
-        return item.modelo.precio_compra * (tipoCambioVenta / tipoCambioSeleccionada);
+        return precioBase * (tipoCambioVenta / tipoCambioSeleccionada);
     };
-    React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, item.modelo.precio_compra]);
+    React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, precioBase]);
     const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
 
     // const formatFecha = (dateStr: string) => {
@@ -263,14 +273,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                 </SView>
                 <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }} >
                     <SImage
-                        src={SSocket.api.inventario + "modelo/" + item.modelo.key}
+                        src={SSocket.api.inventario + "modelo/" + (item.modelo?.key ?? "")}
                         style={{ resizeMode: "cover" }}
                     />
                 </SView>
                 <SView width={4} />
                 <SView flex>
                     <SText fontSize={14} bold>
-                        {item.modelo.descripcion}
+                        {item.modelo?.descripcion ?? "Producto"}
                     </SText>
                     <SHr h={2} />
                     <SView row style={{ alignItems: "center" }}>
@@ -293,13 +303,15 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                         numberOfLines={1}
                                         color={STheme.color.lightGray}
                                     >
-                                        {moneda ? moneda.observacion : "BS"}
+                                        {moneda?.observacion ?? "BS"}
                                     </SText>
                                 }
                                 value={precioFormateado}
                                 onChangeText={(e) => {
                                     setPrecio(e);
-                                    item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
+                                    if (item.modelo) {
+                                        item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
+                                    }
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
@@ -351,7 +363,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
                         <SView width={80} style={{ justifyContent: "center" }}>
                             <SText fontSize={12} bold style={{ textAlign: "right" }}>
-                                {SMath.formatMoney(precio * item.cantidad)}
+                                {SMath.formatMoney(precio * (item.cantidad ?? 0))}
                             </SText>
                         </SView>
 

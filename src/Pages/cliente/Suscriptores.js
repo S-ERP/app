@@ -196,7 +196,13 @@ export default class Suscriptores extends Component {
 
   async loadInitialData() {
     try {
-      console.log('🚀 Iniciando carga de datos...');
+      const notificationKey = "suscriptores_load";
+
+      SNotification.send({
+        key: notificationKey,
+        title: "Cargando suscripciones...",
+        type: "loading",
+      });
 
       const empresaKey = MDL.empresa.select?.key;
 
@@ -206,6 +212,8 @@ export default class Suscriptores extends Component {
       ) || [];
 
       if (!Array.isArray(res)) return [];
+
+      console.log("✅ Suscripciones obtenidas:", JSON.stringify(res, null, 2));
 
       const empresa = await MDL.empresa.getFull();
       const sucursales = Object.values(empresa?.sucursales || {});
@@ -225,7 +233,7 @@ export default class Suscriptores extends Component {
       // clientes
       const clientesArr = await MDL.crm.cliente.getAll();
       if (!Array.isArray(clientesArr)) {
-        throw new Error("No se pudieron obtener clientes.");
+        console.error("No se pudieron obtener clientes.");
       }
 
       const clientesMap = Object.fromEntries(
@@ -240,11 +248,26 @@ export default class Suscriptores extends Component {
         empresa,
       }));
 
+
+      SNotification.send({
+        key: notificationKey,
+        title: "Suscripciones cargadas",
+        color: STheme.color.success,
+        time: 2000,
+      });
+
       console.log("✅ Data final:", data_mejorada);
       return data_mejorada;
 
     } catch (error) {
       console.error("❌ Error en loadInitialData:", error);
+      SNotification.send({
+        key: notificationKey,
+        title: "Error al cargar datos",
+        body: error?.message || "No se pudieron cargar las suscripciones.",
+        color: STheme.color.danger,
+        time: 5000,
+      });
       SPopup.alert("Error al cargar los datos.");
       return [];
     }
@@ -274,6 +297,13 @@ export default class Suscriptores extends Component {
 
         onSelect={(e) => {
 
+          SNotification.send({
+            key: "suscriptor_edit_open",
+            title: "Abriendo editor...",
+            type: "loading",
+            time: 1000,
+          });
+
           console.log("Selected project:", e.row);
           const { row, evt } = e;
           const nombreTurno = `Suscripción: ${row?.cliente?.nombres ?? 'Sin nombre'}`;
@@ -290,6 +320,13 @@ export default class Suscriptores extends Component {
                   onActualizar: (nuevoDato) => {
                     this.DinamicTable.loadData();
                     console.log("Cliente actualizado:", nuevoDato);
+                    SNotification.send({
+                      key: "suscriptor_update",
+                      title: "Suscripción actualizada",
+                      color: STheme.color.success,
+                      time: 3000,
+                    });
+
                   }
                 });
               }
@@ -303,71 +340,52 @@ export default class Suscriptores extends Component {
               label: 'Eliminar',
               icon: <SIconApp name="Delete" fill={STheme.color.text} />,
               onPress: () => {
+                const notificationKey = `suscripcion_${row.key}`;
+
                 SPopup.confirm({
-                  title: 'Eliminar Suscripción',
+                  title: "Eliminar Suscripción",
                   message: `¿Estás seguro de eliminar a ${nombreTurno}?`,
-                  onPress: () => {
-
-                    const data = { ...row}
-                    // const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
-
-                    //SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
-
-                    const datosParaEnviar = {
-                      key: data.key,
-                      key_cliente: data.key_cliente,
-                      fecha_inicio: data.fecha_inicio,
-                      fecha_fin: data.fecha_fin,
-                      estado: 0 
-                    };
-
-                    console.log("Datos para enviar:", datosParaEnviar);
-
-
-                    MDL.inventario.editSuscripcion(datosParaEnviar).then((resp) => {
+                  onPress: async () => {
+                    try {
                       SNotification.send({
-                        title: 'Éxito',
-                        body: 'Suscripción actualizada correctamente.',
-                        time: 3000,
+                        key: notificationKey,
+                        title: "Actualizando suscripción...",
+                        type: "loading",
+                      });
+
+                      const datosParaEnviar = {
+                        key: row.key,
+                        key_cliente: row.key_cliente,
+                        fecha_inicio: row.fecha_inicio,
+                        fecha_fin: row.fecha_fin,
+                        estado: 0,
+                      };
+
+                      console.log("Datos para enviar:", datosParaEnviar);
+
+                      await MDL.inventario.editSuscripcion(datosParaEnviar);
+
+                      this.DinamicTable?.loadData?.();
+
+                      SNotification.send({
+                        key: notificationKey,
+                        title: "Éxito",
+                        message: `Esta acción desactivará la suscripción de ${nombreTurno}`,
+                        // body: "Suscripción actualizada correctamente.",
                         color: STheme.color.success,
-                      });
-                      this.DinamicTable.loadData();
-                    }).catch((err) => {
-                      console.error("Error al eliminar el artículo del cliente", err);
-                      SNotification.send({
-                        title: 'Error',
-                        body: 'Suscripción no actualizada.',
                         time: 3000,
-                        color: STheme.color.danger,
                       });
-                    });
+                    } catch (err) {
+                      console.error("Error al eliminar el artículo del cliente", err);
 
-                    // SSocket.sendPromise({
-                    //   service: 'empresa',
-                    //   component: 'horario_atencion',
-                    //   type: '_editarTurnosHorariosAtencion',
-                    //   data: { ...row, estado: 0 },
-                    // })
-                    //   .then(() => {
-                    //     SNotification.send({
-                    //       key: 'eliminar_ok',
-                    //       title: 'Éxito',
-                    //       body: `${nombreTurno} fue eliminado correctamente.`,
-                    //       time: 1500,
-                    //       color: STheme.color.success,
-                    //     });
-                    //     this.DinamicTable.loadData();
-                    //   })
-                    //   .catch(err => {
-                    //     console.error('Error al eliminar turno:', err);
-                    //     SNotification.send({
-                    //       key: 'eliminar_error',
-                    //       title: 'Error',
-                    //       body: 'Ocurrió un error al eliminar. Intenta nuevamente.',
-                    //       time: 3000,
-                    //       color: STheme.color.danger,
-                    //     });
-                    //   });
+                      SNotification.send({
+                        key: notificationKey,
+                        title: "Error",
+                        body: err?.message || "Suscripción no actualizada.",
+                        color: STheme.color.danger,
+                        time: 3000,
+                      });
+                    }
                   },
                 });
               },
@@ -389,6 +407,7 @@ export default class Suscriptores extends Component {
         <DinamicTable.Col key="key_sucursal" label="key_sucursal" width={100} data={(e) => e.row?.key_sucursal ?? ""} customComponent={e => this.renderSucursal(e.row?.sucursal)} />
         {/* <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} data={(e) => e.row?.key_empresa ?? ""} customComponent={e => this.renderEmpresa(e.row?.empresa)} /> */}
 
+        <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={(e) => e.row?.descripcion ?? ""} />
 
 
 

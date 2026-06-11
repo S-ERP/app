@@ -149,8 +149,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SHr h={1} color={STheme.color.card} />
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>
-                    {"Total:"} {selectedMoneda.observacion + " "}
-                    {SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}
+                    {"Total:"} {selectedMoneda?.observacion ?? "Bs"} {SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}
                 </SText>
             </SView>
             <SHr h={1} color={STheme.color.card} />
@@ -218,11 +217,11 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const [precio, setPrecio] = React.useState(0);
     const calcularPrecio = () => {
         if (!moneda) return item.modelo.precio_venta;
-        if (item.modelo.venta_moneda.key === moneda.key) {
+        if (item.modelo.venta_moneda?.key === moneda?.key) {
             return item.modelo.precio_venta;
         }
-        const tipoCambioVenta = item.modelo.venta_moneda.tipo_cambio || 1;
-        const tipoCambioSeleccionada = moneda.tipo_cambio || 1;
+        const tipoCambioVenta = item.modelo.venta_moneda?.tipo_cambio || 1;
+        const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
         return item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
     };
     React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, item.modelo.precio_venta]);
@@ -249,7 +248,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 value={precioFormateado}
                                 onChangeText={(e) => {
                                     setPrecio(e);
-                                    item.modelo.precio_venta_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
+                                    item.modelo.precio_venta_moneda = e * (moneda?.tipo_cambio || 1);
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />

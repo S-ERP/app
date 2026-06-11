@@ -8,7 +8,7 @@ import { SStorage, STheme } from "servisofts-component";
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
   monedaSeleccionada: any = null;
-  
+
   async registrar(data: any) {
     const formar = {
       descripcion: "Venta desde punto de venta",
@@ -34,30 +34,30 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "venta_realizada" })
     return resp.data;
   }
-  
+
   vaciarAll() {
     this.dispatchEvent({ type: "venta_realizada" })
   }
-  
+
   conStock() {
     this.dispatchEvent({ type: "conStock" })
   }
   totalItemsCarrito = 0
-  
+
   updateCarritoItems(carritoCantidad: any) {
     this.totalItemsCarrito = carritoCantidad;
     this.dispatchEvent({ type: "carrito_globo" })
   }
-  
+
   setMonedaSeleccionada(moneda: any) {
     this.monedaSeleccionada = moneda;
     return moneda;
   }
-  
+
   getMonedaSeleccionada() {
     return this.monedaSeleccionada;
   }
-  
+
   getStateInfo(key?: string) {
     const states: any = {
       cotizacion: { color: STheme.color.lightGray, label: "Cotización" },
@@ -69,7 +69,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     if (!key) return states;
     return states[key] ?? null;
   }
-  
+
   getTipoPago(key?: string) {
     const _states: any = {
       contado: { color: "#034400ff", label: "Contado" },
@@ -79,7 +79,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     if (!key) return _states;
     return _states[key] ?? null;
   }
-  
+
   async getAll() {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -89,7 +89,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-  
+
   async editar(data: any) {
     data.key_empresa = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({
@@ -101,7 +101,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-  
+
   getByKey(value: any) {
     return SSocket.sendPromise({
       service: "compra_venta",
@@ -111,7 +111,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     }).then((resp: any) => resp.data);
   }
-  
+
   getJson(value: any) {
     return SSocket.sendPromise({
       service: "compra_venta",
@@ -121,7 +121,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     }).then((resp: any) => resp.data);
   }
-  
+
   getTotales(value: any) {
     var compra_venta_detalle = value
     console.log("compra_venta_detalle", compra_venta_detalle)
@@ -146,7 +146,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     t.total_a_pagar = t.total - t.gifcard
     return t;
   }
-  
+
   async getByKeyComraVenta(value: any) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -157,7 +157,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data[0] || [];
   }
-  
+
   setSucursalSeleccionada(sucursal: any) {
     this.sucursalSeleccionada = sucursal;
     return new Promise((resolve, reject) => {
@@ -169,7 +169,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       }
     });
   }
-  
+
   async getSucursalSeleccionada() {
     try {
       const sucursalStr = await SStorage.getItem("sucursal_seleccionada");
@@ -182,7 +182,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       return null;
     }
   }
-  
+
   async getTransaccion(_tipo: String, fecha_inicio_: String, fecha_fin_: String) {
     const key_empresa = MDL.empresa?.select?.key || {};
     const resp: any = await SSocket.sendPromise({
@@ -194,7 +194,20 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-  
+
+
+  async getsuscripciones(_key_compra_venta_detalle: String) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "reporte",
+      type: "execute_function",
+      func: "_reporte_suscritos",
+      params: ["'" + _key_compra_venta_detalle + "'"],
+    });
+    return resp.data || [];
+  }
+
+
   async getAllCostos() {
     const key_empresa = MDL.empresa?.select?.key || {};
     const resp: any = await SSocket.sendPromise({
@@ -223,7 +236,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-  
+
   async getCuotasCompras(key_compra_venta: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -234,7 +247,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-  
+
   async getTransaccionCuotasVentas(_key_cliente: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -245,7 +258,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-  
+
   async getCuotasResumenTotal_compras() {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",

@@ -9,8 +9,34 @@ import AjusteTagInfoPopup from "./Components/AjusteInfoPopup";
 import { ScrollView } from "react-native";
 import FloatButtom from "../../Components/FloatButtom";
 
-export default class cuentas_anidadas extends React.Component {
+export default class CuentasAnidadas extends React.Component {
 
+    static open(props) {
+        SPopup.open({
+            key: "popup-cuentas",
+            content: <SView
+                style={{
+                    width: "100%",
+                    height: 500,
+                    maxWidth: 1000,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
+                    backgroundColor: STheme.color.background,
+                    overflow: "hidden"
+
+                }} withoutFeedback>
+                <CuentasAnidadas
+                    {...props}
+                    btnSelect={true}
+                // filtroTipo="INGRESO"
+                />
+            </SView>
+        });
+    }
+    static close() {
+        SPopup.close("popup-cuentas");
+    }
     tipoComprobante = "Todos";
     baseDataCache = null;
     reporteTodosPorCodigo = null;
@@ -364,7 +390,7 @@ export default class cuentas_anidadas extends React.Component {
                         codigo = item.codigo + ".1";
                     }
                     CuentaContableForm.open({
-                        cuenta_contable: { tipo: item.tipo, codigo: codigo, descripcion: "", key_moneda: item.key_moneda},
+                        cuenta_contable: { tipo: item.tipo, codigo: codigo, descripcion: "", key_moneda: item.key_moneda },
                         onChange: (e) => {
                             const newCuenta = e?.cuenta_contable || e;
                             const parts = newCuenta.codigo.split(".");
@@ -390,7 +416,8 @@ export default class cuentas_anidadas extends React.Component {
             })
         }
         if (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'edit' })) {
-            options.push({ label: 'Editar', icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
+            options.push({
+                label: 'Editar', icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
                 onPress: () => {
                     CuentaContableForm.open({
                         cuenta_contable: item,
@@ -406,9 +433,10 @@ export default class cuentas_anidadas extends React.Component {
                 label: 'Eliminar',
                 icon: <SIconApp name="Delete" fill={STheme.color.text} />,
                 onPress: () => {
-                    SPopup.confirm({ title: "Eliminar Cuenta Contable", message: "¿Estás seguro de eliminar la cuenta contable?",
+                    SPopup.confirm({
+                        title: "Eliminar Cuenta Contable", message: "¿Estás seguro de eliminar la cuenta contable?",
                         onPress: () => {
-                            MDL.contabilidad.cuenta_contable.save({ key: item.key, estado: 0}).then(e => {
+                            MDL.contabilidad.cuenta_contable.save({ key: item.key, estado: 0 }).then(e => {
                                 SNotification.send({
                                     title: "Cuenta eliminada",
                                     body: "La cuenta contable ha sido eliminada correctamente.",
@@ -449,7 +477,7 @@ export default class cuentas_anidadas extends React.Component {
                             this.toggleItem(item.codigo);
                         }
                     }}
-                    style={{ flexDirection: "row", alignItems: "center", paddingVertical: 8, minHeight: 32, borderBottomWidth: 0.2, borderColor: STheme.color.card, backgroundColor}}
+                    style={{ flexDirection: "row", alignItems: "center", paddingVertical: 8, minHeight: 32, borderBottomWidth: 0.2, borderColor: STheme.color.card, backgroundColor }}
                     onMouseEnter={() => {
                         this.hoveredItemLocal = item.codigo;
                         this.forceUpdate();
@@ -459,12 +487,12 @@ export default class cuentas_anidadas extends React.Component {
                         this.forceUpdate();
                     }}
                 >
-                    <SView style={{ flex: 1, flexDirection: "row", alignItems: "center", paddingLeft: level * 15}}>
+                    <SView style={{ flex: 1, flexDirection: "row", alignItems: "center", paddingLeft: level * 15 }}>
                         <SIconApp width={14} height={14} name={hasChildren ? (isOpen ? "arrowDown" : "arrowRight") : ""} stroke={STheme.color.lightGray} fill={"transparent"} style={{ cursor: "pointer", marginLeft: 4 }} />
                         <SText numberOfLines={1}>{item.codigo} - {item.descripcion || item.tipo}</SText>
                         <SView width={15} />
                         <SView style={{ alignItems: "center" }}>
-                            <SText clean style={{ borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[item.tipo], backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55", fontSize: 10, paddingHorizontal: 6, paddingVertical: 3, borderRadius: 10}}>{item.tipo}</SText>
+                            <SText clean style={{ borderWidth: 1, borderColor: MDL.contabilidad.color_tipo[item.tipo], backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55", fontSize: 10, paddingHorizontal: 6, paddingVertical: 3, borderRadius: 10 }}>{item.tipo}</SText>
                         </SView>
                         <SView width={10} />
                         <SView style={{ alignItems: "center" }}>
@@ -486,7 +514,7 @@ export default class cuentas_anidadas extends React.Component {
                     <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.debe ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.debe || 0)}</SText> </SView>
                     <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.haber ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.haber || 0)}</SText> </SView>
                     <SView style={{ width: 80, alignItems: "center" }}> <SText style={{ color: (item.saldo ? STheme.color.text : STheme.color.lightGray + "55"), fontSize: 12 }}>{SMath.formatMoney(item.saldo || 0)}</SText> </SView>
-                    <SView style={{ width: 60, alignItems: "center" }} onPress={(evt) => { FloatMenu.open({ e: evt, label: nombreCuenta, options}); }}> <SIconApp name="drive-menu" width={10} height={10} fill={STheme.color.text} /> </SView>
+                    <SView style={{ width: 60, alignItems: "center" }} onPress={(evt) => { FloatMenu.open({ e: evt, label: nombreCuenta, options }); }}> <SIconApp name="drive-menu" width={10} height={10} fill={STheme.color.text} /> </SView>
                     {showSelectButton && (
                         <SView row onPress={() => {
                             const cuenta = this.state.cuentas.find(c => c.key === item.key);
@@ -613,7 +641,7 @@ export default class cuentas_anidadas extends React.Component {
                                     value={this.state.search}
                                     onChangeText={(tx) => this.handleSearch(tx)}
                                     onKeyPress={this.handleSearchKeyDown}
-                                    style={{ top: 4, paddingLeft: 28, height: 33, borderRadius: 4, color: "#ecfeff"}}
+                                    style={{ top: 4, paddingLeft: 28, height: 33, borderRadius: 4, color: "#ecfeff" }}
                                 />
                             </SView><SView width={10} />
                             <SView row style={{ alignItems: "center" }}>
@@ -655,8 +683,8 @@ export default class cuentas_anidadas extends React.Component {
                         </SView>
                     </SView>
                     <SView col={"xs-12"} style={{ flex: 1 }} padding={15}>
-                        <SView style={{ flexDirection: "row", alignItems: "center", backgroundColor: STheme.color.background, borderTopLeftRadius: 8, borderTopRightRadius: 8, paddingVertical: 8, height: 36}}>
-                            <SView style={{ flex: 1}}>
+                        <SView style={{ flexDirection: "row", alignItems: "center", backgroundColor: STheme.color.background, borderTopLeftRadius: 8, borderTopRightRadius: 8, paddingVertical: 8, height: 36 }}>
+                            <SView style={{ flex: 1 }}>
                                 <SText style={{ color: STheme.color.text, fontSize: 13, fontWeight: "700", paddingLeft: 4 }}>CUENTA</SText>
                             </SView>
                             <SView style={{ width: 100, alignItems: "center", justifyContent: "center", minHeight: 32, paddingVertical: 8 }}>
