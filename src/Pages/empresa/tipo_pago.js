@@ -84,6 +84,7 @@ export default class tipo_pago extends Component {
                 ref={ref => this.DinamicTable = ref}
                 {...Config.table.applyTheme()}
                 selectType='single'
+                language="es"
                 loadData={this.loadData.bind(this)}
                 loadInitialState={async () => {
                     return {
