@@ -65,6 +65,7 @@ import iconUbicacion, { ReactComponent as iconUbicacionW } from "./svg/social/ic
 import iconMail, { ReactComponent as iconMailW } from "./svg/social/iconMail.svg";
 import cajero, { ReactComponent as cajeroW } from "./svg/cajero.svg";
 import sucursal_, { ReactComponent as sucursal_W } from "./svg/sucursal.svg";
+import nuevaGestion, { ReactComponent as nuevaGestionW } from "./svg/nuevaGestion.svg";
 
 import Comment2, {
   ReactComponent as Comment2W,
@@ -531,6 +532,7 @@ export const svg = {
   expand: { Native: expand, Web: expandW },
   collapse: { Native: collapse, Web: collapseW },
   dashboard: { Native: dashboard, Web: dashboardW },
+  nuevaGestion: { Native: nuevaGestion, Web: nuevaGestionW },
 
 
   arrowRight: { Native: arrowRight, Web: arrowRightW },

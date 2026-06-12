@@ -15,13 +15,22 @@ export default class root extends Component {
             permiso_crear: true,
             gestiones: null,
             loading: false,
+            highlight: false,
+
             error: ""
         };
     }
 
     componentDidMount() {
+        this.intervalHighlight = setInterval(() => {
+            this.setState({
+                highlight: !this.state.highlight
+            });
+        }, 800);
         this.loadInitialData();
     }
+
+
 
     loadInitialData = async () => {
         const api = await MDL.contabilidad.gestion.getAll();
@@ -176,8 +185,15 @@ export default class root extends Component {
                         <SHr h={15} />
                         {!!this.state.error && (<> <SText color={STheme.color.danger}> {this.state.error} </SText> <SHr h={10} /> </>)}
                         <SHr h={8} />
+
+
+
+
                         {!this.state.loading ? (
-                            <SView row center width={280} height={55} onPress={this.abrir_nueva_gestion} style={{ backgroundColor: STheme.color.primary + "99", borderRadius: 4, cursor: "pointer" }} >
+                            <SView row center width={280} height={55} onPress={this.abrir_nueva_gestion} style={{
+                                backgroundColor: this.state.highlight ? STheme.color.primary + "99" : STheme.color.primary,
+                                borderRadius: 4, cursor: "pointer"
+                            }} >
                                 <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} /> <SView width={10} /> <SText color={STheme.color.white} bold fontSize={16} > Crear gestión </SText>
                             </SView>
                         ) : (
