@@ -31,13 +31,23 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         const cuentas = await MDL.contabilidad.getCuentasCache();
         // const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
         // const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
-        const moneda_base = data.monedas.find(a => a.tipo == "base");
-        //"
-        this.pvtp = Object.values(empresa_tipo_pago)
+
+
+        // const moneda_base = data.monedas.find(a => a.tipo == "base");
+        const monedas = data?.monedas || [];
+        const moneda_base = monedas.find(a => a.tipo == "base");
+
+        // this.pvtp = Object.values(empresa_tipo_pago)
+        this.pvtp = Object.values(empresa_tipo_pago || {});
+
         // if (!this.pvtp) return [];
         this.pvtp = this.pvtp.map(item => {
-            item.cuenta = cuentas[item.key_cuenta_contable]
-            const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
+
+            // item.cuenta = cuentas[item.key_cuenta_contable]
+            item.cuenta = cuentas?.[item.key_cuenta_contable];
+
+            // const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
+            const moneda = monedas.find(a => a.key == item?.cuenta?.key_moneda);
 
             item.moneda = moneda ?? moneda_base;
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
