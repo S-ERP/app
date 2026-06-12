@@ -17,7 +17,7 @@ export default class FiltroNiveles extends React.Component<{
     componentDidMount(): void {
         MDL.contabilidad.getNivelesPlanCuentas().then((niveles) => {
             this.niveles = niveles;
-            this.nivelLen = niveles[0].len ?? 1;
+            this.nivelLen = niveles?.[0]?.len ?? 1;
             this.forceUpdate();
         })
     }
