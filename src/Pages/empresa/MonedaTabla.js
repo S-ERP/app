@@ -22,7 +22,7 @@ export default class MonedaTabla extends Component {
         })
     }
     loadInitialData = async () => {
-        const api = await MDL.empresa.getMonedas();
+        const api = await MDL.empresa.getMonedas() || [];
         return api;
     }
     mostrarTabla() {

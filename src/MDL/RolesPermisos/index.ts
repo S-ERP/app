@@ -1,4 +1,4 @@
-import { SStorage } from "servisofts-component";
+import { SNavigation, SStorage } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener, Rol } from "./types";
@@ -15,7 +15,10 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
             throw "No hay usuario logueado";
         }
         if (!key_empresa) {
-            throw "No hay empresa seleccionada";
+            // throw "No hay empresa seleccionada";
+            console.log("%c" + "No hay empresa seleccionada", `color: #fa0fb3; font-weight: bold;`);
+            SNavigation.navigate("/");
+
         }
         const state = Model.usuarioPage.Action._getState();
         // console.log("RolesPermisos", state.usuarioPageReducer)

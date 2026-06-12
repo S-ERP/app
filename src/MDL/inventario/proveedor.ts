@@ -48,21 +48,34 @@ export default class proveedor {
     });
     return resp.data;
   }
+// richard
 
-  async registrar(data: any) {
-    data.key_empresa = MDL.empresa.select?.key;
-    // data.nombre = "oruro";
-    // data.nit = "10";
-
-    // console.log("registrar aqui vemos " + JSON.stringify(data))
-    // return;
+ async registrar(data: Cliente) {
+    data.key_empresa = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({
-      service: "inventario",
-      component: "proveedor",
+      service: "crm",
+      component: "cliente",
       type: "registro",
       data: data,
       key_usuario: Model.usuario.Action.getKey(),
     });
     return resp.data;
   }
+
+  // async registrar(data: any) {
+  //   data.key_empresa = MDL.empresa.select?.key;
+  //   // data.nombre = "oruro";
+  //   // data.nit = "10";
+
+  //   // console.log("registrar aqui vemos " + JSON.stringify(data))
+  //   // return;
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "inventario",
+  //     component: "proveedor",
+  //     type: "registro",
+  //     data: data,
+  //     key_usuario: Model.usuario.Action.getKey(),
+  //   });
+  //   return resp.data;
+  // }
 }

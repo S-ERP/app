@@ -40,8 +40,12 @@ export default class Modelo extends Component {
             });
             return;
         }
-        const modelos = await MDL.inventario.getAllModeloStock();
+        // const modelos = await MDL.inventario.getAllModeloStock();
+        const modelos = await MDL.inventario.getAllModeloStock() || [];
+        // let monedas = await MDL.empresa.getMonedas();
         let monedas = await MDL.empresa.getMonedas();
+        monedas = monedas || [];
+
         this.modelos = modelos
             .map(e => ({
                 ...e,
@@ -168,7 +172,7 @@ export default class Modelo extends Component {
                                                     <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion} </SText>
                                                     <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion} </SText>
                                                 </SView>
-                                                {producto?.tipo_producto && (<SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(producto?.tipo_producto?.tipo) + "44", borderWidth: 1, borderColor: STheme.colorFromText(producto?.tipo_producto?.tipo) }}>
+                                                {producto?.tipo_producto?.tipo && (<SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(producto?.tipo_producto?.tipo) + "44", borderWidth: 1, borderColor: STheme.colorFromText(producto?.tipo_producto?.tipo) }}>
                                                     <SText fontSize={10} style={{ textTransform: "uppercase" }} >{producto?.tipo_producto?.tipo}</SText>
                                                 </SView>)}
                                             </SView>
