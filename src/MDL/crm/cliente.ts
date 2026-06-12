@@ -43,12 +43,28 @@ export default class cliente {
       key: key_cliente,
       key_empresa: Model.empresa.Action.getKey(),
     });
-        return Object.values(resp.data)[0];
- 
+    return Object.values(resp.data)[0];
+
     // return resp.data[0];
   }
 
 
+  /**
+ * TODO:
+ * En el servidor CRM existe la tabla `clientela`, la cual actualmente
+ * se utiliza para registrar tanto clientes como proveedores.
+ *
+ * Conceptualmente esta tabla debería llamarse `persona`, ya que almacena
+ * entidades de distintos tipos y no únicamente clientes.
+ *
+ * Durante la evolución del sistema se evaluó realizar el cambio de nombre,
+ * pero por compatibilidad con implementaciones existentes y dependencias
+ * del CRM, la tabla permaneció con el nombre `clientela`.
+ *
+ * Considerar una futura refactorización para renombrar la entidad y sus
+ * referencias asociadas cuando el impacto sobre los sistemas integrados
+ * pueda ser gestionado adecuadamente.
+ */
 
   async registrar(data: Cliente) {
     data.key_empresa = Model.empresa.Action.getKey();
@@ -73,7 +89,7 @@ export default class cliente {
     return resp.data;
   }
 
- 
+
 
   async eliminar(data: Cliente) {
     data.key_empresa = Model.empresa.Action.getKey();

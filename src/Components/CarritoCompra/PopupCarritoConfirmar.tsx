@@ -7,7 +7,6 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPago2";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
-import SelectorCliente from "../Selectores/SelectorCliente";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
 type PopupCarritoConfirmarProps = {
 }
@@ -37,17 +36,46 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
-    state: { almacen: any, moneda: any, factura: boolean, esCredito: boolean, subtotal: any, } = {
+    state: {
+        almacen: any,
+        moneda: any,
+        factura: boolean,
+        esCredito: boolean,
+        subtotal: any,
+        clientes: any[],
+        key_cliente: string | null,
+        cliente_texto: string,
+        razon_social?: string,
+        nit?: string,
+    } = {
         almacen: null,
         moneda: MDL.compra_venta.getMonedaSeleccionada() || null,
         factura: false,
         esCredito: false, // 👈 bandera
         subtotal: null,
+        clientes: [],
+        key_cliente: null,
+        cliente_texto: "",
     }
 
     componentDidMount(): void {
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarSubtotal(); });
         this.cargarSubtotal();
+        this.cargarClientes();
+    }
+
+    async cargarClientes() {
+        try {
+            let clientes = await MDL.crm.cliente.getAll();
+            if (clientes && !Array.isArray(clientes)) {
+                clientes = Object.values(clientes);
+            }
+            if (!clientes) clientes = [];
+            clientes = (clientes as any[]).filter((c: any) => !!c);
+            this.setState({ clientes });
+        } catch (error) {
+            console.error("Error cargando clientes:", error);
+        }
     }
 
     cargarSubtotal() {
@@ -306,22 +334,186 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         </SView>
                     </SView>
                     <SHr />
+
+
+
+
+
                     <SView row>
-                        <SelectorCliente
-                            inputStyle={this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
-                            icon={<SText color={STheme.color.lightGray} bold>{"Proveedor: "}</SText>}
-                            placeholder={"Escriba el nombre del proveedor"}
-                            onChangeSelect={(cliente) => {
-                                if (this.inputNit && cliente) {
-                                    if (this.proveedor?.nit !== cliente.nit) {
-                                        this.inputNit.setValue(cliente?.nit || "");
-                                        this.inputRazonSocial.setValue(cliente?.razon_social || "");
-                                    }
+                        <SInput
+                            ref={ref => (this.inputCliente = ref)}
+                            inputStyle={this.state.factura || this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente: "}</SText>}
+                            placeholder={"Escriba el chaval del cliente"}
+                            height={40}
+                            type="select2"
+                            options={
+                                (this.state.clientes || [])
+                                    .map(c => (c?.razon_social || c?.nombres || "").trim())
+                                    .filter(a => !!a)
+                            }
+                            onChangeText={(text) => {
+                                const t = (text || "").trim();
+                                const encontrado = (this.state.clientes || []).find(c =>
+                                ((c?.razon_social || c?.nombres || "")
+                                    .trim()
+                                    .toLowerCase() === t.toLowerCase())
+                                );
+                                if (encontrado && encontrado.key) {
+                                    this.proveedor = encontrado;
+                                    this.setState({
+                                        key_cliente: encontrado.key,
+                                        cliente_texto: t,
+                                        razon_social: encontrado?.razon_social || encontrado?.nombres || "",
+                                        nit: encontrado?.nit || "",
+                                    });
+
+                                    this.inputRazonSocial?.setValue?.(
+                                        encontrado?.razon_social || encontrado?.nombres || ""
+                                    );
+                                    this.inputNit?.setValue?.(
+                                        encontrado?.nit || ""
+                                    );
+
+                                } else {
+                                    this.proveedor = null;
+
+                                    this.setState({
+                                        key_cliente: null,
+                                        cliente_texto: t,
+                                    });
                                 }
-                                this.proveedor = cliente;
                             }}
+                            iconR={
+                                (!this.state.key_cliente && !!this.state.cliente_texto) ? (
+                                    <SView
+                                        center
+                                        style={{
+                                            width: 28,
+                                            height: 28,
+                                            borderRadius: 6,
+                                            backgroundColor: STheme.color.card,
+                                        }}
+                                        onPress={async () => {
+
+                                            const nombre = (this.state.cliente_texto || "").trim();
+                                            if (!nombre) return;
+
+                                            try {
+                                                // richard
+                                                const resp = await MDL.crm.cliente.registrar({
+                                                    razon_social: nombre,
+                                                    nombres: nombre,
+                                                    nit: this.inputNit?.getValue?.() || "",
+                                                    key_empresa: MDL.empresa.select?.key,
+                                                });
+                                                if (!resp || !resp.key) {
+                                                    SNotification.send({
+                                                        title: "Error",
+                                                        body: "No se pudo crear el cliente.",
+                                                        color: STheme.color.danger,
+                                                        time: 3000,
+                                                    });
+                                                    return;
+                                                }
+                                                this.proveedor = resp;
+
+                                                this.setState(prev => ({
+                                                    clientes: [
+                                                        ...(prev.clientes || []),
+                                                        resp
+                                                    ],
+                                                    key_cliente: resp.key,
+                                                    cliente_texto: resp?.razon_social || resp?.nombres || nombre,
+                                                    razon_social: resp?.razon_social || resp?.nombres || "",
+                                                    nit: resp?.nit || "",
+                                                }));
+                                                this.inputCliente?.setSelect?.(resp);
+                                                this.inputRazonSocial?.setValue?.(
+                                                    resp?.razon_social || resp?.nombres || ""
+                                                );
+                                                this.inputNit?.setValue?.(
+                                                    resp?.nit || ""
+                                                );
+
+                                                SNotification.send({
+                                                    title: "Cliente creado",
+                                                    body: "Se registró correctamente.",
+                                                    time: 2500,
+                                                    color: STheme.color.success,
+                                                });
+
+                                            } catch (err: any) {
+
+                                                console.error("Error al registrar cliente:", err);
+
+                                                SNotification.send({
+                                                    title: "Error",
+                                                    body: err?.error || "No se pudo crear el cliente.",
+                                                    color: STheme.color.danger,
+                                                    time: 4000,
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        <SIconApp name="Girl" />
+                                    </SView>
+
+                                ) : (
+                                    <SView
+                                        center
+                                        style={{
+                                            width: 28,
+                                            height: 28,
+                                            borderRadius: 6,
+                                            backgroundColor: STheme.color.card,
+                                        }}
+                                        onPress={() => {
+
+                                            SNavigation.navigate("/cliente", {
+
+                                                onSelect: (cliente: any) => {
+
+                                                    if (!cliente || !cliente.key) return;
+
+                                                    this.proveedor = cliente;
+
+                                                    this.setState(prev => ({
+                                                        clientes: prev.clientes.some(c => c.key === cliente.key)
+                                                            ? prev.clientes
+                                                            : [...prev.clientes, cliente],
+                                                        key_cliente: cliente.key,
+                                                        cliente_texto:
+                                                            cliente?.razon_social ||
+                                                            cliente?.nombres ||
+                                                            "",
+                                                        razon_social: cliente?.razon_social || cliente?.nombres || "",
+                                                        nit: cliente?.nit || "",
+                                                    }));
+
+                                                    this.inputCliente?.setSelect?.(cliente);
+                                                    this.inputRazonSocial?.setValue?.(
+                                                        cliente?.razon_social || cliente?.nombres || ""
+                                                    );
+                                                    this.inputNit?.setValue?.(
+                                                        cliente?.nit || ""
+                                                    );
+
+                                                    SNavigation.goBack();
+                                                }
+                                            });
+                                        }}
+                                    >
+                                        <SIconApp name="Search" />
+                                    </SView>
+                                )
+                            }
                         />
+
                     </SView>
+
+
+
                     {(this.state.factura) ? <>
                         <SHr h={10} />
                         <SView row>
