@@ -32,53 +32,28 @@ export default class root extends Component {
         return api;
     }
 
-  abrir_nueva_gestion = async () => {
-    let fecha = this.input_fecha.getValue();
-
-    this.setState({
-        loading: true,
-        error: ""
-    });
-
-    try {
-        console.log("Creando gestión...");
-
-        const resp = await Model.gestion.Action.cerrar({
-            fecha,
-            key_usuario: Model.usuario.Action.getKey()
-        });
-
-        console.log("Respuesta:", resp);
-
-        const data = await this.loadInitialData();
-
-        console.log("Gestiones cargadas:", data);
-// ss
-        this.setState({
-            loading: false
-        });
-
-    } catch (e) {
-        console.error(e);
-
-        this.setState({
-            loading: false,
-            error: e.error || "Ocurrió un error al crear la gestión."
-        });
+    abrir_nueva_gestion = async () => {
+        let fecha = this.input_fecha.getValue();
+        this.setState({ loading: true, error: "" });
+        try {
+            console.log("Creando gestión...");
+            const resp = await Model.gestion.Action.cerrar({ fecha, key_usuario: Model.usuario.Action.getKey() });
+            console.log("Respuesta:", resp);
+            const data = await this.loadInitialData();
+            console.log("Gestiones cargadas:", data);
+            this.setState({ loading: false });
+        } catch (e) {
+            console.error(e);
+            this.setState({ loading: false, error: e.error || "Ocurrió un error al crear la gestión." });
+        }
     }
-}
 
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
             ref={ref => this.table = ref}
             {...Config.table.applyTheme()}
-            center
-            language="es"
-            selectType="single"
-            loadInitialState={async () => {
-                return { sorters: [{ key: "fecha", order: "desc", type: "date" }] }
-            }}
+            center language="es" selectType="single" loadInitialState={async () => { return { sorters: [{ key: "fecha", order: "desc", type: "date" }] } }}
             loadData={this.loadInitialData.bind(this)}
             onSelect={(e) => {
                 if (this.onSelect) {
@@ -86,9 +61,7 @@ export default class root extends Component {
                     SNavigation.goBack();
                     return;
                 }
-
                 const MenuOptions = [];
-
                 (e.row.estado == 1) ? MenuOptions.push({
                     icon: <SIconApp name='Edit' />,
                     label: "Abrir gestión",
@@ -125,12 +98,7 @@ export default class root extends Component {
                             })
                         }
                     })
-
-                FloatMenu.open({
-                    e: e.evt,
-                    label: "Gestión: " + new SDate(e.row?.fecha, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM"),
-                    options: MenuOptions
-                })
+                FloatMenu.open({ e: e.evt, label: "Gestión: " + new SDate(e.row?.fecha, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM"), options: MenuOptions })
             }}
         >
             <DinamicTable.Col key="index" label="#" textStyle={{
@@ -156,73 +124,69 @@ export default class root extends Component {
 
     render() {
         const { gestiones } = this.state;
-console.log("gestiones", gestiones);
+        console.log("gestiones", gestiones);
         if (!gestiones) return <SPage title="Gestiones" disableScroll><SLoad /></SPage>;
 
         if (gestiones.length === 0) {
-            return <SPage title="Gestiones Nueva" disableScroll border={"red"} center>
-                <SView col={"xs-9"} center row >
-                    <SView col={"xs-12"} center border={"yellow"}>
-                        <SHr h={16} />
-                        <SIcon name='Alert' fill='transparent' width={50} />
-                        <SHr h={8} />
-                        <SText fontSize={20} bold>{"¿Primera vez que abrirás una gestión?"}</SText>
-                        <SHr h={8} />
-                        <SText fontSize={16} color={STheme.color.lightGray} justify>{`Es necesario abrir una gestión en el sistema contable para que puedas registrar correctamente tus actividades económicas y mantener un seguimiento adecuado de las mismas. Si no abres una gestión, es posible que la información financiera de tu empresa no esté completa o no sea precisa, lo que podría dificultar la toma de decisiones en el futuro.\n\nPor lo tanto, te recomendamos abrir una gestión en el sistema contable tan pronto como sea posible para comenzar a registrar tus actividades económicas y tener un registro ordenado y preciso de tus transacciones financieras.`}</SText>
-                        <SHr h={16} />
-                        <SHr h={1} color={STheme.color.card} />
-                        <SHr h={16} />
-                        <SText fontSize={16} color={STheme.color.lightGray}>{"Ingresa el mes y el año de la gestión: "}</SText>
-                        <SHr h={4} />
-                        <SView width={100}>
-                            <SInput ref={ref => this.input_fecha = ref} type='date_my' iconR={<SView width={10} />} style={{ textAlign: "center" }} defaultValue={new SDate().toString("yyyy-MM")} />
-                        </SView>
-                        <SHr h={16} />
-                        <SText color={STheme.color.danger}>
-                            {this.state.error}
-                        </SText>
-
-                        <SHr h={8} />
-
-                        {!this.state.loading
-                            ? <SView
-                                row
-                                center
-                                width={280}
-                                height={52}
-                                card
-                                onPress={this.abrir_nueva_gestion}
-                                style={{
-                                    backgroundColor: STheme.color.primary,
-                                    borderRadius: 14
-                                }}
-                            >
-                                <SIconApp
-                                    name='Add'
-                                    width={18}
-                                    height={18}
-                                    fill={STheme.color.white}
-                                />
-
-                                <SView width={8} />
-
-                                <SText
-                                    bold
-                                    fontSize={16}
-                                    color={STheme.color.white}
-                                >
-                                    Crear primera gestión
-                                </SText>
+            return <SPage title="Crear primera gestión" disableScroll  >
+                <SView col={"xs-12"} center row>
+                    <SHr h={32} />
+                    <SView col={"xs-11 sm-10 md-8 lg-6"} center card padding={30} style={{ borderRadius: 20, backgroundColor: STheme.color.card, maxWidth: 850, boxShadow: "0 10px 30px rgba(0,0,0,0.12)" }} >
+                        <SView width={90} height={90} center style={{ borderRadius: 100, backgroundColor: STheme.color.primary + "20" }} > <SIconApp name='nuevaGestion' width={45} height={45} fill={STheme.color.text} /> </SView>
+                        <SHr h={20} />
+                        <SText bold fontSize={28} center > Crear primera gestión </SText>
+                        <SHr h={12} />
+                        <SText center color={STheme.color.lightGray} fontSize={16} > Comienza a registrar la información contable de tu empresa creando una gestión para el período que deseas administrar. </SText>
+                        <SHr h={25} />
+                        <SView col={"xs-12"} card padding={20} style={{ backgroundColor: STheme.color.primary + "20", borderRadius: 12 }} >
+                            <SText bold fontSize={16} > ¿Qué es una gestión? </SText>
+                            <SHr h={15} />
+                            <SView row>
+                                <SText color={STheme.color.success}>✓</SText>
+                                <SView width={10} />
+                                <SText> Organiza la información contable por períodos. </SText>
                             </SView>
-                            : <>
+                            <SHr h={10} />
+                            <SView row>
+                                <SText color={STheme.color.success}>✓</SText>
+                                <SView width={10} />
+                                <SText> Permite registrar compras, ventas y movimientos financieros. </SText>
+                            </SView>
+                            <SHr h={10} />
+                            <SView row>
+                                <SText color={STheme.color.success}>✓</SText>
+                                <SView width={10} />
+                                <SText> Facilita la generación de reportes y balances. </SText>
+                            </SView>
+                            <SHr h={10} />
+                            <SView row>
+                                <SText color={STheme.color.success}>✓</SText>
+                                <SView width={10} />
+                                <SText> Es el punto de partida para utilizar el sistema. </SText>
+                            </SView>
+
+                        </SView>
+                        <SHr h={30} />
+
+                        <SText bold fontSize={15} > Mes y año de inicio </SText> <SHr h={10} />
+                        <SView width={240}>
+                            <SInput ref={ref => this.input_fecha = ref} type='date_my' defaultValue={new SDate().toString("yyyy-MM")} style={{ textAlign: "center", fontSize: 18, backgroundColor: STheme.color.primary + "20", }} />
+                        </SView>
+                        <SHr h={15} />
+                        {!!this.state.error && (<> <SText color={STheme.color.danger}> {this.state.error} </SText> <SHr h={10} /> </>)}
+                        <SHr h={8} />
+                        {!this.state.loading ? (<SView row center width={280} height={55} onPress={this.abrir_nueva_gestion} style={{ backgroundColor: STheme.color.primary + "99", borderRadius: 14, cursor: "pointer" }} >
+                            <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} /> <SView width={10} /> <SText color={STheme.color.white} bold fontSize={16} > Crear gestión </SText>
+                        </SView>
+                        ) : (
+                            <>
                                 <SLoad />
-                                <SHr h={8} />
-                                <SText color={STheme.color.lightGray}>
-                                    Creando gestión...
-                                </SText>
+                                <SHr h={10} />
+                                <SText color={STheme.color.lightGray}> Creando gestión... </SText>
                             </>
-                        }
-                        <SHr h={16} />
+                        )}
+                        <SHr h={20} />
+                        <SText center color={STheme.color.lightGray} fontSize={13} > Podrás crear nuevas gestiones más adelante cuando lo necesites. </SText>
                     </SView>
                 </SView>
             </SPage>;
