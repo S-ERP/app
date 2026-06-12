@@ -456,7 +456,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             }
                                         }}
                                     >
-                                        <SIconApp name="Girl" />
+                                        <SIconApp name="Add" />
                                     </SView>
 
                                 ) : (
