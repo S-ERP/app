@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom } from 'servisofts-component';
-import SSocket from 'servisofts-socket';
+import { SPage, SView, SText, STheme, SLoad, SNavigation, SPopup, SInput, SHr, SDate } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../../MDL';
 import FloatButtom from '../../../Components/FloatButtom';
 import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import Config from '../../../Config';
-import Menu from 'servisofts-component/img/Menu';
 import Model from '../../../Model';
 
 export default class root extends Component {
@@ -169,15 +167,19 @@ export default class root extends Component {
                         <SHr h={30} />
 
                         <SText bold fontSize={15} > Mes y año de inicio </SText> <SHr h={10} />
-                        <SView width={240}>
-                            <SInput ref={ref => this.input_fecha = ref} type='date_my' defaultValue={new SDate().toString("yyyy-MM")} style={{ textAlign: "center", fontSize: 18, backgroundColor: STheme.color.primary + "20", }} />
+                        <SView width={240} backgroundColor={STheme.color.primary + "20"} style={{ borderRadius: 8 }}>
+                            <SInput ref={ref => this.input_fecha = ref}
+                                iconR={<SView width={40} height={"100%"} backgroundColor={"transparent"} ><SIconApp name="Evento" fill={STheme.color.text} width={20} />  </SView>}
+                                type='date_my' defaultValue={new SDate().toString("yyyy-MM")}
+                                style={{ textAlign: "center", fontSize: 18, borderRadius: 8 }} />
                         </SView>
                         <SHr h={15} />
                         {!!this.state.error && (<> <SText color={STheme.color.danger}> {this.state.error} </SText> <SHr h={10} /> </>)}
                         <SHr h={8} />
-                        {!this.state.loading ? (<SView row center width={280} height={55} onPress={this.abrir_nueva_gestion} style={{ backgroundColor: STheme.color.primary + "99", borderRadius: 14, cursor: "pointer" }} >
-                            <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} /> <SView width={10} /> <SText color={STheme.color.white} bold fontSize={16} > Crear gestión </SText>
-                        </SView>
+                        {!this.state.loading ? (
+                            <SView row center width={280} height={55} onPress={this.abrir_nueva_gestion} style={{ backgroundColor: STheme.color.primary + "99", borderRadius: 4, cursor: "pointer" }} >
+                                <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} /> <SView width={10} /> <SText color={STheme.color.white} bold fontSize={16} > Crear gestión </SText>
+                            </SView>
                         ) : (
                             <>
                                 <SLoad />
