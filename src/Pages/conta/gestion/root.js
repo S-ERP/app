@@ -8,27 +8,66 @@ import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import Config from '../../../Config';
 import Menu from 'servisofts-component/img/Menu';
-// import FormDiario from './Components/FormDiario';
+import Model from '../../../Model';
+
 export default class root extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            permiso_crear: true
+            permiso_crear: true,
+            gestiones: null,
+            loading: false,
+            error: ""
         };
     }
-    componentDidMount() {
-        // this.loadInitialData();
-        // MDL.rolesPermisos.getPermisoAsync({ url: "/empresa/moneda", permiso: "new" }).then(e => {
-        //     this.setState({ permiso_crear: e });
-        // }).catch(e => {
 
-        // })
+    componentDidMount() {
+        this.loadInitialData();
     }
+
     loadInitialData = async () => {
-        // const api = await MDL.contabilidad.diario.getAll();
         const api = await MDL.contabilidad.gestion.getAll();
+        const arr = api ? Object.values(api).filter(g => g.estado != 0) : [];
+        this.setState({ gestiones: arr });
         return api;
     }
+
+  abrir_nueva_gestion = async () => {
+    let fecha = this.input_fecha.getValue();
+
+    this.setState({
+        loading: true,
+        error: ""
+    });
+
+    try {
+        console.log("Creando gestión...");
+
+        const resp = await Model.gestion.Action.cerrar({
+            fecha,
+            key_usuario: Model.usuario.Action.getKey()
+        });
+
+        console.log("Respuesta:", resp);
+
+        const data = await this.loadInitialData();
+
+        console.log("Gestiones cargadas:", data);
+// ss
+        this.setState({
+            loading: false
+        });
+
+    } catch (e) {
+        console.error(e);
+
+        this.setState({
+            loading: false,
+            error: e.error || "Ocurrió un error al crear la gestión."
+        });
+    }
+}
+
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
@@ -40,39 +79,20 @@ export default class root extends Component {
             loadInitialState={async () => {
                 return { sorters: [{ key: "fecha", order: "desc", type: "date" }] }
             }}
-
             loadData={this.loadInitialData.bind(this)}
             onSelect={(e) => {
                 if (this.onSelect) {
                     this.onSelect(e.row);
-                    console.log("select ", this.onSelect)
-
                     SNavigation.goBack();
                     return;
                 }
 
                 const MenuOptions = [];
-                // if (MDL.rolesPermisos.getPermiso({ url: "/empresa/moneda", permiso: "edit" })) {
-                //     MenuOptions.push({
-                //         icon: <SIconApp name='Edit' />,
-                //         label: "Editar Diario",
-                //         onPress: () => {
-                //             // FormDiario.open({
-                //             //     editObject: e?.row,
-                //             //     onSuccess: () => {
-                //             //         this.table.loadData();
-                //             //         this.forceUpdate();
-                //             //     }
-                //             // })
-                //         }
-                //     })
-                // }
 
                 (e.row.estado == 1) ? MenuOptions.push({
                     icon: <SIconApp name='Edit' />,
                     label: "Abrir gestión",
                     onPress: () => {
-
                         SPopup.confirm({
                             title: "¿Estás seguro de abrir esta gestión?",
                             message: "Antes de continuar, queremos informarte que al abrir esta gestión, la que está actualmente abierta se cerrará automáticamente. Sin embargo, no te preocupes, todos los comprobantes que generes a partir de ahora se registrarán en esta gestión que estás abriendo. ¿Deseas continuar?",
@@ -83,15 +103,8 @@ export default class root extends Component {
                                 }).catch(e => {
                                     console.log(e)
                                 })
-
-                                // Model.gestion.Action.abrir({ key_gestion: this.data.key }).then(resp => {
-                                //     Model.gestion.Action.CLEAR();
-                                // }).catch(e => {
-                                //     console.log(e)
-                                // })
                             }
                         })
-
                     }
                 }) :
                     MenuOptions.push({
@@ -113,42 +126,12 @@ export default class root extends Component {
                         }
                     })
 
-
-                // if (MDL.rolesPermisos.getPermiso({ url: "/empresa/moneda", permiso: "delete" })) {
-                //     MenuOptions.push({
-                //         icon: <SIconApp name='delete' />,
-                //         label: "Eliminar Diario",
-                //         onPress: () => {
-                //             SPopup.confirm({
-                //                 title: "Eliminar diario",
-                //                 message: "¿Estás seguro de eliminar este diario?",
-                //                 onPress: () => {
-                //                     const data = {
-                //                         ...e.row,
-                //                         estado: 0,
-                //                     }
-                //                     MDL.contabilidad.diario.editar(data).then(() => {
-                //                         this.table.loadData();
-                //                         this.forceUpdate();
-                //                     }
-                //                     ).catch(err => {
-                //                         console.error("response", err);
-                //                     })
-                //                 }
-                //             })
-                //         }
-                //     })
-                // }
-
                 FloatMenu.open({
                     e: e.evt,
                     label: "Gestión: " + new SDate(e.row?.fecha, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM"),
                     options: MenuOptions
                 })
-            }
-            }
-
-
+            }}
         >
             <DinamicTable.Col key="index" label="#" textStyle={{
                 color: STheme.color.lightGray
@@ -168,11 +151,83 @@ export default class root extends Component {
                 data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                 textStyle={{ fontSize: 10, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm"
             />
-
         </DinamicTable>
     }
+
     render() {
-        console.log("seleccion: ", this.onSelect)
+        const { gestiones } = this.state;
+console.log("gestiones", gestiones);
+        if (!gestiones) return <SPage title="Gestiones" disableScroll><SLoad /></SPage>;
+
+        if (gestiones.length === 0) {
+            return <SPage title="Gestiones Nueva" disableScroll border={"red"} center>
+                <SView col={"xs-9"} center row >
+                    <SView col={"xs-12"} center border={"yellow"}>
+                        <SHr h={16} />
+                        <SIcon name='Alert' fill='transparent' width={50} />
+                        <SHr h={8} />
+                        <SText fontSize={20} bold>{"¿Primera vez que abrirás una gestión?"}</SText>
+                        <SHr h={8} />
+                        <SText fontSize={16} color={STheme.color.lightGray} justify>{`Es necesario abrir una gestión en el sistema contable para que puedas registrar correctamente tus actividades económicas y mantener un seguimiento adecuado de las mismas. Si no abres una gestión, es posible que la información financiera de tu empresa no esté completa o no sea precisa, lo que podría dificultar la toma de decisiones en el futuro.\n\nPor lo tanto, te recomendamos abrir una gestión en el sistema contable tan pronto como sea posible para comenzar a registrar tus actividades económicas y tener un registro ordenado y preciso de tus transacciones financieras.`}</SText>
+                        <SHr h={16} />
+                        <SHr h={1} color={STheme.color.card} />
+                        <SHr h={16} />
+                        <SText fontSize={16} color={STheme.color.lightGray}>{"Ingresa el mes y el año de la gestión: "}</SText>
+                        <SHr h={4} />
+                        <SView width={100}>
+                            <SInput ref={ref => this.input_fecha = ref} type='date_my' iconR={<SView width={10} />} style={{ textAlign: "center" }} defaultValue={new SDate().toString("yyyy-MM")} />
+                        </SView>
+                        <SHr h={16} />
+                        <SText color={STheme.color.danger}>
+                            {this.state.error}
+                        </SText>
+
+                        <SHr h={8} />
+
+                        {!this.state.loading
+                            ? <SView
+                                row
+                                center
+                                width={280}
+                                height={52}
+                                card
+                                onPress={this.abrir_nueva_gestion}
+                                style={{
+                                    backgroundColor: STheme.color.primary,
+                                    borderRadius: 14
+                                }}
+                            >
+                                <SIconApp
+                                    name='Add'
+                                    width={18}
+                                    height={18}
+                                    fill={STheme.color.white}
+                                />
+
+                                <SView width={8} />
+
+                                <SText
+                                    bold
+                                    fontSize={16}
+                                    color={STheme.color.white}
+                                >
+                                    Crear primera gestión
+                                </SText>
+                            </SView>
+                            : <>
+                                <SLoad />
+                                <SHr h={8} />
+                                <SText color={STheme.color.lightGray}>
+                                    Creando gestión...
+                                </SText>
+                            </>
+                        }
+                        <SHr h={16} />
+                    </SView>
+                </SView>
+            </SPage>;
+        }
+
         return (
             <SPage title="Gestiones" disableScroll>
                 {this.mostrarTabla()}
