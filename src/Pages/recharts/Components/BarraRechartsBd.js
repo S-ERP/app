@@ -68,6 +68,8 @@ export default class BarraRechartsBd extends Component {
       onClick = null,
     } = this.props;
 
+    const nameBarra = nameKey.slice(0, 10)
+
     if (!Array.isArray(data) || data.length === 0) {
       return <SText>No hay datos disponibles para mostrar el gráfico.</SText>;
     }
@@ -87,12 +89,12 @@ export default class BarraRechartsBd extends Component {
             onClick={onClick}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={nameKey.slice(0, 12)} fontSize={9}
+            <XAxis dataKey={nameBarra} hide={data.length < 15 ? false : true} fontSize={9}
               tick={{ fill: STheme.color.text }}
               // angle={-15}
               // textAnchor="end"
-            // angle={-90}
-            // textAnchor="end"
+              angle={-20}
+              textAnchor="end"
             />
             <YAxis tick={{ fill: STheme.color.text }} />
             <Tooltip content={this.CustomTooltip} />

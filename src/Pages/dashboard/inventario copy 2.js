@@ -482,7 +482,7 @@ export default class inventario extends React.Component {
         }
     };
 
-    loadStockBySucursal__ = async (keyEmpresa, fecha_inicio,
+    loadStockBySucursal = async (keyEmpresa, fecha_inicio,
         fecha_fin,
         keySucursal) => {
         try {
@@ -519,73 +519,6 @@ export default class inventario extends React.Component {
 
             if (this._mounted) {
                 this.setState({ dataStockBySucursal: sucursalesConStock });
-                this.setState({ loading: false });
-            }
-        } catch (e) {
-            console.error("Error en loadStockBySucursal:", e);
-            if (this._mounted) {
-                this.setState({ dataStockBySucursal: [] });
-            }
-        }
-    };
-
-    loadStockBySucursal = async (keyEmpresa, fecha_inicio,
-        fecha_fin,
-        keySucursal) => {
-        try {
-            const sucursales = this.state.sucursales || [];
-            // const productos = await MDL.inventario.getAllProducto?.() || [];
-            // const productos = await MDL.inventario.getAllModeloStock?.(keySucursal) || [];
-
-            const stockPorSucursal = {};
-            console.log("sucursales obtenidos:", sucursales);
-
-            // const sucursalesConStock = await Promise.all(
-            //     sucursales.map(async (sucursal) => {
-            //         // if (sucursal?.key) return;
-            //         console.log("keyyyy")
-
-            //         console.log(sucursal.key)
-            //         const productos = await MDL.inventario.getAllModeloStock?.(sucursal?.key_ ?? "", sucursal?.key ?? "") || [];
-            //         console.log("productos", productos)
-            //         const stockTotal = productos.reduce((sum, item) => {
-            //             return sum + (parseFloat(item.stock) || 0);
-            //         }, 0);
-            //         console.log("stockTotal", stockTotal)
-            //         return {
-            //             name: sucursal.descripcion,
-            //             value: stockTotal,
-            //             key_sucursal: sucursal.key
-            //         };
-            //     })
-            // );
-            const sucursalesConStock = await MDL.inventario.execute_function("get_stock_por_sucursal_inventario", [keyEmpresa, keySucursal, null]);
-
-            console.log("sucursalesConStock", sucursalesConStock)
-
-            const nuevoData = sucursalesConStock.map(item => ({
-                ...item,
-                name: sucursales.find(
-                    suc => suc.key === item.key_sucursal
-                )?.descripcion || ""
-            }));
-
-            console.log("NUEVODATA", nuevoData)
-
-            const dataResumen = nuevoData.map(item => ({
-                ...item,
-                stock_total: (item.productos || []).reduce(
-                    (sum, p) => sum + Number(p.stock || 0),
-                    0
-                ),
-                valor_inventario_total: (item.productos || []).reduce(
-                    (sum, p) => sum + Number(p.valor_inventario || 0),
-                    0
-                ).toFixed(2)
-            }));
-            console.log("dataResumen", dataResumen)
-            if (this._mounted) {
-                this.setState({ dataStockBySucursal: dataResumen });
                 this.setState({ loading: false });
             }
         } catch (e) {
@@ -1089,7 +1022,7 @@ export default class inventario extends React.Component {
                                     <CircularRechartsBd
                                         data={dataStockBySucursal}
                                         nameKey="name"
-                                        valueKey="stock_total"
+                                        valueKey="value"
                                         height={320}
                                     />
                                 )}

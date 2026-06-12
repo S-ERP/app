@@ -10,7 +10,24 @@ const defaultData = [
 ];
 
 const RADIAN = Math.PI / 180;
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6B6B", "#4ECDC4"];
+const COLORS = ["#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#FF6B6B",
+    "#4ECDC4",
+    "#845EC2",
+    "#D65DB1",
+    "#FF9671",
+    "#FFC75F",
+    "#F9F871",
+    "#2C73D2",
+    "#008E9B",
+    "#B39CD0",
+    "#C34A36",
+    "#4CAF50",
+    "#795548",
+    "#607D8B",];
 
 export default class CircularRechartsBd extends Component {
 
@@ -85,6 +102,10 @@ export default class CircularRechartsBd extends Component {
                                 borderRadius: 10,
                                 padding: 15,
                                 right: 0,
+                                // width: 250,
+                                // alignItems:"flex-start",
+                                // alignContent:"initial",
+                                fontSize:12
                             }}
                         />
                     </PieChart>
