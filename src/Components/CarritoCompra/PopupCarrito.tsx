@@ -260,13 +260,16 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         });
     };
 
+    const puedeEditarCosto = MDL.rolesPermisos.getPermiso({ url: "/compra3", permiso: "carrito_editar_precio" });
+
+
+
     return (
         <SView padding={8}>
             <SView row>
                 <SView
                     center
                     style={{ width: 20, height: 20, padding: 2 }}
-                    // onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}
                     onPress={() => MDL.carrito.removerItemAlCarritoDeCompras(item)}
                 >
                     <SIconApp name="Close" fill={STheme.color.warning} />
@@ -284,37 +287,40 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SText>
                     <SHr h={2} />
                     <SView row style={{ alignItems: "center" }}>
-                        <SView width={60}>
-                            <SInput
-                                style={{
-                                    height: 16,
-                                    fontSize: 12,
-                                    padding: 0,
-                                    paddingRight: 4,
-                                    textAlign: "right",
-                                    backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#ffb5b5"
-                                }}
-                                type="money2"
-                                icon={
-                                    <SText
-                                        width={20}
-                                        fontSize={10}
-                                        numberOfLines={1}
-                                        color={STheme.color.lightGray}
-                                    >
-                                        {moneda?.observacion ?? "BS"}
-                                    </SText>
-                                }
-                                value={precioFormateado.toString()}
-                                onChangeText={(e) => {
-                                    setPrecio(e);
-                                    if (item.modelo) {
-                                        item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
-                                    }
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
+
+                        <SView width={60} style={{ borderWidth: 1, backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#bf0505" }} >
+                            {puedeEditarCosto ? (
+                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
+                                    type="money2"
+                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
+                                    value={precioFormateado.toString()}
+                                    onChangeText={(e) => {
+                                        setPrecio(e);
+                                        if (item.modelo) {
+                                            item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
+                                        }
+                                        MDL.carrito.calcularValoresCarritDeCompras();
+                                    }}
+                                />
+                            ) : (
+                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
+                                    type="money2"
+                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} style={{ borderWidth: 0 }} > {moneda?.observacion ?? "BS"} </SText>}
+                                    value={precioFormateado.toString()}
+                                    onChangeText={(e) => {
+                                        SNotification.send({
+                                            title: "No tiene permiso",
+                                            body: "par apoder editar precio costo.",
+                                            color: STheme.color.warning,
+                                        });
+                                        return;
+                                    }}
+                                />
+
+                            )}
+
                         </SView>
+
                         <SView width={4} />
                         <SView width={60}>
                             <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
