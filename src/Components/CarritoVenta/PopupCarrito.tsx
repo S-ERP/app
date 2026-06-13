@@ -124,7 +124,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
             <SView row col={"xs-12"} style={{ padding: 8 }}>
                 <FiltroMoneda
-                    onSelect={(moneda) => {
+                    onSelect={(moneda: string) => {
                         this.setState({ selectedMoneda: moneda });
                         MDL.compra_venta.setMonedaSeleccionada(moneda);
                         MDL.carrito.calcularValoresCarritDeVentas();
@@ -171,7 +171,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         onPress={() => {
                             const items = MDL.carrito.carrito_venta.items;
                             const itemConPrecioInvalido = items.find(it => {
-                                const precio = it?.modelo?.precio_venta_moneda ?? 0;
+                                // const precio = it?.modelo?.precio_venta_moneda ?? 0;
+                                const precio = (it?.modelo as any)?.precio_compra_moneda ?? 0;
+
                                 return precio <= 0;
                             });
                             if (itemConPrecioInvalido) {
@@ -246,13 +248,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     <SView row col={"xs-12"} style={{ alignItems: "center" }}>
 
                         <SView width={70} style={{ borderWidth: 1, backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#bf0505" }} >
+                            {/* alvaro */}
 
                             {puedeEditarPrecio ? (
                                 <SInput
                                     style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                     type="money2"
                                     icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
-                                    value={precioFormateado}
+                                    value={precioFormateado.toString()}
                                     onChangeText={(e) => {
                                         setPrecio(e);
                                         item.modelo.precio_venta_moneda = e * (moneda?.tipo_cambio || 1);
@@ -264,7 +267,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                     type="money2"
                                     icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
-                                    value={precioFormateado}
+                                    value={precioFormateado.toString()}
                                     onChangeText={(e) => {
                                         SNotification.send({
                                             title: "Sin permiso",
