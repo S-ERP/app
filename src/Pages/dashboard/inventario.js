@@ -334,8 +334,8 @@ export default class inventario extends React.Component {
 
             this.loadProductosBajoStock(
                 empresaSeleccionada.key,
-                fecha_inicio,
-                fecha_fin,
+                // fecha_inicio,
+                // fecha_fin,
                 selectedSucursal?.key
             ),
 
@@ -349,14 +349,14 @@ export default class inventario extends React.Component {
                 empresaSeleccionada.key,
                 // fecha_inicio,
                 // fecha_fin,
-                // selectedSucursal?.key
+                selectedSucursal?.key
             ),
-            this.loadValorInventarioPorSucursal(
-                empresaSeleccionada.key,
-                // fecha_inicio,
-                // fecha_fin,
-                // selectedSucursal?.key
-            ),
+            // this.loadValorInventarioPorSucursal(
+            //     empresaSeleccionada.key,
+            //     // fecha_inicio,
+            //     // fecha_fin,
+            //     // selectedSucursal?.key
+            // ),
 
         ]);
 
@@ -600,9 +600,13 @@ export default class inventario extends React.Component {
 
 
     // loadProductosBajoStock = async (...) => { };
-    loadProductosBajoStock = async (keyEmpresa) => {
+    loadProductosBajoStock = async (keyEmpresa, keySucursal) => {
+        console.log(keyEmpresa)
+        console.log(keySucursal)
+        this.setState({ dataProductosBajoStock: [] });
         try {
-            const productos = await MDL.inventario.execute_function("calcular_valor_stock", [keyEmpresa]);
+            // const productos = await MDL.inventario.execute_function("calcular_valor_stock", [keyEmpresa]);
+            const productos = await MDL.inventario.execute_function("calcular_valor_stock_inventario", [keyEmpresa, keySucursal]);
             console.log("Productos obtenidos para bajo stock:", productos);
             // Productos con stock menor al 20% de su stock mínimo (o stock < 10 si no tienen mínimo)
             // const bajoStock = productos
@@ -622,7 +626,7 @@ export default class inventario extends React.Component {
             //     .sort((a, b) => a.stock_actual - b.stock_actual)
             //     .slice(0, 10);
             const bajoStock = productos
-                .filter(p => Number(p.stock_actual) <= 10)
+                .filter(p => Number(p.stock_actual) < 10)
                 .map(p => ({
                     producto: p.modelo || p.nombre || "Producto",
                     stock: Number(p.stock_actual)
@@ -751,9 +755,10 @@ export default class inventario extends React.Component {
         }
     };
 
-    loadValorInventario = async (keyEmpresa) => {
+    loadValorInventario = async (keyEmpresa, keySucursal) => {
+        this.setState({ dataValorInventario: [] });
         try {
-            const res = await MDL.inventario.execute_function("calcular_valor_stock", [keyEmpresa]);
+            const res = await MDL.inventario.execute_function("calcular_valor_stock_inventario", [keyEmpresa, keySucursal]);
             console.log("RESULTADO", res)
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
@@ -768,6 +773,11 @@ export default class inventario extends React.Component {
         } catch (e) {
             console.error("Error en calcular_valor_stock:", e);
             if (this._mounted) this.setState({ loadingValorInventario: false });
+            if (this._mounted) {
+                this.setState({ dataValorInventario: [] });
+            }
+
+
         }
     };
 
@@ -799,6 +809,8 @@ export default class inventario extends React.Component {
             dataStockByAlmacen,
             sucursales
         } = this.state;
+
+        console.log(dataProductosBajoStock)
 
         const stockTotal =
             dataProductosMayorStock.reduce(
@@ -1063,7 +1075,7 @@ export default class inventario extends React.Component {
                                     /> */}
                                     <BarraRechartsBd
                                         // data={this.state.dataValorProductos}
-                                        data={this.state.dataValorInventario}
+                                        data={dataValorInventario}
 
                                         nameKey="modelo"
                                         valueKey="valor_inventario"
@@ -1102,7 +1114,7 @@ export default class inventario extends React.Component {
                         <SView col="xs-12" row>
 
                             {/* BAJO STOCK */}
-                            <SView col="xs-12 md-6" padding={10}>
+                            <SView col="xs-12 md-5" padding={10}>
                                 <SView card padding={15}>
 
                                     <SText color={STheme.color.text} bold fontSize={16}>
@@ -1162,7 +1174,7 @@ export default class inventario extends React.Component {
                             </SView>
                             {/* <SHr /> */}
                             {/* TABLA */}
-                            <SView col="xs-12 md-6" padding={10}>
+                            <SView col="xs-12 md-7" padding={10}>
                                 <SView card padding={15}>
 
                                     <SText bold fontSize={16}>
