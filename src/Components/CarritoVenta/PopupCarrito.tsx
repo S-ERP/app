@@ -26,14 +26,14 @@ const convertirADias = (tipo: string, cantidad: number) => {
 
 const normalizeSuscriptores = (item: any) => {
     let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
-    
+
     // Convertir a array si es un objeto JSON único
     if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
         suscriptores = [suscriptores];
     } else if (!Array.isArray(suscriptores)) {
         suscriptores = [];
     }
-    
+
     item.modelo.suscriptores = suscriptores;
     if (item.modelo.Suscritores) {
         delete item.modelo.Suscritores;
@@ -124,7 +124,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
             <SView row col={"xs-12"} style={{ padding: 8 }}>
                 <FiltroMoneda
-                    onSelect={(moneda) => {
+                    onSelect={(moneda: string) => {
                         this.setState({ selectedMoneda: moneda });
                         MDL.compra_venta.setMonedaSeleccionada(moneda);
                         MDL.carrito.calcularValoresCarritDeVentas();
@@ -171,13 +171,15 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         onPress={() => {
                             const items = MDL.carrito.carrito_venta.items;
                             const itemConPrecioInvalido = items.find(it => {
-                                const precio = it?.modelo?.precio_venta_moneda ?? 0;
+                                // const precio = it?.modelo?.precio_venta_moneda ?? 0;
+                                const precio = (it?.modelo as any)?.precio_compra_moneda ?? 0;
+
                                 return precio <= 0;
                             });
                             if (itemConPrecioInvalido) {
                                 SNotification.send({
-                                    title: "precio_invalido",
-                                    body: "Debe registrar precio antes de continuar.",
+                                    title: "Precio requerido",
+                                    body: `El producto "${itemConPrecioInvalido.modelo?.descripcion ?? "desconocido"}" no tiene precio registrado. Ingrese un precio válido antes de continuar.`,
                                     color: STheme.color.danger,
                                 });
                                 return;
@@ -188,8 +190,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             });
                             if (itemConCantidadInvalida) {
                                 SNotification.send({
-                                    title: "cantidad_invalida",
-                                    body: "Debe registrar cantidad antes de continuar.",
+                                    title: "Cantidad requerida",
+                                    body: `El producto "${itemConCantidadInvalida.modelo?.descripcion ?? "desconocido"}" tiene cantidad 0. Ingrese una cantidad válida antes de continuar.`,
                                     color: STheme.color.danger,
                                 });
                                 return;
@@ -226,6 +228,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     };
     React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, item.modelo.precio_venta]);
     const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
+    const puedeEditarPrecio = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "carrito_editar_precio" });
+
     return (
         <SView padding={8}>
             <SView row>
@@ -242,7 +246,42 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     <SText fontSize={14} bold>{item.modelo.descripcion}</SText>
                     <SHr h={2} />
                     <SView row col={"xs-12"} style={{ alignItems: "center" }}>
-                        <SView width={70}>
+
+                        <SView width={70} style={{ borderWidth: 1, backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#bf0505" }} >
+                            {/* alvaro */}
+
+                            {puedeEditarPrecio ? (
+                                <SInput
+                                    style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                                    type="money2"
+                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
+                                    value={precioFormateado.toString()}
+                                    onChangeText={(e) => {
+                                        setPrecio(e);
+                                        item.modelo.precio_venta_moneda = e * (moneda?.tipo_cambio || 1);
+                                        MDL.carrito.calcularValoresCarritDeVentas();
+                                    }}
+                                />
+                            ) : (
+
+                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                                    type="money2"
+                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
+                                    value={precioFormateado.toString()}
+                                    onChangeText={(e) => {
+                                        SNotification.send({
+                                            title: "Sin permiso",
+                                            body: "No tiene permiso para editar el precio de venta.",
+                                            color: STheme.color.warning,
+                                        });
+                                        return;
+                                    }}
+                                />
+                            )}
+                        </SView>
+
+
+                        {/* <SView width={70}>
                             <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 type="money2"
                                 value={precioFormateado}
@@ -252,7 +291,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />
-                        </SView>
+                        </SView> */}
                         <SView width={4} />
                         <SView width={50}>
                             <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
@@ -306,14 +345,14 @@ const ListaSuscripciones = ({ item }: any) => {
     console.log("cantidadMiembros", JSON.stringify(item));
     if (!cantidadMiembros) return null;
     let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
-    
+
     // Convertir a array si es un objeto JSON único
     if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
         suscriptores = [suscriptores];
     } else if (!Array.isArray(suscriptores)) {
         suscriptores = [];
     }
-    
+
     item.modelo.suscriptores = suscriptores;
     if (item.modelo.Suscritores) {
         delete item.modelo.Suscritores;
@@ -396,14 +435,14 @@ const SuscripcionItem = ({ index, item, suscriptor }: any) => {
 
     const saveSuscriptor = (updates: any) => {
         let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
-        
+
         // Convertir a array si es un objeto JSON único
         if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
             suscriptores = [suscriptores];
         } else if (!Array.isArray(suscriptores)) {
             suscriptores = [];
         }
-        
+
         item.modelo.suscriptores = suscriptores;
         if (item.modelo.Suscritores) {
             delete item.modelo.Suscritores;
