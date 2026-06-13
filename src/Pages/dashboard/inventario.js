@@ -1042,30 +1042,29 @@ export default class inventario extends React.Component {
                         {this.renderResumenTarjetas()}
 
                         {/* GRAFICO PRINCIPAL */}
+                        <SView padding={5} col="xs-12" >
+                            <SView card padding={15} style={{ borderRadius: 10 }}>
 
-                        <SView card padding={15}>
+                                <SText bold fontSize={16}>
+                                    Stock por Producto
+                                </SText>
+                                <SHr />
+                                <BarraRechartsBd
+                                    data={this.state.dataProductosMayorStock}
+                                    nameKey="producto"
+                                    valueKey="stock_actual"
+                                    height={320}
+                                />
 
-                            <SText bold fontSize={16}>
-                                Stock por Producto
-                            </SText>
-                            <SHr />
-                            <BarraRechartsBd
-                                data={this.state.dataProductosMayorStock}
-                                nameKey="producto"
-                                valueKey="stock_actual"
-                                height={320}
-                            />
-
+                            </SView>
                         </SView>
 
                         {/* DOS GRAFICOS */}
 
-                        <SView row col="xs-12" gap={16}>
+                        <SView row col="xs-12" >
 
-                            <SView padding={10}
-                                col="xs-12"
-                            >
-                                <SView card padding={15}>
+                            <SView padding={5} col="xs-12" >
+                                <SView card padding={15} style={{ borderRadius: 10 }}>
                                     <SText bold fontSize={16}>
                                         Valor del Inventario en {monedaBase?.descripcion ?? ''}
                                     </SText>
@@ -1088,8 +1087,8 @@ export default class inventario extends React.Component {
 
                         </SView>
 
-                        <SView padding={10} col="xs-12" >
-                            <SView card padding={15} >
+                        <SView padding={5} col="xs-12" >
+                            <SView card padding={15} style={{ borderRadius: 10 }}>
                                 <SText color={STheme.color.text} bold fontSize={16}>
                                     Stock por Sucursal
                                 </SText>
@@ -1114,8 +1113,8 @@ export default class inventario extends React.Component {
                         <SView col="xs-12" row>
 
                             {/* BAJO STOCK */}
-                            <SView col="xs-12 md-5" padding={10}>
-                                <SView card padding={15}>
+                            <SView col="xs-12 md-5" padding={5}>
+                                <SView card padding={15} style={{ borderRadius: 10 }}>
 
                                     <SText color={STheme.color.text} bold fontSize={16}>
                                         Productos con Bajo Stock
@@ -1174,8 +1173,8 @@ export default class inventario extends React.Component {
                             </SView>
                             {/* <SHr /> */}
                             {/* TABLA */}
-                            <SView col="xs-12 md-7" padding={10}>
-                                <SView card padding={15}>
+                            <SView col="xs-12 md-7" padding={5}>
+                                <SView card padding={15} style={{ borderRadius: 10 }}>
 
                                     <SText bold fontSize={16}>
                                         Valor del Inventario por modelo
@@ -1278,26 +1277,35 @@ export default class inventario extends React.Component {
 
 CardResumen = ({ label, value }) => (
     <SView
-        card
-        padding={16}
-        margin={8}
+
+        padding={5}
+        // margin={8}
         style={{
             flex: 1,
             minWidth: 120,
+            borderRadius: 10,
+            paddingTop: 10
         }}
     >
-        <SText
-            fontSize={14}
-            color={STheme.color.lightGray}
-            bold
-        >
-            {label}
-        </SText>
-        <SText
-            fontSize={24}
-            bold
-        >
-            {value}
-        </SText>
+        <SView padding={15} card style={{
+            // flex: 1,
+            // minWidth: 120,
+            borderRadius: 10,
+            minHeight: 90
+        }}>
+            <SText
+                fontSize={14}
+                color={STheme.color.lightGray}
+                bold
+            >
+                {label}
+            </SText>
+            <SText
+                fontSize={24}
+                bold
+            >
+                {value}
+            </SText>
+        </SView>
     </SView>
 );
