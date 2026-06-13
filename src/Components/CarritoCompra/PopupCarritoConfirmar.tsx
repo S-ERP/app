@@ -343,8 +343,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SInput
                             ref={ref => (this.inputCliente = ref)}
                             inputStyle={this.state.factura || this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
-                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente: "}</SText>}
-                            placeholder={"Escriba el chaval del cliente"}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Proveedor: "}</SText>}
+                            placeholder={"Escriba el nombre del proveedor"}
                             height={40}
                             type="select2"
                             options={
