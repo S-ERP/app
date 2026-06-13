@@ -176,8 +176,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             });
                             if (itemConPrecioInvalido) {
                                 SNotification.send({
-                                    title: "precio_invalido",
-                                    body: "Debe registrar precio antes de continuar.",
+                                    title: "Precio requerido",
+                                    body: `El producto "${itemConPrecioInvalido.modelo?.descripcion ?? "desconocido"}" no tiene precio registrado. Ingrese un precio válido antes de continuar.`,
                                     color: STheme.color.danger,
                                 });
                                 return;
@@ -188,8 +188,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             });
                             if (itemConCantidadInvalida) {
                                 SNotification.send({
-                                    title: "cantidad_invalida",
-                                    body: "Debe registrar cantidad antes de continuar.",
+                                    title: "Cantidad requerida",
+                                    body: `El producto "${itemConCantidadInvalida.modelo?.descripcion ?? "desconocido"}" tiene cantidad 0. Ingrese una cantidad válida antes de continuar.`,
                                     color: STheme.color.danger,
                                 });
                                 return;
@@ -267,8 +267,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     value={precioFormateado}
                                     onChangeText={(e) => {
                                         SNotification.send({
-                                            title: "No tiene permiso",
-                                            body: "par apoder editar precio venta.",
+                                            title: "Sin permiso",
+                                            body: "No tiene permiso para editar el precio de venta.",
                                             color: STheme.color.warning,
                                         });
                                         return;
