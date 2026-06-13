@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SInput, SForm } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SInput, SForm, SIcon } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -592,33 +592,99 @@ export default class ventas extends React.Component {
             const topProduct = dataTopProducts[0]?.producto || "N/A";
 
             return (
-                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }} >
-                    {[{
-                        label: "Sucursal",
-                        value: selectedBranchName,
-                    }, {
-                        label: "Total ventas",
-                        value: `${monedaBase?.observacion ?? ''} ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
-                    }, {
-                        label: "Cantidad de ventas",
-                        value: totalTickets,
-                    }, {
-                        label: "Top producto",
-                        value: topProduct,
-                    }].map((item, index) => (
-                        <SView key={index}
-                            col="xs-12 md-6 lg-3" padding={5} >
+                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }}>
+                    {[
+                        {
+                            label: "Sucursal",
+                            value: selectedBranchName,
+                            icon: "iconHome",
+                        },
+                        {
+                            label: "Total ventas",
+                            value: `${monedaBase?.observacion ?? ''} ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+                            icon: "pagoefectivo",
+                        },
+                        {
+                            label: "Cantidad de ventas",
+                            value: totalTickets,
+                            icon: "tpIn",
+                        },
+                        {
+                            label: "Top producto",
+                            value: topProduct,
+                            icon: "crmllamadatasaconversion",
+                        }
+                    ].map((item, index) => (
+                        <SView
+                            key={index}
+                            col="xs-12 md-6 lg-3"
+                            padding={5}
+                        >
                             <SView
-
                                 card
-                                style={{ padding: 15, minHeight: 80, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                row
+                                style={{
+                                    padding: 15,
+                                    minHeight: 80,
+                                    borderRadius: 10,
+                                    borderWidth: 1,
+                                    borderColor: STheme.color.gray + "44",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}
                             >
-                                <SText fontSize={14} bold color={STheme.color.lightGray}>{item.label}</SText>
-                                <SText fontSize={18} bold>{item.value}</SText>
+                                <SView flex>
+                                    <SText
+                                        fontSize={14}
+                                        bold
+                                        color={STheme.color.lightGray}
+                                    >
+                                        {item.label}
+                                    </SText>
+
+                                    <SText fontSize={18} bold>
+                                        {item.value}
+                                    </SText>
+                                </SView>
+                                <SView width={50} height={50} style={{ borderRadius: 80, backgroundColor: STheme.color.card }} center>
+                                    <SIcon
+                                        name={item.icon}
+                                        width={32}
+                                        height={32}
+                                        fill={STheme.color.text}
+                                    />
+                                </SView>
                             </SView>
                         </SView>
                     ))}
                 </SView>
+                // <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }} >
+                //     {[{
+                //         label: "Sucursal",
+                //         value: selectedBranchName,
+                //     }, {
+                //         label: "Total ventas",
+                //         value: `${monedaBase?.observacion ?? ''} ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+                //     }, {
+                //         label: "Cantidad de ventas",
+                //         value: totalTickets,
+                //     }, {
+                //         label: "Top producto",
+                //         value: topProduct,
+                //     }].map((item, index) => (
+                //         <SView key={index}
+                //             col="xs-12 md-6 lg-3" padding={5} >
+                //             <SView
+
+                //                 card
+                //                 style={{ padding: 15, minHeight: 80, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                //             >
+                //                 <SText fontSize={14} bold color={STheme.color.lightGray}>{item.label}</SText>
+                //                 <SText fontSize={18} bold>{item.value}</SText>
+                //             </SView>
+                //         </SView>
+                //     ))}
+                // </SView>
             );
         };
         // console.log("dataBranchShare", dataBranchShare);

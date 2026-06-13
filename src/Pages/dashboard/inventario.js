@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SForm } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SForm, SIcon } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -825,21 +825,25 @@ export default class inventario extends React.Component {
                 <CardResumen
                     label="Stock Total"
                     value={stockTotal}
+                    icon="tpIn"
                 />
 
                 <CardResumen
                     label="Productos"
                     value={dataProductosMayorStock.length}
+                    icon="blender/group"
                 />
 
                 <CardResumen
                     label="Sucursales"
                     value={sucursales.length}
+                    icon="iconHome"
                 />
 
                 <CardResumen
                     label="Bajo Stock"
                     value={dataProductosBajoStock.length}
+                    icon="AlertOutline"
                 />
 
             </SView>
@@ -1275,11 +1279,9 @@ export default class inventario extends React.Component {
     }
 }
 
-CardResumen = ({ label, value }) => (
+CardResumen = ({ label, value, icon }) => (
     <SView
-
         padding={5}
-        // margin={8}
         style={{
             flex: 1,
             minWidth: 120,
@@ -1287,25 +1289,73 @@ CardResumen = ({ label, value }) => (
             paddingTop: 10
         }}
     >
-        <SView padding={15} card style={{
-            // flex: 1,
-            // minWidth: 120,
-            borderRadius: 10,
-            minHeight: 90
-        }}>
-            <SText
-                fontSize={14}
-                color={STheme.color.lightGray}
-                bold
-            >
-                {label}
-            </SText>
-            <SText
-                fontSize={24}
-                bold
-            >
-                {value}
-            </SText>
+        <SView
+            padding={15}
+            card
+            row
+            style={{
+                borderRadius: 10,
+                minHeight: 90,
+                justifyContent: "space-between",
+                alignItems: "center"
+            }}
+        >
+            <SView flex>
+                <SText
+                    fontSize={14}
+                    color={STheme.color.lightGray}
+                    bold
+                >
+                    {label}
+                </SText>
+
+                <SText
+                    fontSize={24}
+                    bold
+                >
+                    {value}
+                </SText>
+            </SView>
+            <SView width={50} height={50} style={{borderRadius:80, backgroundColor:STheme.color.card}}  center>
+                <SIcon
+                    name={icon} // el icono que quieras
+                    width={30}
+                    height={30}
+                    fill={STheme.color.text}
+                />
+            </SView>
         </SView>
     </SView>
+    // <SView
+
+    //     padding={5}
+    //     // margin={8}
+    //     style={{
+    //         flex: 1,
+    //         minWidth: 120,
+    //         borderRadius: 10,
+    //         paddingTop: 10
+    //     }}
+    // >
+    //     <SView padding={15} card style={{
+    //         // flex: 1,
+    //         // minWidth: 120,
+    //         borderRadius: 10,
+    //         minHeight: 90
+    //     }}>
+    //         <SText
+    //             fontSize={14}
+    //             color={STheme.color.lightGray}
+    //             bold
+    //         >
+    //             {label}
+    //         </SText>
+    //         <SText
+    //             fontSize={24}
+    //             bold
+    //         >
+    //             {value}
+    //         </SText>
+    //     </SView>
+    // </SView>
 );
