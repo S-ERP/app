@@ -264,7 +264,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
                 {/* Imagen */}
                 <SView style={{ position: "relative" }}>
-                    <SView style={{ width: 35, height: 35, borderRadius: 8, overflow: "hidden" }}>
+                    <SView style={{ width: 35, height: 35, borderRadius: 2, overflow: "hidden" }}>
                         <SImage src={(SSocket.api as any).inventario + "modelo/" + (modelo?.key ?? "")} style={{ resizeMode: "cover" }} />
                     </SView>
                     <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center" }}

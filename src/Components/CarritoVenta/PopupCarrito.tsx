@@ -291,7 +291,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
                 {/* Imagen */}
                 <SView style={{ position: "relative" }}>
-                    <SView style={{ width: 35, height: 35, borderRadius: 8, overflow: "hidden" }}>
+                    <SView style={{ width: 35, height: 35, borderRadius: 2, overflow: "hidden" }}>
                         <SImage src={(SSocket.api as any).inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
                     </SView>
                     <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center", }}
@@ -670,16 +670,21 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
     const [monto, setMonto] = React.useState(costo.monto || 0);
     const [inputValue, setInputValue] = React.useState((costo.monto || 0).toFixed(2));
     const [clienteKey, setClienteKey] = React.useState(costo.key_modelo_cliente || "");
+    const [resetKey, setResetKey] = React.useState(0);
+
+    const setProgrammaticMonto = (nuevoMonto: number) => {
+        setMonto(nuevoMonto);
+        setInputValue(nuevoMonto.toFixed(2));
+        setResetKey(k => k + 1);
+        costo.monto = nuevoMonto;
+    };
 
     React.useEffect(() => {
         if (!costo.key_modelo_cliente) return;
         const cliente = (costo.clientes || []).find((c: any) => c.key === costo.key_modelo_cliente);
         if (!cliente) return;
         const comision = parseFloat(cliente.comision || "0");
-        const nuevoMonto = totalItem * (comision / 100);
-        setMonto(nuevoMonto);
-        setInputValue(nuevoMonto.toFixed(2));
-        costo.monto = nuevoMonto;
+        setProgrammaticMonto(totalItem * (comision / 100));
     }, [totalItem, costo.key_modelo_cliente]);
 
     const clienteError = !!monto && !clienteKey;
@@ -706,10 +711,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                             costo.key_modelo_cliente = selected.value;
                             costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente?.nombres}`;
                             const comision = parseFloat(selected.data.comision || "0");
-                            const nuevoMonto = totalItem * (comision / 100);
-                            setMonto(nuevoMonto);
-                            setInputValue(nuevoMonto.toFixed(2));
-                            costo.monto = nuevoMonto;
+                            setProgrammaticMonto(totalItem * (comision / 100));
                             setClienteKey(selected.value);
                         }}
                     />
@@ -719,10 +721,11 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                         <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{moneda?.observacion ?? "BS"}</SText>
                         <SView flex>
                             <SInput2
+                                key={resetKey}
                                 name={`monto_${costo.key_tipo_costo}`}
                                 type="money"
                                 style={{ fontSize: UI.font.small, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                value={inputValue}
+                                defaultValue={inputValue}
                                 onChangeText={(e: string) => {
                                     setInputValue(e);
                                     const valor = parseFloat(e) || 0;
