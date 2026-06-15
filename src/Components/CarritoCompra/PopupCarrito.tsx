@@ -1,13 +1,33 @@
 import React from "react";
-import { SHr, SImage, SInput, SMath, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SImage, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
-import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-const DEFAULT_MONEDA_KEY = "";
+import SInput2 from "../SForm2/SInput2";
+
 type PopupCarritoProps = {}
+const DEFAULT_MONEDA_KEY = "";
+
+const UI = {
+    font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
+    colors: {
+        background: "#5d636e",
+        // background: "#252a33",
+        header: "#a046e8",
+        danger: "#dc3545",
+        card: "#34383f",
+        // card: "#1e222b",
+        itemBg: "#303744",
+        mutedDark: "#1f242d",
+        accent: "#6cffb4",
+        error: "#bf0505",
+        textMuted: "#bfc7d4",
+        border: "#434c5d",
+    }
+};
+
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
@@ -15,38 +35,34 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     };
     rapido: any;
     evento: any;
+
     static open(props: PopupCarritoProps) {
         SPopup.open({
-            key: "PopupCarrito",
-            type: "3",
-            content:
+            key: "PopupCarrito", type: "3", content:
                 <SView style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: "100%",
-                    maxWidth: 300,
-                    height: 500,
-                    maxHeight: "100%",
-                    backgroundColor: STheme.color.background,
+                    position: "absolute", top: 8, right: 8,
+                    width: "100%", maxWidth: 300,
+                    height: "95%", maxHeight: 620,
+                    backgroundColor: UI.colors.background,
                     borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor: STheme.color.card,
-                    cursor: "default",
-                    userSelect: "text"
+                    overflow: "hidden",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 10 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 30,
                 }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
         })
     }
 
-    handleChange = () => {
-        this.forceUpdate();
-    }
+    handleChange = () => { this.forceUpdate(); }
 
     componentDidMount(): void {
-        MDL.carrito.addEventListener("handleChange", this.handleChange)
-        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarMonedaSeleccionada(); });
+        MDL.carrito.addEventListener("handleChange", this.handleChange);
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+            this.cargarMonedaSeleccionada();
+        });
         this.cargarMonedaSeleccionada();
         this.cargarMonedas();
     }
@@ -63,9 +79,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         try {
             const monedas = await MDL.empresa.getMonedas();
             if (!Array.isArray(monedas)) return;
-            const monedaDefault = monedas.find(
-                m => m.key === DEFAULT_MONEDA_KEY
-            );
+            const monedaDefault = monedas.find(m => m.key === DEFAULT_MONEDA_KEY);
             this.setState({
                 options: monedas,
                 selectedMoneda: monedaDefault ?? this.state.selectedMoneda
@@ -85,266 +99,242 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     render() {
         const items = MDL.carrito.carrito_compra?.items || [];
         const { selectedMoneda } = this.state;
-        return <SView col={"xs-12"} height>
-            <SHr />
-            <SText center color={STheme.color.lightGray} bold>{"Carrito de compras"}</SText>
-            <SView row col={"xs-12"} style={{ padding: 8 }}>
-                <FiltroMoneda
-                    onSelect={(moneda: string) => {
-                        this.setState({ selectedMoneda: moneda });
-                        MDL.compra_venta.setMonedaSeleccionada(moneda);
-                        MDL.carrito.calcularValoresCarritDeCompras();
-                    }}
-                />
-                {/* alvaro */}
-            </SView>
-            <SView style={{
-                padding: 4, width: 33, height: 33, position: "absolute",
-                right: 0,
-                top: 0,
-            }} onPress={() => {
-                SPopup.close("PopupCarrito")
-            }}>
-                <SIconApp name="Close" fill={STheme.color.text} />
-            </SView>
-            <SHr />
-            <SView row col={"xs-12"} style={{
-                paddingHorizontal: 8
-            }}>
-                <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_compra.cantidad_items})</SText>
-                <SView flex />
-                <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
-            </SView>
-            <SHr />
-            <SHr h={1} color={STheme.color.card} />
-            <FlatList
-                data={items}
-                renderItem={({ item, index }) => {
-                    return <ItemComp
-                        item={item}
-                        moneda={selectedMoneda}
-                    />
-                }}
-            />
-            <SHr h={1} color={STheme.color.card} />
-            <SView padding={8}>
-                <SText col={"xs-12"} style={{ textAlign: "right" }}>
-                    {"Total:"} {(selectedMoneda?.observacion ?? "") + " "}
-                    {SMath.formatMoney(MDL.carrito.carrito_compra?.monto_total || 0)}
-                </SText>
-            </SView>
-            <SHr h={1} color={STheme.color.card} />
-            <SView padding={8}>
-                <SView col={"xs-12"} row flex center>
-                    <SView padding={4} card style={{
-                        backgroundColor: STheme.color.danger
-                    }} onPress={() => {
-                        SPopup.confirm({
-                            title: "Seguro que quieres limpiar el carrito?",
-                            onPress: () => {
-                                MDL.carrito.limpiarCarritoCompras();
-                                SPopup.close("PopupCarrito")
-                            }
-                        })
-                    }}>
-                        <SText fontSize={12}>{"Limpiar carrito"}</SText>
+
+        return (
+            <SView col={"xs-12"} height style={{ backgroundColor: UI.colors.background }}>
+
+                {/* Header */}
+                <SView row style={{ backgroundColor: UI.colors.header, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
+                    <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}>
+                        <SText fontSize={UI.font.icon}>🛍️</SText>
                     </SView>
+                    <SText fontSize={UI.font.title} bold color={STheme.color.text}>{"Carrito de Compras"}</SText>
                     <SView flex />
-                    <SView
-                        style={{ backgroundColor: STheme.color.success }}
-                        padding={4}
-                        card
-                        onPress={() => {
-                            const items = MDL.carrito.carrito_compra.items ?? [];
-                            console.table(
-                                items.map(it => ({
-                                    precio: it?.precio,
-                                    precio_modelo: (it?.modelo as any)?.precio_compra_moneda,
-                                    // precio_modelo: it?.modelo?.precio_compra_moneda,
-                                    cantidad: it?.cantidad
-                                }))
-                            );
-
-                            const itemConPrecioInvalido = items.find(it => {
-                                // const precio = it?.modelo?.precio_compra_moneda ?? 0;
-
-                                const precio = (it?.modelo as any)?.precio_compra_moneda ?? 0;
-                                if (precio <= 0) {
-                                    console.error("ITEM CON PRECIO INVALIDO:", it);
-                                    return true;
-                                }
-                                return false;
-                            });
-                            if (itemConPrecioInvalido) {
-                                SNotification.send({
-                                    title: "Precio requerido",
-                                    body: `El producto "${itemConPrecioInvalido.modelo?.descripcion ?? "desconocido"}" no tiene precio de costo registrado. Ingrese un precio válido antes de continuar.`,
-                                    color: STheme.color.danger,
-                                });
-                                return;
-                            }
-                            const itemConCantidadInvalida = items.find(it => {
-                                const cantidad = it?.cantidad ?? 0;
-                                if (cantidad <= 0) {
-                                    console.error("ITEM CON CANTIDAD INVALIDA:", it);
-                                    return true;
-                                }
-                                return false;
-                            });
-                            if (itemConCantidadInvalida) {
-                                SNotification.send({
-                                    title: "Cantidad requerida",
-                                    body: `El producto "${itemConCantidadInvalida.modelo?.descripcion ?? "desconocido"}" tiene cantidad 0. Ingrese una cantidad válida antes de continuar.`,
-                                    color: STheme.color.danger,
-                                });
-                                return;
-                            }
-                            PopupCarritoConfirmar.open({ moneda: selectedMoneda });
-                        }}
-                    >
-                        <SText fontSize={12}>
-                            {"Confirmar la compra"}
-                        </SText>
+                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center" }}
+                        onPress={() => SPopup.close("PopupCarrito")}>
+                        <SText fontSize={UI.font.tiny} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
                 </SView>
+
+                {/* Selector de moneda */}
+                <SView style={{ padding: 8 }}>
+                    <FiltroMoneda
+                        onSelect={(moneda: string) => {
+                            this.setState({ selectedMoneda: moneda });
+                            MDL.compra_venta.setMonedaSeleccionada(moneda);
+                            MDL.carrito.calcularValoresCarritDeCompras();
+                        }}
+                    />
+                </SView>
+
+                {/* Título de sección */}
+                <SView row style={{ paddingHorizontal: 10, paddingVertical: 8, alignItems: "center" }}>
+                    <SText fontSize={UI.font.small} color={STheme.color.text}>{"Productos ("}{MDL.carrito.carrito_compra.cantidad_items}{")"}</SText>
+                    <SView flex />
+                    <SText fontSize={UI.font.small} color={STheme.color.text}>
+                        {"Sub: "}{selectedMoneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.carrito.carrito_compra?.monto_total || 0)}
+                    </SText>
+                </SView>
+
+                {/* Lista de productos */}
+                <FlatList
+                    data={items}
+                    renderItem={({ item }) => <ItemComp item={item} moneda={selectedMoneda} />}
+                    keyExtractor={(item) => item.modelo?.key ?? Math.random().toString()}
+                    style={{ flex: 1, paddingHorizontal: 8 }}
+                />
+
+                {/* Resumen y acciones */}
+                <SView style={{ backgroundColor: UI.colors.card, borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}>
+                    <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                        <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Total Compra"}</SText>
+                        <SText fontSize={UI.font.small} bold color={STheme.color.text}>
+                            {selectedMoneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.carrito.carrito_compra?.monto_total || 0)}
+                        </SText>
+                    </SView>
+
+                    <SView row style={{ gap: 8 }}>
+                        <SView flex style={{ backgroundColor: UI.colors.danger, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                            onPress={() => {
+                                SPopup.confirm({
+                                    title: "¿Seguro que quieres limpiar el carrito?",
+                                    onPress: () => {
+                                        MDL.carrito.limpiarCarritoCompras();
+                                        SPopup.close("PopupCarrito");
+                                    }
+                                });
+                            }}>
+                            <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Cancelar"}</SText>
+                        </SView>
+
+                        <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                            onPress={() => {
+                                const items = MDL.carrito.carrito_compra.items ?? [];
+                                const itemConPrecioInvalido = items.find(it => {
+                                    const precio = (it?.modelo as any)?.precio_compra_moneda ?? 0;
+                                    return precio <= 0;
+                                });
+                                if (itemConPrecioInvalido) {
+                                    SNotification.send({
+                                        title: "Precio requerido",
+                                        body: `El producto "${itemConPrecioInvalido.modelo?.descripcion ?? "desconocido"}" no tiene precio de costo registrado.`,
+                                        color: STheme.color.danger,
+                                    });
+                                    return;
+                                }
+                                const itemConCantidadInvalida = items.find(it => {
+                                    const cantidad = it?.cantidad ?? 0;
+                                    return cantidad <= 0;
+                                });
+                                if (itemConCantidadInvalida) {
+                                    SNotification.send({
+                                        title: "Cantidad requerida",
+                                        body: `El producto "${itemConCantidadInvalida.modelo?.descripcion ?? "desconocido"}" tiene cantidad 0.`,
+                                        color: STheme.color.danger,
+                                    });
+                                    return;
+                                }
+                                PopupCarritoConfirmar.open({ moneda: selectedMoneda });
+                            }}>
+                            <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Confirmar compra"}</SText>
+                        </SView>
+                    </SView>
+                </SView>
+
             </SView>
-        </SView>
+        );
     }
 }
+
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const modelo = item?.modelo;
     const precioBase = modelo?.precio_compra ?? 0;
     const ventaMonedaKey = modelo?.venta_moneda?.key;
     const tipoCambioVenta = modelo?.venta_moneda?.tipo_cambio || 1;
     const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
-    const [precio, setPrecio] = React.useState(0);
+
     const calcularPrecio = () => {
         if (!moneda) return precioBase;
-        if (ventaMonedaKey === moneda.key) {
-            return precioBase;
-        }
+        if (ventaMonedaKey === moneda.key) return precioBase;
         return precioBase * (tipoCambioVenta / tipoCambioSeleccionada);
     };
-    React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, precioBase]);
 
-    if (!modelo) {
-        return (
-            <SView padding={8}>
-                <SText color={STheme.color.warning}>Producto inválido</SText>
-            </SView>
-        );
-    }
-    const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
-
-    // const formatFecha = (dateStr: string) => {
-    //     if (!dateStr) return "";
-    //     const d = new Date(dateStr);
-    //     if (isNaN(d.getTime())) return "";
-    //     return d.toLocaleString("es-BO");
-    // };
-
-    // const formatFecha = (dateStr: string) => {
-    //     if (!dateStr) return "";
-    //     const d = new Date(dateStr);
-    //     if (isNaN(d.getTime())) return "";
-    //     return d.toLocaleDateString("es-BO", {
-    //         day: "2-digit",
-    //         month: "2-digit",
-    //         year: "numeric",
-    //     });
-    // };
-
-    const formatFecha = (dateStr: string) => {
-        if (!dateStr) return "";
-
-        const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return "";
-
-        d.setDate(d.getDate() + 1);
-
-        return d.toLocaleDateString("es-BO", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        });
-    };
+    const [precio, setPrecio] = React.useState(calcularPrecio);
+    const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
+    React.useEffect(() => {
+        const p = calcularPrecio();
+        setPrecio(p);
+        setPrecioStr((p ?? 0).toFixed(2));
+    }, [moneda, precioBase]);
 
     const puedeEditarCosto = MDL.rolesPermisos.getPermiso({ url: "/compra3", permiso: "carrito_editar_precio" });
 
+    if (!modelo) {
+        return (
+            <SView style={{ padding: 8 }}>
+                <SText color={STheme.color.warning}>{"Producto inválido"}</SText>
+            </SView>
+        );
+    }
 
+    const precioFormateado = (precio ?? 0).toFixed(2);
+    const subtotalStr = SMath.formatMoney(precio * (item.cantidad ?? 0));
+    const precioDigits = puedeEditarCosto
+        ? precioStr.replace(/[^0-9]/g, '').length
+        : precioFormateado.replace(/[^0-9]/g, '').length;
+    const precioMinWidth = Math.max(50, precioDigits * 7 + 24);
+    const subtotalLargo = precioDigits > 8;
+
+    const formatFecha = (dateStr: string) => {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "";
+        d.setDate(d.getDate() + 1);
+        return d.toLocaleDateString("es-BO", { day: "2-digit", month: "2-digit", year: "numeric" });
+    };
 
     return (
-        <SView padding={8}>
-            <SView row>
-                <SView
-                    center
-                    style={{ width: 20, height: 20, padding: 2 }}
-                    onPress={() => MDL.carrito.removerItemAlCarritoDeCompras(item)}
-                >
-                    <SIconApp name="Close" fill={STheme.color.warning} />
+        <SView style={{
+            backgroundColor: UI.colors.itemBg,
+            borderRadius: 10,
+            padding: 10,
+            marginBottom: 10,
+        }}>
+            <SView row style={{ gap: 8, alignItems: "flex-start" }}>
+
+                {/* Imagen */}
+                <SView style={{ position: "relative" }}>
+                    <SView style={{ width: 35, height: 35, borderRadius: 8, overflow: "hidden" }}>
+                        <SImage src={(SSocket.api as any).inventario + "modelo/" + (modelo?.key ?? "")} style={{ resizeMode: "cover" }} />
+                    </SView>
+                    <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center" }}
+                        onPress={() => MDL.carrito.removerItemAlCarritoDeCompras(item)}>
+                        <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
+                    </SView>
                 </SView>
-                <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }} >
-                    <SImage
-                        // src={SSocket.api["inventario" as keyof typeof SSocket.api] + "modelo/" + (item.modelo?.key ?? "")}
-                        src={SSocket.api.inventario + "modelo/" + (item.modelo?.key ?? "")} style={{ resizeMode: "cover" }}
-                    />
-                </SView>
-                <SView width={4} />
+
+                {/* Info del producto */}
                 <SView flex>
-                    <SText fontSize={14} bold>
-                        {item.modelo?.descripcion ?? "Producto"}
+                    <SText fontSize={UI.font.title} bold color={STheme.color.text} style={{ marginBottom: 2 }} numberOfLines={2}>
+                        {modelo?.descripcion ?? "Producto"}
                     </SText>
-                    <SHr h={2} />
-                    <SView row style={{ alignItems: "center" }}>
 
-                        <SView width={60} style={{ borderWidth: 1, backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#bf0505" }} >
+                    {/* Fila precio / cantidad / subtotal */}
+                    <SView row style={{ alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+
+                        {/* Precio unitario */}
+                        <SView flex style={{
+                            backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error,
+                            borderRadius: 2,
+                            paddingHorizontal: 1,
+                            height: 18,
+                            justifyContent: "center",
+                            // minWidth: precioMinWidth,
+                        }}>
                             {puedeEditarCosto ? (
-                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
-                                    type="money2"
-                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
-                                    value={precioFormateado.toString()}
-                                    onChangeText={(e) => {
-
-                                        // setPrecio(e);
-                                        // if (item.modelo) {
-                                        //     item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
-                                        // }
-                                        // MDL.carrito.calcularValoresCarritDeCompras();
-
-                                        const precio = Number(e);
-                                        setPrecio(precio);
-                                        if (item.modelo) {
-                                            item.modelo.precio_compra_moneda =
-                                                moneda ? precio * (moneda.tipo_cambio || 1) : precio;
-                                        }
-                                        MDL.carrito.calcularValoresCarritDeCompras();
-
-                                    }}
-                                />
+                                <SView row center>
+                                    <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>{moneda?.observacion ?? "BS"}</SText>
+                                    <SView flex>
+                                        <SInput2
+                                            name="precio"
+                                            type="money"
+                                            style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: UI.colors.accent }}
+                                            defaultValue={precioFormateado}
+                                            onChangeText={(e) => {
+                                                setPrecioStr(e);
+                                                const n = parseFloat(e) || 0;
+                                                setPrecio(n);
+                                                if (modelo) {
+                                                    modelo.precio_compra_moneda = moneda ? n * (moneda.tipo_cambio || 1) : n;
+                                                }
+                                                MDL.carrito.calcularValoresCarritDeCompras();
+                                            }}
+                                        />
+                                    </SView>
+                                </SView>
                             ) : (
-                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
-                                    type="money2"
-                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} style={{ borderWidth: 0 }} > {moneda?.observacion ?? "BS"} </SText>}
-                                    value={precioFormateado.toString()}
-                                    onChangeText={(e) => {
+                                <SInput2
+                                    name="precio"
+                                    type="money"
+                                    style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                    value={precioFormateado}
+                                    onChangeText={() => {
                                         SNotification.send({
                                             title: "Sin permiso",
                                             body: "No tiene permiso para editar el precio de costo.",
                                             color: STheme.color.warning,
                                         });
-                                        return;
                                     }}
                                 />
-
                             )}
-
                         </SView>
 
-                        <SView width={4} />
-                        <SView width={60}>
-                            <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                        {/* Badge cantidad */}
+                        <SView style={{ width: 50, height: 18, borderRadius: 2, alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                            <SInput
+                                style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: STheme.color.text, fontWeight: "bold" }}
                                 type="money2"
-                                icon={<SText width={15} fontSize={10} color={STheme.color.lightGray} > x </SText>}
+                                icon={<SText fontSize={10} color={STheme.color.text}>{"x"}</SText>}
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
                                     item.cantidad = e;
@@ -352,102 +342,27 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }}
                             />
                         </SView>
-                        <SView flex />
-                        {/* alvaro */}
 
+                        {/* Subtotal */}
+                        <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}
+                            style={{ textAlign: "right", minWidth: 55, ...(subtotalLargo ? { width: "100%" } : {}) }}
+                            numberOfLines={1}>
+                            {subtotalStr}
+                        </SText>
+                    </SView>
 
-                        {/* <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }}   >
-                            <SHr />
-                            <SText fontSize={12}  >Fecha de Vencimiento</SText>
-                            <SView flex />
-                            <SInput
-                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date"
-                                value={formatFecha(item.modelo.fecha_vencimiento)}
-                                onChangeText={(e) => {
-                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
-                                    console.log("Fecha de vencimiento actualizada:", item.modelo.fecha_vencimiento);
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
-                        </SView> */}
-
-                        {/* <SView width={120}>
-                            <SInput
-                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date" icon={<SText width={50} fontSize={10} color={STheme.color.lightGray} numberOfLines={1} > Vencimiento </SText>}
-                                value={formatFecha(item.modelo.fecha_vencimiento)}
-                                onChangeText={(e) => {
-                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
-                        </SView> */}
-
-                        <SView flex />
-
-
-                        <SView width={80} style={{ justifyContent: "center" }}>
-                            <SText fontSize={12} bold style={{ textAlign: "right" }}>
-                                {SMath.formatMoney(precio * (item.cantidad ?? 0))}
-                            </SText>
-                        </SView>
-
-                        <SView flex />
-                        <SHr height={8} />
-
-                        {/* <SView width={128}>
-                            <SInput
-                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date" icon={<SText width={50} fontSize={10} color={STheme.color.lightGray} numberOfLines={1} > Vencimiento </SText>}
-                                value={formatFecha(item.modelo.fecha_vencimiento)}
-                                onChangeText={(e) => {
-                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
-                        </SView> */}
-                        <SHr />
-                        <SHr />
-
-
-                        {/* <SView col={"xs-12"} row>
-                            <SInput
-                                style={{ height: 16, fontSize: 11, padding: 0 }} type="date" icon={<SText width={110} fontSize={10} color={STheme.color.text} numberOfLines={1} padding={4} >Fecha de Vencimiento </SText>}
-                                value={formatFecha(item.modelo.fecha_vencimiento)}
-                                onChangeText={(e) => {
-                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
-                        </SView> */}
-
-
-                        <SView col={"xs-12"} padding={1}>
-                            <SInput type="date" style={{ height: 32, fontSize: 12, borderRadius: 4, paddingHorizontal: 8, }}
-                                icon={<SText width={128} fontSize={12} color={STheme.color.text} padding={4} numberOfLines={1} > Fecha de vencimiento </SText>}
-                                value={formatFecha(item.modelo.fecha_vencimiento)}
-                                onChangeText={(e) => {
-                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
-                        </SView>
-
-
-                        {/* <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }}   >
-                            <SHr />
-                            <SText fontSize={12}  >Fecha de Vencimiento</SText>
-                            <SView flex />
-                            <SInput
-                                style={{ height: 16, fontSize: 11, padding: 0, paddingRight: 4, textAlign: "right" }} type="date"
-                                value={formatFecha(item.modelo.fecha_vencimiento)}
-                                onChangeText={(e) => {
-                                    item.modelo.fecha_vencimiento = new Date(e).toISOString();
-                                    console.log("Fecha de vencimiento actualizada:", item.modelo.fecha_vencimiento);
-                                    MDL.carrito.calcularValoresCarritDeCompras();
-                                }}
-                            />
-                        </SView> */}
-
-
+                    {/* Fecha de vencimiento */}
+                    <SView style={{ height: 20, backgroundColor: UI.colors.mutedDark, borderRadius: 2, marginTop: 6 }}>
+                        <SInput
+                            style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }}
+                            type="date"
+                            icon={<SText width={110} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"Fecha vencimiento"}</SText>}
+                            value={formatFecha(modelo.fecha_vencimiento)}
+                            onChangeText={(e) => {
+                                modelo.fecha_vencimiento = new Date(e).toISOString();
+                                MDL.carrito.calcularValoresCarritDeCompras();
+                            }}
+                        />
                     </SView>
                 </SView>
             </SView>
