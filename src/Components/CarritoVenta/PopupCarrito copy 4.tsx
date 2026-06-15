@@ -265,15 +265,15 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         {/* <SView style={{ width: 56, height: 56, borderRadius: 8, overflow: "hidden" }}> */}
                         <SImage src={(SSocket.api as any).inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
                     </SView>
-                    {/* <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center", }}
+                    <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center", }}
                         onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)} >
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
-                    </SView> */}
+                    </SView>
                 </SView>
 
                 {/* Info del producto */}
                 <SView flex  >
-                    <SText fontSize={15} bold color={STheme.color.text} style={{ marginBottom: 8 }} numberOfLines={2}> {item.modelo.descripcion} </SText>
+                    <SText fontSize={15} bold color={STheme.color.text} style={{ marginBottom: 2 }} numberOfLines={2}>{item.modelo.descripcion} </SText>
 
                     {/* Fila precio / cantidad / subtotal */}
                     <SView row style={{ alignItems: "center", gap: 8 }}>
