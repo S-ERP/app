@@ -7,6 +7,7 @@ import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+import SInput2 from "../SForm2/SInput2";
 
 type PopupCarritoProps = {}
 const DEFAULT_MONEDA_KEY = "";
@@ -69,7 +70,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito", type: "3", content:
-                <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 300, height: 500, maxHeight: "100%", backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, }} withoutFeedback>
+                <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 310, height: 500, maxHeight: "100%", backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
         })
@@ -119,7 +120,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda, options } = this.state;
-        return <SView col={"xs-12"} height>
+        return <SView col={"xs-12"} height  >
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
             <SView row col={"xs-12"} style={{ padding: 8 }}>
@@ -216,7 +217,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 }
 
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
-    const [precio, setPrecio] = React.useState(0);
     const calcularPrecio = () => {
         if (!moneda) return item.modelo.precio_venta;
         if (item.modelo.venta_moneda?.key === moneda?.key) {
@@ -226,8 +226,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
         return item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
     };
+    const [precio, setPrecio] = React.useState(calcularPrecio);
     React.useEffect(() => { setPrecio(calcularPrecio()); }, [moneda, item.modelo.precio_venta]);
-    const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
+    const precioFormateado = (precio ?? 0).toFixed(2);
     const puedeEditarPrecio = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "carrito_editar_precio" });
 
     return (
@@ -247,26 +248,30 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     <SHr h={2} />
                     <SView row col={"xs-12"} style={{ alignItems: "center" }}>
 
-                        <SView width={70} style={{ borderWidth: 1, backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#bf0505" }} >
+                        <SView width={85} style={{ backgroundColor: Number(precioFormateado) > 0 ? STheme.color.card : "#bf0505", paddingHorizontal: 2 }} >
                             {/* alvaro */}
 
                             {puedeEditarPrecio ? (
-                                <SInput
-                                    style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                    type="money2"
-                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
-                                    value={precioFormateado.toString()}
-                                    onChangeText={(e) => {
-                                        setPrecio(e);
-                                        item.modelo.precio_venta_moneda = e * (moneda?.tipo_cambio || 1);
-                                        MDL.carrito.calcularValoresCarritDeVentas();
-                                    }}
-                                />
-                            ) : (
 
-                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                    type="money2"
-                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.text} > {moneda?.observacion ?? "BS"} </SText>}
+                                <SView width={"100%"} style={{ backgroundColor: STheme.color.card, borderRadius: 2 }} row center >
+                                    <SView width={18} style={{ alignItems: "flex-start", paddingLeft: 1 }} center   >
+                                        <SText fontSize={11} color={STheme.color.text}   >{moneda?.observacion ?? "BS"} </SText>
+                                    </SView>
+                                    <SView flex row   >
+                                        <SInput2 name="precio" type="money" style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 0 }}
+                                            defaultValue={precioFormateado.toString()}
+                                            onChangeText={(e) => {
+                                                const n = parseFloat(e) || 0;
+                                                setPrecio(n);
+                                                item.modelo.precio_venta_moneda = n * (moneda?.tipo_cambio || 1);
+                                                MDL.carrito.calcularValoresCarritDeVentas();
+                                            }}
+                                        />
+                                    </SView>
+                                </SView>
+                            ) : (
+                                <SInput2 name="precio" style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                                    type="money"
                                     value={precioFormateado.toString()}
                                     onChangeText={(e) => {
                                         SNotification.send({
@@ -279,21 +284,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 />
                             )}
                         </SView>
-
-
-                        {/* <SView width={70}>
-                            <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                type="money2"
-                                value={precioFormateado}
-                                onChangeText={(e) => {
-                                    setPrecio(e);
-                                    item.modelo.precio_venta_moneda = e * (moneda?.tipo_cambio || 1);
-                                    MDL.carrito.calcularValoresCarritDeVentas();
-                                }}
-                            />
-                        </SView> */}
-                        <SView width={4} />
-                        <SView width={50}>
+                        <SView width={8} />
+                        <SView width={32}>
                             <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 type="money2"
                                 icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
@@ -539,7 +531,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
             <SView style={{ width: "100%" }} row>
                 <SView style={{ flex: 1, height: 18, backgroundColor: STheme.color.card }}>
                     <InputSelector customStyle="erp" placeholder="Selecciona un cliente" options={(costo.clientes || []).map((c: any) => ({
-                        label: c.cliente.nombres, value: c.key, data: c,
+                        label: c.cliente?.nombres, value: c.key, data: c,
                         customComponent: () => (
                             <SText fontSize={10} color={STheme.color.lightGray}>
                                 {c.comision} %
@@ -549,7 +541,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                         defaultValue={costo.key_modelo_cliente || null}
                         onSelect={(selected: any) => {
                             costo.key_modelo_cliente = selected.value;
-                            costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente.nombres}`;
+                            costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente?.nombres}`;
                             const comision = parseFloat(selected.data.comision || "0");
                             const nuevoMonto = totalItem * (comision / 100);
                             setMonto(nuevoMonto);
