@@ -300,35 +300,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
                 </SView>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                {/* Info del producto */}
                 <SView flex  >
                     <SText fontSize={UI.font.title} bold color={STheme.color.text} style={{ marginBottom: 2 }} numberOfLines={2}>{item.modelo.descripcion} </SText>
 
@@ -367,10 +338,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     </SView>
                                 </SView>
                             ) : (
-                                <SInput2
+                                <SInput
                                     name="precio"
                                     type="money"
-                                    style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                    inputStyle={{backgroundColor:"transparent", height:3}}
+                                    style={{backgroundColor:"cyan"}}
+                                    // style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                    editable={false}
                                     value={precioFormateado.toString()}
                                     onChangeText={() => {
                                         SNotification.send({
@@ -378,6 +352,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             body: "No tiene permiso para editar el precio de venta.",
                                             color: STheme.color.warning,
                                         });
+                                        return
                                     }}
                                 />
                             )}

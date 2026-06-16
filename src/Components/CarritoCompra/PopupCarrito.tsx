@@ -317,7 +317,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     name="precio"
                                     type="money"
                                     style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
-                                    value={precioFormateado}
+                                    defaultValue={precioFormateado}
                                     onChangeText={() => {
                                         SNotification.send({
                                             title: "Sin permiso",
