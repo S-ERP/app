@@ -22,12 +22,9 @@ export default class inventario extends React.Component {
 
         empresaSeleccionada: null,
         sucursales: [],
-        almacenes: [],
-
         selectedSucursal: null,
-        selectedAlmacen: null,
 
-
+        almacenes: [],
         categorias: [],
 
         dataStockByCategoria: [],
@@ -229,39 +226,10 @@ export default class inventario extends React.Component {
         }, this.loadDashboardData);
     };
 
-    // handleSucursalSelect = (sucursal) => {
-    //     this.setState({
-    //         selectedSucursal: sucursal
-    //     }, this.loadDashboardData);
-    // };
-    handleSucursalSelect = async (sucursal) => {
-
-        let almacenes = [];
-        let almacenesAll = await MDL.inventario.getAllAlmacen();
-        if (sucursal?.key) {
-
-            almacenes = almacenesAll.filter(
-                a => a.key_sucursal === sucursal?.key
-            );
-            console.log(almacenes)
-        } else {
-            console.log("ninguno")
-            almacenes= almacenesAll
-        }
-
+    handleSucursalSelect = (sucursal) => {
         this.setState({
-            selectedSucursal: sucursal,
-            selectedAlmacen: null,
-            almacenes
+            selectedSucursal: sucursal
         }, this.loadDashboardData);
-    };
-
-    handleAlmacenSelect = (almacen) => {
-
-        this.setState({
-            selectedAlmacen: almacen
-        }, this.loadDashboardData);
-
     };
 
     // ==========================
@@ -289,14 +257,9 @@ export default class inventario extends React.Component {
         const sucursales =
             await MDL.empresa.getAllSucursales();
 
-        const almacenesAll =
+        const almacenes =
             await MDL.inventario.getAllAlmacen();
-        console.log(almacenesAll)
-        const almacenes = almacenesAll.filter(almacen =>
-            sucursales.some(sucursal =>
-                sucursal.key === almacen.key_sucursal
-            )
-        );
+
         const categorias =
             // await MDL.inventario.getAllCategoria();
             await MDL.inventario.getAllProducto?.() || []
@@ -331,8 +294,7 @@ export default class inventario extends React.Component {
             empresaSeleccionada,
             fecha_inicio,
             fecha_fin,
-            selectedSucursal,
-            selectedAlmacen
+            selectedSucursal
         } = this.state;
 
         // const { empresaSeleccionada } = this.state;
@@ -347,54 +309,47 @@ export default class inventario extends React.Component {
                 empresaSeleccionada.key,
                 fecha_inicio,
                 fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
 
             this.loadStockByCategoria(
                 empresaSeleccionada.key,
                 fecha_inicio,
                 fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
 
             this.loadStockByAlmacen(
                 empresaSeleccionada.key,
                 fecha_inicio,
                 fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
             this.loadStockBySucursal(
                 empresaSeleccionada.key,
                 fecha_inicio,
                 fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
 
             this.loadProductosBajoStock(
                 empresaSeleccionada.key,
                 // fecha_inicio,
                 // fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
 
             this.loadDistribucionProductos(
                 empresaSeleccionada.key,
                 fecha_inicio,
                 fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
             this.loadValorInventario(
                 empresaSeleccionada.key,
                 // fecha_inicio,
                 // fecha_fin,
-                selectedSucursal?.key,
-                selectedAlmacen?.key
+                selectedSucursal?.key
             ),
             // this.loadValorInventarioPorSucursal(
             //     empresaSeleccionada.key,
@@ -414,10 +369,9 @@ export default class inventario extends React.Component {
         keyEmpresa,
         fecha_inicio,
         fecha_fin,
-        keySucursal,
-        keyAlmacen
+        keySucursal
     ) => {
-        console.log("KEYEMPRESA_:", keyEmpresa, fecha_inicio, fecha_fin, keySucursal, keyAlmacen);
+        console.log("KEYEMPRESA_:", keyEmpresa, fecha_inicio, fecha_fin, keySucursal);
         const res =
             await MDL.compra_venta.execute_function(
                 "productos_mayor_stock_compra_venta_inventario",
@@ -426,8 +380,7 @@ export default class inventario extends React.Component {
                     keyEmpresa,
                     fecha_inicio,
                     fecha_fin,
-                    keySucursal,
-                    keyAlmacen
+                    keySucursal
                 ]
             );
 
@@ -578,7 +531,7 @@ export default class inventario extends React.Component {
 
     loadStockBySucursal = async (keyEmpresa, fecha_inicio,
         fecha_fin,
-        keySucursal, keyAlmacen) => {
+        keySucursal) => {
         try {
             const sucursales = this.state.sucursales || [];
             // const productos = await MDL.inventario.getAllProducto?.() || [];
@@ -606,7 +559,7 @@ export default class inventario extends React.Component {
             //         };
             //     })
             // );
-            const sucursalesConStock = await MDL.inventario.execute_function("get_stock_por_sucursal_inventario", [keyEmpresa, keySucursal, keyAlmacen]);
+            const sucursalesConStock = await MDL.inventario.execute_function("get_stock_por_sucursal_inventario", [keyEmpresa, keySucursal, null]);
 
             console.log("sucursalesConStock", sucursalesConStock)
 
@@ -802,10 +755,10 @@ export default class inventario extends React.Component {
         }
     };
 
-    loadValorInventario = async (keyEmpresa, keySucursal, keyAlmacen) => {
+    loadValorInventario = async (keyEmpresa, keySucursal) => {
         this.setState({ dataValorInventario: [] });
         try {
-            const res = await MDL.inventario.execute_function("calcular_valor_stock_inventario", [keyEmpresa, keySucursal, keyAlmacen]);
+            const res = await MDL.inventario.execute_function("calcular_valor_stock_inventario", [keyEmpresa, keySucursal]);
             console.log("RESULTADO", res)
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
@@ -909,7 +862,6 @@ export default class inventario extends React.Component {
             fecha_fin,
             sucursales,
             selectedSucursal,
-            selectedAlmacen,
             loading,
             dataValorInventario,
             loadingValorInventario,
@@ -980,7 +932,7 @@ export default class inventario extends React.Component {
                                             placeholder: "Seleccione una almacén",
                                             type: "custom",
                                             customInputClass: InputSelector,
-                                            defaultValue: selectedAlmacen?.key ?? "todos",
+                                            defaultValue: selectedSucursal?.key ?? "todos",
                                             options: [
                                                 {
                                                     label: "Todos los almacenes",
@@ -994,7 +946,7 @@ export default class inventario extends React.Component {
                                                 }))
                                             ],
                                             onSelect: (val) => {
-                                                this.handleAlmacenSelect(val.data);
+                                                this.handleSucursalSelect(val.data);
                                             }
                                         }
                                     }}
@@ -1394,7 +1346,7 @@ CardResumen = ({ label, value, icon }) => (
                     {value}
                 </SText>
             </SView>
-            <SView width={50} height={50} style={{ borderRadius: 80, backgroundColor: STheme.color.card }} center>
+            <SView width={50} height={50} style={{borderRadius:80, backgroundColor:STheme.color.card}}  center>
                 <SIcon
                     name={icon} // el icono que quieras
                     width={30}
