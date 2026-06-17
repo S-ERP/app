@@ -49,15 +49,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         razon_social?: string,
         nit?: string,
     } = {
-        almacen: null,
-        moneda: MDL.compra_venta.getMonedaSeleccionada() || null,
-        factura: false,
-        esCredito: false, // 👈 bandera
-        subtotal: null,
-        clientes: [],
-        key_cliente: null,
-        cliente_texto: "",
-    }
+            almacen: null,
+            moneda: MDL.compra_venta.getMonedaSeleccionada() || null,
+            factura: false,
+            esCredito: false, // 👈 bandera
+            subtotal: null,
+            clientes: [],
+            key_cliente: null,
+            cliente_texto: "",
+        }
 
     componentDidMount(): void {
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarSubtotal(); });
@@ -134,11 +134,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 compra: true
             });
         } catch (error: any) {
+            const mensaje = error instanceof Error ? error.message : (error?.error || JSON.stringify(error));
             console.error("Error al realizar la compra:", error);
             SNotification.send({
                 key: "compra_rapida",
-                title: "Error al realizar la compra2",
-                body: error?.error || JSON.stringify(error),
+                title: "Error al realizar la compra",
+                body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
             });
@@ -217,6 +218,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 }
             })
             console.clear();
+            console.log("%c" + JSON.stringify(detalle), `color: #d81de9; font-weight: bold;`);
+
+            // console.clear();
 
             const data: any = {
                 "descripcion": descripcionVenta,
@@ -247,6 +251,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
+
+            // console.clear();
+            console.log("%c" + JSON.stringify(data), `color: #d5e91d; font-weight: bold;`);
+
+
             SNotification.send({
                 key: "compra_rapida",
                 title: "Cargando",
@@ -270,7 +279,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         }
                     }
                 })
-                console.log("%c" + JSON.stringify(compraResp), `color: #e9682d; font-weight: bold;`);
+                // console.clear();
+                console.log("%c" + JSON.stringify(compraResp), `color: #008a0b; font-weight: bold;`);
+
+
+                // console.log("%c" + JSON.stringify(compraResp), `color: #e9682d; font-weight: bold;`);
 
                 SelectTipoPagoCompra.closePopup();
                 SNotification.remove("compra_rapida");
@@ -283,7 +296,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "data": data
                 })
 
-                console.log("%c" + JSON.stringify(compraResp), `color: #d81de9; font-weight: bold;`);
+                // alvaro
+
+                // console.clear();
+                console.log("%c" + JSON.stringify(compraResp), `color: #0804e4; font-weight: bold;`);
 
 
                 MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
@@ -296,11 +312,16 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 MDL.caja.dispatchEvent({ type: "onDetalleChange" });
             }
         } catch (error: any) {
+            const mensaje = error instanceof Error ? error.message : (error?.error || JSON.stringify(error));
+            console.clear();
+
+            console.log("%c" + JSON.stringify(error), `color: #008a0b; font-weight: bold;`);
+
             console.error("Error al realizar la compra:", error);
             SNotification.send({
                 key: "compra_rapida",
-                title: "Error al realizar la compra3",
-                body: error?.error || JSON.stringify(error),
+                title: "Error al realizar la compra2222",
+                body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
             });

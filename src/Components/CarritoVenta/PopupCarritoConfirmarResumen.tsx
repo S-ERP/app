@@ -245,8 +245,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 return;
             }
 
-            console.clear();
-            console.log("%c" + JSON.stringify(cliente), `color: #ccc92e; font-weight: bold;`);
+            // console.clear();
+            // console.log("%c" + JSON.stringify(cliente), `color: #ccc92e; font-weight: bold;`);
             const sucursalKey = MDL.caja.activa ? MDL.caja.activa.key_sucursal : null;
 
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
@@ -256,7 +256,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             );
             const clientefull = this.props.cliente || {};
 
-            console.log("%c" + JSON.stringify(clientefull), `color: rgb(27, 210, 235); font-weight: bold;`);
+            // console.log("%c" + JSON.stringify(clientefull), `color: rgb(27, 210, 235); font-weight: bold;`);
 
             if (esCredito && !clientefull?.key) {
                 this.props.onTipoPagoChange(true);
@@ -277,7 +277,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 SPopup.alert("Debe seleccionar un almacen");
             }
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
-                console.log("%c" + JSON.stringify(ci), `color: #e22b2b; font-weight: bold;`);
+                // console.log("%c" + JSON.stringify(ci), `color: #e22b2b; font-weight: bold;`);
                 const costos: any = []
                 const tcostos = ci?.modelo?.tipoCostos;
                 if (tcostos) {
@@ -360,7 +360,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 suscripciones,
                 tipos_pago,
             };
-            console.log("%c" + JSON.stringify(data), `color: #2ECC40; font-weight: bold;`);
+            // console.log("%c" + JSON.stringify(data), `color: #2ECC40; font-weight: bold;`);
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
@@ -373,6 +373,12 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "estado": "cargando",
                 "data": data
             })
+
+                console.clear();
+                console.log("%c" + JSON.stringify(compraResp), `color: #d81de9; font-weight: bold;`);
+
+
+                
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
             SelectTipoPagoVenta.closePopup();
             SNotification.remove("venta_rapida");
