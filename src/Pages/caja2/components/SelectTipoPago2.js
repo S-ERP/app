@@ -4,7 +4,8 @@ import { SHr, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from 
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import PagarConPasarela from '../../pasarela/Components/PagarConPasarela';
-
+import SInput2 from '../../../Components/SForm2/SInput2';
+// alvaro
 type SelectTipoPagoProps = {
     key_punto_venta: string,
     solo_para_caja: boolean,
@@ -127,13 +128,21 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                 if (!this.props.montoMaximoPorTipo) {
                     // item.monto = this.props.montoMaximoPorTipo[item.key_tipo_pago];
                     let total = 0;
-                    selecteds.forEach(pv => {
-                        console.log(pv)
-                        pv.monto = Math.round(((this.props.montoMaximo || 0) / selecteds.length) * 100) / 100;
-                        total += parseFloat(pv.monto);
-                        if (pv.__ref) {
-                            pv.__ref.setValue(Math.round((pv.monto / (pv.moneda?.tipo_cambio || 1)) * 100) / 100);
+                    let remainingCents = Math.round((this.props.montoMaximo || 0) * 100);
+                    selecteds.forEach((pv, index) => {
+                        let montoCents;
+                        if (index === selecteds.length - 1) {
+                            montoCents = remainingCents;
+                        } else {
+                            montoCents = Math.round((this.props.montoMaximo || 0) / selecteds.length * 100);
+                            remainingCents -= montoCents;
                         }
+                        const montoNacional = montoCents / 100;
+                        total += montoNacional;
+                        if (pv.__ref) {
+                            pv.__ref.setValue(Math.round((montoNacional / (pv.moneda?.tipo_cambio || 1)) * 100) / 100);
+                        }
+                        pv.monto = montoNacional;
                     });
 
                     // if (total != this.props.montoMaximo) {
@@ -185,36 +194,37 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     <SView flex col={"xs-12"} center >
 
                         <SView col={"xs-12"} withoutFeedback center style={{ paddingTop: 5 }}>
-                            <SInput
-                                autoFocus
-                                ref={ref => item.__ref = ref}
-                                type='money2'
-                                customStyle={"erp"}
-                                decimales={2}
-                                icon={<SText fontSize={10}>{item?.moneda?.observacion ?? ""}</SText>}
-                                defaultValue={MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1))} required
-                                style={{ marginBottom: 5 }}
-                                onChangeText={(e) => {
+                            <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
+                                <SText style={{ marginRight: 2 }}> {item?.moneda?.observacion ?? "BS"} </SText>
+                                <SView flex row>
+                                    <SInput2 ref={ref => item.__ref = ref} autoFocus name={`monto_${item.key}`} type="money" style={{ width: "100%", textAlign: "right", fontSize: 14, paddingRight: 4 }}
+                                        defaultValue={String(MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1)))}
+                                        onChangeText={(e) => {
+                                            const val = parseFloat(e) || 0;
+                                            item.monto = val;
+                                            if (val > 0) {
+                                                item.monto = MDL.contabilidad.round(val * parseFloat(item.moneda?.tipo_cambio ?? 1))
+                                                if (item.__ref_extranjera) {
+                                                    item.__ref_extranjera.setValue(item.monto);
+                                                }
+                                            }
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
+                            </SView>
 
-                                    item.monto = e;
-                                    if (e > 0) {
-                                        item.monto = MDL.contabilidad.round(e * parseFloat(item.moneda?.tipo_cambio ?? 1))
-                                        if (item.__ref_extranjera) {
-                                            item.__ref_extranjera.setValue(item.monto);
-                                        }
-                                        this.forceUpdate();
-                                    }
-                                }}
-                            />
-
-                            {(item?.moneda?.tipo_cambio != 1) && < SInput
-                                customStyle={"erp"}
-                                ref={ref => item.__ref_extranjera = ref} type='money2' decimales={2}
-                                defaultValue={parseFloat(item.monto ?? "0")} required
-                                style={{ marginBottom: 5 }}
-                                icon={<SText fontSize={10}>{this.moneda_base?.observacion ?? "Bs"}</SText>}
-
-                            />}
+                            <SHr />
+                            {(item?.moneda?.tipo_cambio != 1) &&
+                                <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
+                                    <SText style={{ marginRight: 2 }}> {this.moneda_base?.observacion} </SText>
+                                    <SView flex row>
+                                        <SInput2 ref={ref => item.__ref_extranjera = ref} name={`monto_extranjera_${item.key}`} type="money" style={{ width: "100%", textAlign: "right", fontSize: 14, paddingRight: 4 }}
+                                            defaultValue={String(parseFloat(item.monto ?? "0"))}
+                                        />
+                                    </SView>
+                                </SView>
+                            }
                         </SView>
                         {/* <SHr h={4} /> */}
                         {/* <SText fontSize={10} color={STheme.color.lightGray}>{item.monto}</SText> */}
@@ -233,13 +243,13 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
     }
 
     calcularMontoInsertado() {
-        // ((this.pvtp ?? []).filter(a => a.__select).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
         selecteds.forEach(item => {
             montoTotal += parseFloat(item.monto)
         });
-        return MDL.contabilidad.round(montoTotal);
+        const enMoneda = MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio ?? 1));
+        return SMath.formatMoney(enMoneda);
     }
 
     agruparPorMoneda(lista) {
