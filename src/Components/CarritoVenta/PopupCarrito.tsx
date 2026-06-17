@@ -106,6 +106,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     handleChange = () => { this.forceUpdate(); }
+    handleKeyDown = (e: any) => {
+        if (e.key === "Escape") SPopup.close("PopupCarrito");
+    }
 
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange);
@@ -114,6 +117,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         });
         this.cargarMonedaSeleccionada();
         this.cargarMonedas();
+        (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
 
     cargarMonedaSeleccionada() {
@@ -143,6 +147,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
+        (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
 
     render() {

@@ -57,17 +57,23 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.setState({ esCredito });
     };
 
+    handleKeyDown = (e: any) => {
+        if (e.key === "Escape") SPopup.close("PopupCarritoConfirmar");
+    }
+
     componentDidMount() {
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", this.cargarMonedaSeleccionada);
         this.cargarMonedaSeleccionada();
         this.cargarClientes();
         this.cargarDescuentos();
+        (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
 
     componentWillUnmount(): void {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
+        (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
 
     cargarMonedaSeleccionada = () => {

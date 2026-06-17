@@ -8,22 +8,17 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2 from "../SForm2/SInput2";
 
 type PopupCarritoProps = {}
-const DEFAULT_MONEDA_KEY = "";
 
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
     colors: {
-        background: "#5d636e",
-        // background: "#252a33",
+        background: "#252a33",
         header: "#a046e8",
         danger: "#dc3545",
-        card: "#34383f",
-        // card: "#1e222b",
         itemBg: "#303744",
         mutedDark: "#1f242d",
         accent: "#6cffb4",
         error: "#bf0505",
-        textMuted: "#bfc7d4",
         border: "#434c5d",
     }
 };
@@ -31,9 +26,7 @@ const UI = {
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
-        options: [] as any[],
     };
-    rapido: any;
     evento: any;
 
     static open(props: PopupCarritoProps) {
@@ -57,36 +50,19 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     handleChange = () => { this.forceUpdate(); }
+    handleKeyDown = (e: any) => {
+        if (e.key === "Escape") SPopup.close("PopupCarrito");
+    }
 
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange);
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
-            this.cargarMonedaSeleccionada();
+            const moneda = MDL.compra_venta.getMonedaSeleccionada();
+            this.setState({ selectedMoneda: moneda || null });
         });
-        this.cargarMonedaSeleccionada();
-        this.cargarMonedas();
-    }
-
-    cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
-        if (this.rapido && moneda) {
-            this.rapido.setValue(moneda.key);
-        }
         this.setState({ selectedMoneda: moneda || null });
-    }
-
-    async cargarMonedas() {
-        try {
-            const monedas = await MDL.empresa.getMonedas();
-            if (!Array.isArray(monedas)) return;
-            const monedaDefault = monedas.find(m => m.key === DEFAULT_MONEDA_KEY);
-            this.setState({
-                options: monedas,
-                selectedMoneda: monedaDefault ?? this.state.selectedMoneda
-            });
-        } catch (e) {
-            console.error("Error cargando monedas:", e);
-        }
+        (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
 
     componentWillUnmount(): void {
@@ -94,6 +70,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
+        (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
 
     render() {
@@ -119,7 +96,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 {/* Selector de moneda */}
                 <SView style={{ padding: 8 }}>
                     <FiltroMoneda
-                        onSelect={(moneda: string) => {
+                        onSelect={(moneda: any) => {
                             this.setState({ selectedMoneda: moneda });
                             MDL.compra_venta.setMonedaSeleccionada(moneda);
                             MDL.carrito.calcularValoresCarritDeCompras();
@@ -129,7 +106,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
                 {/* Título de sección */}
                 <SView row style={{ paddingHorizontal: 10, paddingVertical: 8, alignItems: "center" }}>
-                    <SText fontSize={UI.font.small} color={STheme.color.text}>{"Productos ("}{MDL.carrito.carrito_compra.cantidad_items}{")"}</SText>
+                    <SText fontSize={UI.font.small} color={STheme.color.text}>
+                        {"Productos ("}{MDL.carrito.carrito_compra.cantidad_items}{")"}
+                    </SText>
                     <SView flex />
                     <SText fontSize={UI.font.small} color={STheme.color.text}>
                         {"Sub: "}{selectedMoneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.carrito.carrito_compra?.monto_total || 0)}
@@ -145,7 +124,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 />
 
                 {/* Resumen y acciones */}
-                <SView style={{ backgroundColor: UI.colors.card, borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}>
                     <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Total Compra"}</SText>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>
@@ -164,7 +143,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     }
                                 });
                             }}>
-                            <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Cancelar"}</SText>
+                            <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Limpiar"}</SText>
                         </SView>
 
                         <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
@@ -182,10 +161,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     });
                                     return;
                                 }
-                                const itemConCantidadInvalida = items.find(it => {
-                                    const cantidad = it?.cantidad ?? 0;
-                                    return cantidad <= 0;
-                                });
+                                const itemConCantidadInvalida = items.find(it => (it?.cantidad ?? 0) <= 0);
                                 if (itemConCantidadInvalida) {
                                     SNotification.send({
                                         title: "Cantidad requerida",
@@ -221,6 +197,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
     const [precio, setPrecio] = React.useState(calcularPrecio);
     const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
+
     React.useEffect(() => {
         const p = calcularPrecio();
         setPrecio(p);
@@ -239,11 +216,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
     const precioFormateado = (precio ?? 0).toFixed(2);
     const subtotalStr = SMath.formatMoney(precio * (item.cantidad ?? 0));
-    const precioDigits = puedeEditarCosto
-        ? precioStr.replace(/[^0-9]/g, '').length
-        : precioFormateado.replace(/[^0-9]/g, '').length;
-    const precioMinWidth = Math.max(50, precioDigits * 7 + 24);
-    const subtotalLargo = precioDigits > 8;
+    const subtotalLargo = precioStr.replace(/[^0-9]/g, '').length > 8;
 
     const formatFecha = (dateStr: string) => {
         if (!dateStr) return "";
@@ -254,12 +227,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     };
 
     return (
-        <SView style={{
-            backgroundColor: UI.colors.itemBg,
-            borderRadius: 10,
-            padding: 10,
-            marginBottom: 10,
-        }}>
+        <SView style={{ backgroundColor: UI.colors.itemBg, borderRadius: 10, padding: 10, marginBottom: 10 }}>
             <SView row style={{ gap: 8, alignItems: "flex-start" }}>
 
                 {/* Imagen */}
@@ -286,13 +254,11 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         <SView flex style={{
                             backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error,
                             borderRadius: 2,
-                            // paddingHorizontal: 1,
                             height: 18,
                             justifyContent: "center",
-                            // minWidth: precioMinWidth,
                         }}>
                             {puedeEditarCosto ? (
-                                <SView row center style={{paddingHorizontal:2}}>
+                                <SView row center style={{ paddingHorizontal: 2 }}>
                                     <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>{moneda?.observacion ?? "BS"}</SText>
                                     <SView flex>
                                         <SInput2
@@ -313,13 +279,10 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     </SView>
                                 </SView>
                             ) : (
-                                
                                 <SInput
                                     name="precio"
                                     type="money"
-                                    // inputStyle={{ backgroundColor: "transparent", height: 3 }}
-                                    style={{ height: 18, width:"100%",paddingRight: 0,textAlign: "right"}}
-                                    // style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                    style={{ height: 18, width: "100%", paddingRight: 0, textAlign: "right" }}
                                     editable={false}
                                     value={precioFormateado.toString()}
                                     onChangeText={() => {
@@ -328,23 +291,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             body: "No tiene permiso para editar el precio de costo",
                                             color: STheme.color.warning,
                                         });
-                                        return
                                     }}
                                 />
-
-                                // <SInput2
-                                //     name="precio"
-                                //     type="money"
-                                //     style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
-                                //     defaultValue={precioFormateado}
-                                //     onChangeText={() => {
-                                //         SNotification.send({
-                                //             title: "Sin permiso",
-                                //             body: "No tiene permiso para editar el precio de costo.",
-                                //             color: STheme.color.warning,
-                                //         });
-                                //     }}
-                                // />
                             )}
                         </SView>
 
