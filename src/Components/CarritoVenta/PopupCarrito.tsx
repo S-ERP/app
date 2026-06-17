@@ -218,7 +218,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center", }} onPress={() => {
                             const items = MDL.carrito.carrito_venta.items;
                             const itemConPrecioInvalido = items.find(it => {
-                                const precio = (it?.modelo as any)?.precio_compra_moneda ?? 0;
+                                const precio = (it?.modelo as any)?.precio_venta_moneda || (it?.modelo as any)?.precio_venta || 0;
                                 return precio <= 0;
                             });
                             if (itemConPrecioInvalido) {
@@ -310,14 +310,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         <SView flex style={{
                             backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error,
                             borderRadius: 2,
-                            paddingHorizontal: 1,
+                            // paddingHorizontal: 1,
                             height: 18,
                             justifyContent: "center",
                             // minWidth: 85,
                             // minWidth: precioMinWidth,
                         }}>
                             {puedeEditarPrecio ? (
-                                <SView width={"100%"} row center>
+                                <SView row center style={{paddingHorizontal:2}}>
                                     <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>
                                         {moneda?.observacion ?? "BS"}
                                     </SText>
@@ -341,9 +341,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 <SInput
                                     name="precio"
                                     type="money"
-                                    inputStyle={{backgroundColor:"transparent", height:3}}
-                                    style={{backgroundColor:"cyan"}}
-                                    // style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                    style={{ height: 18, width:"100%",paddingRight: 0,textAlign: "right"}}
                                     editable={false}
                                     value={precioFormateado.toString()}
                                     onChangeText={() => {

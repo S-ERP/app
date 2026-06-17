@@ -6,7 +6,8 @@ import detalle from "../compra/detalle";
 import { FlatList } from "react-native";
 import SSocket from "servisofts-socket";
 import PButtom from "../../Components/PButtom";
-import SelectTipoPago from "../caja2/components/SelectTipoPago";
+import SelectTipoPagoVenta from "../caja2/components/SelectTipoPagoVenta";
+// import SelectTipoPago from "../caja2/components/SelectTipoPagoVenta";
 
 
 //  import React from "react";
@@ -198,7 +199,7 @@ export default class root extends React.Component {
             //     data: data,
             // });
 
-            SelectTipoPago.closePopup();
+            SelectTipoPagoVenta.closePopup();
             SNavigation.goBack();
             SNotification.remove("compra_rapida");
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
@@ -389,7 +390,7 @@ export default class root extends React.Component {
                                     // return;
 
 
-                                    SelectTipoPago.openPopup({
+                                    SelectTipoPagoVenta.openPopup({
                                         key_punto_venta: MDL.caja.activa.key_punto_venta,
                                         montoMaximo: max,
                                         key_moneda: this.selectedMoneda?.key || this.state.monedas[0]?.key,

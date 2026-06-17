@@ -4,10 +4,11 @@ import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNot
 // import ResumenTotales from './ResumenTotales';
 // import PopupConfirmaPago from './PopupConfirmaPago';
 import FotoCliente from '../Foto/FotoCliente';
-import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
+// import SelectTipoPago from '../../../caja2/components/SelectTipoPagoVenta';
 import MDL from '../../../../MDL';
 // import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
+import SelectTipoPagoVenta from '../../../caja2/components/SelectTipoPagoVenta';
 // import PopupCarritoFlotante from './PopupCarritoFlotante';
 // import Carrito from '../Carrito';
 // import Main from '../../Main';
@@ -159,7 +160,7 @@ export default class TecladoNumerico extends Component {
                                 console.log("montoTotal_ME", montoTotal_ME);
                                 console.log("monedaSymbol", monedaSymbol);
 
-                                SelectTipoPago.openPopup({
+                                SelectTipoPagoVenta.openPopup({
                                     key_punto_venta: key_punto_venta,
                                     key_moneda: moneda?.key,
                                     montoMaximo: montoTotal_MN, // Usar totalFinal
@@ -168,7 +169,7 @@ export default class TecladoNumerico extends Component {
                                         this.tipos_pago = item;
                                         this.forceUpdate();
                                         this.renderButton(totalFinal, subtotalMoneda, subtotal, descuento, conFactura, carrito);
-                                        SelectTipoPago.closePopup();
+                                        SelectTipoPagoVenta.closePopup();
                                     },
                                 });
                             }
@@ -216,7 +217,7 @@ export default class TecladoNumerico extends Component {
                                 console.log("montoTotal_ME", montoTotal_ME);
                                 console.log("monedaSymbol", monedaSymbol);
 
-                                SelectTipoPago.openPopup({
+                                SelectTipoPagoVenta.openPopup({
                                     key_punto_venta: key_punto_venta,
                                     key_moneda: moneda?.key,
                                     montoMaximo: montoTotal_MN, // Usar totalFinal
@@ -225,7 +226,7 @@ export default class TecladoNumerico extends Component {
                                         this.tipos_pago = item;
                                         this.forceUpdate();
                                         this.renderButton(totalFinal, subtotalMoneda, subtotal, descuento, conFactura, carrito);
-                                        SelectTipoPago.closePopup();
+                                        SelectTipoPagoVenta.closePopup();
                                     },
                                 });
                             }

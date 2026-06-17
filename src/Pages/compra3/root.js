@@ -4,10 +4,11 @@ import MDL from "../../MDL";
 import SIconApp from "../../Assets/SIconApp";
 import { Dimensions, FlatList } from "react-native";
 import SSocket from "servisofts-socket";
-import SelectTipoPago from "../caja2/components/SelectTipoPago";
+// import SelectTipoPago from "../caja2/components/SelectTipoPagoVenta";
 import Categoria from "./Components/Categoria";
 import Modelo from "./Components/Modelo";
 import Carrito from "./Components/Carrito";
+import SelectTipoPagoVenta from "../caja2/components/SelectTipoPagoVenta";
 
 export default class Root extends React.Component {
     cajaActiva = false; // Bandera sin usar state
@@ -215,7 +216,7 @@ export default class Root extends React.Component {
                 data: data,
             });
 
-            SelectTipoPago.closePopup();
+            SelectTipoPagoVenta.closePopup();
             SNavigation.goBack();
             SNotification.remove("compra_rapida");
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });

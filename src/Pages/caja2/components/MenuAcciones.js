@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SHr, SNavigation, SNotification, SPopup, SSCrollView, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
-import SelectTipoPago from './SelectTipoPago';
+// import SelectTipoPago from './SelectTipoPagoVenta';
 import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
 import Transferencia from '../Acciones/Transferencia';
 import { Btn } from '../../../Components';
@@ -9,6 +9,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import { ColorCompraVenta } from '../../../Config/theme';
 import TotalTipoPagoTabla from './TotalTipoPagoTabla';
 import PdfCierreCaja from '../../../Components/PDF/venta/PdfCierreCaja';
+import SelectTipoPagoVenta from './SelectTipoPagoVenta';
 
 
 export default class MenuAcciones extends Component<{ caja: any, movimientos: any[] }> {
@@ -103,7 +104,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
 
     }
     enviarAlBanco = () => {
-        SelectTipoPago.openPopup({
+        SelectTipoPagoVenta.openPopup({
             key_punto_venta: this.props.caja.key_punto_venta,
             solo_para_caja: true,
             montoMaximoPorTipo: {
@@ -121,7 +122,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                     tipo: "egreso_banco",
                     tipo_pago: item
                 }).then(e => {
-                    SelectTipoPago.closePopup();
+                    SelectTipoPagoVenta.closePopup();
                 }).catch(e => {
 
                 })

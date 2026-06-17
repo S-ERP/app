@@ -4,10 +4,11 @@ import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
-import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
-import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPago2";
+// import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPagoVenta";
+// import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPagoCompra";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
+import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
 type PopupCarritoConfirmarProps = {
 }
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
@@ -123,7 +124,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             }
             const subtotal = this.state.subtotal || 0;
             const total = subtotal * (selectedMoneda.tipo_cambio || 1);
-            SelectTipoPago2.openPopup({
+            SelectTipoPagoCompra.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total,
                 key_moneda: key_moneda,
@@ -173,7 +174,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
             if (keyPago === "credito" && !proveedor) {
                 this.setState({ esCredito: true });
-                SelectTipoPago2.closePopup();
+                SelectTipoPagoCompra.closePopup();
                 SNotification.send({
                     key: "compra_rapida",
                     title: "Proveedor requerido",
@@ -271,7 +272,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 })
                 console.log("%c" + JSON.stringify(compraResp), `color: #e9682d; font-weight: bold;`);
 
-                SelectTipoPago.closePopup();
+                SelectTipoPagoCompra.closePopup();
                 SNotification.remove("compra_rapida");
             } else {
                 const compraResp = await SSocket.sendPromise({
@@ -286,7 +287,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
 
                 MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-                SelectTipoPago.closePopup();
+                SelectTipoPagoCompra.closePopup();
                 SNotification.remove("compra_rapida");
                 SPopup.close("PopupCarritoConfirmar");
                 SPopup.close("PopupCarrito");

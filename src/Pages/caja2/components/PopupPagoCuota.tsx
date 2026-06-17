@@ -3,8 +3,9 @@ import { ScrollView, Animated } from 'react-native';
 import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate, SLoad, SMath } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
-import SelectTipoPago from './SelectTipoPago';
+// import SelectTipoPago from './SelectTipoPagoVenta';
 import SSocket from 'servisofts-socket';
+import SelectTipoPagoVenta from './SelectTipoPagoVenta';
 
 const data = {
     configuracion: {
@@ -502,7 +503,7 @@ export default class PopupPagoCuota extends Component {
                                 return;
                             }
 
-                            SelectTipoPago.openPopup({
+                            SelectTipoPagoVenta.openPopup({
                                 key_punto_venta: activa.key_punto_venta,
                                 key_moneda: moneda_base.key,
                                 montoMaximo: MontoSeleccionado,
@@ -533,7 +534,7 @@ export default class PopupPagoCuota extends Component {
                                             SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
                                             // this.props.onSuccess?.();
                                             if (this.props.onSuccess) this.props.onSuccess(resp)
-                                            SelectTipoPago.closePopup();
+                                            SelectTipoPagoVenta.closePopup();
                                         }
                                     }).catch(err => {
                                         SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });

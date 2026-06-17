@@ -5,10 +5,11 @@ import Config from '../../Config';
 import MDL from '../../MDL';
 import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 import SIconApp from '../../Assets/SIconApp';
-import SelectTipoPago from '../caja2/components/SelectTipoPago';
+// import SelectTipoPago from '../caja2/components/SelectTipoPagoVenta';
 import SSocket from 'servisofts-socket';
 import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
+import SelectTipoPagoVenta from '../caja2/components/SelectTipoPagoVenta';
 
 export default class TablaTransacciones extends Component {
     constructor(props) {
@@ -258,7 +259,7 @@ export default class TablaTransacciones extends Component {
                                         });
                                         return;
                                     }
-                                    SelectTipoPago.openPopup({
+                                    SelectTipoPagoVenta.openPopup({
                                         key_punto_venta: activa.key_punto_venta,
                                         key_moneda: moneda.key,
                                         montoMaximo: monto,
@@ -278,12 +279,12 @@ export default class TablaTransacciones extends Component {
                                                     SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
                                                     this.DinamicTable.loadData();
                                                     if (this.props.onSuccess) this.props.onSuccess(resp)
-                                                    SelectTipoPago.closePopup();
+                                                    SelectTipoPagoVenta.closePopup();
                                                 }
                                             }).catch(err => {
                                                 SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
                                             });
-                                            SelectTipoPago.closePopup();
+                                            SelectTipoPagoVenta.closePopup();
                                             SPopup.close("popup-venta-completada");
                                         }
                                     });

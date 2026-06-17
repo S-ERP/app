@@ -5,7 +5,8 @@ import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
-import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
+import SelectTipoPagoVenta from '../../../caja2/components/SelectTipoPagoVenta';
+// import SelectTipoPago from '../../../caja2/components/SelectTipoPagoVenta';
 export default class PopupConfirmaPago extends Component {
     async componentDidMount() {
         this.sucursal = await MDL.compra_venta.getSucursalSeleccionada();
@@ -196,13 +197,13 @@ export default class PopupConfirmaPago extends Component {
                     <SView center flex height={40} style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
                             if (!this.tipos_pago) {
-                                SelectTipoPago.openPopup({
+                                SelectTipoPagoVenta.openPopup({
                                     key_punto_venta: MDL.caja.activa.key_punto_venta,
                                     montoMaximo: totalFinal,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
                                         this.forceUpdate();
-                                        SelectTipoPago.closePopup();
+                                        SelectTipoPagoVenta.closePopup();
                                     }
                                 });
                             }

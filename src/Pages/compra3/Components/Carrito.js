@@ -8,7 +8,8 @@ import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
 import PButtom from '../../../Components/PButtom';
 import Root from '../root';
-import SelectTipoPago from '../../caja2/components/SelectTipoPago';
+import SelectTipoPagoVenta from '../../caja2/components/SelectTipoPagoVenta';
+// import SelectTipoPago from '../../caja2/components/SelectTipoPagoVenta';
 
 export default class Carrito extends Component {
     carrito = [];
@@ -392,7 +393,7 @@ export default class Carrito extends Component {
                                 onPress={() => {
                                     Root.prototype.inputs = this.inputs; // Asegura que cada Detalle tenga acceso a los inputs
 
-                                    SelectTipoPago.openPopup({
+                                    SelectTipoPagoVenta.openPopup({
                                         key_punto_venta: MDL.caja.activa.key_punto_venta,
                                         montoMaximo: subtotal,
                                         key_moneda: this.props.selectedMoneda?.key || this.state.monedas[0]?.key,

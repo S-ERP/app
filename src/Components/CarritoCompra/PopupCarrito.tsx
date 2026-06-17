@@ -171,7 +171,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             onPress={() => {
                                 const items = MDL.carrito.carrito_compra.items ?? [];
                                 const itemConPrecioInvalido = items.find(it => {
-                                    const precio = (it?.modelo as any)?.precio_compra_moneda ?? 0;
+                                    const precio = (it?.modelo as any)?.precio_compra_moneda || (it?.modelo as any)?.precio_compra || 0;
                                     return precio <= 0;
                                 });
                                 if (itemConPrecioInvalido) {
@@ -286,13 +286,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         <SView flex style={{
                             backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error,
                             borderRadius: 2,
-                            paddingHorizontal: 1,
+                            // paddingHorizontal: 1,
                             height: 18,
                             justifyContent: "center",
                             // minWidth: precioMinWidth,
                         }}>
                             {puedeEditarCosto ? (
-                                <SView row center>
+                                <SView row center style={{paddingHorizontal:2}}>
                                     <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>{moneda?.observacion ?? "BS"}</SText>
                                     <SView flex>
                                         <SInput2
@@ -313,19 +313,38 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     </SView>
                                 </SView>
                             ) : (
-                                <SInput2
+                                
+                                <SInput
                                     name="precio"
                                     type="money"
-                                    style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
-                                    defaultValue={precioFormateado}
+                                    // inputStyle={{ backgroundColor: "transparent", height: 3 }}
+                                    style={{ height: 18, width:"100%",paddingRight: 0,textAlign: "right"}}
+                                    // style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                    editable={false}
+                                    value={precioFormateado.toString()}
                                     onChangeText={() => {
                                         SNotification.send({
                                             title: "Sin permiso",
-                                            body: "No tiene permiso para editar el precio de costo.",
+                                            body: "No tiene permiso para editar el precio de costo",
                                             color: STheme.color.warning,
                                         });
+                                        return
                                     }}
                                 />
+
+                                // <SInput2
+                                //     name="precio"
+                                //     type="money"
+                                //     style={{ fontSize: UI.font.small, paddingRight: 0, textAlign: "right", color: UI.colors.accent }}
+                                //     defaultValue={precioFormateado}
+                                //     onChangeText={() => {
+                                //         SNotification.send({
+                                //             title: "Sin permiso",
+                                //             body: "No tiene permiso para editar el precio de costo.",
+                                //             color: STheme.color.warning,
+                                //         });
+                                //     }}
+                                // />
                             )}
                         </SView>
 

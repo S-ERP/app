@@ -197,6 +197,15 @@ class SInput2Class extends React.Component<SInput2Props, {
         _popUndo(true); // not focused — focus money after undoing a money entry
     }
 
+    setValue(raw: number | string) {
+        const rawStr = String(raw ?? '');
+        const formatted = this.props.type === 'money' ? this.initMoney(rawStr) : rawStr;
+        this.setState({ value: formatted });
+        if (this.props.onChangeText) {
+            this.props.onChangeText(rawStr);
+        }
+    }
+
     // Called by _popUndo when undoing a money entry from outside the instance.
     _applyUndoFromStack(value: string, cursor: number) {
         const c = Math.min(cursor, value.length);
