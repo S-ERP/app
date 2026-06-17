@@ -196,14 +196,15 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         </SView>
     }
 
-    calcularMontoInsertado() {
+    calcularMontoInsertadoNum() {
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
-        selecteds.forEach(item => {
-            montoTotal += parseFloat(item.monto)
-        });
-        const enMoneda = MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio ?? 1));
-        return SMath.formatMoney(enMoneda);
+        selecteds.forEach(item => { montoTotal += parseFloat(item.monto) });
+        return MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio ?? 1));
+    }
+
+    calcularMontoInsertado() {
+        return SMath.formatMoney(this.calcularMontoInsertadoNum());
     }
 
     agruparPorMoneda(lista) {
@@ -222,6 +223,14 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     render() {
         const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio ?? 1);
         const obs = this.moneda?.observacion ?? "Bs";
+        const montoInsertadoNum = this.calcularMontoInsertadoNum();
+        const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
+        const statusColor = diff < -0.001 ? "#dc3545" : diff > 0.001 ? "#e6a817" : "#198754";
+        const statusMsg = diff < -0.001
+            ? `Falta: ${obs} ${SMath.formatMoney(Math.abs(diff))}`
+            : diff > 0.001
+                ? `Cambio: ${obs} ${SMath.formatMoney(diff)}`
+                : "✓ Monto exacto";
 
         return (
             <SView col={"xs-12"} height>
@@ -237,18 +246,25 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
 
                 {/* Monto cards */}
                 {this.props.montoMaximo != null && (
-                    <SView row style={{ padding: 8, gap: 8 }}>
-                        <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center" }}>
-                            <SText fontSize={12} color={STheme.color.lightGray}>{"Monto a Pagar"}</SText>
-                            <SText bold fontSize={16}>{obs}{" "}{SMath.formatMoney(montoAPagar)}</SText>
-                            <SText fontSize={11} color={STheme.color.lightGray}>{this.moneda?.descripcion}</SText>
+                    <>
+                        <SView row style={{ padding: 8, paddingBottom: 4, gap: 8 }}>
+                            <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center" }}>
+                                <SText fontSize={12} color={STheme.color.lightGray}>{"Monto a Pagar"}</SText>
+                                <SText bold fontSize={16}>{obs}{" "}{SMath.formatMoney(montoAPagar)}</SText>
+                                <SText fontSize={11} color={STheme.color.lightGray}>{this.moneda?.descripcion}</SText>
+                            </SView>
+                            <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center", borderWidth: 2, borderColor: statusColor }}>
+                                <SText fontSize={12} color={STheme.color.lightGray}>{"Monto Insertado"}</SText>
+                                <SText bold fontSize={16} color={statusColor}>{obs}{" "}{SMath.formatMoney(montoInsertadoNum)}</SText>
+                                <SText fontSize={11} color={STheme.color.lightGray}>{this.moneda?.descripcion}</SText>
+                            </SView>
                         </SView>
-                        <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center" }}>
-                            <SText fontSize={12} color={STheme.color.lightGray}>{"Monto Insertado"}</SText>
-                            <SText bold fontSize={16}>{obs}{" "}{this.calcularMontoInsertado()}</SText>
-                            <SText fontSize={11} color={STheme.color.lightGray}>{this.moneda?.descripcion}</SText>
+                        <SView style={{ paddingHorizontal: 8, paddingBottom: 8 }}>
+                            <SView style={{ backgroundColor: statusColor + "22", borderRadius: 6, paddingVertical: 6, paddingHorizontal: 12, alignItems: "center" }}>
+                                <SText bold fontSize={13} color={statusColor}>{statusMsg}</SText>
+                            </SView>
                         </SView>
-                    </SView>
+                    </>
                 )}
 
                 <SHr />
@@ -275,6 +291,12 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                     )
                 }
 
+
+                <SHr />
+                <SHr />
+                <SHr />
+                <SHr />
+                <SHr />
                 {/* Footer */}
                 <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", padding: 12 }}>
                     <SView row style={{ gap: 12 }}>
