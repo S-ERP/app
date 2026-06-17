@@ -227,7 +227,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     };
 
     return (
-        <SView style={{ backgroundColor: UI.colors.itemBg, borderRadius: 10, padding: 10, marginBottom: 10 }}>
+        <SView style={{
+            backgroundColor: Number(precioFormateado) > 0 ? UI.colors.itemBg : "#3a1515",
+            borderRadius: 10,
+            padding: 10,
+            marginBottom: 10,
+            borderLeftWidth: 3,
+            borderLeftColor: Number(precioFormateado) > 0 ? UI.colors.header : UI.colors.danger,
+        }}>
             <SView row style={{ gap: 8, alignItems: "flex-start" }}>
 
                 {/* Imagen */}

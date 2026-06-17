@@ -224,13 +224,21 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio ?? 1);
         const obs = this.moneda?.observacion ?? "Bs";
         const montoInsertadoNum = this.calcularMontoInsertadoNum();
+        const selecteds = this.pvtp.filter(a => !!a.__select);
+        const nada = selecteds.length === 0;
         const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
-        const statusColor = diff < -0.001 ? "#dc3545" : diff > 0.001 ? "#e6a817" : "#198754";
-        const statusMsg = diff < -0.001
-            ? `Falta: ${obs} ${SMath.formatMoney(Math.abs(diff))}`
-            : diff > 0.001
-                ? `Cambio: ${obs} ${SMath.formatMoney(diff)}`
-                : "✓ Monto exacto";
+        const puedeConfirmar = !nada && Math.abs(diff) <= 0.001;
+        const statusColor = nada ? STheme.color.gray
+            : diff < -0.001 ? "#dc3545"
+            : diff > 0.001 ? "#e6a817"
+            : "#198754";
+        const statusMsg = nada
+            ? "Seleccione un tipo de pago"
+            : diff < -0.001
+                ? `Falta: ${obs} ${SMath.formatMoney(Math.abs(diff))}`
+                : diff > 0.001
+                    ? `Vuelto: ${obs} ${SMath.formatMoney(diff)}`
+                    : "✓ Monto exacto";
 
         return (
             <SView col={"xs-12"} height>
@@ -306,12 +314,11 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             }}>
                             <SText bold color={STheme.color.text}>{"Cancelar"}</SText>
                         </SView>
-                        <SView flex style={{ backgroundColor: "#a046e8", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: "#a046e8", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center", opacity: puedeConfirmar ? 1 : 0.45 }}
                             onPress={async () => {
-                                if (this.state.loading) return;
+                                if (this.state.loading || !puedeConfirmar) return;
                                 let montoTotal = 0;
                                 const elm = {};
-                                const selecteds = this.pvtp.filter(a => !!a.__select);
                                 selecteds.forEach(item => {
                                     elm[item.key] = {
                                         monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
