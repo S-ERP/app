@@ -182,7 +182,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             onPress={() => { SPopup.close("popup-compra-completada"); SNavigation.navigate("/venta/profile2", { pk: key_compra }); }}>
                             <SText color={STheme.color.text} center>Ver compra</SText>
                         </SView>
-                        <SView flex height={40} borderRadius={8} center backgroundColor={"#a046e844"} border={"#a046e8"}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={"#a046e844"}
+                            style={{ borderWidth: 1, borderColor: "#a046e8" }}
                             onPress={() => { SPopup.close("popup-compra-completada"); ComprobanteCarta.imprimir(key_compra); }}>
                             <SText color={STheme.color.text} center>Imprimir PDF</SText>
                         </SView>
@@ -246,7 +247,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         leyenda: "",
                     }
                     : null,
-                tipo_pago: this.state.factura ? "credito" : "contado",
+                tipo_pago: keyPago === "credito" ? "credito" : "contado",
                 facturar_luego: this.state.factura,
                 key_caja: keyCaja,
                 key_almacen: almacen.key,

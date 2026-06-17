@@ -169,7 +169,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 />
 
                 {/* Resumen y acciones */}
-                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", paddingHorizontal: 14, paddingVertical: 10, }}>
+                <SView style={{ backgroundColor: UI.colors.card, borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}>
                     <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}  >
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Total Venta"}</SText>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>
@@ -188,8 +188,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             })
                         }}>
                             <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Limpiar"}</SText>
-
-                            {/* <SText fontSize={13} bold color={STheme.color.text}>{"Limpiar"}</SText> */}
                         </SView>
 
                         <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center", }} onPress={() => {
