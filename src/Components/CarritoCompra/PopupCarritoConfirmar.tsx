@@ -44,6 +44,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputNit: SInput | null = null;
     evento: any;
     proveedor: any;
+    _mounted = false;
 
     state: {
         almacen: any;
@@ -74,6 +75,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
 
     componentDidMount(): void {
+        this._mounted = true;
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => this.cargarSubtotal());
         this.cargarSubtotal();
         this.cargarClientes();
@@ -81,6 +83,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
 
     componentWillUnmount(): void {
+        this._mounted = false;
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
@@ -90,12 +93,19 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     async cargarClientes() {
         try {
             let clientes = await MDL.crm.cliente.getAll();
+            if (!this._mounted) return;
             if (clientes && !Array.isArray(clientes)) clientes = Object.values(clientes);
             if (!clientes) clientes = [];
             this.setState({ clientes: (clientes as any[]).filter((c: any) => !!c) });
         } catch (error) {
             console.error("Error cargando clientes:", error);
         }
+    }
+
+    generateRandomCode(length = 6) {
+        const min = Math.pow(10, length - 1);
+        const max = Math.pow(10, length) - 1;
+        return "C-" + Math.floor(min + Math.random() * (max - min + 1)).toString();
     }
 
     cargarSubtotal() {
@@ -212,12 +222,18 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             }
             this.setState({ esCredito: false });
 
+            const carritoItems = MDL.carrito.carrito_compra?.items || [];
+            if (carritoItems.length === 0) {
+                SNotification.send({ key: "compra_rapida", title: "Carrito vacío", body: "No hay productos en el carrito.", color: STheme.color.danger, time: 3000 });
+                return;
+            }
+
             const almacen = this.state.almacen;
             const effectiveKeyMoneda = key_moneda || this.state.moneda?.key || this.props.moneda?.key;
             const keyUsuario = MDL.usuario.session?.key;
             const keyCaja = MDL.caja.activa?.key;
 
-            const detalle = (MDL.carrito.carrito_compra?.items || []).map((ci) => {
+            const detalle = carritoItems.map((ci) => {
                 const modelo = (ci?.modelo || {}) as any;
                 return {
                     cantidad: ci?.cantidad || 0,
@@ -240,7 +256,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 facturar: this.state.factura,
                 factura: this.state.factura
                     ? {
-                        nro_factura: "f-compra-545",
+                        nro_factura: this.generateRandomCode(),
                         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
                         nit: this.state.nit || this.proveedor?.nit || "",
                         razon_social: this.state.razon_social || this.proveedor?.razon_social || "",
@@ -280,13 +296,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     estado: "cargando",
                     data,
                 });
+                const keyCompra = (compraResp as any)?.data?.key_compra_venta;
+                if (!keyCompra) throw new Error("El servidor no devolvió la clave de la compra.");
                 MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
                 SelectTipoPagoCompra.closePopup();
                 SNotification.remove("compra_rapida");
                 SPopup.close("PopupCarritoConfirmar");
                 SPopup.close("PopupCarrito");
                 MDL.carrito.limpiarCarritoCompras();
-                this.showCompraPopup(compraResp?.data?.key_compra_venta);
+                this.showCompraPopup(keyCompra);
                 MDL.caja.dispatchEvent({ type: "onDetalleChange" });
             }
         } catch (error: any) {

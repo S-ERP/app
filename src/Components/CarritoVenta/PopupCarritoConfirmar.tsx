@@ -41,6 +41,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputDescuento: SInput | null = null;
     inputDescripcionVenta: SInput | null = null;
     evento: any;
+    _mounted = false;
 
     state: {
         almacen: any;
@@ -77,6 +78,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
 
     componentDidMount() {
+        this._mounted = true;
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", this.cargarMonedaSeleccionada);
         this.cargarMonedaSeleccionada();
         this.cargarClientes();
@@ -85,6 +87,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
 
     componentWillUnmount(): void {
+        this._mounted = false;
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
@@ -99,6 +102,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     async cargarClientes() {
         try {
             let clientes = await MDL.crm.cliente.getAll();
+            if (!this._mounted) return;
             if (clientes && !Array.isArray(clientes)) clientes = Object.values(clientes);
             this.setState({ clientes: (clientes as any[] || []).filter((c: any) => !!c) });
         } catch (e) {
@@ -114,6 +118,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 type: "getAll",
                 key_empresa: MDL.empresa?.select?.key
             });
+            if (!this._mounted) return;
             const descuentos = Object.values(resp?.data || {});
             this.setState({ descuentos });
         } catch (e) {
@@ -142,6 +147,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     color: STheme.color.danger,
                     time: 4000,
                 });
+                return;
+            }
+
+            const carritoItems = MDL.carrito.carrito_venta?.items || [];
+            if (carritoItems.length === 0) {
+                SNotification.send({ key: "venta_rapida", title: "Carrito vacío", body: "No hay productos en el carrito.", color: STheme.color.danger, time: 3000 });
                 return;
             }
 

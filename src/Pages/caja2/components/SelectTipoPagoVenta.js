@@ -162,12 +162,12 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                 <SView flex row>
                                     <SInput2 ref={ref => item.__ref = ref} autoFocus name={`monto_${item.key}`} type="money"
                                         style={{ width: "100%", textAlign: "right", paddingRight: 4, fontSize: 14 }}
-                                        defaultValue={String(MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1)))}
+                                        defaultValue={String(MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio || 1)))}
                                         onChangeText={(e) => {
                                             const val = parseFloat(e) || 0;
                                             item.monto = val;
                                             if (val > 0) {
-                                                item.monto = MDL.contabilidad.round(val * parseFloat(item.moneda?.tipo_cambio ?? 1))
+                                                item.monto = MDL.contabilidad.round(val * parseFloat(item.moneda?.tipo_cambio || 1))
                                                 if (item.__ref_extranjera) {
                                                     item.__ref_extranjera.setValue(item.monto);
                                                 }
@@ -200,7 +200,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
         selecteds.forEach(item => { montoTotal += parseFloat(item.monto) });
-        return MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio ?? 1));
+        return MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio || 1));
     }
 
     calcularMontoInsertado() {
@@ -208,7 +208,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
     }
 
     render() {
-        const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio ?? 1);
+        const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio || 1);
         const obs = this.moneda?.observacion ?? "Bs";
         const montoInsertadoNum = this.calcularMontoInsertadoNum();
         const selecteds = this.pvtp.filter(a => !!a.__select);
@@ -305,7 +305,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                 selecteds.forEach(item => {
                                     elm[item.key] = {
                                         monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
-                                        monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio ?? 1))),
+                                        monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio || 1))),
                                         tipo_pago: item.tipo_pago
                                     }
                                     montoTotal += parseFloat(item.monto)

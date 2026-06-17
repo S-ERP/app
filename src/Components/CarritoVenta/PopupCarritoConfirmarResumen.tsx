@@ -189,7 +189,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             }
             this.props.onTipoPagoChange(false);
 
-            const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
+            const carritoItems = MDL.carrito.carrito_venta?.items || [];
+            if (carritoItems.length === 0) {
+                SNotification.send({ key: "venta_rapida", title: "Carrito vacío", body: "No hay productos en el carrito.", color: STheme.color.danger, time: 3000 });
+                return;
+            }
+
+            const detalle = carritoItems.map((ci: any) => {
                 const costos: any[] = [];
                 const tcostos = ci?.modelo?.tipoCostos;
                 if (tcostos) {
@@ -283,6 +289,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 data,
             });
 
+            const keyVenta = (ventaResp as any)?.data?.key_compra_venta;
+            if (!keyVenta) throw new Error("El servidor no devolvió la clave de la venta.");
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
             SelectTipoPagoVenta.closePopup();
             SNotification.remove("venta_rapida");
@@ -290,7 +298,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
-            this.showVentaPopup((ventaResp as any)?.data?.key_compra_venta);
+            this.showVentaPopup(keyVenta);
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
             const mensaje = error instanceof Error ? error.message : JSON.stringify(error);

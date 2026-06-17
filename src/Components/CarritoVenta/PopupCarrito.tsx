@@ -53,20 +53,21 @@ const normalizeSuscriptores = (item: any) => {
     return suscriptores;
 };
 
-const validarSuscripciones = (items: any[]) => {
+type CampoIncompletoSusc = { itemDesc: string; index: number } | null;
+
+const validarSuscripcionesParcialesItems = (items: any[]): CampoIncompletoSusc => {
     for (const item of items) {
         const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo?.cantidad_suscriptores || 0);
         if (!cantidadMiembros) continue;
         const suscriptores = normalizeSuscriptores(item);
         for (let i = 0; i < cantidadMiembros; i++) {
-            const suscriptor = suscriptores[i] || {};
-            const clienteKey = suscriptor?.key_cliente || suscriptor?.cliente?.key || suscriptor?.cliente?.value;
-            if (!clienteKey) return false;
-            if (!suscriptor?.fecha_inicio) return false;
-            if (!suscriptor?.fecha_fin) return false;
+            const s = suscriptores[i];
+            const hayAlgo = !!(s?.cliente || s?.key_cliente || s?.fecha_inicio || s?.fecha_fin);
+            const completo = !!(s?.key_cliente || s?.cliente?.key) && !!s?.fecha_inicio && !!s?.fecha_fin;
+            if (hayAlgo && !completo) return { itemDesc: item.modelo?.descripcion ?? "un producto", index: i };
         }
     }
-    return true;
+    return null;
 };
 
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
@@ -216,6 +217,46 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 });
                                 return;
                             }
+
+                            // Validar miembros (suscriptores) con datos incompletos
+                            const suscError = validarSuscripcionesParcialesItems(items);
+                            if (suscError) {
+                                SNotification.send({
+                                    title: "Miembro incompleto",
+                                    body: `El miembro ${suscError.index + 1} de "${suscError.itemDesc}" tiene campos sin completar. Completá todos los datos o borrálos.`,
+                                    color: STheme.color.danger,
+                                    time: 6000,
+                                });
+                                return;
+                            }
+
+                            // Validar costos con datos incompletos
+                            for (const it of items) {
+                                const costos: any[] = (it.modelo as any)?.tipoCostos || [];
+                                for (const costo of costos) {
+                                    const tieneCliente = !!costo.key_modelo_cliente;
+                                    const tieneMonto = !!costo.monto && costo.monto > 0;
+                                    if (tieneCliente && !tieneMonto) {
+                                        SNotification.send({
+                                            title: "Costo incompleto",
+                                            body: `El costo "${costo.descripcion ?? ""}" de "${it.modelo?.descripcion ?? "un producto"}" necesita un monto.`,
+                                            color: STheme.color.danger,
+                                            time: 6000,
+                                        });
+                                        return;
+                                    }
+                                    if (!tieneCliente && tieneMonto) {
+                                        SNotification.send({
+                                            title: "Costo incompleto",
+                                            body: `El costo "${costo.descripcion ?? ""}" de "${it.modelo?.descripcion ?? "un producto"}" necesita un cliente asignado.`,
+                                            color: STheme.color.danger,
+                                            time: 6000,
+                                        });
+                                        return;
+                                    }
+                                }
+                            }
+
                             PopupCarritoConfirmar.open({});
                         }}>
                             <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Confirmar venta"}</SText>
@@ -387,6 +428,10 @@ const ListaCostos = ({ item, moneda, totalItem }: any) => {
 
 const ListaSuscripciones = ({ item }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
+    const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
+    const [loadingClientes, setLoadingClientes] = React.useState(false);
+    const [visible, setVisible] = React.useState(3);
+
     const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo.cantidad_suscriptores || 0);
     if (!cantidadMiembros) return null;
 
@@ -401,6 +446,25 @@ const ListaSuscripciones = ({ item }: any) => {
         delete item.modelo.Suscritores;
     }
 
+    React.useEffect(() => {
+        let mounted = true;
+        if (Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
+            setClientes(item.modelo.clientes);
+            return () => { mounted = false; };
+        }
+        setLoadingClientes(true);
+        MDL.crm.cliente.getAll()
+            .then((resp: any) => {
+                if (!mounted) return;
+                const all = Array.isArray(resp) ? resp : Object.values(resp || {}).filter((c: any) => !!c);
+                setClientes(all);
+                item.modelo.clientes = all;
+            })
+            .catch((err: any) => { console.error("Error cargando clientes:", err); })
+            .finally(() => { if (mounted) setLoadingClientes(false); });
+        return () => { mounted = false; };
+    }, []);
+
     return (
         <SView style={{ marginTop: 10 }}>
             <SView row style={{
@@ -410,7 +474,6 @@ const ListaSuscripciones = ({ item }: any) => {
                 <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Miembros"}</SText>
                 <SView flex />
                 <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{cantidadMiembros}{")"}</SText>
-                {/* <SText fontSize={11} color={"#8a94a6"}>{" ("}{cantidadMiembros}{")"}</SText> */}
                 <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
                     <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
                         style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }}
@@ -419,26 +482,34 @@ const ListaSuscripciones = ({ item }: any) => {
             </SView>
             {isOpen && (
                 <SView col={"xs-12"}>
-                    {Array.from({ length: cantidadMiembros }, (_, i) => (
+                    {Array.from({ length: Math.min(visible, cantidadMiembros) }, (_, i) => (
                         <SuscripcionItem
                             key={`suscripcion-${item.modelo.key}-${i}`}
                             index={i}
                             item={item}
                             suscriptor={item.modelo.suscriptores[i] || null}
+                            clientes={clientes}
+                            loadingClientes={loadingClientes}
                         />
                     ))}
+                    {visible < cantidadMiembros && (
+                        <SView style={{ paddingVertical: 8, alignItems: "center", backgroundColor: STheme.color.card, borderRadius: 4, marginTop: 4 }}
+                            onPress={() => setVisible(v => v + 10)}>
+                            <SText fontSize={12} color={STheme.color.lightGray}>
+                                {`Mostrar ${Math.min(10, cantidadMiembros - visible)} más (${cantidadMiembros - visible} restantes)`}
+                            </SText>
+                        </SView>
+                    )}
                 </SView>
             )}
         </SView>
     );
 };
 
-const SuscripcionItem = ({ index, item, suscriptor }: any) => {
+const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }: any) => {
     const [fechaInicio, setFechaInicio] = React.useState(suscriptor?.fecha_inicio || "");
     const [fechaFin, setFechaFin] = React.useState(suscriptor?.fecha_fin || "");
     const [cliente, setCliente] = React.useState(suscriptor?.cliente || null);
-    const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
-    const [loadingClientes, setLoadingClientes] = React.useState(false);
 
     const calcularFechaFin = (fechaInicioValue: string) => {
         if (!fechaInicioValue) return "";
@@ -455,26 +526,6 @@ const SuscripcionItem = ({ index, item, suscriptor }: any) => {
         setFechaInicio(inicio);
         setFechaFin(fin);
     }, [suscriptor]);
-
-    React.useEffect(() => {
-        let mounted = true;
-        if (Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
-            setClientes(item.modelo.clientes);
-            return () => { mounted = false; };
-        }
-        setLoadingClientes(true);
-        MDL.crm.cliente.getAll()
-            .then((resp: any) => {
-                if (!mounted) return;
-                const allClientes = Array.isArray(resp)
-                    ? resp
-                    : Object.values(resp || {}).filter((c: any) => !!c);
-                setClientes(allClientes);
-            })
-            .catch((err: any) => { console.error("Error cargando clientes:", err); })
-            .finally(() => { if (!mounted) return; setLoadingClientes(false); });
-        return () => { mounted = false; };
-    }, [item.modelo.clientes]);
 
     const saveSuscriptor = (updates: any) => {
         let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
