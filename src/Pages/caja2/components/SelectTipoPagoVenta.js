@@ -223,7 +223,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                 <SView flex padding={4} style={{
                     alignItems: "center",
                 }} card>
-                    <SText fontSize={15} color={STheme.color.lightGray}>{"Monto Inserteado: "}</SText>
+                    <SText fontSize={15} color={STheme.color.lightGray}>{"Monto Insertado: "}</SText>
                     <SView width={4} />
                     <SText bold fontSize={18}>{this.moneda?.observacion} {this.calcularMontoInsertado()}</SText>
                     <SView width={16} />

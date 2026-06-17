@@ -13,6 +13,7 @@ interface ClienteType {
     key?: string;
     nit?: string;
     razon_social?: string;
+    nombres?: string;
 }
 
 export interface PopupCarritoConfirmarResumenProps {
@@ -72,6 +73,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         cliente_texto: string,
         descuentos: any[],
         subtotal: any,
+        selectedMoneda: any,
     } = {
             almacen: null,
             moneda: null,
@@ -83,6 +85,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             cliente_texto: "",
             descuentos: [],
             subtotal: null,
+            selectedMoneda: null,
         }
 
     componentDidMount() {
@@ -100,7 +103,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
     async cargarClientes() {
         try {
-            const clientes = await MDL.crm.cliente.getAll();
+            let clientes = await MDL.crm.cliente.getAll();
+            if (clientes && !Array.isArray(clientes)) clientes = Object.values(clientes);
             this.setState({ clientes: clientes || [] });
         } catch (error) {
             console.error("Error cargando clientes:", error);
@@ -382,11 +386,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
             SelectTipoPagoVenta.closePopup();
             SNotification.remove("venta_rapida");
-            SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarritoConfirmarResumen");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
-            MDL.carrito.limpiarCarritoCompras();
             this.showVentaPopup(compraResp?.data?.key_compra_venta);
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
@@ -439,7 +441,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente"}</SText>
                         <SHr />
                         <SView col={"xs-12"} row>
-                            <SText color={STheme.color.lightGray}>Nombrssse:</SText>
+                            <SText color={STheme.color.lightGray}>Nombre:</SText>
                             <SView width={8} />
                             <SText>{cliente?.nombres}</SText>
                         </SView>
@@ -511,7 +513,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 <SView padding={8} card onPress={() => {
                     this.handleOnPress();
                 }}>
-                    <SText>{"Confirmar lasssss venta"}</SText>
+                    <SText>{"Confirmar venta"}</SText>
                 </SView>
             </SView>
         </SView>

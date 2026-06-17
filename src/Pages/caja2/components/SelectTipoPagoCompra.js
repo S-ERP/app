@@ -13,6 +13,7 @@ type SelectTipoPagoCompraProps = {
     montoMaximoPorTipo?: { [key: string]: number },
     key_moneda?: string,
     compra?: boolean,
+    venta?: boolean,
     onSelect?: (item: any) => void
 }
 

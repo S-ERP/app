@@ -10,6 +10,8 @@ import SelectorMoneda from "../Selectores/SelectorMoneda";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
 type PopupCarritoConfirmarProps = {
+    moneda?: any;
+    cliente?: any;
 }
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
@@ -36,6 +38,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
+    inputCliente: SInput | null = null;
+    inputDescripcionVenta: SInput | null = null;
+    inputRazonSocial: SInput | null = null;
+    inputNit: SInput | null = null;
+    evento: any;
     proveedor: any;
     state: {
         almacen: any,
@@ -63,6 +70,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarSubtotal(); });
         this.cargarSubtotal();
         this.cargarClientes();
+    }
+
+    componentWillUnmount(): void {
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
     }
 
     async cargarClientes() {
@@ -217,11 +230,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "fecha_vencimiento": modelo?.fecha_vencimiento || null,
                 }
             })
-            console.clear();
-            console.log("%c" + JSON.stringify(detalle), `color: #d81de9; font-weight: bold;`);
-
-            // console.clear();
-
             const data: any = {
                 "descripcion": descripcionVenta,
                 "observacion": "Observacion compras",
@@ -232,10 +240,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 factura: this.state.factura
                     ? {
                         nro_factura: "f-compra-545",
-                        // nro_factura: this.generateRandomCode(),
                         cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
-                        nit: this.props.cliente?.nit || "",
-                        razon_social: this.props.cliente?.razon_social || "",
+                        nit: this.inputNit?.getValue?.() || this.proveedor?.nit || "",
+                        razon_social: this.inputRazonSocial?.getValue?.() || this.proveedor?.razon_social || "",
                         leyenda: "alvaro",
                     }
                     : null,
@@ -251,18 +258,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
-
-            // console.clear();
-            console.log("%c" + JSON.stringify(data), `color: #d5e91d; font-weight: bold;`);
-
-
             SNotification.send({
                 key: "compra_rapida",
                 title: "Cargando",
                 type: "loading",
             });
             if (saveRecurrente) {
-                const compraResp = await SSocket.sendPromise({
+                await SSocket.sendPromise({
                     "service": "caja",
                     "component": "recurrente",
                     "type": "registro",
@@ -279,12 +281,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         }
                     }
                 })
-                // console.clear();
-                console.log("%c" + JSON.stringify(compraResp), `color: #008a0b; font-weight: bold;`);
-
-
-                // console.log("%c" + JSON.stringify(compraResp), `color: #e9682d; font-weight: bold;`);
-
                 SelectTipoPagoCompra.closePopup();
                 SNotification.remove("compra_rapida");
             } else {
@@ -320,7 +316,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error al realizar la compra:", error);
             SNotification.send({
                 key: "compra_rapida",
-                title: "Error al realizar la compra2222",
+                title: "Error al realizar la compra",
                 body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
@@ -450,7 +446,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                     razon_social: resp?.razon_social || resp?.nombres || "",
                                                     nit: resp?.nit || "",
                                                 }));
-                                                this.inputCliente?.setSelect?.(resp);
+                                                (this.inputCliente as any)?.setSelect?.(resp);
                                                 this.inputRazonSocial?.setValue?.(
                                                     resp?.razon_social || resp?.nombres || ""
                                                 );
@@ -513,7 +509,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                         nit: cliente?.nit || "",
                                                     }));
 
-                                                    this.inputCliente?.setSelect?.(cliente);
+                                                    (this.inputCliente as any)?.setSelect?.(cliente);
                                                     this.inputRazonSocial?.setValue?.(
                                                         cliente?.razon_social || cliente?.nombres || ""
                                                     );
@@ -615,7 +611,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     }
                     this.handleOnPress2(false);
                 }}>
-                    <SText>{"Confirmar 2"}</SText>
+                    <SText>{"Confirmar"}</SText>
                 </SView>
             </SView>
         </SView >
