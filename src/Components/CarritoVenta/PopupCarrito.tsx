@@ -10,19 +10,14 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2 from "../SForm2/SInput2";
 
 type PopupCarritoProps = {}
-const DEFAULT_MONEDA_KEY = "";
 
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
     colors: {
-        background: "#acb1bb",
-
-        // background: "#252a33",
+        background: "#252a33",
         header: "#198754",
         danger: "#dc3545",
-        card: "#34383f",
-
-        // card: "#1e222b",
+        card: "#1e222b",
         itemBg: "#303744",
         mutedDark: "#1f242d",
         accent: "#6cffb4",
@@ -77,12 +72,7 @@ const validarSuscripciones = (items: any[]) => {
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
-        options: [] as any[],
-        contactosSeleccionados: [] as any[],
-        tipoCostosSeleccionados: [] as any[],
-        suscriptoresSeleccionados: [] as any[],
     };
-    rapido: any;
     evento: any;
 
     static open(props: PopupCarritoProps) {
@@ -116,30 +106,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             this.cargarMonedaSeleccionada();
         });
         this.cargarMonedaSeleccionada();
-        this.cargarMonedas();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
 
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
-        if (this.rapido && moneda) {
-            this.rapido.setValue(moneda.key);
-        }
         this.setState({ selectedMoneda: moneda || null });
-    }
-
-    async cargarMonedas() {
-        try {
-            const monedas = await MDL.empresa.getMonedas();
-            if (!Array.isArray(monedas)) return;
-            const monedaDefault = monedas.find(m => m.key === DEFAULT_MONEDA_KEY);
-            this.setState({
-                options: monedas,
-                selectedMoneda: monedaDefault ?? this.state.selectedMoneda
-            });
-        } catch (e) {
-            console.error("Error cargando monedas:", e);
-        }
     }
 
     componentWillUnmount(): void {
@@ -155,7 +127,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         const { selectedMoneda } = this.state;
 
         return (
-            <SView col={"xs-12"} height style={{ backgroundColor: "#252a33", }}>
+            <SView col={"xs-12"} height style={{ backgroundColor: UI.colors.background }}>
 
                 {/* Header */}
                 <SView row style={{ backgroundColor: UI.colors.header, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center", }}>
@@ -281,7 +253,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const precioDigits = puedeEditarPrecio
         ? precioStr.replace(/[^0-9]/g, '').length
         : precioFormateado.replace(/[^0-9]/g, '').length;
-    const precioMinWidth = Math.max(50, precioDigits * 7 + 24);
     const subtotalLargo = puedeEditarPrecio ? precioDigits >= 10 : precioDigits >= 4;
 
     return (
@@ -315,11 +286,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         <SView flex style={{
                             backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error,
                             borderRadius: 2,
-                            // paddingHorizontal: 1,
                             height: 18,
                             justifyContent: "center",
-                            // minWidth: 85,
-                            // minWidth: precioMinWidth,
                         }}>
                             {puedeEditarPrecio ? (
                                 <SView row center style={{paddingHorizontal:2}}>
@@ -372,7 +340,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         }}>
                             <SInput
                                 style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: STheme.color.text, fontWeight: "bold" }}
-                                // style={{ fontSize: 12, padding: 0, textAlign: "center", color: STheme.color.text, fontWeight: "bold", width: 46 }}
                                 type="money2"
                                 icon={<SText fontSize={10} color={STheme.color.text}>{"x"}</SText>}
                                 value={item.cantidad.toString()}
@@ -391,43 +358,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                 </SView>
             </SView>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* Paneles de costos y suscripciones */}
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
         </SView>

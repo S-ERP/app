@@ -1,10 +1,11 @@
 import React from "react";
-import { SHr, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SInput, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
+
 type PopupCarritoConfirmarProps = {}
 
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
@@ -18,21 +19,21 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 right: 8,
                 width: "100%",
                 maxWidth: 300,
-                height: 500,
-                maxHeight: "100%",
+                height: "95%",
+                maxHeight: 620,
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
                 borderWidth: 1,
                 borderColor: STheme.color.card,
                 cursor: "default",
-                userSelect: "text"
+                userSelect: "text",
+                overflow: "hidden",
             }} withoutFeedback>
                 <PopupCarritoConfirmar {...props} />
             </SView>
         })
     }
-    inputNombre: SInput | null = null;
-    inputAlmacen: SelectorAlmacen | undefined;
+
     proveedor: any;
     inputCliente: SInput | null = null;
     inputRazonSocial: SInput | null = null;
@@ -40,7 +41,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputDescuento: SInput | null = null;
     inputDescripcionVenta: SInput | null = null;
     evento: any;
-    state: { almacen: any, moneda: any, factura: boolean, razon_social: string, nit: string, clientes: any[], key_cliente: string | null, cliente_texto: string, descuentos: any[], descuentoSeleccionado: any | null, esCredito: boolean, } = {
+
+    state: {
+        almacen: any;
+        moneda: any;
+        factura: boolean;
+        razon_social: string;
+        nit: string;
+        clientes: any[];
+        key_cliente: string | null;
+        cliente_texto: string;
+        descuentos: any[];
+        descuentoSeleccionado: any | null;
+        esCredito: boolean;
+    } = {
         almacen: null,
         moneda: null,
         factura: false,
@@ -53,6 +67,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         descuentoSeleccionado: null,
         esCredito: false,
     }
+
     onTipoPagoChange = (esCredito: boolean) => {
         this.setState({ esCredito });
     };
@@ -78,15 +93,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
     cargarMonedaSeleccionada = () => {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
-        this.setState({
-            moneda: moneda || null
-        });
+        this.setState({ moneda: moneda || null });
     };
 
     async cargarClientes() {
         try {
-            const clientes = await MDL.crm.cliente.getAll();
-            this.setState({ clientes: clientes || [] });
+            let clientes = await MDL.crm.cliente.getAll();
+            if (clientes && !Array.isArray(clientes)) clientes = Object.values(clientes);
+            this.setState({ clientes: (clientes as any[] || []).filter((c: any) => !!c) });
         } catch (e) {
             console.error("Error cargando clientes", e);
         }
@@ -111,28 +125,31 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         try {
             const { moneda, almacen, descuentoSeleccionado, factura } = this.state;
             if (!moneda) {
-                console.error("Debe seleccionar una moneda antes de continuar.");
-                // SNotification.send({
-                //title: "Moneda requerida",
-                //body: "Debe seleccionar una moneda antes de continuar.",
-                //color: STheme.color.danger,
-                // });
+                SNotification.send({
+                    key: "venta_rapida",
+                    title: "Moneda requerida",
+                    body: "Debe seleccionar una moneda antes de continuar.",
+                    color: STheme.color.danger,
+                    time: 4000,
+                });
+                return;
             }
             if (!almacen) {
-                console.error("Debe seleccionar un almacén");
-
-                // SNotification.send({
-                //title: "Almacén requerido",
-                //body: "Debe seleccionar un almacén.",
-                //color: STheme.color.danger,
-                // });
+                SNotification.send({
+                    key: "venta_rapida",
+                    title: "Almacén requerido",
+                    body: "Debe seleccionar un almacén.",
+                    color: STheme.color.danger,
+                    time: 4000,
+                });
+                return;
             }
 
             let subtotal = MDL.carrito.carrito_venta?.monto_total || 0;
             subtotal = parseFloat(Number(subtotal).toFixed(2));
             let porcentajeDescuento = 0;
             let montoFinal = subtotal;
-            let descuentos = [];
+            let descuentos: any[] = [];
             if (descuentoSeleccionado?.porcentaje) {
                 porcentajeDescuento = descuentoSeleccionado.porcentaje;
                 const descuentoMonto = Math.round((montoFinal * porcentajeDescuento) * 100) / 100;
@@ -147,6 +164,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 nit: this.state.nit || this.proveedor?.nit || "",
                 razon_social: this.state.razon_social || this.proveedor?.razon_social || this.proveedor?.nombres || "",
             };
+
             PopupCarritoConfirmarResumen.open({
                 subtotal,
                 montoMaximo: montoFinal,
@@ -158,9 +176,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 factura: !!factura,
                 moneda,
                 almacen,
-                descripcion: descripcionVenta, // 👈 AQUI
-                onTipoPagoChange: this.onTipoPagoChange
-            })
+                descripcion: descripcionVenta,
+                onTipoPagoChange: this.onTipoPagoChange,
+            });
         } catch (error: any) {
             console.error("Error al realizar la venta:", error);
             SNotification.send({
@@ -174,44 +192,48 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
 
     render() {
-        return <SView col={"xs-12"} height>
-            < SHr />
-            <SText center color={STheme.color.lightGray} bold>{"Confirmar la venta"}</SText>
-            <SView style={{
-                padding: 4,
-                width: 33, height: 33,
-                position: "absolute",
-                left: 0,
-                top: 0,
-            }} onPress={() => {
-                SPopup.close("PopupCarritoConfirmar")
-            }}>
-                <SIconApp name="Arrow" fill={STheme.color.text} />
-            </SView>
-            <SHr />
-            <SHr h={1} color={STheme.color.card} />
-            <SHr />
-            <SView flex>
-                <SView padding={8}>
-                    <SView row col={"xs-12"}>
-                        <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente:"}</SText>
-                        <SView col={"xs-6"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
-                            <SInput height={20} style={{ marginTop: 0 }} labelstyle={{ left: 12 }}
-                                label={"Con factura"}
-                                type="checkBox"
-                                onChangeText={(val) => {
-                                    this.setState({ factura: val }, () => {
-                                        if (val && this.proveedor) {
-                                            this.inputRazonSocial?.setValue(this.proveedor.razon_social || "");
-                                            this.inputNit?.setValue(this.proveedor.nit || "");
-                                        }
-                                    });
-                                }}
-                            />
+        return (
+            <SView col={"xs-12"} height>
+                {/* Header */}
+                <SView row style={{ backgroundColor: "#198754", paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
+                    <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
+                        onPress={() => SPopup.close("PopupCarritoConfirmar")}>
+                        <SIconApp name="Arrow" fill={STheme.color.text} />
+                    </SView>
+                    <SText fontSize={16} bold color={STheme.color.text}>{"Confirmar Venta"}</SText>
+                    <SView flex />
+                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#dc3545", justifyContent: "center", alignItems: "center" }}
+                        onPress={() => SPopup.close("PopupCarritoConfirmar")}>
+                        <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
+                    </SView>
+                </SView>
+
+                <SView flex>
+                    <SView padding={8}>
+                        {/* Datos del cliente + checkbox factura */}
+                        <SView row col={"xs-12"} style={{ alignItems: "center", marginBottom: 4 }}>
+                            <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente:"}</SText>
+                            <SView col={"xs-6"} row style={{ alignItems: "center", justifyContent: "flex-end" }}>
+                                <SInput
+                                    height={30}
+                                    style={{ marginTop: 0 }}
+                                    label={"Con factura"}
+                                    type="checkBox"
+                                    labelStyle={{ left: 12 }}
+                                    onChangeText={(val) => {
+                                        this.setState({ factura: val }, () => {
+                                            if (val && this.proveedor) {
+                                                this.inputRazonSocial?.setValue(this.proveedor.razon_social || "");
+                                                this.inputNit?.setValue(this.proveedor.nit || "");
+                                            }
+                                        });
+                                    }}
+                                />
+                            </SView>
                         </SView>
                         <SHr />
-                    </SView>
-                    <SView row>
+
+                        {/* Selector de cliente */}
                         <SInput
                             ref={ref => (this.inputCliente = ref)}
                             inputStyle={this.state.factura || this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
@@ -219,19 +241,16 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             placeholder={"Escriba el nombre del cliente"}
                             height={40}
                             type="select2"
-                            options={
-                                (this.state.clientes || [])
-                                    .map(c => (c?.razon_social || c?.nombres || "").trim())
-                                    .filter(a => !!a)
+                            options={(this.state.clientes || [])
+                                .map(c => (c?.razon_social || c?.nombres || "").trim())
+                                .filter(a => !!a)
                             }
                             onChangeText={(text) => {
                                 const t = (text || "").trim();
                                 const encontrado = (this.state.clientes || []).find(c =>
-                                ((c?.razon_social || c?.nombres || "")
-                                    .trim()
-                                    .toLowerCase() === t.toLowerCase())
+                                    (c?.razon_social || c?.nombres || "").trim().toLowerCase() === t.toLowerCase()
                                 );
-                                if (encontrado && encontrado.key) {
+                                if (encontrado?.key) {
                                     this.proveedor = encontrado;
                                     this.setState({
                                         key_cliente: encontrado.key,
@@ -239,293 +258,195 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                         razon_social: encontrado?.razon_social || encontrado?.nombres || "",
                                         nit: encontrado?.nit || "",
                                     });
-
-                                    this.inputRazonSocial?.setValue?.(
-                                        encontrado?.razon_social || encontrado?.nombres || ""
-                                    );
-                                    this.inputNit?.setValue?.(
-                                        encontrado?.nit || ""
-                                    );
-
+                                    this.inputRazonSocial?.setValue?.(encontrado?.razon_social || encontrado?.nombres || "");
+                                    this.inputNit?.setValue?.(encontrado?.nit || "");
                                 } else {
                                     this.proveedor = null;
-
-                                    this.setState({
-                                        key_cliente: null,
-                                        cliente_texto: t,
-                                    });
+                                    this.setState({ key_cliente: null, cliente_texto: t });
                                 }
                             }}
                             iconR={
                                 (!this.state.key_cliente && !!this.state.cliente_texto) ? (
-                                    <SView
-                                        center
-                                        style={{
-                                            width: 28,
-                                            height: 28,
-                                            borderRadius: 6,
-                                            backgroundColor: STheme.color.card,
-                                        }}
+                                    <SView center style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: STheme.color.card }}
                                         onPress={async () => {
-
                                             const nombre = (this.state.cliente_texto || "").trim();
                                             if (!nombre) return;
-
                                             try {
-
                                                 const resp = await MDL.crm.cliente.registrar({
                                                     razon_social: nombre,
                                                     nombres: nombre,
                                                     nit: this.inputNit?.getValue?.() || "",
                                                     key_empresa: MDL.empresa.select?.key,
                                                 });
-                                                if (!resp || !resp.key) {
-                                                    SNotification.send({
-                                                        title: "Error",
-                                                        body: "No se pudo crear el cliente.",
-                                                        color: STheme.color.danger,
-                                                        time: 3000,
-                                                    });
+                                                if (!resp?.key) {
+                                                    SNotification.send({ title: "Error", body: "No se pudo crear el cliente.", color: STheme.color.danger, time: 3000 });
                                                     return;
                                                 }
                                                 this.proveedor = resp;
-
                                                 this.setState(prev => ({
-                                                    clientes: [
-                                                        ...(prev.clientes || []),
-                                                        resp
-                                                    ],
+                                                    clientes: [...((prev as any).clientes || []), resp],
                                                     key_cliente: resp.key,
                                                     cliente_texto: resp?.razon_social || resp?.nombres || nombre,
                                                     razon_social: resp?.razon_social || resp?.nombres || "",
                                                     nit: resp?.nit || "",
                                                 }));
-                                                this.inputCliente?.setSelect?.(resp);
-                                                this.inputRazonSocial?.setValue?.(
-                                                    resp?.razon_social || resp?.nombres || ""
-                                                );
-                                                this.inputNit?.setValue?.(
-                                                    resp?.nit || ""
-                                                );
-
-                                                SNotification.send({
-                                                    title: "Cliente creado",
-                                                    body: "Se registró correctamente.",
-                                                    time: 2500,
-                                                    color: STheme.color.success,
-                                                });
-
+                                                (this.inputCliente as any)?.setSelect?.(resp);
+                                                this.inputRazonSocial?.setValue?.(resp?.razon_social || resp?.nombres || "");
+                                                this.inputNit?.setValue?.(resp?.nit || "");
+                                                SNotification.send({ title: "Cliente creado", body: "Se registró correctamente.", time: 2500, color: STheme.color.success });
                                             } catch (err: any) {
-
-                                                console.error("Error al registrar cliente:", err);
-
-                                                SNotification.send({
-                                                    title: "Error",
-                                                    body: err?.error || "No se pudo crear el cliente.",
-                                                    color: STheme.color.danger,
-                                                    time: 4000,
-                                                });
+                                                SNotification.send({ title: "Error", body: err?.error || "No se pudo crear el cliente.", color: STheme.color.danger, time: 4000 });
                                             }
-                                        }}
->
+                                        }}>
                                         <SIconApp name="Add" />
                                     </SView>
-
                                 ) : (
-                                    <SView
-                                        center
-                                        style={{
-                                            width: 28,
-                                            height: 28,
-                                            borderRadius: 6,
-                                            backgroundColor: STheme.color.card,
-                                        }}
+                                    <SView center style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: STheme.color.card }}
                                         onPress={() => {
-
                                             SNavigation.navigate("/cliente", {
-
                                                 onSelect: (cliente: any) => {
-
-                                                    if (!cliente || !cliente.key) return;
-
+                                                    if (!cliente?.key) return;
                                                     this.proveedor = cliente;
-
                                                     this.setState(prev => ({
-                                                        clientes: prev.clientes.some(c => c.key === cliente.key)
-                                                            ? prev.clientes
-                                                            : [...prev.clientes, cliente],
+                                                        clientes: (prev as any).clientes.some((c: any) => c.key === cliente.key)
+                                                            ? (prev as any).clientes
+                                                            : [...(prev as any).clientes, cliente],
                                                         key_cliente: cliente.key,
-                                                        cliente_texto:
-                                                            cliente?.razon_social ||
-                                                            cliente?.nombres ||
-                                                            "",
+                                                        cliente_texto: cliente?.razon_social || cliente?.nombres || "",
                                                         razon_social: cliente?.razon_social || cliente?.nombres || "",
                                                         nit: cliente?.nit || "",
                                                     }));
-
-                                                    this.inputCliente?.setSelect?.(cliente);
-                                                    this.inputRazonSocial?.setValue?.(
-                                                        cliente?.razon_social || cliente?.nombres || ""
-                                                    );
-                                                    this.inputNit?.setValue?.(
-                                                        cliente?.nit || ""
-                                                    );
-
+                                                    (this.inputCliente as any)?.setSelect?.(cliente);
+                                                    this.inputRazonSocial?.setValue?.(cliente?.razon_social || cliente?.nombres || "");
+                                                    this.inputNit?.setValue?.(cliente?.nit || "");
                                                     SNavigation.goBack();
                                                 }
                                             });
-                                        }}
->
+                                        }}>
                                         <SIconApp name="Search" />
                                     </SView>
                                 )
                             }
                         />
 
-                    </SView>
-                    {(this.state.factura) ? <>
-                        <SHr h={10} />
-                        <SView row>
+                        {/* Campos de factura */}
+                        {this.state.factura && <>
+                            <SHr h={10} />
                             <SInput
-                                inputStyle={this.state.factura ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+                                inputStyle={{ borderColor: STheme.color.danger, borderWidth: 1 }}
                                 ref={ref => this.inputRazonSocial = ref}
                                 icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>}
                                 placeholder={"Razón Social"}
-                                onChangeText={(valor) => this.setState({ razon_social: valor || "" })}
                                 value={this.state.razon_social}
+                                onChangeText={(valor) => this.setState({ razon_social: valor || "" })}
                             />
-                        </SView>
-                        <SHr h={10} />
-                        <SView row><SInput
-                            icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>}
-                            placeholder={"Escriba el nit"}
-                            inputStyle={
-                                this.state.factura
-                                    ? { borderColor: STheme.color.danger, borderWidth: 1 }
-                                    : undefined
-                            }
-                            ref={ref => (this.inputNit = ref)}
-                            onChangeText={(e) => {
-                                const nit = (e || "").trim();
-                                this.setState({ nit });
-                                if (nit.length < 6) {
-                                    this.proveedor = null;
-                                    return;
-                                }
-                                MDL.crm.cliente.buscar_nit(nit)
-                                    .then(proveedor => {
-                                        if (!proveedor) {
-                                            this.proveedor = null;
-                                            return;
-                                        }
-                                        this.proveedor = proveedor;
-                                        this.setState({
-                                            razon_social: proveedor?.razon_social || proveedor?.nombres || "",
-                                            nit: proveedor?.nit || "",
-                                        });
-                                        this.inputCliente?.setSelect?.(proveedor);
-                                        this.inputRazonSocial?.setValue?.(
-                                            proveedor?.razon_social || proveedor?.nombres || ""
-                                        );
-
-                                    })
-                                    .catch(error => {
-                                        console.error("Error buscando NIT:", error);
-                                    });
-                            }}
-                            onSubmitEditing={() => {
-                            }}
-                            iconR={
-                                <SView
-                                    card
-                                    style={{ width: 40, 
-                                        height: 40 }}
-                                    onPress={() => {
-                                        SNavigation.navigate("/cliente", {
-                                            onSelect: (proveedor: any) => {
+                            <SHr h={10} />
+                            <SInput
+                                inputStyle={{ borderColor: STheme.color.danger, borderWidth: 1 }}
+                                ref={ref => this.inputNit = ref}
+                                icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>}
+                                placeholder={"Escriba el nit"}
+                                value={this.state.nit}
+                                onChangeText={(e) => {
+                                    const nit = (e || "").trim();
+                                    this.setState({ nit });
+                                    if (nit.length >= 6) {
+                                        MDL.crm.cliente.buscar_nit(nit)
+                                            .then((proveedor: any) => {
                                                 if (!proveedor) return;
                                                 this.proveedor = proveedor;
-                                                this.inputCliente?.setSelect?.(proveedor);
+                                                this.setState({
+                                                    razon_social: proveedor?.razon_social || proveedor?.nombres || "",
+                                                    nit: proveedor?.nit || "",
+                                                });
+                                                (this.inputCliente as any)?.setSelect?.(proveedor);
                                                 this.inputRazonSocial?.setValue?.(proveedor?.razon_social || proveedor?.nombres || "");
-                                                this.inputNit?.setValue?.(proveedor?.nit || "");
-                                                SNavigation.goBack();
-                                            }
-                                        });
-                                    }}
->
-                                    <SIconApp name="Search" />
-                                </SView>
-                            }
-                        />
-                        </SView>
-                        <SHr h={4} />
-                    </> : null}
-                    <SHr height={20} />
-                    <SView row col={"xs-12"}>
-                        <SText col={"xs-12"} color={STheme.color.lightGray}>{"Seleccione si hay descuento:"}</SText>
-                        <SView col={"xs-12"} row style={{ alignItems: "flex-end",
-                        
-                        justifyContent: "flex-end", 
-                            
-                            alignContent: "flex-start" }}>
-                            <SInput
-                                ref={ref => this.inputDescuento = ref}
-                                icon={<SText color={STheme.color.lightGray} bold>{"Descuento:"}</SText>}
-                                placeholder={"Seleccione descuento"}
-                                height={40}
-                                type="select2"
-                                options={this.state.descuentos.map(c => `${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).filter(a => !!a)}
-                                onChangeText={(text) => {
-                                    const t = (text || "").trim();
-                                    const encontradoD = (this.state.descuentos || []).find(c =>
-                                        ((`${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).trim().toLowerCase() === t.toLowerCase())
-                                    );
-                                    this.setState({ descuentoSeleccionado: encontradoD || null });
+                                            })
+                                            .catch((err: any) => console.error("Error buscando NIT:", err));
+                                    }
                                 }}
+                                iconR={
+                                    <SView card style={{ width: 40, height: 40 }}
+                                        onPress={() => {
+                                            SNavigation.navigate("/cliente", {
+                                                onSelect: (proveedor: any) => {
+                                                    if (!proveedor) return;
+                                                    this.proveedor = proveedor;
+                                                    (this.inputCliente as any)?.setSelect?.(proveedor);
+                                                    this.inputRazonSocial?.setValue?.(proveedor?.razon_social || proveedor?.nombres || "");
+                                                    this.inputNit?.setValue?.(proveedor?.nit || "");
+                                                    SNavigation.goBack();
+                                                }
+                                            });
+                                        }}>
+                                        <SIconApp name="Search" />
+                                    </SView>
+                                }
                             />
-                        </SView>
+                            <SHr h={4} />
+                        </>}
+                    </SView>
+
+                    <SHr />
+
+                    {/* Descuento */}
+                    <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
+                        <SText color={STheme.color.lightGray}>{"Descuento"}</SText>
+                        <SInput
+                            ref={ref => this.inputDescuento = ref}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Descuento:"}</SText>}
+                            placeholder={"Seleccione descuento"}
+                            height={40}
+                            type="select2"
+                            options={this.state.descuentos.map(c => `${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).filter(a => !!a)}
+                            onChangeText={(text) => {
+                                const t = (text || "").trim();
+                                const encontrado = (this.state.descuentos || []).find(c =>
+                                    (`${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).trim().toLowerCase() === t.toLowerCase()
+                                );
+                                this.setState({ descuentoSeleccionado: encontrado || null });
+                            }}
+                        />
+                    </SView>
+
+                    <SHr />
+
+                    {/* Almacén */}
+                    <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
+                        <SText color={STheme.color.lightGray}>{"Seleccione el almacén"}</SText>
+                        <SelectorAlmacen
+                            selectFirst
+                            icon={<SText color={STheme.color.lightGray} bold>{"Almacén:"}</SText>}
+                            placeholder={"Escriba el nombre del almacén"}
+                            filterData={(e) => e.key_sucursal == MDL.caja.activa?.key_sucursal}
+                            onChangeSelect={e => this.setState({ almacen: e })}
+                        />
+                    </SView>
+
+                    <SHr />
+
+                    {/* Descripción */}
+                    <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
+                        <SText color={STheme.color.lightGray}>{"Descripción"}</SText>
+                        <SInput
+                            type="textArea"
+                            ref={ref => this.inputDescripcionVenta = ref}
+                            placeholder={"Descripción de la venta"}
+                            style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
+                        />
+                    </SView>
+
+                    <SHr />
+                </SView>
+
+                {/* Footer */}
+                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", paddingHorizontal: 14, paddingVertical: 10 }}>
+                    <SView style={{ backgroundColor: "#198754", borderRadius: 4, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
+                        onPress={() => this.handleOnPress()}>
+                        <SText fontSize={14} bold color={STheme.color.text}>{"Continuar"}</SText>
                     </SView>
                 </SView>
-                <SHr />
-                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
-                    <SText color={STheme.color.lightGray}>{"Seleccione el almacén"}</SText>
-                    <SelectorAlmacen
-                        selectFirst
-                        icon={<SText color={STheme.color.lightGray} bold>{"Almacén:"}</SText>}
-                        placeholder={"Escriba el nombre del almacén"}
-                        filterData={(e) => {
-                            if (e.key_sucursal == MDL.caja.activa?.key_sucursal) return true;
-                            return false;
-                        }}
-                        onChangeSelect={e => {
-                            this.setState({ almacen: e }); // ✅ correcto
-                        }} />
-                </SView>
-                <SHr />
-                <SView style={{ padding: 10,
-                 paddingBottom: 5, 
-                    paddingTop: 5 }}>
-                    <SText color={STheme.color.lightGray}>{"Descripcion"}</SText>
-                    <SInput
-                        type="textArea"
-                        ref={ref => this.inputDescripcionVenta = ref}
-                        placeholder={"Descripción de la venta"}
-                        style={{ minHeight: 20, height: 50, 
-                            borderWidth: 1,
-                            
-                            borderColor: STheme.color.gray, marginVertical: 4 }}
-                    />
-                </SView>
-                <SHr />
             </SView>
-            <SHr h={1} color={STheme.color.card} />
-            <SView col={"xs-12"} row center height={40}>
-                <SView padding={8} card onPress={() => {
-                    this.handleOnPress();
-                }}>
-                    <SText>{"Confirmar la venta"}</SText>
-                </SView>
-            </SView>
-        </SView>
+        );
     }
 }
