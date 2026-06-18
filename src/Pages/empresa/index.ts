@@ -24,6 +24,7 @@ import MonedaTabla from "./MonedaTabla";
 import MonedaTablaHistorial from "./MonedaTablaHistorial";
 import tipo_pago from "./tipo_pago";
 import eliminar_datos_cotables from "./eliminar_datos_cotables"
+import clonar from "./clonar";
 const model = Model.empresa;
 
 export const Parent = {
@@ -49,6 +50,7 @@ export default SPage.combinePages(Parent.name, {
     "paso1": paso1,
     "paso2": paso2,
     "paso3": paso3,
+    clonar,
     eliminar_datos_cotables,
     config,
     config2,

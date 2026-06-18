@@ -126,6 +126,28 @@ export default class empresa extends MDLAbstract<EventListener> {
   //   return resp.data;
   // }
 
+  async execute_function(func: string, params: any[]) {
+    let newParams: any = [];
+    if (params) {
+      params.map(p => {
+        
+        if (typeof p == "string") {
+          p = "'" + p + "'"
+        } else if (typeof p == "object" && p !== null) {
+          p = "'" + JSON.stringify(p) + "'"
+        }
+        newParams.push(p)
+      })
+    }
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "db",
+      type: "execute_function",
+      func: func,
+      params: newParams,
+    });
+    return resp.data || [];
+  }
   async getByKeyFull(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
       service: "empresa",

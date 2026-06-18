@@ -632,6 +632,18 @@ export default class table2 extends React.Component {
                             }}
                         />
                     }} />
+
+                <DinamicTable.Col key="codigo_ref" label="Cód. Ref." width={120} data={(e) => e.row.codigo_ref}
+                    customComponent={e => {
+                        return <SInput2
+                            key={"codigo_ref" + e.row.key}
+                            defaultValue={e.row.codigo_ref}
+                            onChangeText={val => {
+                                e.row.codigo_ref = val;
+                                this.checkAndUpdateDirty(e.row);
+                            }}
+                            style={inputStyle} />
+                    }} />
                 <DinamicTable.Col key="foto" label="" width={28} data={e => e.row.key}
                     customComponent={e => <FotoCell rowKey={e.row.key} />}
                 />
@@ -649,6 +661,7 @@ export default class table2 extends React.Component {
                                 fontWeight: "bold",
                             }} />
                     }} />
+
                 <DinamicTable.Col key="stock" label="Stock" width={70} dataType="number"
                     data={e => e.row.stock ? parseFloat(e.row.stock) : 0}
                     customComponent={e => <StockCell key={"stock" + e.row.key} row={e.row} table={this.table} inputStyle={inputStyle} />}
