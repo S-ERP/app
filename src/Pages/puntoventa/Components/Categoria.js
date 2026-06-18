@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { SInput, SText, STheme, SView } from 'servisofts-component';
 import { ScrollView } from 'react-native-gesture-handler';
 import MDL from '../../../MDL';
-import FiltroMoneda from './FiltroMoneda';
+import FiltroMoneda from '../../../Components/FiltroMoneda';
 export default class Categoria extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +13,11 @@ export default class Categoria extends Component {
     }
     componentDidMount() {
         this.loadTipoProducto();
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.selected !== this.props.selected) {
+            this.setState({ selectedCategory: this.props.selected });
+        }
     }
     async loadTipoProducto() {
         const tipos = await MDL.inventario.getAllTipoProducto();

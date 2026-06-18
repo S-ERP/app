@@ -291,6 +291,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     type="money"
                                     style={{ height: 18, width: "100%", paddingRight: 0, textAlign: "right" }}
                                     editable={false}
+                                    icon={<SText color={STheme.color.lightGray}>{moneda?.observacion ?? "$"}</SText>}
                                     value={precioFormateado.toString()}
                                     onChangeText={() => {
                                         SNotification.send({

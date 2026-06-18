@@ -9,31 +9,28 @@ import MDL from "../../MDL";
 export default class Main extends Component {
     constructor(props) {
         super(props);
-        this.selectedTipoKey = "all";
-        this.searchText = "";
-        this.selectedMoneda = null;
         this.cajaActiva = false;
 
         this.state = {
             conStock: false,
             conPrecio: true,
             conServicio: false,
+            selectedTipoKey: "all",
+            searchText: "",
+            selectedMoneda: null,
         };
     }
 
     setTipoKey = (key) => {
-        this.selectedTipoKey = key;
-        this.forceUpdate();
+        this.setState({ selectedTipoKey: key });
     };
 
     setSearchText = (text) => {
-        this.searchText = text;
-        this.forceUpdate();
+        this.setState({ searchText: text });
     };
 
     setMoneda = (moneda) => {
-        this.selectedMoneda = moneda;
-        this.forceUpdate();
+        this.setState({ selectedMoneda: moneda });
     };
 
     setConStock = (value) => {
@@ -90,7 +87,7 @@ export default class Main extends Component {
             <Carrito
                 ref={(ref) => (this.carritoRef = ref)}
                 onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
-                selectedMoneda={this.selectedMoneda}
+                selectedMoneda={this.state.selectedMoneda}
                 conStock={this.state.conStock}
                 onChangeConStock={this.setConStock}
             />
@@ -103,23 +100,14 @@ export default class Main extends Component {
                 <Header />
                 <SView col="xs-12" row flex>
 
-                    <SView style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
-                        {this.renderCarrito()}
-                    </SView>
+                    {this.renderCarrito()}
 
-                    <SView
-                        col="xs-12 sm-12"
-                        style={{
-                            borderRightWidth: 1,
-                            borderRightColor: STheme.color.card,
-                        }}
-                    >
+                    <SView col="xs-12 sm-12" style={{ borderRightWidth: 1, borderRightColor: STheme.color.card }}>
                         <Categoria
                             onSelect={this.setTipoKey}
-                            selected={this.selectedTipoKey}
-                            value={this.searchText}
+                            selected={this.state.selectedTipoKey}
+                            value={this.state.searchText}
                             onChangeText={this.setSearchText}
-                            selectedMoneda={this.selectedMoneda}
                             onSelectMoneda={this.setMoneda}
                             conStock={this.state.conStock}
                             onChangeConStock={this.setConStock}
@@ -131,9 +119,9 @@ export default class Main extends Component {
                         {this.cajaActiva && (
                             <Modelo
                                 ref={(ref) => (this.modeloRef = ref)}
-                                tipoKey={this.selectedTipoKey}
-                                searchText={this.searchText}
-                                selectedMoneda={this.selectedMoneda}
+                                tipoKey={this.state.selectedTipoKey}
+                                searchText={this.state.searchText}
+                                selectedMoneda={this.state.selectedMoneda}
                                 conStock={this.state.conStock}
                                 conPrecio={this.state.conPrecio}
                                 conServicio={this.state.conServicio}

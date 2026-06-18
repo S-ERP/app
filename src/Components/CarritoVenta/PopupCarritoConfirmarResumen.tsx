@@ -3,9 +3,11 @@ import { SHr, SMath, SNavigation, SNotification, SPopup, SText, STheme, SView } 
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
-import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+import FiltroMoneda from "../FiltroMoneda";
 import ComprobanteRollo from "../PDF/venta/ReciboSmall";
 import SelectTipoPagoVenta from "../../Pages/caja2/components/SelectTipoPagoVenta";
+
+const HEADER_COLOR = "#198754";
 
 interface ClienteType {
     key?: string;
@@ -56,7 +58,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     }
 
     evento: any;
-    state: { selectedMoneda: any } = { selectedMoneda: null }
 
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarritoConfirmarResumen");
@@ -152,10 +153,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         });
     }
 
-    generateRandomCode(length = 6) {
-        const min = Math.pow(10, length - 1);
-        const max = Math.pow(10, length) - 1;
-        return "F-" + Math.floor(min + Math.random() * (max - min + 1)).toString();
+    generateRandomCode() {
+        return "F-" + Date.now();
     }
 
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean | undefined, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
@@ -248,7 +247,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
             const data = {
                 descripcion: this.props.descripcion || "",
-                observacion: "Observación venta",
+                observacion: this.props.descripcion || "",
                 facturar: this.props.factura,
                 factura: this.props.factura
                     ? {
@@ -297,7 +296,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SPopup.close("PopupCarritoConfirmarResumen");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
-            MDL.carrito.limpiarCarritoVentas();
             this.showVentaPopup(keyVenta);
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
@@ -317,14 +315,14 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         return (
             <SView col={"xs-12"} height>
                 {/* Header */}
-                <SView row style={{ backgroundColor: "#198754", paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
+                <SView row style={{ backgroundColor: HEADER_COLOR, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                         onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
                         <SIconApp name="Arrow" fill={STheme.color.text} />
                     </SView>
                     <SText fontSize={16} bold color={STheme.color.text}>{"Resumen de Venta"}</SText>
                     <SView flex />
-                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#dc3545", justifyContent: "center", alignItems: "center" }}
+                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
                         onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
@@ -335,7 +333,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         {/* Selector de moneda */}
                         <SView style={{ paddingVertical: 8 }}>
                             <FiltroMoneda onSelect={(moneda) => {
-                                this.setState({ selectedMoneda: moneda });
                                 MDL.compra_venta.setMonedaSeleccionada(moneda);
                                 MDL.carrito.calcularValoresCarritDeVentas();
                             }} />
@@ -404,8 +401,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 </SView>
 
                 {/* Footer */}
-                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", paddingHorizontal: 14, paddingVertical: 10 }}>
-                    <SView style={{ backgroundColor: "#198754", borderRadius: 4, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
+                <SView style={{ backgroundColor: STheme.color.card, borderTopWidth: 1, borderTopColor: STheme.color.gray, paddingHorizontal: 14, paddingVertical: 10 }}>
+                    <SView style={{ backgroundColor: HEADER_COLOR, borderRadius: 4, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
                         onPress={() => this.handleOnPress()}>
                         <SText fontSize={14} bold color={STheme.color.text}>{"Confirmar venta"}</SText>
                     </SView>

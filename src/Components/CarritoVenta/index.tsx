@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-
+import React from "react";
 import MDL from "../../MDL";
 import CarritoItem from "./CarritoItem";
 
@@ -8,18 +7,14 @@ export default class CarritoVenta extends React.Component {
         open: false,
     }
     handleChange = () => {
-        // const items = MDL.carrito.carrito_compra.items;
         const items = MDL.carrito.carrito_venta.items;
-        this.setState({
-            open: items.length > 0
-        })
+        this.setState({ open: items.length > 0 })
     }
     componentDidMount(): void {
-
-        MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
+        MDL.carrito.addEventListener("handleChange", this.handleChange)
     }
     componentWillUnmount(): void {
-        MDL.carrito.removeEventListener(this.handleChange.bind(this))
+        MDL.carrito.removeEventListener(this.handleChange)
     }
     render() {
         if (!this.state.open) return null;

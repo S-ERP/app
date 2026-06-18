@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { SView, SText, SIcon, STheme } from 'servisofts-component';
 
 export default class Recargar extends Component {
-
     initialTime = this.props.initialTime ?? 300;
 
     constructor(props) {
@@ -56,8 +55,7 @@ export default class Recargar extends Component {
 
     render() {
         const { time, rotate } = this.state;
-        const fillColor = this.props.fill ?? STheme.color.text; // 👈 default
-
+        const fillColor = this.props.fill ?? STheme.color.text;
         return (
             <SView width={38} center height={38} onPress={this.onPress}>
                 <SIcon
@@ -65,10 +63,7 @@ export default class Recargar extends Component {
                     width={38}
                     height={38}
                     fill={fillColor}
-                    style={{
-                        transition: 'transform 1s',
-                        transform: rotate ? 'rotate(360deg)' : 'rotate(0deg)'
-                    }}
+                    style={{ transition: 'transform 1s', transform: rotate ? 'rotate(360deg)' : 'rotate(0deg)' }}
                 />
                 <SView col={"xs-12"} height={40} style={{ position: "absolute", paddingTop: 2 }} center>
                     <SText fontSize={8} style={{ color: fillColor }}>

@@ -13,17 +13,19 @@ type PopupCarritoProps = {}
 
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
-    colors: {
-        background: "#252a33",
-        header: "#198754",
-        danger: "#dc3545",
-        card: "#1e222b",
-        itemBg: "#303744",
-        mutedDark: "#1f242d",
-        accent: "#6cffb4",
-        error: "#bf0505",
-        textMuted: "#bfc7d4",
-        border: "#434c5d",
+    get colors() {
+        return {
+            background: STheme.color.background,
+            header: "#198754",
+            danger: STheme.color.danger,
+            card: STheme.color.card,
+            itemBg: STheme.color.card,
+            mutedDark: STheme.color.background,
+            accent: "#6cffb4",
+            error: STheme.color.danger,
+            textMuted: STheme.color.lightGray,
+            border: STheme.color.gray,
+        };
     }
 };
 const convertirADias = (tipo: string, cantidad: number) => {
@@ -158,7 +160,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 <SView row style={{ paddingHorizontal: 10, paddingVertical: 8, alignItems: "center" }}>
                     <SText fontSize={UI.font.small} color={STheme.color.text}> {"Productos ("}{MDL.carrito.carrito_venta.cantidad_items}{")"} </SText>
                     <SView flex />
-                    <SText fontSize={UI.font.small} color={STheme.color.text}> {"Sub: "}{selectedMoneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)} </SText>
+                    <SText fontSize={UI.font.small} color={STheme.color.text}> {"Sub: "}{selectedMoneda?.observacion ?? "$"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)} </SText>
                 </SView>
 
                 {/* Lista de productos */}
@@ -174,7 +176,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}  >
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Total Venta"}</SText>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>
-                            {selectedMoneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}
+                            {selectedMoneda?.observacion ?? "$"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}
                         </SText>
                     </SView>
 
@@ -318,7 +320,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                 </SView>
 
                 <SView flex  >
-                    <SText fontSize={UI.font.title} bold color={STheme.color.text} style={{ marginBottom: 2 }} numberOfLines={2}>{item.modelo.descripcion} </SText>
+                    <SText fontSize={UI.font.title} bold color={STheme.color.text} style={{ marginBottom: 2 }} numberOfLines={2}>{item.modelo.descripcion}</SText>
 
                     {/* Fila precio / cantidad / subtotal */}
                     <SView row style={{ alignItems: "center", gap: 8, flexWrap: "wrap" }}>
@@ -331,9 +333,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             justifyContent: "center",
                         }}>
                             {puedeEditarPrecio ? (
-                                <SView row center style={{paddingHorizontal:2}}>
+                                <SView row center style={{ paddingHorizontal: 2 }}>
                                     <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>
-                                        {moneda?.observacion ?? "BS"}
+                                        {moneda?.observacion ?? "$"}
                                     </SText>
                                     <SView flex row>
                                         <SInput2
@@ -355,8 +357,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 <SInput
                                     name="precio"
                                     type="money"
-                                    style={{ height: 18, width:"100%",paddingRight: 0,textAlign: "right"}}
+                                    style={{ height: 18, width: "100%", paddingRight: 0, textAlign: "right" }}
                                     editable={false}
+                                    icon={<SText color={STheme.color.lightGray}>{moneda?.observacion ?? "$"}</SText>}
                                     value={precioFormateado.toString()}
                                     onChangeText={() => {
                                         SNotification.send({
@@ -677,7 +680,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                 </SView>
                 <SView style={{ width: 95, height: 20, backgroundColor: montoError ? UI.colors.error : STheme.color.card, borderRadius: 2 }}>
                     <SView row style={{ alignItems: "center", height: "100%", paddingHorizontal: 4 }}>
-                        <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{moneda?.observacion ?? "BS"}</SText>
+                        <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{moneda?.observacion ?? "$"}</SText>
                         <SView flex>
                             <SInput2
                                 key={resetKey}

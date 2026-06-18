@@ -70,20 +70,6 @@ export default class carrito extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "handleChange" });
   }
 
-  calcularValoresCarritDeCompras2() {
-    const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
-    let cantidad_items = 0;
-    let monto = 0;
-    this.carrito_compra.items.forEach(element => {
-      cantidad_items += element.cantidad;
-      const tipoCambioProducto = element.modelo.compra_moneda?.tipo_cambio || 1;
-      monto += element.cantidad * (element.modelo.precio_compra_moneda / moneda.tipo_cambio);
-    });
-
-    this.carrito_compra.cantidad_items = cantidad_items;
-    this.carrito_compra.monto_total = monto;
-    this.dispatchEvent({ type: "handleChange" });
-  }
   agregarItemAlCarritoDeCompras = (item: CarritoItem) => {
     const exist = this.carrito_compra.items.find(a => this.compararItem(a, item))
     if (exist) {
@@ -138,21 +124,6 @@ export default class carrito extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "handleChange" });
   }
 
-  calcularValoresCarritDeVentas2() {
-    const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
-    let cantidad_items = 0;
-    let monto = 0;
-    this.carrito_venta.items.forEach(element => {
-      cantidad_items += element.cantidad;
-      const precio = moneda
-        ? element.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)
-        : element.modelo.precio_venta_moneda;
-      monto += element.cantidad * precio;
-    });
-    this.carrito_venta.cantidad_items = cantidad_items;
-    this.carrito_venta.monto_total = monto;
-    this.dispatchEvent({ type: "handleChange" });
-  }
   agregarItemAlCarritoDeVentas = (item: CarritoItemVenta) => {
     const exist = this.carrito_venta.items.find(a => this.compararItemVenta(a, item))
     if (exist) {

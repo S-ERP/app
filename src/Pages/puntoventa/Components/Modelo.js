@@ -103,7 +103,6 @@ export default class Modelo extends Component {
                                         col={`xs-6 md-4 lg-3 xl-3 xxl-2`}
                                         margin={4}
                                         style={{
-                                            minWidth: "100%",
                                             overflow: "hidden",
                                         }}
                                         onPress={() => {

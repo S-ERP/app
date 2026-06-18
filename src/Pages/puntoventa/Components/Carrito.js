@@ -5,59 +5,42 @@ import MDL from '../../../MDL';
 const CACHE_TTL = 5 * 60 * 1000;
 
 export default class Carrito extends Component {
-    carrito = [];
     _clientesCache = null;
     _clientesCacheTime = 0;
     _tipoCostosCache = new Map();
 
     ajustarCarrito = () => {
         if (!this.props.conStock) return;
-        this.carrito = this.carrito.filter((item) => {
-            if (!item.stock || item.stock <= 0) {
+        const toRemove = MDL.carrito.carrito_venta.items.filter((item) => {
+            const stock = item.modelo.stock ?? 0;
+            if (stock <= 0) {
                 SNotification.send({
-                    title: "CARRITO Producto sin stock",
-                    body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,
+                    title: "Producto sin stock",
+                    body: `${item.modelo.descripcion} fue eliminado del carrito porque no tiene stock.`,
                     color: STheme.color.danger,
                     time: 3000,
                 });
-                return false;
+                return true;
             }
-            if (item.cantidad > item.stock) {
-                item.cantidad = item.stock;
+            if (item.cantidad > stock) {
+                item.cantidad = stock;
                 SNotification.send({
-                    title: "CARRITO Stock ajustado",
-                    body: `La cantidad de ${item.descripcion} se ajustó al stock disponible (${item.stock}).`,
+                    title: "Stock ajustado",
+                    body: `La cantidad de ${item.modelo.descripcion} se ajustó al stock disponible (${stock}).`,
                     color: STheme.color.warning,
                     time: 3000,
                 });
             }
-            return true;
+            return false;
         });
-        this.forceUpdate();
+        toRemove.forEach(item => MDL.carrito.removerItemAlCarritoDeVentas(item));
+        if (toRemove.length === 0) MDL.carrito.calcularValoresCarritDeVentas();
     };
 
     componentDidMount() {
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.vaciarCarrito();
-            this.forceUpdate();
         });
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
-            this.carrito = this.carrito.map((item) => ({
-                ...item,
-                precio_venta_moneda: this.props.selectedMoneda
-                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : item.precio_venta,
-                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
-            }));
-            this.forceUpdate();
-        }
-        if (prevProps.conStock !== this.props.conStock) {
-            this.ajustarCarrito();
-            this.forceUpdate();
-        }
     }
 
     componentWillUnmount() {
@@ -77,11 +60,12 @@ export default class Carrito extends Component {
     }
 
     async _getTipoCostos(key) {
-        if (this._tipoCostosCache.has(key)) {
-            return this._tipoCostosCache.get(key);
+        const cached = this._tipoCostosCache.get(key);
+        if (cached && Date.now() - cached.time < CACHE_TTL) {
+            return cached.data;
         }
         const tipoCostosKeys = await MDL.inventario.getTipoCostosByModelo(key);
-        this._tipoCostosCache.set(key, tipoCostosKeys);
+        this._tipoCostosCache.set(key, { data: tipoCostosKeys, time: Date.now() });
         return tipoCostosKeys;
     }
 
@@ -100,71 +84,52 @@ export default class Carrito extends Component {
                 })),
             }));
 
-            producto = { ...producto, tipoCostos };
+            producto = { ...producto, tipoCostos, clientes };
 
-            const index = this.carrito.findIndex((p) => p.key === producto.key);
-            if (index >= 0) {
-                const item = this.carrito[index];
-                if (this.props.conStock) {
-                    if (item.cantidad < item.stock) {
-                        item.cantidad += 1;
-                    } else {
-                        SNotification.send({
-                            title: "CARRITO Stock insuficiente",
-                            body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
-                            color: STheme.color.danger,
-                            time: 3000,
-                        });
-                        return;
-                    }
-                } else {
-                    item.cantidad += 1;
+            const items = MDL.carrito.carrito_venta.items;
+            const existingItem = items.find(item => item.modelo.key === producto.key);
+
+            if (existingItem) {
+                if (this.props.conStock && existingItem.cantidad >= existingItem.modelo.stock) {
+                    SNotification.send({
+                        title: "Stock insuficiente",
+                        body: `No hay suficiente stock para ${producto.descripcion}. Máximo: ${existingItem.modelo.stock} unidades.`,
+                        color: STheme.color.danger,
+                        time: 3000,
+                    });
+                    return;
                 }
+                existingItem.cantidad += 1;
+                MDL.carrito.calcularValoresCarritDeVentas();
             } else {
                 if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
                     SNotification.send({
-                        title: "CARRITO Sin stock",
+                        title: "Sin stock",
                         body: `No hay stock disponible para ${producto.descripcion}.`,
                         color: STheme.color.danger,
                         time: 3000,
                     });
                     return;
                 }
-                this.carrito.push({
-                    ...producto,
+                MDL.carrito.agregarItemAlCarritoDeVentas({
+                    modelo: producto,
                     cantidad: 1,
-                    precio_venta: producto.precio_venta,
-                    precio_venta_moneda: producto.precio_venta_moneda || (this.props.selectedMoneda
-                        ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                        : producto.precio_venta),
-                    monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
+                    precio: producto.precio_venta,
+                    key_modelo_cliente: "",
                 });
             }
-            this.getCarritoItemCount();
-            MDL.carrito.agregarItemAlCarritoDeVentas({
-                modelo: producto,
-                cantidad: 1,
-                precio: producto.precio_venta,
-            });
+            MDL.compra_venta.updateCarritoItems(MDL.carrito.carrito_venta.cantidad_items);
         } catch (err) {
             console.error("Error al agregar producto:", err);
         }
     };
 
     vaciarCarrito = () => {
-        this.carrito = [];
         this._clientesCache = null;
         this._tipoCostosCache.clear();
-        this.props.onModificarStock?.(null, 0);
+        MDL.carrito.limpiarCarritoVentas();
         MDL.compra_venta.updateCarritoItems(0);
-        this.forceUpdate();
     };
-
-    getCarritoItemCount() {
-        const cant = this.carrito.reduce((total, item) => total + item.cantidad, 0);
-        MDL.compra_venta.updateCarritoItems(cant);
-        return cant;
-    }
 
     render() {
         return null;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { SView, STheme } from "servisofts-component";
-import InputSelector from "../../../Components/Selectores/InputSelector";
-import MDL from "../../../MDL";
+import InputSelector from "../Selectores/InputSelector";
+import MDL from "../../MDL";
 export default class FiltroMoneda extends Component {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
@@ -65,8 +65,17 @@ export default class FiltroMoneda extends Component {
                         placeholder="Seleccione moneda"
                         placeholderTextColor={STheme.color.lightGray}
                         value={selectedMoneda?.key}
-                        style={{ height: 32, backgroundColor: STheme.color.card, borderRadius: 4, paddingHorizontal: 8 }}
-                        options={options.map((o) => ({ label: o.descripcion, value: o.key, data: o }))}
+                        style={{
+                            height: 32,
+                            backgroundColor: STheme.color.card,
+                            borderRadius: 4,
+                            paddingHorizontal: 8,
+                        }}
+                        options={options.map((o) => ({
+                            label: o.descripcion,
+                            value: o.key,
+                            data: o,
+                        }))}
                         onSelect={(item) => this.selectMoneda(item.value)}
                     />
                 )}
