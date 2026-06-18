@@ -322,7 +322,7 @@ export default class FormularioModelo extends Component<Props> {
                         col: "xs-5.5",
                         icon: <SView />,
                         defaultValue: (!this.props.editObject?.codigo_ref ? "" : this.props.editObject?.codigo_ref),
-                        label: "Codigo de Referencia", placeholder: "[ 000 ]",
+                        label: "Codigo de Rewwferencia", placeholder: "[ 000 ]",
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("precio_compra");
                         }
