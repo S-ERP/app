@@ -5,7 +5,7 @@ import SSocket from "servisofts-socket";
 import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-import SInput2 from "../SForm2/SInput2";
+import SInput2, { SInput2Class } from "../SForm2/SInput2";
 
 type PopupCarritoProps = {}
 
@@ -197,11 +197,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
     const [precio, setPrecio] = React.useState(calcularPrecio);
     const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
+    const inputPrecioRef = React.useRef<SInput2Class>(null);
 
     React.useEffect(() => {
         const p = calcularPrecio();
         setPrecio(p);
-        setPrecioStr((p ?? 0).toFixed(2));
+        const str = (p ?? 0).toFixed(2);
+        setPrecioStr(str);
+        inputPrecioRef.current?.setValue(str);
     }, [moneda, precioBase]);
 
     const puedeEditarCosto = MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "carrito_editar_costo" });
@@ -269,6 +272,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>{moneda?.observacion ?? "BS"}</SText>
                                     <SView flex>
                                         <SInput2
+                                            ref={inputPrecioRef}
                                             name="precio"
                                             type="money"
                                             style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: UI.colors.accent }}

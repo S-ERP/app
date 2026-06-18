@@ -117,7 +117,7 @@ function _removeListeners() {
 
 // ─── Component ─────────────────────────────────────────────────────────────
 
-class SInput2Class extends React.Component<SInput2Props, {
+export class SInput2Class extends React.Component<SInput2Props, {
     value: string;
     selection?: { start: number; end: number };
 }> {

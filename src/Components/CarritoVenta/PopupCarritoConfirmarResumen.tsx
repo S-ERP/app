@@ -78,10 +78,12 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     calcularSubtotal() {
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const carritoItems = MDL.carrito.carrito_venta.items;
+        console.clear();
+        console.log(JSON.stringify(carritoItems))
         return carritoItems.reduce((acc, item) => {
-            const precio = monedaActual
-                ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1)
-                : item.modelo.precio_venta_moneda;
+            // antes
+            // const precio = monedaActual ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
+            const precio = monedaActual ? item.modelo.precio_venta / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta;
             return acc + precio * item.cantidad;
         }, 0);
     }
@@ -102,8 +104,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 SNotification.send({ key: "venta_rapida", title: "Moneda no seleccionada", body: "Debe seleccionar una moneda antes de continuar.", color: STheme.color.danger, time: 4000 });
                 return;
             }
-
+            // console.clear()
+            console.log(total)
+            console.log(subtotal)
             const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
+            // const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
             SelectTipoPagoVenta.openPopup({
                 key_punto_venta: keyPuntoVenta,
                 montoMaximo,
@@ -390,11 +395,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                                 </SText>
                             </SView>
                             <SView style={{ borderColor: STheme.color.gray, borderBottomWidth: 2, marginBottom: 6 }} />
-                            <SView row style={{ justifyContent: "space-between" }}>
+                            <SView row style={{ justifyContent: "space-between", alignItems: "center" }}>
                                 <SText fontSize={18} color={STheme.color.text}>{"Total:"}</SText>
-                                <SText fontSize={18} bold color={STheme.color.text}>
-                                    {monedaActual?.observacion ?? "Bs"}{" "}{SMath.formatMoney(total, 2)}
-                                </SText>
+                                <SView style={{ flex: 1, alignItems: "flex-end" }}>
+                                    <SText fontSize={18} bold color={STheme.color.text} numberOfLines={1} adjustsFontSizeToFit>
+                                        {monedaActual?.observacion ?? "Bs"}{" "}{SMath.formatMoney(total, 2)}
+                                    </SText>
+                                </SView>
                             </SView>
                         </SView>
                     </SView>

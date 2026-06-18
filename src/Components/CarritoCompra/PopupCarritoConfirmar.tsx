@@ -1,5 +1,6 @@
 import React from "react";
 import { SHr, SInput, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import SMath from "servisofts-component/Component/SMath";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
@@ -29,8 +30,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 borderRadius: 8,
                 borderWidth: 1,
                 borderColor: STheme.color.card,
-                cursor: "default",
-                userSelect: "text",
+                cursor: "default" as any,
+                userSelect: "text" as any,
                 overflow: "hidden",
             }} withoutFeedback>
                 <PopupCarritoConfirmar {...props} />
@@ -76,7 +77,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
     componentDidMount(): void {
         this._mounted = true;
-        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => this.cargarSubtotal());
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+            const moneda = MDL.compra_venta.getMonedaSeleccionada();
+            this.setState({ moneda: moneda || null });
+            this.cargarSubtotal();
+        });
         this.cargarSubtotal();
         this.cargarClientes();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
@@ -113,7 +118,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const carritoItems = MDL.carrito.carrito_compra?.items || [];
             const subtotal = carritoItems.reduce((acc, item) => {
-                const precioBase = item?.modelo?.precio_compra_moneda || 0;
+                const precioBase = item?.modelo?.precio_compra || 0;
+                // const precioBase = item?.modelo?.precio_compra_moneda || 0;
                 const tipoCambio = monedaActual?.tipo_cambio || 1;
                 const precio = monedaActual ? precioBase / tipoCambio : precioBase;
                 return acc + precio * (item?.cantidad || 0);
@@ -508,10 +514,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     {/* Moneda */}
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
                         <SelectorMoneda
-                            findInitialSelect={(arr) => arr.find(a => a.tipo == "base")}
+                            findInitialSelect={(arr) => {
+                                const actual = MDL.compra_venta.getMonedaSeleccionada();
+                                return actual
+                                    ? arr.find((a: any) => a.key === actual.key)
+                                    : arr.find((a: any) => a.tipo === "base");
+                            }}
                             icon={<SText color={STheme.color.lightGray} bold>{"Moneda:"}</SText>}
                             placeholder={"Moneda"}
-                            onChangeSelect={e => this.setState({ moneda: e })}
+                            onChangeSelect={e => {
+                                this.setState({ moneda: e });
+                                MDL.compra_venta.setMonedaSeleccionada(e);
+                                MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" });
+                                MDL.carrito.calcularValoresCarritDeCompras();
+                            }}
                         />
                     </SView>
 
@@ -528,6 +544,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         />
                     </SView>
                     <SHr />
+
+                    {/* Total */}
+                    <SView style={{ paddingHorizontal: 10, paddingVertical: 8 }}>
+                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 2, borderColor: STheme.color.card }}>
+                            <SView row style={{ justifyContent: "space-between", alignItems: "center" }}>
+                                <SText fontSize={18} color={STheme.color.text}>{"Total:"}</SText>
+                                <SView style={{ flex: 1, alignItems: "flex-end" }}>
+                                    <SText fontSize={18} bold color={STheme.color.text} numberOfLines={1} adjustsFontSizeToFit>
+                                        {this.state.moneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(this.state.subtotal, 2)}
+                                    </SText>
+                                </SView>
+                            </SView>
+                        </SView>
+                    </SView>
                 </SView>
 
                 {/* Footer con botones */}
