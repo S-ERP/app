@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { SPage, SView, STheme, SText, SHr, SNotification, SNavigation } from "servisofts-component";
+
 import Header from "./Components/Header";
 import Carrito from "./Components/Carrito";
 import Modelo from "./Components/Modelo";
 import Categoria from "./Components/Categoria";
+
 import { Dimensions } from "react-native";
 import MDL from "../../MDL";
 
