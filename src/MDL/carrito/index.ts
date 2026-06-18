@@ -162,4 +162,35 @@ export default class carrito extends MDLAbstract<EventListener> {
     }
     this.calcularValoresCarritDeVentas();
   }
+
+  addProductoServicio = async (producto: any) => {
+    try {
+      const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
+      const clientes = await MDL.crm.cliente.getAll();
+      const contactos = contactosKeys.map((item: any) => {
+        const keyCliente = item.key_cliente;
+        const key_modelo_cliente = item.key_modelo_cliente;
+        const comision = item.comision ?? 0;
+        const cliente = clientes.find((c: any) => c.key === keyCliente);
+        return cliente
+          ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || keyCliente, comision, cliente, key_modelo_cliente }
+          : { key: keyCliente, nombre: keyCliente, comision, cliente: null, key_modelo_cliente };
+      });
+      const contactoSeleccionado = contactos.find((c: any) => (c.comision || 0) > 0) || contactos[0] || null;
+      this.agregarItemAlCarritoDeVentas({
+        modelo: {
+          ...producto,
+          contactos,
+          contactoSeleccionado: contactoSeleccionado?.key || null,
+          contacto: contactoSeleccionado || null,
+          comision: contactoSeleccionado?.comision || 0,
+        },
+        cantidad: 1,
+        precio: producto.precio_venta,
+        key_modelo_cliente: contactoSeleccionado?.key_modelo_cliente || "",
+      });
+    } catch (err) {
+      console.error("Error al obtener contactos:", err);
+    }
+  }
 }

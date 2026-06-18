@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
-import { SHr, SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-component';
+import { SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
-import SSocket from 'servisofts-socket';
 import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
-const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 export default class Modelo extends Component {
     constructor(props) {
         super(props);
@@ -32,7 +29,7 @@ export default class Modelo extends Component {
             return;
         }
         const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
-        let monedas = await MDL.empresa.getMonedas();
+        let monedas = MDL.empresa.monedas?.length ? MDL.empresa.monedas : await MDL.empresa.getMonedas();
         this.modelos = modelos.map(e => ({
             ...e,
             compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
@@ -61,24 +58,16 @@ export default class Modelo extends Component {
         }
         return false;
     };
-    getColSize() {
-        const width = Dimensions.get("window").width;
-        if (width >= 1200) return parseFloat((12 / 8).toFixed(2));
-        if (width >= 768) return parseFloat((12 / 4).toFixed(2));
-        return parseFloat((12 / 3).toFixed(2));
-    }
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
         const selectedMoneda = this.props.selectedMoneda || null;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
 
-        // aqui valida que muestre todo o sin precio
         if (this.props.conPrecio) {
             productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
         }
 
-        // aqui valido que funcion con stock
         if (this.props.conStock) {
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
@@ -98,23 +87,19 @@ export default class Modelo extends Component {
             );
         }
         const monedaSymbol = selectedMoneda?.observacion || "Bs";
-        const colSize = this.getColSize();
         return (<>
             <SView col={"xs-12"} flex center>
                 <SScrollView2 disableHorizontal>
                     <SView col={"xs-12"} style={{ padding: 2 }}>
                         <SView col={"xs-12"} row padding={5}>
-                            {productosFiltrados.map((producto, index) => {
-                                const src = producto.key
-                                    ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}`
-                                    : productSinFoto;
+                            {productosFiltrados.map((producto) => {
                                 const tipoCambioProducto = producto.venta_moneda?.tipo_cambio || 1;
                                 const tipoCambioSeleccionada = selectedMoneda?.tipo_cambio || 1;
                                 const precioConvertido = producto.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
                                 const precioFormateado = Number.isInteger(precioConvertido) ? precioConvertido.toString() : precioConvertido.toFixed(2);
                                 return (
                                     <SView
-                                        key={index}
+                                        key={producto.key}
                                         col={`xs-6 md-4 lg-3 xl-3 xxl-2`}
                                         margin={4}
                                         style={{
@@ -137,7 +122,6 @@ export default class Modelo extends Component {
                                                 monedaSymbol,
                                             };
                                             this.props.onPressProducto?.(productoAjustado);
-                                            this.forceUpdate();
                                         }}
                                     >
                                         <SView center style={{ marginBottom: 4, height: 180, overflow: "hidden", backgroundColor: STheme.color.card, borderRadius: 4, }} >
@@ -176,10 +160,8 @@ export default class Modelo extends Component {
             </SView>
             <SView style={{ position: "absolute", bottom: 20, right: 10 }}>
                 {
-                    <Recargar ref={ref => this.recargar = ref} initialTime={20} fill={STheme.color.lightGray}
-                        onFinish={() => {
-                            this.loadApis(); // ✅ correcto
-                        }} />
+                    <Recargar ref={ref => this.recargar = ref} initialTime={60} fill={STheme.color.lightGray}
+                        onFinish={() => this.loadApis()} />
                 }
             </SView>
         </>

@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
 import { SView, SText, SIcon, STheme } from 'servisofts-component';
 
-interface Props {
-    onFinish: () => void;
-    initialTime?: number;
-    fill?: string; // 👈 agregar
-}
-
-export default class Recargar extends Component<Props> {
+export default class Recargar extends Component {
 
     initialTime = this.props.initialTime ?? 300;
 
-    constructor(props: Props) {
+    constructor(props) {
         super(props);
         this.state = {
             time: this.initialTime,
@@ -45,7 +39,7 @@ export default class Recargar extends Component<Props> {
         }, 1000);
     };
 
-    formatTime = (seconds: number) => {
+    formatTime = (seconds) => {
         const min = Math.floor(seconds / 60);
         const sec = seconds % 60;
         return `${min}:${sec < 10 ? '0' : ''}${sec}`;

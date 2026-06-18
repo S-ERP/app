@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SInput, SText, STheme, SView } from 'servisofts-component';
+import { SInput, SText, STheme, SView } from 'servisofts-component';
 import { ScrollView } from 'react-native-gesture-handler';
 import MDL from '../../../MDL';
 import FiltroMoneda from './FiltroMoneda';
@@ -7,21 +7,12 @@ export default class Categoria extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
             selectedCategory: this.props.selected || "all",
             tipomodelos: [],
         };
     }
     componentDidMount() {
         this.loadTipoProducto();
-        this.eventoMoneda = () => {
-            const moneda = MDL.compra_venta.getMonedaSeleccionada();
-            this.setState({ selectedMoneda: moneda ? { ...moneda } : null });
-        };
-        MDL.compra_venta.addEventListener("moneda_seleccionada", this.eventoMoneda);
-    }
-    componentWillUnmount() {
-        MDL.compra_venta.removeEventListener("moneda_seleccionada", this.eventoMoneda);
     }
     async loadTipoProducto() {
         const tipos = await MDL.inventario.getAllTipoProducto();
@@ -37,7 +28,7 @@ export default class Categoria extends Component {
         this.props.onSelect?.(key);
     };
     renderCategorias() {
-        const { tipomodelos, selectedCategory, selectedMoneda } = this.state;
+        const { tipomodelos, selectedCategory } = this.state;
         return (
             <SView col={"xs-12 md-12"} backgroundColor={STheme.color.darkGray} row center style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
                 <SView col={"xs-12"} row>
@@ -59,10 +50,7 @@ export default class Categoria extends Component {
                     <SView col={"xs-12 md-12 lg-9"} row>
                         <SView col={"xs-12 md-5 lg-2.5"} row center height={32}>
                             <FiltroMoneda
-                                onSelect={(moneda) => {
-                                    this.setState({ selectedMoneda: moneda ? { ...moneda } : null });
-                                    this.props.onSelectMoneda?.(moneda);
-                                }}
+                                onSelect={(moneda) => this.props.onSelectMoneda?.(moneda)}
                             />
                         </SView>
                         <SView width={16} />
@@ -85,8 +73,8 @@ export default class Categoria extends Component {
                                     style={{ top: -12, fontSize: 12 }}
                                     type="checkBox"
                                     labelStyle={{ left: 14, top: -4 }}
-                                    value={this.props.conPrecio}// <-- valor controlado
-                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}// <-- actualizar Main
+                                    value={this.props.conPrecio}
+                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}
                                 />
                             </SView>
                         </SView>

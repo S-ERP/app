@@ -9,7 +9,6 @@ import Model from "../../../Model";
 import { Parent } from "..";
 import habilidad from '../../habilidad';
 import { Container } from '../../../Components';
-import Carrito from '../../puntoventa/Components/Carrito';
 import { SStorage } from 'servisofts-component';
 
 
@@ -32,7 +31,6 @@ export default class servicios extends Component {
 
         }
         this.pk = SNavigation.getParam("pk");
-        this.carro = new Carrito();
 
     }
 
@@ -81,13 +79,12 @@ export default class servicios extends Component {
                 // evitar duplicados
                 if (!dataSelect.find(d => d.key === item.key)) {
                     dataSelect.push(item);
-                    this.carro.addProductoServicio(item.modelo);
-                    // this.carro.addProductoServicio(obj.item.modelo);
+                    MDL.carrito.addProductoServicio(item.modelo);
 
                 }
             } else {
                 dataSelect = dataSelect.filter(d => d.key !== item.key);
-                this.carro.removeProductoServicio(item);
+                MDL.carrito.removerItemAlCarritoDeVentas(item);
             }
 
             SStorage.setItem("dataSelectServicios", JSON.stringify(dataSelect));
