@@ -204,7 +204,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         setPrecioStr((p ?? 0).toFixed(2));
     }, [moneda, precioBase]);
 
-    const puedeEditarCosto = MDL.rolesPermisos.getPermiso({ url: "/compra3", permiso: "carrito_editar_precio" });
+    const puedeEditarCosto = MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "carrito_editar_costo" });
 
     if (!modelo) {
         return (
@@ -299,6 +299,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             body: "No tiene permiso para editar el precio de costo",
                                             color: STheme.color.warning,
                                         });
+                                        return
                                     }}
                                 />
                             )}
