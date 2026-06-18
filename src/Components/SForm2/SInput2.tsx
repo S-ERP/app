@@ -399,8 +399,11 @@ export class SMoneyInput extends React.Component<SMoneyInputProps> {
         }
     }
 
+    getType() { return 'money'; }
     getValue() { return this._ref?.getValue() ?? ''; }
     setValue(v: string) { this._ref?.setValue(v); }
+    verify() { return true; }
+    focus() { this._ref?._inputRef?.focus(); }
 
     render() {
         const { icon, iconR, ...rest } = this.props;
