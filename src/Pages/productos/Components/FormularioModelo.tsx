@@ -10,6 +10,7 @@ import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOp
 import InputSelector from '../../../Components/Selectores/InputSelector';
 import Cuentas_anidadas from '../../conta/cuentas_anidadas';
 import CuentasAnidadas from '../../conta/cuentas_anidadas';
+import SForm2 from '../../../Components/SForm2';
 
 type Props = {
     editObject?: any,
@@ -95,7 +96,7 @@ export default class FormularioModelo extends Component<Props> {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Modelo"}</SText>
             <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
-            <SForm ref={(ref: any) => this.form = ref} row
+            <SForm2 ref={(ref: any) => this.form = ref} row
                 style={{
                     justifyContent: "space-between",
                 }}

@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
-import { STheme } from "servisofts-component";
-import { useSForm2Context } from "./index";
+import { STheme, SView } from "servisofts-component";
 import { TextInput } from "react-native";
+
 
 type SInput2Props = {
     name: string;
@@ -14,13 +14,11 @@ type SInput2Props = {
 }
 
 const SInput2 = forwardRef((props: SInput2Props, ref: React.Ref<SInput2Class>) => {
-    const { SForm2 } = useSForm2Context();
     return <SInput2Class ref={_ref => {
         if (ref) {
             if (typeof ref === "function") { ref(_ref); }
             else { (ref as any).current = _ref; }
         }
-        if (SForm2) { SForm2._inputs[props.name] = _ref; }
     }} {...props} />
 })
 export default SInput2;
@@ -195,6 +193,15 @@ class SInput2Class extends React.Component<SInput2Props, {
         e.preventDefault();
         e.stopImmediatePropagation();
         _popUndo(true); // not focused — focus money after undoing a money entry
+    }
+
+    getValue() {
+        if (this.props.type === 'money') {
+            const { integer, decimal } = this.parseMoneyText(this.state.value);
+            const rawInt = parseInt(integer || '0', 10) || 0;
+            return decimal != null && decimal !== '' ? `${rawInt}.${decimal}` : rawInt.toString();
+        }
+        return this.state.value;
     }
 
     setValue(raw: number | string) {
@@ -375,5 +382,40 @@ class SInput2Class extends React.Component<SInput2Props, {
             onChangeText={this.onChangeText.bind(this)}
             style={[{ outline: "none", fontSize: 12, color: STheme.color.text } as any, style]}
         />
+    }
+}
+
+type SMoneyInputProps = Omit<SInput2Props, 'type'> & {
+    icon?: React.ReactNode;
+    iconR?: React.ReactNode;
+};
+
+export class SMoneyInput extends React.Component<SMoneyInputProps> {
+    private _ref: SInput2Class | null = null;
+
+    componentDidMount() {
+        if (this.props.defaultValue) {
+            this._ref?.setValue(this.props.defaultValue);
+        }
+    }
+
+    getValue() { return this._ref?.getValue() ?? ''; }
+    setValue(v: string) { this._ref?.setValue(v); }
+
+    render() {
+        const { icon, iconR, ...rest } = this.props;
+        const inputStyle = [
+            { flex: 1, height: "100%", textAlign: icon ? "right" : "left", paddingRight:4 },
+            rest.style,
+        ] as any;
+        return (
+            <>
+                {icon && <SView center style={{ height: "100%" }}>{icon}</SView>}
+                <SView flex height>
+                    <SInput2Class ref={r => { this._ref = r; }} {...rest} type="money" style={inputStyle} />
+                </SView>
+                {iconR && <SView center style={{ height: "100%" }}>{iconR}</SView>}
+            </>
+        );
     }
 }
