@@ -200,6 +200,7 @@ export default class Barra extends React.Component {
                         <Page label={"Test"} url={"/test"} />
                         <Page label={"Test2"} url={"/test2"} />
                         <Page label={"Caja history"} url={"/caja/history"} />
+                        <Page label={"Clonar Empresa"} url={"/empresa/clonar"} />
                         <Page label={"Eliminar datos contables"} url={"/empresa/eliminar_datos_cotables"} />
                         <Page label={"Tema"} onPress={() => {
                             PopupEditarTema.open()

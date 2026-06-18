@@ -10,6 +10,7 @@ import Recargar from "../../../Components/Recargar";
 import PopupCrearPuntoVenta from "./Components/PopupCrearPuntoVenta";
 import PopupCrearAlmacen from "../../inventario/almacen/Components/PopupCrearAlmacen";
 import FloatMenu from "../../../Components/FloatMenu";
+import PopupCrearUnidadNegocio from "./Components/PopupCrearUnidadNegocio";
 
 export default class config2 extends React.Component {
 
@@ -107,6 +108,25 @@ export default class config2 extends React.Component {
                                 }
                             },
                             {
+                                icon: <SIconApp name="Add" fill={STheme.color.text} />,
+                                label: "Crear Unidad De Negocio",
+                                onPress: () => {
+                                    PopupCrearUnidadNegocio.open({
+                                        key_empresa: empresa.key,
+                                        // editObject: sucursal,
+                                        onSuccess: (e) => {
+                                            this.save_locations[resp.data.key] = e;
+                                            this.reload()
+                                            // const nuevaSucursal = e.data;
+                                            // const index = empresa.sucursales.findIndex(o => o.key == nuevaSucursal.key)
+                                            // empresa.sucursales[index] = nuevaSucursal;
+                                            // this.forceUpdate();
+
+                                        },
+                                    })
+                                }
+                            },
+                            {
                                 icon: <SIconApp name="productos" fill={STheme.color.text} />,
                                 label: "Crear Almacen",
                                 onPress: () => {
@@ -142,8 +162,12 @@ export default class config2 extends React.Component {
                         }
                     </>
                 })}
-                {(this.empresa_tipo_pago ?? []).map((tipo_pago, i) => {
+                {/* {(this.empresa_tipo_pago ?? []).map((tipo_pago, i) => {
                     return <TipoPagoNodo tipo_pago={tipo_pago} />
+                }
+                )} */}
+                {(empresa.unidad_negocio ?? []).map((obj, i) => {
+                    return <UnidadNegocioNodo unidad_negocio={obj} />
                 }
                 )}
             </Pizarra>
@@ -168,7 +192,7 @@ const getSelectLineProps = () => {
     }
 }
 
-const getUnSelectLineProps= () => {
+const getUnSelectLineProps = () => {
     return {
         strokeWidth: 1,
         strokeDasharray: "4 2",
@@ -238,7 +262,7 @@ const TipoPagoNodo = ({ tipo_pago }) => {
                 // })
                 // console.log("onConnect", e)
             }}
-            
+
             selectLineProps={getSelectLineProps()}
             lineProps={getUnSelectLineProps()}
             style={{
@@ -249,6 +273,68 @@ const TipoPagoNodo = ({ tipo_pago }) => {
                 position: "absolute",
                 borderRadius: 100,
                 backgroundColor: STheme.color.text,
+            }} />
+    </Nodo>
+}
+const UnidadNegocioNodo = ({ unidad_negocio }) => {
+    const color = STheme.colorFromText(unidad_negocio.key)
+    return <Nodo
+        id={unidad_negocio.key}
+        key={unidad_negocio.key}
+        data={unidad_negocio}
+        y={0} x={0}
+        style={{
+            alignItems: "center",
+            justifyContent: "center"
+        }}
+        onDoublePress={e => {
+            PopupCrearUnidadNegocio.open({
+                editObject: unidad_negocio,
+                onSuccess: () => {
+                    if (reload) reload()
+                    // this.loadData()
+                },
+
+            })
+        }}
+    >
+        <SView style={{
+            width: 200,
+            height: 50,
+            borderWidth: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            borderColor: STheme.color.text,
+            backgroundColor: color + "44",
+            borderRadius: 100,
+        }}>
+
+            <SText style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: STheme.color.text,
+            }}>{unidad_negocio.descripcion}</SText>
+        </SView>
+
+        {/* <SText style={{
+            width: 220
+        }} fontSize={20} center>{unidad_negocio.descripcion}</SText> */}
+
+        <Puerto id="key_unidad_negocio"
+            value={unidad_negocio.key}
+            type="output"
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
+            style={{
+                width: 20,
+                top: 18,
+                left: -4,
+                position: "absolute",
+                borderRadius: 4,
+                transform: [{ rotate: '45deg' }],
+                height: 20,
+                backgroundColor: STheme.color.text,
+                // bottom: 0
             }} />
     </Nodo>
 }
@@ -360,6 +446,7 @@ const AlmacenNodo = ({ sucursal, almacen, empresa, save_locations }) => {
             value={almacen.key_sucursal}
             type="input"
             onConnect={e => {
+                if (e.id != "key_sucursal") return;
                 if (e.value == almacen.key_sucursal) return;
                 MDL.inventario.saveAlmacen({
                     data: {
@@ -382,6 +469,38 @@ const AlmacenNodo = ({ sucursal, almacen, empresa, save_locations }) => {
                 left: 0,
                 position: "absolute",
                 borderRadius: 100,
+                height: 20,
+                backgroundColor: STheme.color.text,
+            }} />
+
+        <Puerto id="key_unidad_negocio"
+            value={almacen.key_unidad_negocio ?? ""}
+            type="input"
+            onConnect={e => {
+                if (e.id != "key_unidad_negocio") return;
+                if (e.value == almacen.key_unidad_negocio) return;
+                MDL.inventario.saveAlmacen({
+                    data: {
+                        key: almacen.key,
+                        key_unidad_negocio: e.value
+                    }
+                }).then(e => {
+                    if (reload) reload()
+                    // this.loadData();
+                }).catch(e => {
+                    console.log(e)
+                })
+                console.log("onConnect", e)
+            }}
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
+            style={{
+                width: 20,
+                top: 36,
+                right: -8,
+                position: "absolute",
+                borderRadius: 4,
+                transform: [{ rotate: '45deg' }],
                 height: 20,
                 backgroundColor: STheme.color.text,
             }} />
@@ -520,8 +639,8 @@ const PuntoVentaNodo = ({ sucursal, empresa, punto_venta, reload, save_locations
             id="key_punto_venta"
             type="output"
             value={punto_venta?.key}
-           selectLineProps={getSelectLineProps()}
-           lineProps={getUnSelectLineProps()}
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
 
             style={{
                 position: "absolute",
