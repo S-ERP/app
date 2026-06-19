@@ -115,8 +115,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         try {
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const carritoItems = MDL.carrito.carrito_compra?.items || [];
+
+            console.clear();
+            console.log("aqui");
             const subtotal = carritoItems.reduce((acc, item) => {
-                const precioBase = item?.modelo?.precio_compra || 0;
+                console.log(JSON.stringify(item?.modelo))
+                const precioBase = item?.modelo?.precio_compra_moneda || 0;
+                // const precioBase = item?.modelo?.precio_compra || 0;
 
                 const tipoCambio = monedaActual?.tipo_cambio || 1;
                 const precio = monedaActual ? precioBase / tipoCambio : precioBase;
@@ -154,6 +159,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 return;
             }
             const total = this.state.subtotal * (selectedMoneda.tipo_cambio || 1);
+            console.clear();
+            console.log(total)
+            console.log(this.state.subtotal)
+            // const total = this.state.subtotal * (selectedMoneda.tipo_cambio || 1);
             SelectTipoPagoCompra.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total,
@@ -163,6 +172,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 compra: true,
             });
         } catch (error: any) {
+            // console.log("macaco")
+            console.log(JSON.stringify(error))
             const mensaje = error instanceof Error ? error.message : (error?.error || JSON.stringify(error));
             SNotification.send({
                 key: "compra_rapida",

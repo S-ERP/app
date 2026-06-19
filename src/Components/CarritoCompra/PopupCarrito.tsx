@@ -170,7 +170,10 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const ventaMonedaKey = modelo?.venta_moneda?.key;
     const tipoCambioVenta = modelo?.venta_moneda?.tipo_cambio || 1;
     const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
+    const monedaKey = moneda?.key ?? '__base';
     const calcularPrecio = () => {
+        const editado = modelo?.__precioEditado;
+        if (editado && editado.key === monedaKey) return editado.precio;
         if (!moneda) return precioBase;
         if (ventaMonedaKey === moneda.key) return precioBase;
         return precioBase * (tipoCambioVenta / tipoCambioSeleccionada);
@@ -184,7 +187,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         const str = (p ?? 0).toFixed(2);
         setPrecioStr(str);
         inputPrecioRef.current?.setValue(str);
-    }, [moneda, precioBase]);
+    }, [monedaKey, precioBase]);
     const puedeEditarCosto = MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "carrito_editar_costo" });
     if (!modelo) {
         return (
@@ -244,6 +247,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                                 setPrecio(n);
                                                 if (modelo) {
                                                     modelo.precio_compra_moneda = moneda ? n * (moneda.tipo_cambio || 1) : n;
+                                                    modelo.__precioEditado = { key: monedaKey, precio: n };
                                                 }
                                                 MDL.carrito.calcularValoresCarritDeCompras();
                                             }}
