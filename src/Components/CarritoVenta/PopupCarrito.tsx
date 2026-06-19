@@ -267,6 +267,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         setPrecioStr(str);
         inputPrecioRef.current?.setValue(str);
     }, [moneda, item.modelo.precio_venta]);
+
+    // console.log()
     const precioFormateado = (precio ?? 0).toFixed(2);
     const puedeEditarPrecio = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "carrito_editar_precio" });
     const subtotalStr = SMath.formatMoney(precio * item.cantidad);

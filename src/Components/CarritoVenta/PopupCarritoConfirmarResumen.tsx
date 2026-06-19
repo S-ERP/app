@@ -58,7 +58,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         console.clear();
         console.log(JSON.stringify(carritoItems))
         return carritoItems.reduce((acc, item) => {
-            const precio = monedaActual ? item.modelo.precio_venta / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta;
+            const precio = monedaActual ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
+            // const precio = monedaActual ? item.modelo.precio_venta / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta;
+
             return acc + precio * item.cantidad;
         }, 0);
     }
