@@ -21,26 +21,14 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
         SPopup.open({
             key: "SelectTipoPagoVenta",
             type: "1",
-            content: <SView style={{
-                width: 400,
-                maxWidth: "95%",
-                // height: "85%",
-                // maxHeight: 520,
-                backgroundColor: STheme.color.background,
-                borderRadius: 8,
-                overflow: "hidden",
-                cursor: "default",
-                userSelect: "text",
-            }} withoutFeedback>
+            content: <SView style={{ width: 400, maxWidth: "95%", backgroundColor: STheme.color.background, borderRadius: 8, overflow: "hidden", cursor: "default", userSelect: "text", }} withoutFeedback>
                 <SelectTipoPagoVenta {...props} />
             </SView>
         })
     }
-
     static closePopup() {
         SPopup.close("SelectTipoPagoVenta")
     }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -50,17 +38,14 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
         this._mounted = false;
         this.pvtp = [];
     }
-
     handleKeyDown = (e) => {
         if (e.key === "Escape") SPopup.close("SelectTipoPagoVenta");
     }
-
     componentDidMount() {
         this._mounted = true;
         this.loadData();
         globalThis.document?.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount() {
         this._mounted = false;
         globalThis.document?.removeEventListener("keydown", this.handleKeyDown);
@@ -104,13 +89,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
     renderItemTipoPago(item) {
         const select = item.__select
         return <SView style={{ padding: 4, maxWidth: 150, }} col={"xs-6 sm-4"} colSquare>
-            <SView style={{
-                width: "100%", height: "100%", borderWidth: 1,
-                borderColor: select ? STheme.color.success : STheme.color.card,
-                borderRadius: 8,
-                padding: 4,
-                alignItems: "center"
-            }} onPress={() => {
+            <SView style={{ width: "100%", height: "100%", borderWidth: 1, borderColor: select ? STheme.color.success : STheme.color.card, borderRadius: 8, padding: 4, alignItems: "center" }} onPress={() => {
                 item.__select = !item.__select;
                 const selecteds = this.pvtp.filter(a => !!a.__select);
                 if (!this.props.montoMaximoPorTipo) {
@@ -209,53 +188,36 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
             </SView>
         </SView>
     }
-
     calcularMontoInsertadoNum() {
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
         selecteds.forEach(item => { montoTotal += parseFloat(item.monto) });
         return MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio || 1));
     }
-
     calcularMontoInsertadoBase() {
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
         selecteds.forEach(item => { montoTotal += parseFloat(item.monto) });
         return MDL.contabilidad.round(montoTotal);
     }
-
     calcularMontoInsertado() {
         return SMath.formatMoney(this.calcularMontoInsertadoNum());
     }
 
     render() {
         const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio || 1);
-        const aaa = Number(this.props.montoMaximo ?? 0);
-        console.log("sssssssssss")
-        console.log(aaa)
         const obs = this.moneda?.observacion ?? "Bs";
         const montoInsertadoNum = this.calcularMontoInsertadoNum();
         const selecteds = this.pvtp.filter(a => !!a.__select);
         const nada = selecteds.length === 0;
         const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
         const puedeConfirmar = !nada && Math.abs(diff) <= 0.001;
-        const statusColor = nada ? STheme.color.gray
-            : diff < -0.001 ? "#dc3545"
-                : diff > 0.001 ? "#e6a817"
-                    : "#198754";
+        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? "#dc3545" : diff > 0.001 ? "#e6a817" : "#198754";
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
-        const statusMsg = nada
-            ? "Seleccione un tipo de pago"
-            : diffBase < -0.001
-                ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}`
-                : diffBase > 0.001
-                    ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}`
-                    : "✓ Monto exacto";
-
+        const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
         return (
             <SView col={"xs-12"} height>
-                {/* Header */}
                 <SView row style={{ backgroundColor: "#198754", paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
                     <SText fontSize={16} bold color={STheme.color.text}>{"Tipo de Pago"}</SText>
                     <SView flex />
@@ -264,14 +226,11 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
                 </SView>
-
-                {/* Monto cards */}
                 {this.props.montoMaximo != null && (
                     <>
                         <SView row style={{ padding: 8, paddingBottom: 4, gap: 8 }}>
                             <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center" }}>
                                 <SText fontSize={12} color={STheme.color.lightGray}>{"Monto a Pagar"}</SText>
-
                                 <SText bold fontSize={16}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0)))}</SText>
                                 {this.moneda?.tipo != "base" && (
                                     // {this.moneda?.tipo_cambio != 1 && (
@@ -297,14 +256,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                         </SView>
                     </>
                 )}
-
-
-
-
-
                 <SHr />
-
-                {/* Payment grid */}
                 <ScrollView style={{ flex: 1 }}>
                     {this.state.ready
                         ? (
@@ -319,12 +271,9 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                         )
                     }
                 </ScrollView>
-
                 <SHr />
                 <SHr />
                 <SHr />
-
-                {/* Footer */}
                 <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", padding: 12 }}>
                     <SView row style={{ gap: 12 }}>
                         <SView flex style={{ backgroundColor: "#dc3545", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
@@ -361,7 +310,6 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                         </SView>
                     </SView>
                 </SView>
-
                 {this.state.loading && (
                     <SView style={{
                         position: "absolute", left: 0, right: 0, top: 0, bottom: 0,

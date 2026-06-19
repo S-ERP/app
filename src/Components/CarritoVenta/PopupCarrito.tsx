@@ -10,7 +10,6 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 
 type PopupCarritoProps = {}
-
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
     get colors() {
@@ -28,6 +27,7 @@ const UI = {
         };
     }
 };
+
 const convertirADias = (tipo: string, cantidad: number) => {
     if (!tipo || !cantidad || isNaN(cantidad)) return 0;
     const conversiones: Record<string, number> = {
@@ -73,11 +73,9 @@ const validarSuscripcionesParcialesItems = (items: any[]): CampoIncompletoSusc =
 };
 
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
-    state = {
-        selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
-    };
+    state = { selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null, };
     evento: any;
-
+    
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito", type: "3", content:
@@ -97,12 +95,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 </SView>
         })
     }
-
+    
     handleChange = () => { this.forceUpdate(); }
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarrito");
     }
-
+    
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange);
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
@@ -111,12 +109,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         this.cargarMonedaSeleccionada();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
-
+    
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         this.setState({ selectedMoneda: moneda || null });
     }
-
+    
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange);
         if (this.evento) {
@@ -124,29 +122,19 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
-
+    
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda } = this.state;
-
         return (
             <SView col={"xs-12"} height style={{ backgroundColor: UI.colors.background }}>
-
-                {/* Header */}
                 <SView row style={{ backgroundColor: UI.colors.header, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center", }}>
-                    <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}>
-                        <SText fontSize={UI.font.icon}>🛒</SText>
-                    </SView>
-                    <SText fontSize={UI.font.title} bold color={STheme.color.text}  >{"Carrito de Ventas"}</SText>
+                    <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}> <SText fontSize={UI.font.icon}>🛒</SText> </SView>
+                    <SText fontSize={UI.font.title} bold color={STheme.color.text}>{"Carrito de Ventas"}</SText>
                     <SView flex />
-                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center", }} onPress={() => SPopup.close("PopupCarrito")} >
-                        <SText fontSize={UI.font.tiny} bold color={STheme.color.text}>{"✕"}</SText>
-                    </SView>
+                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center", }} onPress={() => SPopup.close("PopupCarrito")} > <SText fontSize={UI.font.tiny} bold color={STheme.color.text}>{"✕"}</SText> </SView>
                 </SView>
-
-                {/* Selector de moneda */}
                 <SView style={{ padding: 8 }}>
-
                     <FiltroMoneda
                         onSelect={(moneda: string) => {
                             this.setState({ selectedMoneda: moneda });
@@ -155,32 +143,25 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }}
                     />
                 </SView>
-
-                {/* Título de sección */}
                 <SView row style={{ paddingHorizontal: 10, paddingVertical: 8, alignItems: "center" }}>
                     <SText fontSize={UI.font.small} color={STheme.color.text}> {"Productos ("}{MDL.carrito.carrito_venta.cantidad_items}{")"} </SText>
                     <SView flex />
                     <SText fontSize={UI.font.small} color={STheme.color.text}> {"Sub: "}{selectedMoneda?.observacion ?? "$"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)} </SText>
                 </SView>
-
-                {/* Lista de productos */}
                 <FlatList
                     data={items}
                     renderItem={({ item }) => <ItemComp item={item} moneda={selectedMoneda} />}
                     keyExtractor={(item) => item.modelo.key}
                     style={{ flex: 1, paddingHorizontal: 8 }}
                 />
-
-                {/* Resumen y acciones */}
                 <SView style={{ backgroundColor: UI.colors.card, borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}>
-                    <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}  >
+                    <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Total Venta"}</SText>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>
                             {selectedMoneda?.observacion ?? "$"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}
                         </SText>
                     </SView>
-
-                    <SView row style={{ gap: 8 }}  >
+                    <SView row style={{ gap: 8 }}>
                         <SView flex style={{ backgroundColor: UI.colors.danger, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center", }} onPress={() => {
                             SPopup.confirm({
                                 title: "¿Seguro que quieres limpiar el carrito?",
@@ -192,7 +173,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }}>
                             <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Limpiar"}</SText>
                         </SView>
-
                         <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center", }} onPress={() => {
                             const items = MDL.carrito.carrito_venta.items;
                             const itemConPrecioInvalido = items.find(it => {
@@ -220,7 +200,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 return;
                             }
 
-                            // Validar miembros (suscriptores) con datos incompletos
                             const suscError = validarSuscripcionesParcialesItems(items);
                             if (suscError) {
                                 SNotification.send({
@@ -232,7 +211,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 return;
                             }
 
-                            // Validar costos con datos incompletos
                             for (const it of items) {
                                 const costos: any[] = (it.modelo as any)?.tipoCostos || [];
                                 for (const costo of costos) {
@@ -258,14 +236,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     }
                                 }
                             }
-
                             PopupCarritoConfirmar.open({});
                         }}>
                             <SText fontSize={UI.font.subtitle} bold color={STheme.color.text}>{"Confirmar venta"}</SText>
                         </SView>
                     </SView>
                 </SView>
-
             </SView>
         );
     }
@@ -294,24 +270,11 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const precioFormateado = (precio ?? 0).toFixed(2);
     const puedeEditarPrecio = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "carrito_editar_precio" });
     const subtotalStr = SMath.formatMoney(precio * item.cantidad);
-    const precioDigits = puedeEditarPrecio
-        ? precioStr.replace(/[^0-9]/g, '').length
-        : precioFormateado.replace(/[^0-9]/g, '').length;
+    const precioDigits = puedeEditarPrecio ? precioStr.replace(/[^0-9]/g, '').length : precioFormateado.replace(/[^0-9]/g, '').length;
     const subtotalLargo = puedeEditarPrecio ? precioDigits >= 10 : precioDigits >= 4;
-
     return (
-        <SView style={{
-            backgroundColor: Number(precioFormateado) > 0 ? UI.colors.itemBg : "#3a1515",
-            borderRadius: 10,
-            padding: 10,
-            marginBottom: 10,
-            borderLeftWidth: 3,
-            borderLeftColor: Number(precioFormateado) > 0 ? UI.colors.header : UI.colors.danger,
-        }}>
-            {/* Fila superior: imagen + info */}
+        <SView style={{ backgroundColor: Number(precioFormateado) > 0 ? UI.colors.itemBg : "#3a1515", borderRadius: 10, padding: 10, marginBottom: 10, borderLeftWidth: 3, borderLeftColor: Number(precioFormateado) > 0 ? UI.colors.header : UI.colors.danger, }}>
             <SView row style={{ gap: 8, alignItems: "flex-start" }}>
-
-                {/* Imagen */}
                 <SView style={{ position: "relative" }}>
                     <SView style={{ width: 35, height: 35, borderRadius: 2, overflow: "hidden" }}>
                         <SImage src={(SSocket.api as any).inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
@@ -321,20 +284,10 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
                 </SView>
-
-                <SView flex  >
+                <SView flex>
                     <SText fontSize={UI.font.title} bold color={STheme.color.text} style={{ marginBottom: 2 }} numberOfLines={2}>{item.modelo.descripcion}</SText>
-
-                    {/* Fila precio / cantidad / subtotal */}
                     <SView row style={{ alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-
-                        {/* Precio unitario editable */}
-                        <SView flex style={{
-                            backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error,
-                            borderRadius: 2,
-                            height: 18,
-                            justifyContent: "center",
-                        }}>
+                        <SView flex style={{ backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error, borderRadius: 2, height: 18, justifyContent: "center", }}>
                             {puedeEditarPrecio ? (
                                 <SView row center style={{ paddingHorizontal: 2 }}>
                                     <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>
@@ -376,16 +329,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 />
                             )}
                         </SView>
-
-                        {/* Badge cantidad */}
-                        <SView style={{
-                            width: 50,
-                            height: 18,
-                            borderRadius: 2,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            overflow: "hidden",
-                        }}>
+                        <SView style={{ width: 50, height: 18, borderRadius: 2, alignItems: "center", justifyContent: "center", overflow: "hidden", }}>
                             <SInput
                                 style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: STheme.color.text, fontWeight: "bold" }}
                                 type="money2"
@@ -397,15 +341,12 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }}
                             />
                         </SView>
-
-                        {/* Subtotal */}
                         <SText fontSize={UI.font.subtitle} bold color={STheme.color.text} style={{ textAlign: "right", minWidth: 55, ...(subtotalLargo ? { width: "100%" } : {}) }} numberOfLines={1}>
                             {subtotalStr}
                         </SText>
                     </SView>
                 </SView>
             </SView>
-
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
         </SView>
@@ -420,7 +361,6 @@ const ListaCostos = ({ item, moneda, totalItem }: any) => {
             <SView row style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
                 <SText fontSize={12} bold color={STheme.color.text}>{"Costos"}</SText>
                 <SView flex />
-
                 <SText fontSize={10} color={STheme.color.lightGray}>{" ("}{item.modelo.tipoCostos.length}{")"}</SText>
                 <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
                     <SIconApp name="Back" fill={STheme.color.lightGray} width={8} style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
@@ -438,10 +378,8 @@ const ListaSuscripciones = ({ item }: any) => {
     const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
     const [loadingClientes, setLoadingClientes] = React.useState(false);
     const [visible, setVisible] = React.useState(3);
-
     const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo.cantidad_suscriptores || 0);
     if (!cantidadMiembros) return null;
-
     let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
     if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
         suscriptores = [suscriptores];
@@ -474,17 +412,13 @@ const ListaSuscripciones = ({ item }: any) => {
 
     return (
         <SView style={{ marginTop: 10 }}>
-            <SView row style={{
-                borderColor: STheme.color.lightGray,
-                borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center",
-            }} onPress={() => setIsOpen(!isOpen)}>
+            <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
                 <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Miembros"}</SText>
                 <SView flex />
                 <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{cantidadMiembros}{")"}</SText>
                 <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
                     <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
-                        style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }}
-                    />
+                        style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
                 </SView>
             </SView>
             {isOpen && (
@@ -517,7 +451,6 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
     const [fechaInicio, setFechaInicio] = React.useState(suscriptor?.fecha_inicio || "");
     const [fechaFin, setFechaFin] = React.useState(suscriptor?.fecha_fin || "");
     const [cliente, setCliente] = React.useState(suscriptor?.cliente || null);
-
     const calcularFechaFin = (fechaInicioValue: string) => {
         if (!fechaInicioValue) return "";
         const dias = convertirADias(item.modelo?.duracion_medida, Number(item.modelo?.duracion || 0));
@@ -525,7 +458,6 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
         const fecha = new SDate(fechaInicioValue, "yyyy-MM-dd");
         return fecha.addDay(dias - 1).toString("yyyy-MM-dd");
     };
-
     React.useEffect(() => {
         const inicio = suscriptor?.fecha_inicio || "";
         const fin = suscriptor?.fecha_fin || calcularFechaFin(inicio);
@@ -533,7 +465,6 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
         setFechaInicio(inicio);
         setFechaFin(fin);
     }, [suscriptor]);
-
     const saveSuscriptor = (updates: any) => {
         let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
         if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
@@ -560,12 +491,10 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
         setFechaFin(fin);
         saveSuscriptor({ fecha_inicio: value, fecha_fin: fin });
     };
-
     const onChangeFechaFin = (value: string) => {
         setFechaFin(value);
         saveSuscriptor({ fecha_fin: value });
     };
-
     const options = clientes.length > 0 ? clientes.map((c: any) => {
         const clienteData = c?.cliente ? c.cliente : c;
         return {
@@ -579,7 +508,6 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
             ),
         };
     }) : [{ label: loadingClientes ? "Cargando clientes..." : "No hay clientes", value: "", data: null }];
-
     const hayAlgo = !!cliente || !!fechaInicio || !!fechaFin;
     const clienteError = hayAlgo && !cliente;
     const fechaInicioError = hayAlgo && !fechaInicio;
@@ -587,12 +515,7 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
 
     return (
         <SView style={{ marginBottom: 10 }}>
-
-            <SText fontSize={UI.font.tiny} bold color={STheme.color.text} style={{ marginBottom: 2 }}>
-                {"Miembro "}{index + 1}
-            </SText>
-
-            {/* Selector de cliente */}
+            <SText fontSize={UI.font.tiny} bold color={STheme.color.text} style={{ marginBottom: 2 }}> {"Miembro "}{index + 1} </SText>
             <SView style={{ height: 20, backgroundColor: clienteError ? UI.colors.error : STheme.color.card, borderRadius: 2, marginBottom: 6 }}>
                 <InputSelector
                     customStyle="erp"
@@ -606,22 +529,16 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
                     }}
                 />
             </SView>
-
-            {/* Fechas */}
             <SView row style={{ gap: 8 }}>
                 <SView flex style={{ height: 20, backgroundColor: fechaInicioError ? UI.colors.error : UI.colors.mutedDark, borderRadius: 2 }}>
-                    <SInput
-                        style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }}
-                        type="date"
+                    <SInput style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }} type="date"
                         icon={<SText width={50} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"F. Inicio"}</SText>}
                         value={fechaInicio}
                         onChangeText={onChangeFechaInicio}
                     />
                 </SView>
                 <SView flex style={{ height: 20, backgroundColor: fechaFinError ? UI.colors.error : UI.colors.mutedDark, borderRadius: 2 }}>
-                    <SInput
-                        style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }}
-                        type="date"
+                    <SInput style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }} type="date"
                         icon={<SText width={40} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"F. Fin"}</SText>}
                         value={fechaFin}
                         onChangeText={onChangeFechaFin}
@@ -637,14 +554,12 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
     const [inputValue, setInputValue] = React.useState((costo.monto || 0).toFixed(2));
     const [clienteKey, setClienteKey] = React.useState(costo.key_modelo_cliente || "");
     const [resetKey, setResetKey] = React.useState(0);
-
     const setProgrammaticMonto = (nuevoMonto: number) => {
         setMonto(nuevoMonto);
         setInputValue(nuevoMonto.toFixed(2));
         setResetKey(k => k + 1);
         costo.monto = nuevoMonto;
     };
-
     React.useEffect(() => {
         if (!costo.key_modelo_cliente) return;
         const cliente = (costo.clientes || []).find((c: any) => c.key === costo.key_modelo_cliente);
@@ -652,10 +567,8 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
         const comision = parseFloat(cliente.comision || "0");
         setProgrammaticMonto(totalItem * (comision / 100));
     }, [totalItem, costo.key_modelo_cliente]);
-
     const clienteError = !!monto && !clienteKey;
     const montoError = !!clienteKey && !monto;
-
     return (
         <SView style={{ marginBottom: 4 }}>
             <SText fontSize={UI.font.small} color={UI.colors.textMuted} style={{ marginBottom: 1 }}>{costo.descripcion}</SText>

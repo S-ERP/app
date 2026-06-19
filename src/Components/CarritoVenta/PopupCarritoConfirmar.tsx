@@ -5,37 +5,19 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
-
 const HEADER_COLOR = "#198754";
-
-type PopupCarritoConfirmarProps = {}
+type PopupCarritoConfirmarProps = {};
 
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
         SPopup.open({
             key: "PopupCarritoConfirmar",
             type: "3",
-            content: <SView style={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                width: "100%",
-                maxWidth: 300,
-                height: "95%",
-                maxHeight: 620,
-                backgroundColor: STheme.color.background,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: STheme.color.card,
-                cursor: "default",
-                userSelect: "text",
-                overflow: "hidden",
-            }} withoutFeedback>
+            content: <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 300, height: "95%", maxHeight: 620, backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, cursor: "default", userSelect: "text", overflow: "hidden", }} withoutFeedback>
                 <PopupCarritoConfirmar {...props} />
             </SView>
         })
     }
-
     proveedor: any;
     inputCliente: SInput | null = null;
     inputRazonSocial: SInput | null = null;
@@ -44,7 +26,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputDescripcionVenta: SInput | null = null;
     evento: any;
     _mounted = false;
-
     state: {
         almacen: any;
         moneda: any;
@@ -58,27 +39,24 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         descuentoSeleccionado: any | null;
         esCredito: boolean;
     } = {
-        almacen: null,
-        moneda: null,
-        factura: false,
-        razon_social: "",
-        nit: "",
-        clientes: [],
-        key_cliente: null,
-        cliente_texto: "",
-        descuentos: [],
-        descuentoSeleccionado: null,
-        esCredito: false,
-    }
-
+            almacen: null,
+            moneda: null,
+            factura: false,
+            razon_social: "",
+            nit: "",
+            clientes: [],
+            key_cliente: null,
+            cliente_texto: "",
+            descuentos: [],
+            descuentoSeleccionado: null,
+            esCredito: false,
+        }
     onTipoPagoChange = (esCredito: boolean) => {
         this.setState({ esCredito });
     };
-
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarritoConfirmar");
     }
-
     componentDidMount() {
         this._mounted = true;
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", this.cargarMonedaSeleccionada);
@@ -87,7 +65,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.cargarDescuentos();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount(): void {
         this._mounted = false;
         if (this.evento) {
@@ -95,12 +72,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
-
     cargarMonedaSeleccionada = () => {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         this.setState({ moneda: moneda || null });
     };
-
     async cargarClientes() {
         try {
             let clientes = await MDL.crm.cliente.getAll();
@@ -111,7 +86,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error cargando clientes", e);
         }
     }
-
     async cargarDescuentos() {
         try {
             const resp = await SSocket.sendPromise({
@@ -151,13 +125,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 });
                 return;
             }
-
             const carritoItems = MDL.carrito.carrito_venta?.items || [];
             if (carritoItems.length === 0) {
                 SNotification.send({ key: "venta_rapida", title: "Carrito vacío", body: "No hay productos en el carrito.", color: STheme.color.danger, time: 3000 });
                 return;
             }
-
             let subtotal = MDL.carrito.carrito_venta?.monto_total || 0;
             subtotal = parseFloat(Number(subtotal).toFixed(2));
             let porcentajeDescuento = 0;
@@ -169,7 +141,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 montoFinal = parseFloat((montoFinal - descuentoMonto).toFixed(2));
                 descuentos = [descuentoSeleccionado];
             }
-
             const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
             const cliente = {
                 ...(this.proveedor || {}),
@@ -177,7 +148,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 nit: this.state.nit || this.proveedor?.nit || "",
                 razon_social: this.state.razon_social || this.proveedor?.razon_social || this.proveedor?.nombres || "",
             };
-
             PopupCarritoConfirmarResumen.open({
                 subtotal,
                 montoMaximo: montoFinal,
@@ -203,11 +173,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-
+    
     render() {
         return (
             <SView col={"xs-12"} height>
-                {/* Header */}
                 <SView row style={{ backgroundColor: HEADER_COLOR, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                         onPress={() => SPopup.close("PopupCarritoConfirmar")}>
@@ -220,10 +189,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
                 </SView>
-
                 <SView flex>
                     <SView padding={8}>
-                        {/* Datos del cliente + checkbox factura */}
                         <SView row col={"xs-12"} style={{ alignItems: "center", marginBottom: 4 }}>
                             <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente:"}</SText>
                             <SView col={"xs-6"} row style={{ alignItems: "center", justifyContent: "flex-end" }}>
@@ -245,8 +212,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             </SView>
                         </SView>
                         <SHr />
-
-                        {/* Selector de cliente */}
                         <SInput
                             ref={ref => (this.inputCliente = ref)}
                             inputStyle={this.state.factura || this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
@@ -341,8 +306,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 )
                             }
                         />
-
-                        {/* Campos de factura */}
                         {this.state.factura && <>
                             <SHr h={10} />
                             <SInput
@@ -399,10 +362,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             <SHr h={4} />
                         </>}
                     </SView>
-
                     <SHr />
-
-                    {/* Descuento */}
                     <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
                         <SText color={STheme.color.lightGray}>{"Descuento"}</SText>
                         <SInput
@@ -421,10 +381,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             }}
                         />
                     </SView>
-
                     <SHr />
-
-                    {/* Almacén */}
                     <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
                         <SText color={STheme.color.lightGray}>{"Seleccione el almacén"}</SText>
                         <SelectorAlmacen
@@ -435,10 +392,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             onChangeSelect={e => this.setState({ almacen: e })}
                         />
                     </SView>
-
                     <SHr />
-
-                    {/* Descripción */}
                     <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
                         <SText color={STheme.color.lightGray}>{"Descripción"}</SText>
                         <SInput
@@ -448,11 +402,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
                         />
                     </SView>
-
                     <SHr />
                 </SView>
-
-                {/* Footer */}
                 <SView style={{ backgroundColor: STheme.color.card, borderTopWidth: 1, borderTopColor: STheme.color.gray, paddingHorizontal: 14, paddingVertical: 10 }}>
                     <SView style={{ backgroundColor: HEADER_COLOR, borderRadius: 4, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
                         onPress={() => this.handleOnPress()}>

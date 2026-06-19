@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Dimensions } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, useAnimatedGestureHandler, runOnJS } from "react-native-reanimated";
 import { Gesture, GestureDetector, PanGestureHandler } from "react-native-gesture-handler";
-import { SNavigation, SPopup, SStorage, SText, STheme, SView } from "servisofts-component";
+import { SStorage, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SIconApp from "../../Assets/SIconApp";
 import PopupCarrito from "./PopupCarrito";
@@ -13,6 +13,7 @@ const CarritoItem = () => {
     const isDrag = useSharedValue(false);
     const translateX = useSharedValue(width - 70);
     const translateY = useSharedValue(20);
+
     useEffect(() => {
         const sub = Dimensions.addEventListener("change", (e) => {
             const _window = e.window;
@@ -44,7 +45,6 @@ const CarritoItem = () => {
             console.error("Error al guardar posición:", e);
         }
     };
-
     const tapgesture = Gesture.Tap().maxDistance(4).onBegin(() => {
     }).onEnd(() => {
         PopupCarrito.open({});
@@ -66,7 +66,6 @@ const CarritoItem = () => {
     })
 
     const conbine = Gesture.Simultaneous(gestureHandler, tapgesture);
-
     const animatedStyle = useAnimatedStyle(() => ({
         cursor: isDrag.value ? "grabbing" : "grab",
         transform: [
@@ -74,7 +73,7 @@ const CarritoItem = () => {
             { translateY: translateY.value },
         ],
     }));
-
+    
     return (
         <GestureDetector gesture={conbine}>
             <Animated.View style={[{ width: 50, height: 50, position: "absolute", justifyContent: "center", alignItems: "center" }, animatedStyle]}>
@@ -88,5 +87,4 @@ const CarritoItem = () => {
         </GestureDetector>
     );
 };
-
 export default CarritoItem;

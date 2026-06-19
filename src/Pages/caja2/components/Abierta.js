@@ -145,7 +145,7 @@ export default class Abierta extends Component {
                     }}
                     >
                         <SText
-                            // disabled={true} 
+                            // disabled={true}
                             onPress={() => {
                                 SPopup.date("Selecciona la fecha", (a) => {
                                     console.log("devorame " + JSON.stringify(this.props.caja))

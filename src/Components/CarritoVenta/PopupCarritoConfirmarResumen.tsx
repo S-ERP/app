@@ -6,7 +6,6 @@ import SIconApp from "../../Assets/SIconApp";
 import FiltroMoneda from "../FiltroMoneda";
 import ComprobanteRollo from "../PDF/venta/ReciboSmall";
 import SelectTipoPagoVenta from "../../Pages/caja2/components/SelectTipoPagoVenta";
-
 const HEADER_COLOR = "#198754";
 
 interface ClienteType {
@@ -15,7 +14,6 @@ interface ClienteType {
     razon_social?: string;
     nombres?: string;
 }
-
 export interface PopupCarritoConfirmarResumenProps {
     descripcion?: string;
     factura?: boolean;
@@ -30,59 +28,36 @@ export interface PopupCarritoConfirmarResumenProps {
     almacen?: any;
     onTipoPagoChange: (esCredito: boolean) => void;
 }
-
 export default class PopupCarritoConfirmarResumen extends React.Component<PopupCarritoConfirmarResumenProps> {
     static open(props: PopupCarritoConfirmarResumenProps) {
         SPopup.open({
             key: "PopupCarritoConfirmarResumen",
             type: "3",
-            content: <SView style={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                width: "100%",
-                maxWidth: 300,
-                height: "95%",
-                maxHeight: 620,
-                backgroundColor: STheme.color.background,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: STheme.color.card,
-                cursor: "default",
-                userSelect: "text",
-                overflow: "hidden",
-            }} withoutFeedback>
+            content: <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 300, height: "95%", maxHeight: 620, backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, cursor: "default", userSelect: "text", overflow: "hidden", }} withoutFeedback>
                 <PopupCarritoConfirmarResumen {...props} />
             </SView>
         })
     }
-
     evento: any;
-
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarritoConfirmarResumen");
     }
-
     componentDidMount() {
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => this.forceUpdate());
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
-
     calcularSubtotal() {
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const carritoItems = MDL.carrito.carrito_venta.items;
         console.clear();
         console.log(JSON.stringify(carritoItems))
         return carritoItems.reduce((acc, item) => {
-            // antes
-            // const precio = monedaActual ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
             const precio = monedaActual ? item.modelo.precio_venta / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta;
             return acc + precio * item.cantidad;
         }, 0);
@@ -104,11 +79,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 SNotification.send({ key: "venta_rapida", title: "Moneda no seleccionada", body: "Debe seleccionar una moneda antes de continuar.", color: STheme.color.danger, time: 4000 });
                 return;
             }
-            // console.clear()
-            console.log(total)
-            console.log(subtotal)
             const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
-            // const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
             SelectTipoPagoVenta.openPopup({
                 key_punto_venta: keyPuntoVenta,
                 montoMaximo,
@@ -131,13 +102,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             content: (
                 <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24}
                     style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }}>
-                    <SView width={80} height={80} borderRadius={40} backgroundColor={"#198754"} center style={{ marginBottom: 16 }}>
-                        <SText fontSize={36} color="white">✔</SText>
-                    </SView>
+                    <SView width={80} height={80} borderRadius={40} backgroundColor={"#198754"} center style={{ marginBottom: 16 }}> <SText fontSize={36} color="white">✔</SText> </SView>
                     <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Venta realizada con éxito!</SText>
-                    <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}>
-                        Tu transacción se ha completado correctamente.
-                    </SText>
+                    <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}> Tu transacción se ha completado correctamente. </SText>
                     <SView row col="xs-12 md-11" style={{ justifyContent: "space-between", gap: 16, width: "100%", flexWrap: "nowrap" }}>
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text}
                             onPress={() => SPopup.close("popup-venta-completada")}>
@@ -170,14 +137,12 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 SNotification.send({ key: "venta_rapida", title: "Almacén requerido", body: "Debe seleccionar un almacén antes de completar la venta.", color: STheme.color.danger, time: 4000 });
                 return;
             }
-
             const sucursalKey = MDL.caja.activa?.key_sucursal ?? null;
             const esCredito = Object.values(tipos_pago).some((tp: any) =>
                 tp?.tipo_pago?.key === "credito" ||
                 tp?.tipo_pago?.descripcion?.toLowerCase() === "credito"
             );
             const clientefull = this.props.cliente || {};
-
             if (esCredito && !clientefull?.key) {
                 this.props.onTipoPagoChange(true);
                 SelectTipoPagoVenta.closePopup();
@@ -192,13 +157,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 return;
             }
             this.props.onTipoPagoChange(false);
-
             const carritoItems = MDL.carrito.carrito_venta?.items || [];
             if (carritoItems.length === 0) {
                 SNotification.send({ key: "venta_rapida", title: "Carrito vacío", body: "No hay productos en el carrito.", color: STheme.color.danger, time: 3000 });
                 return;
             }
-
             const detalle = carritoItems.map((ci: any) => {
                 const costos: any[] = [];
                 const tcostos = ci?.modelo?.tipoCostos;
@@ -245,11 +208,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     suscriptores,
                 };
             });
-
             const suscripciones = detalle.flatMap((item: any) =>
                 Array.isArray(item.suscriptores) ? item.suscriptores : []
             );
-
             const data = {
                 descripcion: this.props.descripcion || "",
                 observacion: this.props.descripcion || "",
@@ -282,9 +243,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 suscripciones,
                 tipos_pago,
             };
-
             SNotification.send({ key: "venta_rapida", title: "Cargando", type: "loading" });
-
             const ventaResp = await SSocket.sendPromise({
                 service: "caja",
                 component: "caja_detalle",
@@ -292,7 +251,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 estado: "cargando",
                 data,
             });
-
             const keyVenta = (ventaResp as any)?.data?.key_compra_venta;
             if (!keyVenta) throw new Error("El servidor no devolvió la clave de la venta.");
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
@@ -309,17 +267,15 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SNotification.send({ key: "venta_rapida", title: "Error al realizar la venta", body: mensaje, color: STheme.color.danger, time: 4000 });
         }
     }
-
+    
     render() {
         const { porcentajeDescuento, cliente, factura, almacen } = this.props;
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const subtotal2 = this.calcularSubtotal();
         const totalDescuento = subtotal2 * (porcentajeDescuento || 0);
         const total = subtotal2 - totalDescuento;
-
         return (
             <SView col={"xs-12"} height>
-                {/* Header */}
                 <SView row style={{ backgroundColor: HEADER_COLOR, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                         onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
@@ -332,20 +288,15 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
                 </SView>
-
                 <SView flex>
                     <SView padding={8}>
-                        {/* Selector de moneda */}
                         <SView style={{ paddingVertical: 8 }}>
                             <FiltroMoneda onSelect={(moneda) => {
                                 MDL.compra_venta.setMonedaSeleccionada(moneda);
                                 MDL.carrito.calcularValoresCarritDeVentas();
                             }} />
                         </SView>
-
                         <SHr />
-
-                        {/* Cliente */}
                         <SText color={STheme.color.lightGray} bold>{"Datos del Cliente"}</SText>
                         <SHr h={6} />
                         <SView row>
@@ -353,7 +304,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             <SView width={8} />
                             <SText>{cliente?.nombres || cliente?.razon_social}</SText>
                         </SView>
-
                         {factura && <>
                             <SHr h={12} />
                             <SText color={STheme.color.lightGray} bold>{"Datos Factura"}</SText>
@@ -370,17 +320,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                                 <SText>{cliente?.nit}</SText>
                             </SView>
                         </>}
-
                         <SHr h={12} />
                         <SView row>
                             <SText color={STheme.color.lightGray}>{"Almacén:"}</SText>
                             <SView width={8} />
                             <SText>{almacen?.descripcion}</SText>
                         </SView>
-
                         <SHr h={20} />
-
-                        {/* Totales */}
                         <SView style={{ borderRadius: 8, padding: 12, borderWidth: 2, borderColor: STheme.color.card }}>
                             <SView row style={{ justifyContent: "space-between", marginBottom: 6 }}>
                                 <SText fontSize={13} color={STheme.color.text}>{"Subtotal:"}</SText>
@@ -406,8 +352,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         </SView>
                     </SView>
                 </SView>
-
-                {/* Footer */}
                 <SView style={{ backgroundColor: STheme.color.card, borderTopWidth: 1, borderTopColor: STheme.color.gray, paddingHorizontal: 14, paddingVertical: 10 }}>
                     <SView style={{ backgroundColor: HEADER_COLOR, borderRadius: 4, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
                         onPress={() => this.handleOnPress()}>

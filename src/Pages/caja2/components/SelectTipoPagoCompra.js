@@ -25,8 +25,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             content: <SView style={{
                 width: 400,
                 maxWidth: "95%",
-                // height: "85%",
-                // maxHeight: 920,
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
                 overflow: "hidden",
@@ -37,9 +35,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             </SView>
         })
     }
-
     static closePopup() { SPopup.close("SelectTipoPagoCompra") }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -49,22 +45,18 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         this._mounted = false;
         this.pvtp = [];
     }
-
     handleKeyDown = (e) => {
         if (e.key === "Escape") SPopup.close("SelectTipoPagoCompra");
     }
-
     componentDidMount() {
         this._mounted = true;
         this.loadData();
         globalThis.document?.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount() {
         this._mounted = false;
         globalThis.document?.removeEventListener("keydown", this.handleKeyDown);
     }
-
     async loadData() {
         this.tipo_pago = await MDL.caja.tipo_pago_getAll()
         const data = await MDL.empresa.getFull()
@@ -170,7 +162,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         }}
                                     />
                                 </SView>
-
                                 <SView style={{ paddingRight: 8, paddingLeft: 1 }} row center onPress={() => {
                                     const totalSinEste = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - item.monto);
                                     const falta = MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0) - totalSinEste);
@@ -185,10 +176,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 }} >
                                     <SIconApp name='Reload' width={10} height={10} fill={STheme.color.text} />
                                 </SView>
-
-
                             </SView>
-
                             <SHr />
                             {(item?.moneda?.tipo_cambio != 1) &&
                                 <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
@@ -199,8 +187,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                             defaultValue={String(parseFloat(item.monto ?? "0"))}
                                         />
                                     </SView>
-
-
                                 </SView>
                             }
                             {item.key_pasarela_empresa && (
@@ -215,25 +201,21 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             </SView>
         </SView>
     }
-
     calcularMontoInsertadoNum() {
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
         selecteds.forEach(item => { montoTotal += parseFloat(item.monto) });
         return MDL.contabilidad.round(montoTotal / (this.moneda?.tipo_cambio || 1));
     }
-
     calcularMontoInsertadoBase() {
         let montoTotal = 0;
         const selecteds = this.pvtp.filter(a => !!a.__select);
         selecteds.forEach(item => { montoTotal += parseFloat(item.monto) });
         return MDL.contabilidad.round(montoTotal);
     }
-
     calcularMontoInsertado() {
         return SMath.formatMoney(this.calcularMontoInsertadoNum());
     }
-
     agruparPorMoneda(lista) {
         const grupos = {};
         lista.forEach(item => {
@@ -246,7 +228,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         });
         return Object.values(grupos);
     }
-
     render() {
         const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio || 1);
         const obs = this.moneda?.observacion ?? "Bs";
@@ -255,23 +236,12 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const nada = selecteds.length === 0;
         const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
         const puedeConfirmar = !nada && Math.abs(diff) <= 0.001;
-        const statusColor = nada ? STheme.color.gray
-            : diff < -0.001 ? "#dc3545"
-                : diff > 0.001 ? "#e6a817"
-                    : "#198754";
+        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? "#dc3545" : diff > 0.001 ? "#e6a817" : "#198754";
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
-        const statusMsg = nada
-            ? "Seleccione un tipo de pago"
-            : diffBase < -0.001
-                ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}`
-                : diffBase > 0.001
-                    ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}`
-                    : "✓ Monto exacto";
-
+        const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
         return (
             <SView col={"xs-12"} height>
-                {/* Header */}
                 <SView row style={{ backgroundColor: "#a046e8", paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
                     <SText fontSize={16} bold color={STheme.color.text}>{"Tipo de Pago"}</SText>
                     <SView flex />
@@ -280,8 +250,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
                     </SView>
                 </SView>
-
-                {/* Monto cards */}
                 {this.props.montoMaximo != null && (
                     <>
                         <SView row style={{ padding: 8, paddingBottom: 4, gap: 8 }}>
@@ -296,7 +264,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center", borderWidth: 2, borderColor: statusColor }}>
                                 <SText fontSize={12} color={STheme.color.lightGray}>{"Monto Insertado"}</SText>
                                 <SText bold fontSize={16} color={statusColor}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(this.calcularMontoInsertadoBase())}</SText>
-                                {/* {this.moneda?.tipo_cambio != 1 && ( */}
                                 {this.moneda?.tipo != "base" && (
                                     < SText fontSize={11} color={STheme.color.lightGray}>{obs}{" "}{SMath.formatMoney(montoInsertadoNum)}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
@@ -311,12 +278,8 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             </SView>
                         </SView>
                     </>
-                )
-                }
-
+                )}
                 <SHr />
-
-                {/* Payment list */}
                 {
                     this.state.ready
                         ? (
@@ -338,14 +301,11 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             </SView>
                         )
                 }
-
-
                 <SHr />
                 <SHr />
                 <SHr />
                 <SHr />
                 <SHr />
-                {/* Footer */}
                 <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", padding: 12 }}>
                     <SView row style={{ gap: 12 }}>
                         <SView flex style={{ backgroundColor: "#dc3545", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
@@ -382,7 +342,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         </SView>
                     </SView>
                 </SView>
-
                 {
                     this.state.loading && (
                         <SView style={{
