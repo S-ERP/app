@@ -159,7 +159,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                         <SView col={"xs-12"} withoutFeedback>
                             <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
                                 <SText style={{ marginRight: 2 }}> {item?.moneda?.observacion ?? "BS"} </SText>
-                                <SView flex row>
+                                <SView flex row center>
                                     <SInput2 ref={ref => item.__ref = ref} autoFocus name={`monto_${item.key}`} type="money"
                                         style={{ width: "100%", textAlign: "right", paddingRight: 4, fontSize: 14 }}
                                         defaultValue={String(MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio || 1)))}
@@ -175,6 +175,20 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                             this.forceUpdate();
                                         }}
                                     />
+                                </SView>
+                                <SView style={{ paddingRight: 8, paddingLeft: 1 }} row center onPress={() => {
+                                    const totalSinEste = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - item.monto);
+                                    const falta = MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0) - totalSinEste);
+                                    item.monto = falta;
+                                    if (item.__ref) {
+                                        item.__ref.setValue(MDL.contabilidad.round(falta / (item.moneda?.tipo_cambio || 1)));
+                                    }
+                                    if (item.__ref_extranjera) {
+                                        item.__ref_extranjera.setValue(falta);
+                                    }
+                                    this.forceUpdate();
+                                }} >
+                                    <SIconApp name='Reload' width={10} height={10} fill={STheme.color.text} />
                                 </SView>
                             </SView>
                             <SHr />

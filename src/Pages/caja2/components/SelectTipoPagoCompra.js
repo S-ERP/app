@@ -170,7 +170,25 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         }}
                                     />
                                 </SView>
+
+                                <SView style={{ paddingRight: 8, paddingLeft: 1 }} row center onPress={() => {
+                                    const totalSinEste = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - item.monto);
+                                    const falta = MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0) - totalSinEste);
+                                    item.monto = falta;
+                                    if (item.__ref) {
+                                        item.__ref.setValue(MDL.contabilidad.round(falta / (item.moneda?.tipo_cambio || 1)));
+                                    }
+                                    if (item.__ref_extranjera) {
+                                        item.__ref_extranjera.setValue(falta);
+                                    }
+                                    this.forceUpdate();
+                                }} >
+                                    <SIconApp name='Reload' width={10} height={10} fill={STheme.color.text} />
+                                </SView>
+
+
                             </SView>
+
                             <SHr />
                             {(item?.moneda?.tipo_cambio != 1) &&
                                 <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
@@ -181,6 +199,8 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                             defaultValue={String(parseFloat(item.monto ?? "0"))}
                                         />
                                     </SView>
+
+
                                 </SView>
                             }
                             {item.key_pasarela_empresa && (
