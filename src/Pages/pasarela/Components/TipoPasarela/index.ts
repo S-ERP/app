@@ -1,5 +1,6 @@
 import banco_continental from "./banco_continental";
 import banco_ganadero_qr from "./banco_ganadero_qr";
+import banco_economico from "./banco_economico";
 
 export type TipoPasarelaProps = {
     key_pasarela_empresa: string,
@@ -13,4 +14,5 @@ export type TipoPasarelaProps = {
 export default {
     banco_ganadero_qr,
     banco_continental,
+    banco_economico
 }
