@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { SHr, SImage, SInput, SLoad, SNotification, SPage, SPopup, SText, STheme, SUuid, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SLoad, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import Config from "../../../Config";
 import MDL from "../../../MDL";
@@ -12,6 +12,9 @@ import SIconApp from "../../../Assets/SIconApp";
 import SUpload from "../../../Components/SUpload";
 import FormularioTipoProducto from "../Components/FormularioTipoProducto";
 import PopupAgregarMarca from "../marca/Components/PopupAgregarMarca";
+import FiltroSelector from './Components/FiltroSelector';
+import PopupAjusteStock from './Components/PopupAjusteStock';
+import PopupConfirmarCambiosStock from './Components/PopupConfirmarCambiosStock';
 
 function tipoProductoEstaCompleto(tipo) {
     if (!tipo) return true;
@@ -64,16 +67,13 @@ class FotoCell extends React.Component {
 class StockCell extends React.Component {
     constructor(props) {
         super(props);
-        this.currentValue = props.row.stock ? parseFloat(props.row.stock) : 0;
-        this.state = { resetKey: 0 };
+        this.currentValue = parseFloat(props.row.stock ?? 0);
     }
 
     render() {
-        const { row, table, inputStyle } = this.props;
-        const { resetKey } = this.state;
-        const stockActual = row.stock ? parseFloat(row.stock) : 0;
+        const { row, onDirty, inputStyle } = this.props;
+        const stockActual = parseFloat(row.stock ?? 0);
         return <SInput2
-            key={"sinput" + row.key + resetKey}
             type="money"
             defaultValue={stockActual ? String(stockActual) : undefined}
             placeholder="0"
@@ -82,116 +82,19 @@ class StockCell extends React.Component {
                 this.currentValue = parseFloat(val.replace(/\./g, "").replace(",", ".")) || 0;
             }}
             onBlur={() => {
-                const nuevo = this.currentValue;
-                if (nuevo === stockActual) return;
-                PopupAjusteStock.open({
-                    modelo: row,
-                    stockActual,
-                    stockNuevo: nuevo,
-                    onCancel: () => this.setState(prev => ({ resetKey: prev.resetKey + 1 })),
-                    onSuccess: () => {
-                        row.stock = nuevo;
-                        table.applyFormatData().then(() => table.applyFilter());
-                    },
-                });
+                if (this.currentValue !== stockActual) {
+                    row.stock = this.currentValue;
+                    onDirty(row);
+                }
             }}
             style={{ ...inputStyle, textAlign: "right" }}
         />;
     }
 }
 
-class PopupAjusteStock extends React.Component {
-    state = { almacenes: [], key_almacen: null, guardando: false }
-
-    static open(props) {
-        SPopup.open({
-            key: "PopupAjusteStock",
-            content: <SView style={{ width: "100%", maxWidth: 380, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} withoutFeedback>
-                <PopupAjusteStock {...props}
-                    onCancel={() => { SPopup.close("PopupAjusteStock"); props.onCancel?.(); }}
-                    onSuccess={(resp) => { SPopup.close("PopupAjusteStock"); props.onSuccess?.(resp); }}
-                />
-            </SView>
-        });
-    }
-
-    async componentDidMount() {
-        const almacenes = await MDL.inventario.getAllAlmacen();
-        this.setState({ almacenes, key_almacen: almacenes[0]?.key });
-    }
-
-    async handleConfirmar() {
-        const { modelo, stockActual, stockNuevo } = this.props;
-        const { key_almacen } = this.state;
-        const diff = Math.abs(stockNuevo - stockActual);
-        const esCompra = stockNuevo > stockActual;
-        this.setState({ guardando: true });
-        try {
-            const conteo = await MDL.inventario.saveConteoManualInventario({
-                key_almacen,
-                data: [{
-                    key_modelo: modelo.key,
-                    stock: stockActual,
-                    cantidad_real: esCompra ? stockNuevo : stockActual,
-                    cantidad_baja: esCompra ? 0 : diff,
-                    explicacion: esCompra ? "Compra desde tabla de modelos" : "Pérdida declarada desde tabla de modelos",
-                }]
-            });
-            await MDL.inventario.aplicar_cardex(conteo.key);
-            this.props.onSuccess?.();
-        } catch (err) {
-            console.error(err);
-            SNotification.send({ key: "ajuste_stock", title: "Error al ajustar stock", type: "danger", time: 3000 });
-        }
-        this.setState({ guardando: false });
-    }
-
-    render() {
-        const { modelo, stockActual, stockNuevo } = this.props;
-        const { almacenes, key_almacen, guardando } = this.state;
-        const diff = stockNuevo - stockActual;
-        const esCompra = diff > 0;
-        const color = esCompra ? STheme.color.success : STheme.color.danger;
-
-        return <SView padding={16}>
-            <SText fontSize={14} bold>{modelo.descripcion}</SText>
-            <SHr h={12} />
-            <SView row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                <SText style={{ color: STheme.color.lightGray }}>Stock actual</SText>
-                <SText bold>{stockActual}</SText>
-            </SView>
-            <SView row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                <SText style={{ color: STheme.color.lightGray }}>Stock nuevo</SText>
-                <SText bold>{stockNuevo}</SText>
-            </SView>
-            <SView row style={{ justifyContent: "space-between", marginBottom: 12 }}>
-                <SText style={{ color: STheme.color.lightGray }}>{esCompra ? "Compra de" : "Pérdida de"}</SText>
-                <SText bold style={{ color }}>{esCompra ? "+" : "-"}{Math.abs(diff)}</SText>
-            </SView>
-            <SHr />
-            <SHr h={12} />
-            <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Almacén</SText>
-            {!almacenes.length ? <SLoad size="small" /> : <InputSelector
-                defaultValue={key_almacen}
-                options={almacenes.map(a => ({ label: a.descripcion, value: a.key }))}
-                onSelect={opt => this.setState({ key_almacen: opt.value })}
-                autoSelectOnBlur
-            />}
-            <SHr h={16} />
-            <SView row style={{ justifyContent: "flex-end", gap: 8 }}>
-                <SView onPress={() => this.props.onCancel?.()} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 4, backgroundColor: STheme.color.card }}>
-                    <SText fontSize={12}>Cancelar</SText>
-                </SView>
-                <SView onPress={guardando ? null : this.handleConfirmar.bind(this)} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 4, backgroundColor: color + "44" }}>
-                    {guardando ? <SLoad size="small" /> : <SText fontSize={12} bold style={{ color }}>{esCompra ? "Registrar Compra" : "Declarar Pérdida"}</SText>}
-                </SView>
-            </SView>
-        </SView>;
-    }
-}
 
 export default class table2 extends React.Component {
-    state = { dirtyRows: new Set(), deletedRows: new Set(), saving: false, tableKey: 0, selectedRows: [] };
+    state = { dirtyRows: new Set(), deletedRows: new Set(), saving: false, tableKey: 0, selectedRows: [], selectedSucursal: null };
     originalData = {};
 
     checkAndUpdateDirty(row) {
@@ -201,6 +104,8 @@ export default class table2 extends React.Component {
             !eq(row.descripcion, orig.descripcion) ||
             !eq(row.precio_compra, orig.precio_compra) ||
             !eq(row.precio_venta, orig.precio_venta) ||
+            !eq(row.codigo_ref, orig.codigo_ref) ||
+            parseFloat(row.stock ?? 0) !== parseFloat(orig.stock ?? 0) ||
             row.key_tipo_producto !== orig.key_tipo_producto ||
             row.key_marca !== orig.key_marca ||
             row.precio_compra_moneda !== orig.precio_compra_moneda ||
@@ -216,7 +121,7 @@ export default class table2 extends React.Component {
     async loadData() {
         try {
             const [modelos, tipos, marcas, empresa] = await Promise.all([
-                MDL.inventario.getAllModeloStock(),
+                MDL.inventario.getAllModeloStock("", this.state.selectedSucursal?.key ?? ""),
                 MDL.inventario.getAllTipoProducto(),
                 MDL.inventario.getAllMarca(),
                 MDL.empresa.getFull(),
@@ -246,6 +151,8 @@ export default class table2 extends React.Component {
                     key_marca: m.marca?.key,
                     precio_compra_moneda: m.precio_compra_moneda,
                     precio_venta_moneda: m.precio_venta_moneda,
+                    codigo_ref: m.codigo_ref,
+                    stock: m.stock,
                 };
             });
 
@@ -339,6 +246,19 @@ export default class table2 extends React.Component {
         try {
             const { dirtyRows, deletedRows } = this.state;
 
+            const stockChanges = Array.from(dirtyRows)
+                .filter(key => !deletedRows.has(key))
+                .map(key => ({ key, row: this.table.data.find(r => r.key === key), orig: this.originalData[key] }))
+                .filter(({ row, orig }) => row && orig && parseFloat(row.stock ?? 0) !== parseFloat(orig.stock ?? 0));
+
+            if (stockChanges.length > 0) {
+                const result = await PopupConfirmarCambiosStock.open({ stockChanges });
+                if (!result.confirmed) {
+                    this.setState({ saving: false });
+                    return;
+                }
+            }
+
             const deleteData = Array.from(deletedRows).map(key => ({
                 key,
                 estado: 0,
@@ -358,6 +278,7 @@ export default class table2 extends React.Component {
                         precio_venta: row.precio_venta,
                         key_tipo_producto: row.key_tipo_producto,
                         key_marca: row.key_marca,
+                        codigo_ref: row.codigo_ref,
                         precio_compra_moneda: row.precio_compra_moneda,
                         precio_venta_moneda: row.precio_venta_moneda,
                         estado: 1,
@@ -393,6 +314,27 @@ export default class table2 extends React.Component {
         ].filter(Boolean).join('  ·  ');
 
         return <SPage title={"table2"} disableScroll>
+            <SView col={"xs-12"} row style={{
+                backgroundColor: "transparent",
+                borderBottomWidth: 1,
+                borderColor: STheme.color.lightGray + "30",
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+            }}>
+                <SView width={150}>
+                    <FiltroSelector
+                        ref={ref => this.filtroSucursalRef = ref}
+                        label="Sucursal"
+                        loadData={MDL.empresa.getAllSucursales}
+                        mapOption={a => ({ key: a.key, nombre: a.descripcion })}
+                        onSelect={item => {
+                            this.setState({ selectedSucursal: item }, () => {
+                                this.table?.loadData();
+                            });
+                        }}
+                    />
+                </SView>
+            </SView>
             <DinamicTable
                 key={"tabla_modelo_" + tableKey}
                 ref={ref => {
@@ -664,7 +606,7 @@ export default class table2 extends React.Component {
 
                 <DinamicTable.Col key="stock" label="Stock" width={70} dataType="number"
                     data={e => e.row.stock ? parseFloat(e.row.stock) : 0}
-                    customComponent={e => <StockCell key={"stock" + e.row.key} row={e.row} table={this.table} inputStyle={inputStyle} />}
+                    customComponent={e => <StockCell key={"stock" + e.row.key + (e.row.stock ?? 0)} row={e.row} onDirty={this.checkAndUpdateDirty.bind(this)} inputStyle={inputStyle} />}
                 />
                 <DinamicTable.Col key="precio_compra" label="Pre. Compra" width={80} data={(e) => e.row.precio_compra}
                     cellStyle={{
