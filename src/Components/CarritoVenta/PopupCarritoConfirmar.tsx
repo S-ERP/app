@@ -393,14 +393,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         />
                     </SView>
                     <SHr />
-                    <SView style={{ paddingHorizontal: 8, paddingVertical: 5 }}>
+                    <SView style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
                         <SText color={STheme.color.lightGray}>{"Descripción"}</SText>
-                        <SInput
-                            type="textArea"
-                            ref={ref => this.inputDescripcionVenta = ref}
-                            placeholder={"Descripción de la venta"}
-                            style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
-                        />
+                        <SInput type="textArea" ref={ref => this.inputDescripcionVenta = ref} placeholder={"Descripción de la compra"} style={{ height: 50, padding: 3, marginVertical: 4 }} />
                     </SView>
                     <SHr />
                 </SView>
