@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, SectionList } from 'react-native';
-import { SHr, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import PagarConPasarela from '../../pasarela/Components/PagarConPasarela';
@@ -23,8 +23,9 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             key: "SelectTipoPagoCompra",
             type: "1",
             content: <SView style={{
-                width: 400,
+                width: 380,
                 maxWidth: "95%",
+                height: 600,
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
                 overflow: "hidden",
@@ -142,7 +143,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         </SView>
                     </SView>
                     <SView flex col={"xs-12"} center>
-                        <SView col={"xs-12"} withoutFeedback center style={{ paddingTop: 5 }}>
+                        <SView col={"xs-12"} withoutFeedback center style={{ paddingTop: 5, paddingRight: 2 }}>
                             <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
                                 <SText style={{ marginRight: 2 }}> {item?.moneda?.observacion ?? "BS"} </SText>
                                 <SView flex row>
@@ -162,6 +163,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         }}
                                     />
                                 </SView>
+
                                 <SView style={{ paddingRight: 8, paddingLeft: 1 }} row center onPress={() => {
                                     const totalSinEste = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - item.monto);
                                     const falta = MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0) - totalSinEste);
@@ -180,7 +182,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             <SHr />
                             {(item?.moneda?.tipo_cambio != 1) &&
                                 <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
-                                    <SText style={{ marginRight: 2 }}> {this.moneda_base?.observacion} </SText>
+                                    <SText style={{ marginRight: 2 }}>{this.moneda_base?.observacion}</SText>
                                     <SView flex row>
                                         <SInput2 ref={ref => item.__ref_extranjera = ref} name={`monto_extranjera_${item.key}`} type="money"
                                             style={{ width: "100%", textAlign: "right", fontSize: 14, paddingRight: 4 }}
@@ -189,6 +191,20 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     </SView>
                                 </SView>
                             }
+                            <SHr height={2} />
+
+                            <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
+                                <SText style={{ marginRight: 0, paddingLeft: 2 }} >REF:</SText>
+                                <SView flex row center >
+                                    <SInput placeholder="Referencia / Descripción"
+                                        style={{ height: 32, fontSize: 14, backgroundColor: STheme.color.card + "66", paddingLeft: 2 }}
+                                        defaultValue={item.referencia || ""}
+                                        onChangeText={(e) => { item.referencia = e; }} />
+                                </SView>
+                            </SView>
+
+
+
                             {item.key_pasarela_empresa && (
                                 <SView style={{ marginTop: 6, paddingVertical: 6, paddingHorizontal: 10, backgroundColor: STheme.color.card, borderRadius: 4, alignSelf: "flex-end" }}
                                     onPress={() => PagarConPasarela.open({ key_pasarela_empresa: item.key_pasarela_empresa, monto: item.monto })}>
@@ -257,7 +273,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 <SText fontSize={12} color={STheme.color.lightGray}>{"Monto a Pagar"}</SText>
                                 <SText bold fontSize={16}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0)))}</SText>
                                 {this.moneda?.tipo != "base" && (
-                                    // {this.moneda?.tipo_cambio != 1 && (
                                     <SText fontSize={11} color={STheme.color.lightGray}>{obs}{" "}{SMath.formatMoney(montoAPagar)}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
                             </SView>
@@ -302,10 +317,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         )
                 }
                 <SHr />
-                <SHr />
-                <SHr />
-                <SHr />
-                <SHr />
                 <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", padding: 12 }}>
                     <SView row style={{ gap: 12 }}>
                         <SView flex style={{ backgroundColor: "#dc3545", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
@@ -323,7 +334,8 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     elm[item.key] = {
                                         monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
                                         monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio || 1))),
-                                        tipo_pago: item.tipo_pago
+                                        tipo_pago: item.tipo_pago,
+                                        referencia: item.referencia || "",
                                     }
                                     montoTotal += parseFloat(item.monto)
                                 });
