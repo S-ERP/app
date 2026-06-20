@@ -743,7 +743,7 @@ export default class inventario extends React.Component {
         return (
             <SView row>
 
-                <CardResumen
+                {/* <CardResumen
                     label="Stock Total"
                     value={stockTotal}
                 />
@@ -761,7 +761,7 @@ export default class inventario extends React.Component {
                 <CardResumen
                     label="Bajo Stock"
                     value={dataProductosBajoStock.length}
-                />
+                /> */}
 
             </SView>
         );

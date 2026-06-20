@@ -61,6 +61,9 @@ export default class PagarConPasarela extends Component<Props> {
             const tp: any = this.state?.pasarela_empresa?.key_pasarela;
             TIPOPASARELA = (TipoPasarela as any)[tp];
         }
+        if(!TIPOPASARELA){
+            return <SText>{"Error"}</SText>
+        }
         return <SView col={"xs-12"} center >
             {!this.state.pasarela_empresa && <SText>{"Cargando pasarela..."}</SText>}
             {this.state.pasarela_empresa && <TIPOPASARELA {...this.props} {...this.state} />}
