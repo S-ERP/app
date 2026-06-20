@@ -153,8 +153,8 @@ export default class TotalTipoPagoTabla extends Component<TotalTipoPagoTablaProp
                     alignItems: "center"
                 }}>
                     <SView row center col={"xs-12"} padding={10} style={{
-                        borderTopWidth:1,
-                        borderRightWidth:1,
+                        borderTopWidth: 1,
+                        borderRightWidth: 1,
                         borderLeftWidth: 1,
                         borderColor: STheme.color.card,
                         backgroundColor: STheme.color.card

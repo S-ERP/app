@@ -5,7 +5,6 @@ import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import PagarConPasarela from '../../pasarela/Components/PagarConPasarela';
 import SInput2 from '../../../Components/SForm2/SInput2';
-
 type SelectTipoPagoCompraProps = {
     key_punto_venta: string,
     solo_para_caja: boolean,
@@ -17,7 +16,6 @@ type SelectTipoPagoCompraProps = {
     color?: string,
     onSelect?: (item: any) => void
 }
-
 export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompraProps> {
     static openPopup(props: SelectTipoPagoCompraProps) {
         SPopup.open({
@@ -93,7 +91,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         })
         this.setState({ ready: true });
     }
-
     renderItemTipoPago(item) {
         const select = item.__select
         return <SView style={{ padding: 4, }} col={"xs-12"}>
@@ -164,7 +161,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         }}
                                     />
                                 </SView>
-
                                 <SView style={{ paddingRight: 8, paddingLeft: 1 }} row center onPress={() => {
                                     const totalSinEste = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - item.monto);
                                     const falta = MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0) - totalSinEste);
@@ -193,7 +189,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 </SView>
                             }
                             <SHr height={2} />
-
                             <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
                                 <SText style={{ marginRight: 0, paddingLeft: 2 }} >REF:</SText>
                                 <SView flex row center >
@@ -203,9 +198,6 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         onChangeText={(e) => { item.referencia = e; }} />
                                 </SView>
                             </SView>
-
-
-
                             {item.key_pasarela_empresa && (
                                 <SView style={{ marginTop: 6, paddingVertical: 6, paddingHorizontal: 10, backgroundColor: STheme.color.card, borderRadius: 4, alignSelf: "flex-end" }}
                                     onPress={() => PagarConPasarela.open({ key_pasarela_empresa: item.key_pasarela_empresa, monto: item.monto })}>

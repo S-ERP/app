@@ -8,11 +8,9 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
-
 type PopupCarritoConfirmarProps = {
     moneda?: any;
 }
-
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
         SPopup.open({
@@ -68,11 +66,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             razon_social: "",
             nit: "",
         }
-
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarritoConfirmar");
     }
-
     componentDidMount(): void {
         this._mounted = true;
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
@@ -84,7 +80,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.cargarClientes();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount(): void {
         this._mounted = false;
         if (this.evento) {
@@ -92,7 +87,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
-
     async cargarClientes() {
         try {
             let clientes = await MDL.crm.cliente.getAll();
@@ -104,18 +98,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error cargando clientes:", error);
         }
     }
-
     generateRandomCode(length = 6) {
         const min = Math.pow(10, length - 1);
         const max = Math.pow(10, length) - 1;
         return "C-" + Math.floor(min + Math.random() * (max - min + 1)).toString();
     }
-
     cargarSubtotal() {
         try {
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const carritoItems = MDL.carrito.carrito_compra?.items || [];
-
             const subtotal = carritoItems.reduce((acc, item) => {
                 const precioBase = item?.modelo?.precio_compra_moneda || 0;
                 const tipoCambio = monedaActual?.tipo_cambio || 1;
@@ -128,7 +119,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             this.setState({ subtotal: 0 });
         }
     }
-
     handleOnPress2 = async (saveRecurrente: boolean) => {
         try {
             const key_moneda = this.state.moneda?.key || this.props.moneda?.key;
@@ -174,7 +164,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     };
-
     showCompraPopup(key_compra: string) {
         SPopup.open({
             key: "popup-compra-completada",
@@ -205,23 +194,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             )
         });
     }
-
     handleSubmit = async (tipos_pago: any, key_moneda: string, saveRecurrente?: boolean) => {
         try {
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
-
             const descripcionBase = this.inputDescripcionVenta?.getValue?.() || "";
-            // console.log("alvarin")
-            // console.log(JSON.stringify(tipos_pago))
-
-            // const referencias = Object.values(tipos_pago as Record<string, any>)
-            //     .map((tp: any) => tp.referencia)
-            //     .filter(Boolean)
-            //     .join(" | ");
-            // const descripcionaaaaaaaaa = [descripcionBase, referencias].filter(Boolean).join(" - ");
-
-
-            // const descripcion = this.inputDescripcionVenta?.getValue?.() || "";
             if (keyPago === "credito" && !this.proveedor) {
                 this.setState({ esCredito: true });
                 SelectTipoPagoCompra.closePopup();
@@ -282,10 +258,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 tipos_pago,
             };
 
-            // console.log("aqui viene todo");
-            // console.log(JSON.stringify(data))
-
-
             SNotification.send({ key: "compra_rapida", title: "Cargando", type: "loading" });
             if (saveRecurrente) {
                 await SSocket.sendPromise({
@@ -332,7 +304,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-
     render() {
         return (
             <SView col={"xs-12"} height>

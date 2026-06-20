@@ -213,7 +213,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             );
             const descripcion = this.props.descripcion || "";
             const data = {
-                // descripcion,
                 descripcion: "",
                 observacion: descripcion,
                 facturar: this.props.factura,
