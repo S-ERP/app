@@ -14,6 +14,7 @@ type SelectTipoPagoCompraProps = {
     key_moneda?: string,
     compra?: boolean,
     venta?: boolean,
+    color?: string,
     onSelect?: (item: any) => void
 }
 
@@ -256,9 +257,10 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
         const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
+        const headerColor = this.props.color || "#a046e8";
         return (
             <SView col={"xs-12"} height>
-                <SView row style={{ backgroundColor: "#a046e8", paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
+                <SView row style={{ backgroundColor: headerColor, paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
                     <SText fontSize={16} bold color={STheme.color.text}>{"Tipo de Pago"}</SText>
                     <SView flex />
                     <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#dc3545", justifyContent: "center", alignItems: "center" }}
@@ -325,7 +327,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             }}>
                             <SText bold color={STheme.color.text}>{"Cancelar"}</SText>
                         </SView>
-                        <SView flex style={{ backgroundColor: "#a046e8", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center", opacity: puedeConfirmar ? 1 : 0.45 }}
+                        <SView flex style={{ backgroundColor: headerColor, borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center", opacity: puedeConfirmar ? 1 : 0.45 }}
                             onPress={async () => {
                                 if (this.state.loading || !puedeConfirmar) return;
                                 let montoTotal = 0;

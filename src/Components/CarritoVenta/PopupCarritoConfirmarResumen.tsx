@@ -5,7 +5,7 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import FiltroMoneda from "../FiltroMoneda";
 import ComprobanteRollo from "../PDF/venta/ReciboSmall";
-import SelectTipoPagoVenta from "../../Pages/caja2/components/SelectTipoPagoVenta";
+import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
 const HEADER_COLOR = "#198754";
 
 interface ClienteType {
@@ -79,7 +79,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 return;
             }
             const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
-            SelectTipoPagoVenta.openPopup({
+            SelectTipoPagoCompra.openPopup({
                 key_punto_venta: keyPuntoVenta,
                 montoMaximo,
                 key_moneda: selectedMoneda.key,
@@ -88,6 +88,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 },
                 solo_para_caja: false,
                 venta: true,
+                color: "#198754",
             });
         } catch (error) {
             const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
@@ -144,7 +145,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const clientefull = this.props.cliente || {};
             if (esCredito && !clientefull?.key) {
                 this.props.onTipoPagoChange(true);
-                SelectTipoPagoVenta.closePopup();
+                SelectTipoPagoCompra.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
                 SNotification.send({
                     key: "venta_rapida",
@@ -255,7 +256,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const keyVenta = (ventaResp as any)?.data?.key_compra_venta;
             if (!keyVenta) throw new Error("El servidor no devolvió la clave de la venta.");
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-            SelectTipoPagoVenta.closePopup();
+            SelectTipoPagoCompra.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmarResumen");
             SPopup.close("PopupCarritoConfirmar");
