@@ -116,13 +116,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const carritoItems = MDL.carrito.carrito_compra?.items || [];
 
-            console.clear();
-            console.log("aqui");
             const subtotal = carritoItems.reduce((acc, item) => {
-                console.log(JSON.stringify(item?.modelo))
                 const precioBase = item?.modelo?.precio_compra_moneda || 0;
-                // const precioBase = item?.modelo?.precio_compra || 0;
-
                 const tipoCambio = monedaActual?.tipo_cambio || 1;
                 const precio = monedaActual ? precioBase / tipoCambio : precioBase;
                 return acc + precio * (item?.cantidad || 0);
@@ -159,10 +154,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 return;
             }
             const total = this.state.subtotal * (selectedMoneda.tipo_cambio || 1);
-            console.clear();
-            console.log(total)
-            console.log(this.state.subtotal)
-            // const total = this.state.subtotal * (selectedMoneda.tipo_cambio || 1);
             SelectTipoPagoCompra.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total,
@@ -172,8 +163,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 compra: true,
             });
         } catch (error: any) {
-            // console.log("macaco")
-            console.log(JSON.stringify(error))
+            console.error(JSON.stringify(error))
             const mensaje = error instanceof Error ? error.message : (error?.error || JSON.stringify(error));
             SNotification.send({
                 key: "compra_rapida",
@@ -219,7 +209,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     handleSubmit = async (tipos_pago: any, key_moneda: string, saveRecurrente?: boolean) => {
         try {
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
-            const descripcion = this.inputDescripcionVenta?.getValue?.() || "";
+            const descripcionBase = this.inputDescripcionVenta?.getValue?.() || "";
+            const referencias = Object.values(tipos_pago as Record<string, any>)
+                .map((tp: any) => tp.referencia)
+                .filter(Boolean)
+                .join(" | ");
+            const descripcion = [descripcionBase, referencias].filter(Boolean).join(" - ");
             if (keyPago === "credito" && !this.proveedor) {
                 this.setState({ esCredito: true });
                 SelectTipoPagoCompra.closePopup();
@@ -392,8 +387,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                     razon_social: nombre,
                                                     nombres: nombre,
                                                     nit: this.state.nit || "",
-                                                    key_empresa: MDL.empresa.select?.key,
-                                                });
+                                                    key_empresa: MDL.empresa.select?.key ?? "",
+                                                } as any);
                                                 if (!resp?.key) {
                                                     SNotification.send({ title: "Error", body: "No se pudo crear el proveedor.", color: STheme.color.danger, time: 3000 });
                                                     return;
@@ -423,8 +418,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                 onSelect: (cliente: any) => {
                                                     if (!cliente?.key) return;
                                                     this.proveedor = cliente;
-                                                    this.setState(prev => ({
-                                                        clientes: prev.clientes.some(c => c.key === cliente.key) ? prev.clientes : [...prev.clientes, cliente],
+                                                    this.setState((prev: any) => ({
+                                                        clientes: prev.clientes.some((c: any) => c.key === cliente.key) ? prev.clientes : [...prev.clientes, cliente],
                                                         key_cliente: cliente.key,
                                                         cliente_texto: cliente?.razon_social || cliente?.nombres || "",
                                                         razon_social: cliente?.razon_social || cliente?.nombres || "",
@@ -512,12 +507,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SHr />
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
                         <SText color={STheme.color.lightGray}>{"Descripción"}</SText>
-                        <SInput
-                            type="textArea"
-                            ref={ref => this.inputDescripcionVenta = ref}
-                            placeholder={"Descripción de la compra"}
-                            style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
-                        />
+                        <SInput type="textArea" ref={ref => this.inputDescripcionVenta = ref} placeholder={"Descripción de la compra"} style={{ height: 50, padding: 3, marginVertical: 4 }} />
                     </SView>
                     <SHr />
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 8 }}>
