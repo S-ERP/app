@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
-import { SHr, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SInput2 from '../../../Components/SForm2/SInput2';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
@@ -182,6 +182,10 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                     </SView>
                                 </SView>
                             }
+                            <SHr />
+                            <SView width={"100%"} style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 8, height: 32, justifyContent: "center" }}>
+                                <SInput placeholder="Referencia / Descripción" style={{ height: 32, fontSize: 13 }} defaultValue={item.referencia || ""} onChangeText={(e) => { item.referencia = e; }} />
+                            </SView>
                         </SView>
                     </SView>
                 </>}
@@ -233,7 +237,6 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                 <SText fontSize={12} color={STheme.color.lightGray}>{"Monto a Pagar"}</SText>
                                 <SText bold fontSize={16}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0)))}</SText>
                                 {this.moneda?.tipo != "base" && (
-                                    // {this.moneda?.tipo_cambio != 1 && (
                                     <SText fontSize={11} color={STheme.color.lightGray}>{obs}{" "}{SMath.formatMoney(montoAPagar)}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
                             </SView>
@@ -241,7 +244,6 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                 <SText fontSize={12} color={STheme.color.lightGray}>{"Monto Insertado"}</SText>
                                 <SText bold fontSize={16} color={statusColor}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(this.calcularMontoInsertadoBase())}</SText>
                                 {this.moneda?.tipo != "base" && (
-                                    // {this.moneda?.tipo_cambio != 1 && (
                                     <SText fontSize={11} color={STheme.color.lightGray}>{obs}{" "}{SMath.formatMoney(montoInsertadoNum)}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
                             </SView>
@@ -291,7 +293,8 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                     elm[item.key] = {
                                         monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
                                         monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio || 1))),
-                                        tipo_pago: item.tipo_pago
+                                        tipo_pago: item.tipo_pago,
+                                        referencia: item.referencia || "",
                                     }
                                     montoTotal += parseFloat(item.monto)
                                 });
