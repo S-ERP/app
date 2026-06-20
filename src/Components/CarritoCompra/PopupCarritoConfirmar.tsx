@@ -209,12 +209,17 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     handleSubmit = async (tipos_pago: any, key_moneda: string, saveRecurrente?: boolean) => {
         try {
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
+
             const descripcionBase = this.inputDescripcionVenta?.getValue?.() || "";
+            console.log(JSON.stringify(descripcionBase))
             const referencias = Object.values(tipos_pago as Record<string, any>)
                 .map((tp: any) => tp.referencia)
                 .filter(Boolean)
                 .join(" | ");
-            const descripcion = [descripcionBase, referencias].filter(Boolean).join(" - ");
+            const descripcionaaaaaaaaa = [descripcionBase, referencias].filter(Boolean).join(" - ");
+
+
+            // const descripcion = this.inputDescripcionVenta?.getValue?.() || "";
             if (keyPago === "credito" && !this.proveedor) {
                 this.setState({ esCredito: true });
                 SelectTipoPagoCompra.closePopup();
@@ -252,7 +257,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 };
             });
             const data: any = {
-                descripcion,
+                descripcion: descripcionaaaaaaaaa,
                 observacion: "Observacion compras",
                 key_proveedor: this.proveedor?.key || null,
                 key_usuario: keyUsuario,
