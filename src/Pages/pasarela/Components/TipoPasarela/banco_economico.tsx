@@ -47,15 +47,15 @@ export default class banco_economico extends React.Component<TipoPasarelaProps> 
     }
     render() {
         return <SView col={"xs-12"} center padding={15}>
-            <SGradient colors={["#075018", "#80BB01"]}  ></SGradient>
+            <SGradient colors={["#EC2625", "#ffffff"]}  ></SGradient>
             <SView col={"xs-10"} backgroundColor={STheme.color.white} center
                 style={{
                     borderRadius: 25,
                     overflow: "hidden"
                 }}>
-                <SView col={"xs-12"} backgroundColor={"#024C01"} height={70} width={"100%"}
+                <SView col={"xs-12"} backgroundColor={"#EC1C26"} height={70} width={"100%"}
                     style={{ overflow: "hidden" }}>
-                    {/* <SImage src={require("../../../../Assets/img/bancoGanadero2.jpg")} style={{ resizeMode: "cover" }} /> */}
+                    <SImage src={require("../../../../Assets/img/bancoEconomico.jpg")} style={{ resizeMode: "cover" }} />
                 </SView>
                 <SHr />
                 <SView style={{

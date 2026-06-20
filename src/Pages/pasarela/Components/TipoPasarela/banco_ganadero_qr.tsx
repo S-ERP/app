@@ -55,7 +55,7 @@ export default class banco_ganadero_qr extends React.Component<TipoPasarelaProps
                 }}>
                 <SView col={"xs-12"} backgroundColor={"#024C01"} height={70} width={"100%"}
                     style={{ overflow: "hidden" }}>
-                    {/* <SImage src={require("../../../../Assets/img/bancoGanadero2.jpg")} style={{ resizeMode: "cover" }} /> */}
+                    <SImage src={require("../../../../Assets/img/bancoGanadero2.jpg")} style={{ resizeMode: "cover" }} />
                 </SView>
                 <SHr />
                 <SView style={{
