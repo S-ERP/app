@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrito de Compras</title>
+
+<style>
+
+:root{
+    --principal:#2596be;
+    --principal-hover:#1f7ea0;
+    --fondo:#1f2937;
+    --fondo-card:#334155;
+    --texto:#ffffff;
+    --texto-sec:#cbd5e1;
+    --verde:#2dd4bf;
+    --rojo:#ef4444;
+    --rojo-hover:#dc2626;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(
+        135deg,
+        #537b87 0%,
+        #666370 100%
+    );
+}
+
+/* =======================
+   CARRITO FLOTANTE
+======================= */
+
+.carrito{
+    position:fixed;
+    top:15px;
+    right:15px;
+    width:340px;
+    height:720px;
+    background:var(--fondo);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+    border:1px solid rgba(37,150,190,.25);
+}
+
+/* HEADER */
+
+.carrito-header{
+    background:var(--principal);
+    color:white;
+    padding:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.carrito-header h2{
+    font-size:22px;
+}
+
+.btn-cerrar{
+    width:35px;
+    height:35px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.2);
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+/* SELECT */
+
+.contenedor{
+    padding:12px;
+}
+
+select{
+    width:100%;
+    height:42px;
+    border:none;
+    border-radius:8px;
+    background:#2d4c58;
+    color:white;
+    padding:0 10px;
+    outline:none;
+}
+
+/* TITULO PRODUCTOS */
+
+.titulo-productos{
+    display:flex;
+    justify-content:space-between;
+    color:white;
+    margin-top:15px;
+    margin-bottom:10px;
+    font-weight:600;
+}
+
+/* PRODUCTO */
+
+.producto{
+    background:var(--fondo-card);
+    border-left:5px solid var(--principal);
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:10px;
+}
+
+.producto h3{
+    color:white;
+    margin-bottom:8px;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:5px;
+}
+
+.label{
+    color:var(--texto-sec);
+    font-size:14px;
+}
+
+.valor{
+    color:white;
+}
+
+.precio{
+    color:var(--verde);
+    font-weight:bold;
+}
+
+.fecha{
+    margin-top:10px;
+    padding:6px;
+    text-align:center;
+    border-radius:6px;
+    background:rgba(37,150,190,.15);
+    color:#7dd3fc;
+    font-size:13px;
+}
+
+/* TOTAL */
+
+.footer{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#111827;
+    padding:15px;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+
+.total{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.total-text{
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.total-precio{
+    color:var(--verde);
+    font-size:24px;
+    font-weight:bold;
+}
+
+/* BOTONES */
+
+.botones{
+    display:flex;
+    gap:10px;
+}
+
+.btn{
+    flex:1;
+    height:45px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+    transition:.2s;
+}
+
+.btn-limpiar{
+    background:var(--rojo);
+    color:white;
+}
+
+.btn-limpiar:hover{
+    background:var(--rojo-hover);
+}
+
+.btn-confirmar{
+    background:var(--principal);
+    color:white;
+}
+
+.btn-confirmar:hover{
+    background:var(--principal-hover);
+}
+
+/* BADGE */
+
+.badge{
+    position:absolute;
+    top:12px;
+    right:55px;
+    background:#22c55e;
+    color:white;
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+</style>
+</head>
+<body>
+
+<div class="carrito">
+
+    <div class="carrito-header">
+        <h2>🛒 Carrito de Compras</h2>
+        <button class="btn-cerrar">✕</button>
+    </div>
+
+    <div class="badge">1 producto</div>
+
+    <div class="contenedor">
+
+        <select>
+            <option>Boliviano</option>
+            <option>Dólar</option>
+        </select>
+
+        <div class="titulo-productos">
+            <span>Productos</span>
+            <span>Subtotal: BOB 190.00</span>
+        </div>
+
+        <div class="producto">
+
+            <h3>PROMO 30 DÍAS</h3>
+
+            <div class="info">
+                <span class="label">Precio</span>
+                <span class="precio">BOB 190.00</span>
+            </div>
+
+            <div class="info">
+                <span class="label">Cantidad</span>
+                <span class="valor">1</span>
+            </div>
+
+            <div class="fecha">
+                Fecha de vencimiento
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+
+        <div class="total">
+            <span class="total-text">Total</span>
+            <span class="total-precio">BOB 190.00</span>
+        </div>
+
+        <div class="botones">
+            <button class="btn btn-limpiar">
+                Limpiar
+            </button>
+
+            <button class="btn btn-confirmar">
+                Confirmar Compra
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
