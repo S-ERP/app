@@ -55,11 +55,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     calcularSubtotal() {
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const carritoItems = MDL.carrito.carrito_venta.items;
-        console.clear();
-        console.log(JSON.stringify(carritoItems))
         return carritoItems.reduce((acc, item) => {
             const precio = monedaActual ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
-            // const precio = monedaActual ? item.modelo.precio_venta / (monedaActual.tipo_cambio || 1) : item.modelo.precio_venta;
 
             return acc + precio * item.cantidad;
         }, 0);
@@ -213,9 +210,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const suscripciones = detalle.flatMap((item: any) =>
                 Array.isArray(item.suscriptores) ? item.suscriptores : []
             );
+            const descripcion = this.props.descripcion || "";
             const data = {
-                descripcion: this.props.descripcion || "",
-                observacion: this.props.descripcion || "",
+                // descripcion,
+                descripcion: "",
+                observacion: descripcion,
                 facturar: this.props.factura,
                 factura: this.props.factura
                     ? {
@@ -269,7 +268,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SNotification.send({ key: "venta_rapida", title: "Error al realizar la venta", body: mensaje, color: STheme.color.danger, time: 4000 });
         }
     }
-    
+
     render() {
         const { porcentajeDescuento, cliente, factura, almacen } = this.props;
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();

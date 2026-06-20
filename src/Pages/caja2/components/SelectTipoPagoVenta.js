@@ -295,6 +295,7 @@ export default class SelectTipoPagoVenta extends Component<SelectTipoPagoVentaPr
                                         monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio || 1))),
                                         tipo_pago: item.tipo_pago,
                                         referencia: item.referencia || "",
+                                        descripcion: item.descripcion || "",
                                     }
                                     montoTotal += parseFloat(item.monto)
                                 });

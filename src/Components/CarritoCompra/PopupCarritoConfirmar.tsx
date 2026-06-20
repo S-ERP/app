@@ -211,12 +211,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
 
             const descripcionBase = this.inputDescripcionVenta?.getValue?.() || "";
-            console.log(JSON.stringify(descripcionBase))
-            const referencias = Object.values(tipos_pago as Record<string, any>)
-                .map((tp: any) => tp.referencia)
-                .filter(Boolean)
-                .join(" | ");
-            const descripcionaaaaaaaaa = [descripcionBase, referencias].filter(Boolean).join(" - ");
+            // console.log("alvarin")
+            // console.log(JSON.stringify(tipos_pago))
+
+            // const referencias = Object.values(tipos_pago as Record<string, any>)
+            //     .map((tp: any) => tp.referencia)
+            //     .filter(Boolean)
+            //     .join(" | ");
+            // const descripcionaaaaaaaaa = [descripcionBase, referencias].filter(Boolean).join(" - ");
 
 
             // const descripcion = this.inputDescripcionVenta?.getValue?.() || "";
@@ -257,7 +259,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 };
             });
             const data: any = {
-                descripcion: descripcionaaaaaaaaa,
+                descripcion: "",
                 observacion: "Observacion compras",
                 key_proveedor: this.proveedor?.key || null,
                 key_usuario: keyUsuario,
@@ -279,6 +281,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 detalle,
                 tipos_pago,
             };
+
+            // console.log("aqui viene todo");
+            // console.log(JSON.stringify(data))
+
+
             SNotification.send({ key: "compra_rapida", title: "Cargando", type: "loading" });
             if (saveRecurrente) {
                 await SSocket.sendPromise({
