@@ -1,10 +1,13 @@
 import React from "react";
-import { SForm, SHr, SInput, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SInput, SLoad, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../../MDL";
-type CargarEfectivoDelBancoProps = {
 
+type CargarEfectivoDelBancoProps = {
+    key_caja?: string;
 }
+
 export default class CargarEfectivoDelBanco extends React.Component<CargarEfectivoDelBancoProps> {
+
     static open(props: CargarEfectivoDelBancoProps) {
         SPopup.open({
             key: "CargarEfectivoDelBanco",
@@ -12,110 +15,132 @@ export default class CargarEfectivoDelBanco extends React.Component<CargarEfecti
             content: <SView style={{
                 maxWidth: 500,
                 width: "100%",
-                // height: 500,
                 maxHeight: "100%",
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
-                // @ts-ignore
-                cursor: "default",
-                userSelect: "text",
                 padding: 16,
-
+                ...(({ cursor: "default", userSelect: "text" }) as any),
             }} withoutFeedback>
                 <CargarEfectivoDelBanco {...props} />
             </SView>
         });
     }
-    state = {
-        cuentas_bancos: []
+
+    state: { cuentas_bancos: any[]; moneda: string; loading: boolean } = {
+        cuentas_bancos: [],
+        moneda: "",
+        loading: false,
     }
 
-    format_cuenta_to_string(cuenta: any) {
-        return `${cuenta.codigo} - ${cuenta.descripcion}`;
+    _ref: any = {}
+
+    componentDidMount() {
+        this._mounted = true;
+        MDL.contabilidad.getCuentasByAjusteCache("bancos", true).then((data: any) => {
+            const lista = Array.isArray(data) ? data : Object.values(data ?? {});
+            if (this._mounted) this.setState({ cuentas_bancos: lista });
+        }).catch(() => {});
     }
-    componentDidMount(): void {
-        MDL.contabilidad.getCuentasByAjusteCache("bancos", true).then((data) => {
-            this.setState({ cuentas_bancos: data });
-            console.log(data);
-        })
+
+    componentWillUnmount() {
+        this._mounted = false;
+    }
+
+    format_cuenta(cuenta: any) {
+        return `${cuenta.codigo} - ${cuenta.descripcion}`;
     }
 
     async submit() {
-        const data = {
-            banco: this._ref["banco"].getValue(),
-            monto: this._ref["monto"].getValue(),
-            descripcion: this._ref["descripcion"].getValue(),
-        }
+        const banco = this._ref["banco"]?.getValue?.() ?? "";
+        const montoStr = this._ref["monto"]?.getValue?.() ?? "";
+        const descripcion = this._ref["descripcion"]?.getValue?.() ?? "";
 
-        const caja = MDL.caja.activa;
-        if (!caja) throw "Caja no encontrada";
-        const cuenta: any = this.state.cuentas_bancos.find((c: any) => this.format_cuenta_to_string(c) == data.banco);
-        if (!cuenta) throw "Cuenta no encontrada";
+        if (!banco) throw "Selecciona un banco";
+        const monto = parseFloat(montoStr) || 0;
+        if (monto <= 0) throw "El monto debe ser mayor a 0";
+
+        const _key_caja = this.props.key_caja ?? SNavigation.getParam("key");
+        const caja = _key_caja
+            ? await MDL.caja.getByKey(_key_caja)
+            : MDL.caja.activa;
+        if (!caja?.key) throw "Caja no encontrada";
+
+        const cuenta: any = this.state.cuentas_bancos.find(c => this.format_cuenta(c) === banco);
+        if (!cuenta) throw "Cuenta bancaria no encontrada";
+
         await MDL.caja.registro_detalle({
-            "key_caja": caja.key,
-            "descripcion": data.descripcion,
-            "monto": data.monto,
-            "tipo": "ingreso_banco",
-            "key_tipo_pago": "efectivo",
-            "fecha": caja.fecha,
+            key_caja: caja.key,
+            descripcion: descripcion || "Ingreso desde banco",
+            monto,
+            tipo: "ingreso_banco",
+            key_tipo_pago: "efectivo",
+            fecha: caja.fecha,
             key_moneda: cuenta.key_moneda,
             key_cuenta_banco: cuenta.key,
-        })
-        console.log(data, cuenta);
+        });
     }
-    _ref: any = {}
-    render() {
-        return <SView col={"xs-12"} center>
-            <SText fontSize={18} color={STheme.color.lightGray}>{"Carga efectivo del banco"}</SText>
-            <SHr />
-            <SView row col={"xs-12"}>
-                <SView flex>
-                    <SInput
-                        ref={ref => this._ref["banco"] = ref}
-                        label={"Banco"}
-                        type="select2"
-                        options={this.state.cuentas_bancos.map((c: any) => this.format_cuenta_to_string(c))}
-                        // options={this.state.cuentas_bancos.map((c: any) => {
-                        //     return {
-                        //         key: c.key,
-                        //         content: this.format_cuenta_to_string(c)
-                        //     }
-                        // })}
-                        onChangeText={e => {
 
-                            const cuenta = this.state.cuentas_bancos.find((c: any) => this.format_cuenta_to_string(c) == e);
-                            if (cuenta) {
-                                this.state.moneda = cuenta.key_moneda;
-                                this.forceUpdate();
-                            }
-                        }}
-                        placeholder={"Selecciona el banco"}
-                    />
+    render() {
+        const { loading, cuentas_bancos, moneda } = this.state;
+        return (
+            <SView col={"xs-12"} center>
+                <SText bold fontSize={18}>Carga efectivo del banco</SText>
+                <SHr />
+                <SView row col={"xs-12"}>
+                    <SView flex>
+                        <SInput
+                            ref={ref => this._ref["banco"] = ref}
+                            label={"Banco"}
+                            type="select2"
+                            options={cuentas_bancos.map(c => this.format_cuenta(c))}
+                            onChangeText={(e: string) => {
+                                const cuenta = cuentas_bancos.find(c => this.format_cuenta(c) === e);
+                                if (cuenta) this.setState({ moneda: cuenta.key_moneda ?? "" });
+                            }}
+                            placeholder={"Selecciona el banco"}
+                        />
+                    </SView>
+                    <SView width={10} />
+                    <SView width={160}>
+                        <SInput
+                            icon={<SText width={40} numberOfLines={1}>{moneda}</SText>}
+                            label={"Monto"}
+                            type="money2"
+                            ref={ref => this._ref["monto"] = ref}
+                        />
+                    </SView>
                 </SView>
-                <SView width={10} />
-                <SView width={160} >
-                    <SInput icon={<SText width={40} numberOfLines={1}>{this.state.moneda}</SText>} label={"Monto"} type="money2" ref={ref => this._ref["monto"] = ref} />
+                <SInput label={"Descripción"} type="textArea" ref={ref => this._ref["descripcion"] = ref} />
+                <SHr h={16} />
+                <SView width={160} height={40} center style={{
+                    borderRadius: 6,
+                    backgroundColor: loading ? STheme.color.card : STheme.color.success,
+                }} onPress={() => {
+                    if (loading) return;
+                    this.setState({ loading: true });
+                    this.submit().then(() => {
+                        SNotification.send({
+                            key: "ingreso_banco",
+                            title: "Ingreso registrado",
+                            body: "El efectivo fue cargado correctamente.",
+                            color: STheme.color.success,
+                            time: 4000,
+                        });
+                        SPopup.close("CargarEfectivoDelBanco");
+                    }).catch((e: any) => {
+                        if (this._mounted) this.setState({ loading: false });
+                        SNotification.send({
+                            key: "ingreso_banco",
+                            title: "Error",
+                            body: typeof e === "string" ? e : (e?.error ?? JSON.stringify(e)),
+                            color: STheme.color.danger,
+                            time: 5000,
+                        });
+                    });
+                }}>
+                    {loading ? <SLoad /> : <SText bold>ACEPTAR</SText>}
                 </SView>
             </SView>
-            <SInput label={"Descripcion"} type="textArea" ref={ref => this._ref["descripcion"] = ref} />
-            <SHr h={16} />
-            <SText onPress={() => {
-                SNotification.send({
-                    key: "enviar",
-                    title: "Enviando"
-                })
-                this.submit().then(e => {
-                    SPopup.close("CargarEfectivoDelBanco");
-                    SNotification.remove("enviar")
-                }).catch(e => {
-                    SNotification.send({
-                        key: "enviar",
-                        title: "Error",
-                        body: e.error ?? JSON.stringify(e),
-                        time: 5000
-                    })
-                })
-            }}>{"ACEPTAR"}</SText>
-        </SView>
+        );
     }
 }
