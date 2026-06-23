@@ -1,137 +1,143 @@
 import React from "react";
-import { SForm, SHr, SInput, SNotification, SPage, SPopup, SText, STheme, SThread, SView } from "servisofts-component";
+import { SHr, SInput, SLoad, SNavigation, SNotification, SPopup, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 import SIconApp from "../../../Assets/SIconApp";
-type TransferenciaProps = {
 
-}
+type TransferenciaProps = {}
+
 export default class Transferencia extends React.Component<TransferenciaProps> {
     static open(props: TransferenciaProps) {
         SPopup.open({
             key: "Transferencia",
             type: "1",
-            content: <SView style={{
-                maxWidth: 500,
-                width: "100%",
-                // height: 500,
-                maxHeight: "100%",
-                backgroundColor: STheme.color.background,
-                borderRadius: 8,
-                // @ts-ignore
-                cursor: "default",
-                userSelect: "text",
-                padding: 16,
-
-            }} withoutFeedback>
+            content: <SView style={{ maxWidth: 500, width: "100%", maxHeight: "100%", backgroundColor: STheme.color.background, borderRadius: 8, cursor: "default", userSelect: "text", padding: 16, } as any} withoutFeedback>
                 <Transferencia {...props} />
             </SView>
         });
     }
-    state = {
-        data: []
+
+    _mounted = false;
+    _ref: any = {};
+    state: { data: any[]; origen: any; destino: any; loading: boolean } = {
+        data: [],
+        origen: null,
+        destino: null,
+        loading: false,
     }
 
-    format_cuenta_to_string(cuenta: any) {
-        return `${cuenta.codigo} - ${cuenta.descripcion}`;
+    async componentDidMount(): Promise<void> {
+        this._mounted = true;
+        try {
+            const _key_caja = SNavigation.getParam("key");
+            let key_punto_venta: string | undefined;
+            if (_key_caja) {
+                const caja = await MDL.caja.getByKey(_key_caja);
+                key_punto_venta = caja?.key_punto_venta;
+            } else {
+                key_punto_venta = MDL.caja.activa?.key_punto_venta;
+            }
+            if (!key_punto_venta) throw "No se encontró una caja activa";
+            const data = await MDL.empresa.tipo_pagoGetFullCaja(key_punto_venta);
+            if (!this._mounted) return;
+            this.setState({ data: Array.isArray(data) ? data : Object.values(data ?? {}) });
+        } catch (e: any) {
+            if (!this._mounted) return;
+            SNotification.send({ key: "transferencia_load", title: "Error al cargar cuentas", body: e?.error ?? JSON.stringify(e), color: STheme.color.danger, time: 5000 });
+        }
     }
-    componentDidMount(): void {
-        MDL.empresa.tipo_pagoGetFullCaja(MDL.caja.activa?.key_punto_venta).then((data) => {
-            this.setState({ data: data });
-            console.log(data);
-        })
-        // MDL.contabilidad.getCuentasByAjusteCache("bancos", true).then((data) => {
-        //     this.setState({ cuentas_bancos: data });
-        //     console.log(data);
-        // })
+
+    componentWillUnmount(): void {
+        this._mounted = false;
     }
 
     async submit() {
+        if (this.state.loading) return;
         try {
+            const _key_caja = SNavigation.getParam("key");
+            const key_caja_final = _key_caja ? _key_caja : MDL.caja.activa?.key;
+            if (!key_caja_final) throw "Caja no encontrada";
+            if (!this.state?.origen?.key) throw "Selecciona la cuenta de origen";
+            if (!this.state?.destino?.key) throw "Selecciona la cuenta de destino";
+            if (this.state.origen.key === this.state.destino.key) throw "La cuenta de origen y destino no pueden ser la misma";
+            const monto_origen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
+            const monto_destino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
+            if (monto_origen <= 0) throw "El monto de origen debe ser mayor a 0";
+            if (monto_destino <= 0) throw "El monto de destino debe ser mayor a 0";
+            if (!MDL.usuario.session?.key) throw "Sesión de usuario no encontrada";
+            if (!this.state.origen?.moneda?.key) throw `La cuenta "${this.state.origen.descripcion}" no tiene moneda configurada`;
+            if (!this.state.destino?.moneda?.key) throw `La cuenta "${this.state.destino.descripcion}" no tiene moneda configurada`;
+            const tipo_cambio = parseFloat(this._ref["tipo_cambio"]?.getValue()) || 1;
             const data = {
                 key_usuario: MDL.usuario.session?.key,
-                key_caja: MDL.caja.activa?.key,
-                key_empresa_tipo_pago_origen: this.state?.origen?.key,
-                key_empresa_tipo_pago_destino: this.state?.destino?.key,
-                monto_origen: this._ref["monto_origen"].getValue(),
-                monto_destino: this._ref["monto_destino"].getValue(),
-                descripcion: this._ref["descripcion"].getValue(),
+                key_caja: key_caja_final,
+                key_empresa_tipo_pago_origen: this.state.origen.key,
+                key_empresa_tipo_pago_destino: this.state.destino.key,
+                monto_origen,
+                monto_destino,
+                tipo_cambio,
+                descripcion: this._ref["descripcion"].getValue() || "",
             }
-            const caja = MDL.caja.activa;
-            if (!caja) throw "Caja no encontrada";
-            console.log(data)
-            await MDL.caja.traspaso(data)
+            this.setState({ loading: true });
+            await MDL.caja.traspaso(data);
+            SNotification.send({ key: "enviar", title: "Transferencia exitosa", body: `Se transfirió correctamente de "${this.state.origen.descripcion}" a "${this.state.destino.descripcion}".`, color: STheme.color.success, time: 4000 });
             SPopup.close("Transferencia");
         } catch (e: any) {
-            SNotification.send({
-                key: "enviar",
-                title: "Error",
-                body: e.error ?? JSON.stringify(e),
-                color: STheme.color.danger,
-                time: 5000
-            })
+            if (this._mounted) this.setState({ loading: false });
+            const body = typeof e === "string" ? e : (e?.error ?? JSON.stringify(e));
+            SNotification.send({ key: "enviar", title: "Error en transferencia", body, color: STheme.color.danger, time: 5000 });
         }
-
     }
+
     calcular_tipo_cambio() {
         new SThread(200, "calcular_tipo_cambio", true).start(() => {
-            const montoOrigen = parseFloat(this._ref["monto_origen"].getValue() ?? 0);
-            const montoDestino = parseFloat(this._ref["monto_destino"].getValue() ?? 0);
+            if (!this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return;
+            const montoOrigen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
+            const montoDestino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
             if (montoOrigen > 0 && montoDestino > 0) {
                 this._ref["tipo_cambio"].setValue(Math.round((montoDestino / montoOrigen) * 100000) / 100000);
             }
             this.forceUpdate();
         })
-
     }
+
     calcular_tipo_cambio_cuentas() {
         new SThread(200, "calcular_tipo_cambio", true).start(() => {
-
-            if (this.state.origen) {
-                const tco = this.state?.origen?.moneda?.tipo_cambio;
-                const tcd = this.state?.destino?.moneda?.tipo_cambio;
-                // this._ref["tipo_cambio"].setValue(tco / tcd);
-                const montoOrigen = parseFloat(this._ref["monto_origen"].getValue() ?? 0);
-                const montoDestino = parseFloat(this._ref["monto_destino"].getValue() ?? 0);
-                const tc = (tco ?? 1) / (tcd ?? 1);
-                if (montoOrigen > 0 && montoDestino > 0) {
-                    this._ref["monto_destino"].setValue(montoOrigen * tc);
-                } else {
-
-                    if (montoOrigen > 0) {
-                        this._ref["monto_destino"].setValue(montoOrigen * tc);
-                    }
-                    if (montoDestino > 0) {
-                        this._ref["monto_origen"].setValue(montoDestino / tc);
-                    }
-                    this._ref["tipo_cambio"].setValue(tc);
-                }
+            if (!this.state.origen || !this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return;
+            const tco = this.state?.origen?.moneda?.tipo_cambio ?? 1;
+            const tcd = this.state?.destino?.moneda?.tipo_cambio ?? 1;
+            const montoOrigen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
+            const montoDestino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
+            const tc = tcd > 0 ? tco / tcd : 1;
+            if (montoOrigen > 0) {
+                this._ref["monto_destino"].setValue(montoOrigen * tc);
+            } else if (montoDestino > 0 && tc > 0) {
+                this._ref["monto_origen"].setValue(montoDestino / tc);
             }
-            // const montoOrigen = parseFloat(this._ref["monto_origen"].getValue() ?? 0);
-            // const montoDestino = parseFloat(this._ref["monto_destino"].getValue() ?? 0);
-            // if (montoOrigen > 0 && montoDestino > 0) {
-            //     this._ref["tipo_cambio"].setValue(montoOrigen / montoDestino);
-            // }
-
+            this._ref["tipo_cambio"].setValue(tc);
+            this.forceUpdate();
         })
-
     }
+
     calcular_monto_destino_tipo_cambio() {
-        const monto_origen = parseFloat(this._ref["monto_origen"].getValue() ?? 0);
-        const tipo_cambio = parseFloat(this._ref["tipo_cambio"].getValue() ?? 0);
+        if (!this._ref["monto_origen"] || !this._ref["tipo_cambio"] || !this._ref["monto_destino"]) return;
+        const monto_origen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
+        const tipo_cambio = parseFloat(this._ref["tipo_cambio"].getValue()) || 0;
         this._ref["monto_destino"].setValue(monto_origen * tipo_cambio);
         this.forceUpdate();
     }
 
     nesecitaRecalcularElTipoCambio() {
-        if (!(this._ref["monto_origen"] && this._ref["monto_destino"] && this._ref["tipo_cambio"])) return false;
-        const montoOrigen = parseFloat(this._ref["monto_origen"].getValue() ?? 0);
-        const montoDestino = parseFloat(this._ref["monto_destino"].getValue() ?? 0);
-        const tc = parseFloat(this._ref["tipo_cambio"].getValue() ?? 0);
-        const tcc = montoDestino / montoOrigen
-        return tc != (Math.round(tcc * 100000) / 100000);
+        if (!this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return false;
+        const montoOrigen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
+        const montoDestino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
+        if (montoOrigen <= 0) return false;
+        const tc = parseFloat(this._ref["tipo_cambio"].getValue()) || 0;
+        const tcc = montoDestino / montoOrigen;
+        return tc !== Math.round(tcc * 100000) / 100000;
     }
-    _ref: any = {}
+
     render() {
+        const { loading } = this.state;
         return <SView col={"xs-12"} center>
             <SText fontSize={18} color={STheme.color.lightGray}>{"Transferencia"}</SText>
             <SHr />
@@ -142,9 +148,9 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         label={"Cuenta de origen"}
                         type="select2"
                         customStyle={"erp"}
-                        options={this.state.data.map((c: any) => c.descripcion)}
+                        options={this.state.data.filter((c: any) => c.key !== this.state.destino?.key).map((c: any) => c.descripcion)}
                         onChangeText={e => {
-                            const select = this.state.data.find((c: any) => c.descripcion == e)
+                            const select = this.state.data.find((c: any) => c.descripcion == e);
                             if (select) {
                                 this.state.origen = select;
                                 this.calcular_tipo_cambio_cuentas();
@@ -155,57 +161,47 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                             }
                         }}
                         placeholder={"Selecciona la cuenta de origen"}
-
                     />
                 </SView>
                 <SView width={4} />
-                <SView width={160} >
+                <SView width={160}>
                     <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
                         label={"Monto a enviar"}
                         customStyle={"erp"}
                         type="money2"
                         ref={ref => this._ref["monto_origen"] = ref}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
-                        onChangeText={e => {
-                            this.calcular_tipo_cambio();
-                        }}
-
+                        onChangeText={() => { this.calcular_tipo_cambio(); }}
                     />
                 </SView>
-
             </SView>
             <SHr h={12} />
             <SView col="xs-12" row>
-                <SView flex >
+                <SView flex>
                     <SView row width={40} onPress={() => {
                         const origen = this.state.origen;
                         const destino = this.state.destino;
-                        const monto_orige = this._ref["monto_origen"].getValue();
-                        const monto_destino = this._ref["monto_destino"].getValue();
+                        const monto_orige = this._ref["monto_origen"]?.getValue();
+                        const monto_destino = this._ref["monto_destino"]?.getValue();
                         this.state.origen = destino;
                         this.state.destino = origen;
-                        this._ref["cuenta_origen"].setValue(destino?.descripcion);
-                        this._ref["cuenta_destino"].setValue(origen?.descripcion);
-                        this._ref["monto_origen"].setValue(monto_destino);
-                        this._ref["monto_destino"].setValue(monto_orige);
+                        this._ref["cuenta_origen"]?.setValue(destino?.descripcion);
+                        this._ref["cuenta_destino"]?.setValue(origen?.descripcion);
+                        this._ref["monto_origen"]?.setValue(monto_destino);
+                        this._ref["monto_destino"]?.setValue(monto_orige);
                         this.calcular_tipo_cambio_cuentas();
                         this.calcular_tipo_cambio();
-
                         this.forceUpdate();
                     }}>
-                        <SView height={20} style={{
-                            transform: [{ rotate: "-90deg" }]
-                        }}>
+                        <SView height={20} style={{ transform: [{ rotate: "-90deg" }] }}>
                             <SIconApp name="Arrow" fill={STheme.color.lightGray} />
                         </SView>
-                        <SView height={20} style={{
-                            transform: [{ rotate: "90deg" }]
-                        }}>
+                        <SView height={20} style={{ transform: [{ rotate: "90deg" }] }}>
                             <SIconApp name="Arrow" fill={STheme.color.lightGray} />
                         </SView>
                     </SView>
                 </SView>
-                <SView width={100} >
+                <SView width={100}>
                     <SInput
                         icon={<SView />}
                         label={"Tipo de cambio"}
@@ -214,11 +210,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         decimales={5}
                         defaultValue={1}
                         ref={ref => this._ref["tipo_cambio"] = ref}
-                        onChangeText={e => {
-                            if (!e) return;
-                            this.forceUpdate();
-                            console.log("Cambio el tipo cambio", e)
-                        }}
+                        onChangeText={e => { if (!e) return; this.forceUpdate(); }}
                         iconR={<SView width={24} height={24} padding={2} onPress={() => {
                             if (this.nesecitaRecalcularElTipoCambio()) {
                                 this.calcular_monto_destino_tipo_cambio();
@@ -226,8 +218,6 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         }}>
                             {this.nesecitaRecalcularElTipoCambio() && <SIconApp name="Reload" fill={STheme.color.warning} />}
                         </SView>}
-
-                    // iconR={<SView width={24} height={24} padding={2}><SIconApp name="Ingreso" /></SView>}
                     />
                 </SView>
             </SView>
@@ -239,9 +229,9 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         label={"Cuenta de destino"}
                         type="select2"
                         customStyle={"erp"}
-                        options={this.state.data.map((c: any) => c.descripcion)}
+                        options={this.state.data.filter((c: any) => c.key !== this.state.origen?.key).map((c: any) => c.descripcion)}
                         onChangeText={e => {
-                            const select = this.state.data.find((c: any) => c.descripcion == e)
+                            const select = this.state.data.find((c: any) => c.descripcion == e);
                             if (select) {
                                 this.state.destino = select;
                                 this.calcular_tipo_cambio_cuentas();
@@ -252,36 +242,29 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                             }
                         }}
                         placeholder={"Selecciona la cuenta de destino"}
-
                     />
                 </SView>
                 <SView width={4} />
-                <SView width={160} >
+                <SView width={160}>
                     <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.destino?.moneda?.observacion}</SText>}
                         label={"Monto a recibir"}
                         customStyle={"erp"}
                         type="money2"
                         ref={ref => this._ref["monto_destino"] = ref}
-                        onChangeText={e => {
-                            this.calcular_tipo_cambio();
-                            // this.forceUpdate();
-                        }}
+                        onChangeText={() => { this.calcular_tipo_cambio(); }}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Ingreso" /></SView>}
                     />
                 </SView>
-
             </SView>
             <SHr h={40} />
-            <SInput label={"Descripcion"} type="textArea"
-                customStyle={"erp"}
-                style={{
-                    paddingTop: 4,
-                }}
+            <SInput label={"Descripcion"} type="textArea" customStyle={"erp" as any} style={{ paddingTop: 4 }}
                 ref={ref => this._ref["descripcion"] = ref}
                 placeholder={"Ingresa el motivo de la transferencia..."}
             />
             <SHr h={16} />
-            <SText card padding={4} onPress={this.submit.bind(this)}>{"ACEPTAR"}</SText>
+            <SView card padding={4} style={{ minWidth: 100, alignItems: "center", justifyContent: "center", opacity: loading ? 0.6 : 1 }} onPress={() => { if (!loading) this.submit(); }}>
+                {loading ? <SLoad /> : <SText>{"ACEPTAR"}</SText>}
+            </SView>
         </SView>
     }
 }
