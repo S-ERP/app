@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SNavigation, SNotification, SPopup, SScrollView2, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SImage, SNavigation, SNotification, SPopup, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
 import Transferencia from '../Acciones/Transferencia';
@@ -8,12 +8,46 @@ import { ColorCompraVenta } from '../../../Config/theme';
 import TotalTipoPagoTabla from './TotalTipoPagoTabla';
 import PdfCierreCaja from '../../../Components/PDF/venta/PdfCierreCaja';
 import SelectTipoPagoVenta from './SelectTipoPagoVenta';
+import SSocket from 'servisofts-socket';
 
 export default class MenuAcciones extends Component {
+
+    state = { usuario: null }
+
+    componentDidMount() {
+        this._mounted = true;
+        this.cargarUsuario();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.caja?.key_usuario !== this.props.caja?.key_usuario) {
+            this.cargarUsuario();
+        }
+    }
+
+    componentWillUnmount() {
+        this._mounted = false;
+    }
+
+    cargarUsuario() {
+        const keyUsuario = this.props.caja?.key_usuario;
+        const _key_caja = SNavigation.getParam("key");
+        if (!_key_caja || !keyUsuario) return;
+        MDL.usuario.getByKeys([keyUsuario]).then(usuarios => {
+            if (this._mounted) this.setState({ usuario: usuarios?.[0] ?? null });
+        }).catch(() => {});
+    }
+
+    getNombreCajero() {
+        const u = this.state.usuario;
+        if (!u) return null;
+        return [u.Nombres, u.Apellidos].filter(Boolean).join(" ") || null;
+    }
 
     cerrar_caja() {
         const caja = this.props.caja;
         if (!caja?.key) return;
+        const nombreCajero = this.getNombreCajero();
         SPopup.open({
             key: "barcode_scanner",
             content: <SView style={{
@@ -31,7 +65,39 @@ export default class MenuAcciones extends Component {
                         <SHr height={4} />
                         <TotalTipoPagoTabla key_punto_venta={caja.key_punto_venta} movimientos={this.props.movimientos} />
                         <SHr height={20} />
-                        <SView col={"xs-12"} center>
+                        <SView col={"xs-12"} row style={{ alignItems: "center", justifyContent: "flex-end" }}>
+                            {nombreCajero && (
+                                <SView row style={{
+                                    alignItems: "center",
+                                    backgroundColor: STheme.color.danger + "18",
+                                    borderRadius: 8,
+                                    borderWidth: 1,
+                                    borderColor: STheme.color.danger + "60",
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 8,
+                                    marginRight: 12,
+                                    flex: 1,
+                                }}>
+                                    <SView width={36} height={36} style={{
+                                        borderRadius: 18,
+                                        overflow: "hidden",
+                                        borderWidth: 2,
+                                        borderColor: STheme.color.danger,
+                                    }}>
+                                        {SSocket.api?.root && caja?.key_usuario
+                                            ? <SImage src={`${SSocket.api.root}usuario/${caja.key_usuario}`} style={{ width: 36, height: 36 }} />
+                                            : <SView width={36} height={36} center style={{ backgroundColor: STheme.color.card }}>
+                                                <SIconApp name="Muser" width={20} height={20} fill={STheme.color.danger} />
+                                            </SView>
+                                        }
+                                    </SView>
+                                    <SView width={10} />
+                                    <SView flex>
+                                        <SText fontSize={10} color={STheme.color.danger}>Cajero activo</SText>
+                                        <SText fontSize={13} bold numberOfLines={1}>{nombreCajero}</SText>
+                                    </SView>
+                                </SView>
+                            )}
                             <SView width={120} height={40} center style={{
                                 borderRadius: 4,
                                 borderColor: STheme.color.danger,
@@ -39,7 +105,9 @@ export default class MenuAcciones extends Component {
                             }} onPress={() => {
                                 SPopup.confirm({
                                     title: "Cerrar Caja",
-                                    message: "¿Deseas cerrar la caja?",
+                                    message: nombreCajero
+                                        ? `¿Estás seguro de cerrar la caja de ${nombreCajero}?`
+                                        : "¿Deseas cerrar la caja?",
                                     onPress: () => {
                                         SNotification.send({
                                             key: "caja_cerrar",
@@ -114,7 +182,7 @@ export default class MenuAcciones extends Component {
     }
 
     cargarEfectivoDelBanco() {
-        CargarEfectivoDelBanco.open({});
+        CargarEfectivoDelBanco.open({ key_caja: this.props.caja?.key });
     }
 
     transferir() {
@@ -124,16 +192,24 @@ export default class MenuAcciones extends Component {
     render() {
         const caja = this.props.caja;
         const cajaCerrada = !!caja?.fecha_cierre;
+        const _key_caja = SNavigation.getParam("key");
+        const { usuario } = this.state;
 
         return (
-            <SView row>
+            <SView row wrap>
                 {!cajaCerrada && (
                     <>
                         <BtnAccion text={"Transferir"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={this.transferir.bind(this)} icon="Reload" />
+                        <BtnAccion text={"Cargar Efectivo"} margin={4} padding={10} background={STheme.color.success + "70"} borderColor={STheme.color.success} onPress={this.cargarEfectivoDelBanco.bind(this)} icon="pagoefectivo" />
                         <BtnAccion text={"Vender Productos"} margin={4} padding={10} background={ColorCompraVenta.venta + "70"} borderColor={ColorCompraVenta.venta} onPress={() => { SNavigation.navigate("/puntoventa") }} icon="ventaCarro" />
                         <BtnAccion text={"Comprar Productos"} margin={4} padding={10} background={ColorCompraVenta.compra + "70"} borderColor={ColorCompraVenta.compra} onPress={() => { SNavigation.navigate("/compra2") }} icon="compraCarro" />
                         <BtnAccion text={"Pagar a Proveedores"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/proveedor") }} icon="pagoefectivo" />
                         <BtnAccion text={"Cobrar a Clientes"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/cliente") }} icon="tareaUser" />
+
+                        {_key_caja && usuario && (
+                            <CajeroCard usuario={usuario} key_usuario={caja?.key_usuario} />
+                        )}
+
                         <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="remove" />
                     </>
                 )}
@@ -144,6 +220,39 @@ export default class MenuAcciones extends Component {
         );
     }
 }
+
+const CajeroCard = ({ usuario, key_usuario }) => {
+    const nombre = [usuario?.Nombres, usuario?.Apellidos].filter(Boolean).join(" ") || "—";
+    const fotoUrl = SSocket.api?.root && key_usuario
+        ? `${SSocket.api.root}usuario/${key_usuario}`
+        : null;
+    return (
+        <SView row style={{
+            backgroundColor: STheme.color.danger + "20",
+            borderRadius: 8,
+            borderWidth: 2,
+            borderColor: STheme.color.danger,
+            alignItems: "center",
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            margin: 4,
+        }}>
+            <SView width={32} height={32} style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.danger }}>
+                {fotoUrl
+                    ? <SImage src={fotoUrl} style={{ width: 32, height: 32 }} />
+                    : <SView width={32} height={32} center style={{ backgroundColor: STheme.color.card }}>
+                        <SIconApp name="Muser" width={18} height={18} fill={STheme.color.text} />
+                    </SView>
+                }
+            </SView>
+            <SView width={8} />
+            <SView>
+                <SText fontSize={10} color={STheme.color.danger}>Cajero activo</SText>
+                <SText fontSize={12} bold numberOfLines={1}>{nombre}</SText>
+            </SView>
+        </SView>
+    );
+};
 
 const BtnAccion = (props) => {
     return <SView row style={{
