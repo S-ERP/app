@@ -5,21 +5,12 @@ import {
   STheme, SView
 } from 'servisofts-component';
 import MDL from '../../../MDL';
-import { Container } from '../../../Components';
 import SIconApp from '../../../Assets/SIconApp';
 import PopupUploadVoucher from './PopupUploadVoucher';
-import SSocket from 'servisofts-socket'; // Asegúrate de importar esto
+import SSocket from 'servisofts-socket';
 import { ColorCompraVenta } from '../../../Config/theme';
 
-export default class DetalleItem extends Component<{
-  item: any,
-  index: number,
-  tipo_pago: any,
-  empresa: any
-}> {
-
-
-
+export default class DetalleItem extends Component {
 
   iconotipoArchivo(documento_name = "", documento_type = "") {
     if (!documento_type) return null;
@@ -48,11 +39,6 @@ export default class DetalleItem extends Component<{
 
     const tipo = tipoMapeoKeys[mimeType] || "file";
 
-    let bgColor = "#B0B0B0";
-    let borderColor = "#3c3d3dff";
-    let icon = "crmpdarchivo";
-    let iconColor = "#3c3d3dff";
-
     const tipoMapeo = {
       pdf: { bg: "#fdc4c4ff", border: "#D32F2F", icon: "crmpdf", color: "#D32F2F" },
       document: { bg: "#b2dfffff", border: "#1976D2", icon: "crmword", color: "#1976D2" },
@@ -66,51 +52,42 @@ export default class DetalleItem extends Component<{
       rar: { bg: "#E0F7FA", border: "#0097A7", icon: "crmzip", color: "#0097A7" },
       mp4: { bg: "#FBE9E7", border: "#D84315", icon: "crmpvideo", color: "#D84315" },
       mp3: { bg: "#E8EAF6", border: "#3F51B5", icon: "crmpaudio", color: "#3F51B5" },
-      icon: { bg: "#E8EAF6", border: "#3F51B5", icon: "icon", color: "#3F51B5" }
+      icon: { bg: "#E8EAF6", border: "#3F51B5", icon: "icon", color: "#3F51B5" },
     };
 
-    if (tipoMapeo[tipo]) {
-      bgColor = tipoMapeo[tipo].bg;
-      borderColor = tipoMapeo[tipo].border;
-      icon = tipoMapeo[tipo].icon;
-      iconColor = tipoMapeo[tipo].color;
-    }
+    const style = tipoMapeo[tipo] ?? { bg: "#B0B0B0", border: "#3c3d3dff", icon: "crmpdarchivo", color: "#3c3d3dff" };
 
-    const extensionAlias = {
-      "document": "docx",
-      "sheet": "xlsx",
-      "presentation": "pptx"
-    };
+    const extensionAlias = { document: "docx", sheet: "xlsx", presentation: "pptx" };
     const displayExt = extensionAlias[tipo] || tipo;
 
-    const url = `${SSocket.api.root}empresa/${this.props?.empresa?.key}/voucher/${this.props?.item.key}/${documento_name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+    const empresaKey = this.props?.empresa?.key;
+    const itemKey = this.props?.item?.key;
+    if (!empresaKey || !itemKey || !SSocket.api?.root) return null;
+
+    const url = `${SSocket.api.root}empresa/${empresaKey}/voucher/${itemKey}/${documento_name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
 
     return (
       <SView row center style={{
         padding: 4,
-        backgroundColor: bgColor,
+        backgroundColor: style.bg,
         borderRadius: 6,
         marginRight: 4,
         marginBottom: 4,
         borderWidth: 1,
-        borderColor: borderColor
+        borderColor: style.border,
       }} onPress={() => Linking.openURL(url)}>
-        <SIconApp name={icon} fill={iconColor} width={12} height={12} style={{ marginRight: 3 }} />
-        <SText fontSize={10} color={iconColor} bold>{documento_name?.substring(0, 7)}.{displayExt}</SText>
-        <SIconApp name={"downImgNube"} fill={iconColor} width={12} height={12} style={{ marginLeft: 3 }} />
+        <SIconApp name={style.icon} fill={style.color} width={12} height={12} style={{ marginRight: 3 }} />
+        <SText fontSize={10} color={style.color} bold>{documento_name?.substring(0, 7)}.{displayExt}</SText>
+        <SIconApp name={"downImgNube"} fill={style.color} width={12} height={12} style={{ marginLeft: 3 }} />
       </SView>
     );
   }
 
   botonesVoucher(vouchers = []) {
-    if (!Array.isArray(vouchers) || vouchers.length === 0) {
-      return null;
-      // return (
-      //   <View style={{ borderWidth: 1, borderColor: STheme.color.card, padding: 2, borderRadius: 4 }}>
-      //     <SText color={STheme.color.lightGray} fontSize={10}>Sin vouchers</SText>
-      //   </View>
-      // );
-    }
+    if (!Array.isArray(vouchers) || vouchers.length === 0) return null;
+
+    const empresaKey = this.props?.empresa?.key;
+    const itemKey = this.props?.item?.key;
 
     return (
       <SView row flexWrap style={{ paddingVertical: 2 }}>
@@ -126,9 +103,11 @@ export default class DetalleItem extends Component<{
             borderRadius: 6,
             borderWidth: 1,
             borderColor: STheme.color.lightGray,
-            marginLeft: 4
+            marginLeft: 4,
           }} onPress={() => {
-            PopupUploadVoucher.open(this.props.empresa.key, this.props.item.key, vouchers);
+            if (empresaKey && itemKey) {
+              PopupUploadVoucher.open(empresaKey, itemKey, vouchers);
+            }
           }}>
             <SText fontSize={10} color={STheme.color.link}>+{vouchers.length - 4}</SText>
           </SView>
@@ -139,8 +118,15 @@ export default class DetalleItem extends Component<{
 
   render() {
     const { item, index, empresa } = this.props;
-    const color = item.monto < 0 ? STheme.color.danger : STheme.color.success;
+    if (!item) return null;
+
+    const monto = item.monto ?? 0;
+    const color = monto < 0 ? STheme.color.danger : STheme.color.success;
     const moneda = empresa?.monedas?.find(e => e.key === item.key_moneda);
+    const detalleTipo = MDL.caja.detalle_types?.[item.tipo];
+    const fechaStr = item.fecha_on
+      ? new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")
+      : "—";
 
     return (<>
       <SView key={index} row padding={4} style={{
@@ -149,7 +135,6 @@ export default class DetalleItem extends Component<{
         borderRadius: 4,
       }}>
         <SView flex>
-          {/* CABECERA */}
           <SView row style={{ alignItems: "center" }}>
             <SView style={{
               width: 20, height: 20, borderRadius: 100, backgroundColor: STheme.color.card
@@ -162,83 +147,61 @@ export default class DetalleItem extends Component<{
 
           <SHr h={4} />
 
-          {/* INFORMACIÓN */}
           <SView row style={{ alignItems: "center", flexWrap: 'wrap' }}>
             <View style={styles.etiqueta}>
-              <SText fontSize={10} color={STheme.color.lightGray}>
-                {new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}
-              </SText>
+              <SText fontSize={10} color={STheme.color.lightGray}>{fechaStr}</SText>
             </View>
             <SView width={8} />
 
             <View style={{
               ...styles.etiqueta,
-              backgroundColor: `${MDL.caja.detalle_types[item.tipo]?.color}66`,
-              borderColor: MDL.caja.detalle_types[item.tipo]?.color
+              backgroundColor: detalleTipo ? `${detalleTipo.color}66` : "transparent",
+              borderColor: detalleTipo?.color ?? STheme.color.card,
             }}>
-              <SText fontSize={10}>
-                {MDL.caja.detalle_types[item.tipo]?.label || item.tipo}
-              </SText>
+              <SText fontSize={10}>{detalleTipo?.label || item.tipo}</SText>
             </View>
             <SView width={8} />
 
-            {item.codigo_comprobante &&
-              <>
-                <View style={styles.etiqueta}>
-                  <SText color={STheme.color.link} underLine fontSize={10}
-                    onPress={() => SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: item.key_comprobante })}>
-                    {item.codigo_comprobante}
-                  </SText>
-                </View>
-                <SView width={8} />
-              </>
-            }
+            {item.codigo_comprobante && <>
+              <View style={styles.etiqueta}>
+                <SText color={STheme.color.link} underLine fontSize={10}
+                  onPress={() => SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: item.key_comprobante })}>
+                  {item.codigo_comprobante}
+                </SText>
+              </View>
+              <SView width={8} />
+            </>}
 
-            {item?.key_compra_venta &&
-              <>
-                <SView row style={{
-                  borderWidth: 1,
-                  borderColor: ColorCompraVenta.venta,
-                  padding: 2,
-                  borderRadius: 4
-                }} backgroundColor={ColorCompraVenta.venta + "50"} >
-                  <SIconApp width={13} height={13} name={"ventaCarro"} fill={STheme.color.text} />
-                  <SView width={3} />
-                  <SText fontSize={10}
-                    onPress={() => {
-                      if (item.tipo == "compra") {
-                        SNavigation.navigate("/venta/profile2", { pk: item?.key_compra_venta })
-                      } else if (item.tipo == "venta") {
-                        SNavigation.navigate("/venta/profile2", { pk: item?.key_compra_venta })
-                      }
+            {item?.key_compra_venta && <>
+              <SView row style={{
+                borderWidth: 1,
+                borderColor: ColorCompraVenta.venta,
+                padding: 2,
+                borderRadius: 4,
+              }} backgroundColor={ColorCompraVenta.venta + "50"}>
+                <SIconApp width={13} height={13} name={"ventaCarro"} fill={STheme.color.text} />
+                <SView width={3} />
+                <SText fontSize={10} onPress={() => {
+                  SNavigation.navigate("/venta/profile2", { pk: item.key_compra_venta });
+                }}>
+                  {item.tipo}
+                </SText>
+              </SView>
+              <SView width={8} />
+            </>}
 
-
-                    }}>
-                    {item.tipo}
-                  </SText>
-                </SView>
-                <SView width={8} />
-              </>
-            }
-            {item.tipo == "compra" && <>
+            {item.tipo === "compra" && <>
               <SView row style={{
                 borderWidth: 1,
                 borderColor: ColorCompraVenta.compra,
                 padding: 2,
-                borderRadius: 4
-              }} backgroundColor={ColorCompraVenta.compra + "50"} >
+                borderRadius: 4,
+              }} backgroundColor={ColorCompraVenta.compra + "50"}>
                 <SIconApp width={13} height={13} name={"compraCarro"} fill={STheme.color.text} />
                 <SView width={3} />
-                <SText fontSize={10}
-                  onPress={() => {
-                    if (item.tipo == "compra") {
-                      SNavigation.navigate("/venta/profile2", { pk: item?.key })
-                    } else if (item.tipo == "venta") {
-                      SNavigation.navigate("/venta/profile2", { pk: item?.key })
-                    }
-
-
-                  }}>
+                <SText fontSize={10} onPress={() => {
+                  SNavigation.navigate("/compra/profile", { pk: item.key_compra_venta ?? item.key });
+                }}>
                   {item.tipo}
                 </SText>
               </SView>
@@ -265,54 +228,43 @@ export default class DetalleItem extends Component<{
             </View>
             <SView width={8} />
 
-
             <SView row style={{ alignItems: "center" }}>
               {this.botonesVoucher(item.vouchers)}
             </SView>
 
-
             <SView row flexWrap>
-              <SView style={styles.botonSubir} onPress={() =>
-
-                // console.log("miraa " + JSON.stringify(item))
-
-                PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
-              }>
+              <SView style={styles.botonSubir} onPress={() => {
+                if (empresa?.key && item?.key) {
+                  PopupUploadVoucher.open(empresa.key, item.key, item.vouchers ?? []);
+                }
+              }}>
                 <SIconApp name='upImgNube' fill={STheme.color.text} width={12} />
                 <SView width={4} />
                 <SText fontSize={10} color={STheme.color.text}>Subir Vouchers</SText>
               </SView>
               <SView width={4} />
             </SView>
-
           </SView>
         </SView>
-
-
-
-        {/* <SHr h={4} /> */}
       </SView>
-      {/* <SView style={{ alignItems: "flex-end" }}> */}
-      <SView center style={{ position: "absolute", right: 0, top: 4 }}  >
+
+      <SView center style={{ position: "absolute", right: 0, top: 4 }}>
         <SView center>
           <SText fontSize={18} bold color={color}>
-            {moneda?.observacion} {SMath.formatMoney(item.monto)}
+            {moneda?.observacion} {SMath.formatMoney(monto)}
           </SText>
         </SView>
       </SView>
-    </>
-
-    );
+    </>);
   }
 }
 
-// Estilos auxiliares
 const styles = {
   etiqueta: {
     borderWidth: 1,
     borderColor: STheme.color.card,
     padding: 2,
-    borderRadius: 4
+    borderRadius: 4,
   },
   etiquetaRow: {
     borderWidth: 1,
@@ -320,7 +272,7 @@ const styles = {
     padding: 2,
     borderRadius: 4,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   botonSubir: {
     justifyContent: "space-between",
@@ -332,6 +284,6 @@ const styles = {
     marginBottom: 4,
     borderRadius: 6,
     flexDirection: "row",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 };
