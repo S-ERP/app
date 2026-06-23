@@ -161,8 +161,8 @@ export default class factura extends MDLAbstract<EventListener> {
             // key_empresa: Model.empresa.Action.getKey(),
             key_usuario: Model.usuario.Action.getKey(),
             tipo: tipo,
-            cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
-            // cuf: cuf,
+            // cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+            cuf: cuf,
         }, 1000 * 60).then((e: any) => {
 
             const b64 = e.data.pdf
