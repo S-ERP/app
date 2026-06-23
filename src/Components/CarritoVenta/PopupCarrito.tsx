@@ -75,7 +75,7 @@ const validarSuscripcionesParcialesItems = (items: any[]): CampoIncompletoSusc =
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = { selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null, };
     evento: any;
-    
+
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito", type: "3", content:
@@ -95,12 +95,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 </SView>
         })
     }
-    
+
     handleChange = () => { this.forceUpdate(); }
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarrito");
     }
-    
+
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange);
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
@@ -109,12 +109,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         this.cargarMonedaSeleccionada();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
     }
-    
+
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         this.setState({ selectedMoneda: moneda || null });
     }
-    
+
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange);
         if (this.evento) {
@@ -122,7 +122,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
-    
+
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda } = this.state;
@@ -196,6 +196,22 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     title: "Cantidad requerida",
                                     body: `El producto "${itemConCantidadInvalida.modelo?.descripcion ?? "desconocido"}" tiene cantidad 0.`,
                                     color: STheme.color.danger,
+                                });
+                                return;
+                            }
+
+                            const itemSinStock = items.find(it => {
+                                const stock = (it.modelo as any)?.stock ?? (it.modelo as any)?.stock_actual;
+                                if (stock === undefined || stock === null) return false;
+                                return Number(stock) < Number(it.cantidad);
+                            });
+                            if (itemSinStock) {
+                                const stock = (itemSinStock.modelo as any)?.stock ?? (itemSinStock.modelo as any)?.stock_actual ?? 0;
+                                SNotification.send({
+                                    title: "Stock insuficiente",
+                                    body: `"${itemSinStock.modelo?.descripcion ?? "un producto"}" solo tiene ${stock} unidad(es) en stock.`,
+                                    color: STheme.color.danger,
+                                    time: 5000,
                                 });
                                 return;
                             }
