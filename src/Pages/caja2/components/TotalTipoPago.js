@@ -1,161 +1,144 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SInput, SLoad, SMath, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { View } from 'react-native';
+import { SLoad, SMath, SNotification, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 
-type TotalTipoPagoProps = {
-    key_punto_venta: string,
-    movimientos: any[],
-    onSelect?: (item: any) => void
-}
-export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
+export default class TotalTipoPago extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            ready: false,
-        };
+        this.state = { ready: false };
+        this.pvtp = [];
+        this.tipo_pago = {};
     }
 
     componentDidMount() {
+        this._mounted = true;
         this.loadData();
+    }
 
+    componentWillUnmount() {
+        this._mounted = false;
     }
 
     async loadData() {
-        this.tipo_pago = await MDL.caja.tipo_pago_getAll()
-        const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll({ key_punto_venta: this.props.key_punto_venta })
-        const data = await MDL.empresa.getFull()
-        // console.log(data);
-        const cuentas = await MDL.contabilidad.getCuentasCache();
-        // const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
-        // const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
+        try {
+            if (!this.props.key_punto_venta) {
+                if (this._mounted) this.setState({ ready: true });
+                return;
+            }
+            this.tipo_pago = await MDL.caja.tipo_pago_getAll();
+            const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll({ key_punto_venta: this.props.key_punto_venta });
+            const data = await MDL.empresa.getFull();
+            const cuentas = await MDL.contabilidad.getCuentasCache();
 
+            const monedas = data?.monedas ?? [];
+            const moneda_base = monedas.find(a => a.tipo === "base");
 
-        // const moneda_base = data.monedas.find(a => a.tipo == "base");
-        const monedas = data?.monedas || [];
-        const moneda_base = monedas.find(a => a.tipo == "base");
+            this.pvtp = Object.values(empresa_tipo_pago ?? {}).map(item => {
+                item.cuenta = cuentas?.[item.key_cuenta_contable];
+                const moneda = monedas.find(a => a.key === item?.cuenta?.key_moneda);
+                item.moneda = moneda ?? moneda_base;
+                item.tipo_pago = this.tipo_pago?.[item.key_tipo_pago];
+                return item;
+            });
 
-        // this.pvtp = Object.values(empresa_tipo_pago)
-        this.pvtp = Object.values(empresa_tipo_pago || {});
+            this.pvtp.sort((a, b) => {
+                const ordenA = a.tipo_pago?.orden ?? 9999;
+                const ordenB = b.tipo_pago?.orden ?? 9999;
+                return ordenA - ordenB;
+            });
 
-        // if (!this.pvtp) return [];
-        this.pvtp = this.pvtp.map(item => {
-
-            // item.cuenta = cuentas[item.key_cuenta_contable]
-            item.cuenta = cuentas?.[item.key_cuenta_contable];
-
-            // const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
-            const moneda = monedas.find(a => a.key == item?.cuenta?.key_moneda);
-
-            item.moneda = moneda ?? moneda_base;
-            item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
-            return item;
-        });
-
-
-        this.pvtp.sort((a, b) => {
-            return a.tipo_pago?.orden - b.tipo_pago?.orden
-        })
-        this.setState({ ready: true });
+            if (this._mounted) this.setState({ ready: true });
+        } catch (e) {
+            if (this._mounted) this.setState({ ready: true });
+            SNotification.send({
+                key: "total_tipo_pago_load",
+                title: "Error al cargar cuentas",
+                body: e?.error ?? JSON.stringify(e),
+                color: STheme.color.danger,
+                time: 5000,
+            });
+        }
     }
 
     getColor(total) {
-        let color = STheme.color.lightGray;
-        if (total > 0) {
-            color = STheme.color.success;
-        } else if (total < 0) {
-            color = STheme.color.danger;
-        }
-        return color;
+        if (total > 0) return STheme.color.success;
+        if (total < 0) return STheme.color.danger;
+        return STheme.color.lightGray;
     }
+
     renderItemTipoPago(item) {
-        const total = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key).reduce((sum, mov) => sum + mov.monto, 0);
-        const totalIngresos = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key && mov.monto > 0).reduce((sum, mov) => sum + mov.monto, 0);
-        const totalEgresos = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key && mov.monto < 0).reduce((sum, mov) => sum + mov.monto, 0);
+        const movimientos = this.props.movimientos ?? [];
+        const propios = movimientos.filter(mov => mov.key_empresa_tipo_pago === item.key);
+        const total = propios.reduce((sum, mov) => sum + (mov.monto || 0), 0);
+        const totalIngresos = propios.filter(mov => mov.monto > 0).reduce((sum, mov) => sum + (mov.monto || 0), 0);
+        const totalEgresos = propios.filter(mov => mov.monto < 0).reduce((sum, mov) => sum + (mov.monto || 0), 0);
 
-        return <SView style={{
-            padding: 6,
-            maxWidth: 180,
-        }}
-            // col={"xs-6 sm-4"} colSquare>
-            col={"xs-6 sm-4"} >
-            <SView style={{
-                width: "100%",
-                height: 130,
-                // height: "100%",
-                borderWidth: 1,
-                borderColor: STheme.color.card,
-                // backgroundColor: this._select[item.key] ? STheme.color.success + "44" : "transparent",
-                borderRadius: 8,
-                padding: 4,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: STheme.color.background,
-
-            }} >
-
-                <SView row col={"xs-12"} style={{
-                    alignItems: "center",
+        return (
+            <SView key={item.key} style={{ padding: 6, maxWidth: 180 }} col={"xs-6 sm-4"}>
+                <SView style={{
+                    width: "100%",
+                    height: 130,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
+                    borderRadius: 8,
                     padding: 4,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: STheme.color.background,
                 }}>
-                    <View style={{
-                        width: 22,
-                        height: 22,
-                        // borderWidth: 1,
-                        // borderColor: STheme.color.card
-                    }}>
-                        <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
-                    </View>
-                    <SView width={4} />
-                    <SView flex>
-                        <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.descripcion}</SText>
-                        <SView row>
-                            <SText key={item.key_tipo_pago} numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
-                            <SView width={5} />
-                            <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.moneda?.descripcion}</SText>
+                    <SView row col={"xs-12"} style={{ alignItems: "center", padding: 4 }}>
+                        <View style={{ width: 22, height: 22 }}>
+                            <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
+                        </View>
+                        <SView width={4} />
+                        <SView flex>
+                            <SText flex numberOfLines={1} fontSize={12}>{item.descripcion}</SText>
+                            <SView row>
+                                <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray}>
+                                    {item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}
+                                </SText>
+                                <SView width={5} />
+                                <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray}>{item.moneda?.descripcion}</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                    <SView flex col={"xs-12"} center>
+                        <SText bold color={this.getColor(total)} fontSize={18}>
+                            {item.moneda?.observacion} {SMath.formatMoney(total)}
+                        </SText>
+                    </SView>
+                    <SView flex col={"xs-12"} row style={{ borderTopWidth: 1, borderColor: STheme.color.card }}>
+                        <SView flex center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}>
+                            <SIconApp name='Ingreso' width={8} height={8} />
+                            <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>
+                                {item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)}
+                            </SText>
+                        </SView>
+                        <SView flex center>
+                            <SIconApp name='Egreso' width={8} height={8} />
+                            <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>
+                                {item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)}
+                            </SText>
                         </SView>
                     </SView>
                 </SView>
-                <SView flex col={"xs-12"} center >
-                    <SText bold color={this.getColor(total)} fontSize={18}>{item.moneda?.observacion} {SMath.formatMoney(total)}</SText>
-                </SView>
-                <SView flex col={"xs-12"} row style={{
-                    borderTopWidth: 1,
-                    borderColor: STheme.color.card
-                }}>
-                    <SView flex center style={{
-                        borderRightWidth: 1,
-                        borderColor: STheme.color.card
-                    }} >
-                        <SIconApp name='Ingreso' width={8} height={8} />
-                        {/* <View style={{ width: 2 }} /> */}
-                        <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>{item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)}</SText>
-                    </SView>
-                    <SView flex center >
-                        <SIconApp name='Egreso' width={8} height={8} />
-                        {/* <View style={{ width: 2 }} /> */}
-                        <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>{item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)}</SText>
-                    </SView>
-                </SView>
             </SView>
-        </SView>
+        );
     }
 
     render() {
-        return <SView flex col={"xs-12"} padding={2}>
-            {this.state.ready &&
-                <SView row style={{
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    {this.pvtp.map((item, index) => this.renderItemTipoPago(item))}
-                </SView>
-            }
-            {!this.state.ready && <SView height={140}>
-                <SLoad />
-            </SView>}
-        </SView>
+        return (
+            <SView flex col={"xs-12"} padding={2}>
+                {this.state.ready
+                    ? <SView row style={{ justifyContent: "center", alignItems: "center" }}>
+                        {this.pvtp.map(item => this.renderItemTipoPago(item))}
+                    </SView>
+                    : <SView height={140}><SLoad /></SView>
+                }
+            </SView>
+        );
     }
 }
