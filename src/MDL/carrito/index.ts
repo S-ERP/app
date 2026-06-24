@@ -73,7 +73,7 @@ export default class carrito extends MDLAbstract<EventListener> {
   agregarItemAlCarritoDeCompras = (item: CarritoItem) => {
     const exist = this.carrito_compra.items.find(a => this.compararItem(a, item))
     if (exist) {
-      exist.cantidad = item.cantidad ?? exist.cantidad + 1;
+      exist.cantidad += item.cantidad ?? 1;
     } else {
       this.carrito_compra.items.push(item);
     }
