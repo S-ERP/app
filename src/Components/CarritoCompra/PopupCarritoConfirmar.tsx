@@ -234,9 +234,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     fecha_vencimiento: modelo?.fecha_vencimiento || null,
                 };
             });
+            const descripcion = descripcionBase;
+
             const data: any = {
                 descripcion: "",
-                observacion: "Observacion compras",
+                observacion: descripcion,
                 key_proveedor: this.proveedor?.key || null,
                 key_usuario: keyUsuario,
                 facturar: this.state.factura,
