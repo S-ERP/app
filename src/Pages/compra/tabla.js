@@ -82,9 +82,9 @@ export default class tabla extends Component {
         const usuariosMap = Array.isArray(usuarios)
             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
             : usuarios;
-        const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
         const comprasEnriquecidas = await Promise.all(
             ventas.map(async (cv) => {
+                const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: cv.key }) || {};
                 return {
                     ...cv,
                     moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
@@ -257,6 +257,7 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 /> */}
+                <DinamicTable.Col key="descripcionsa" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} data={(e) => e.row?.observacion ?? ""} />
 
                 <DinamicTable.Col key="facturar" wrap label="Compra con factura" width={65} data={(e) => e.row?.facturar}
                     customComponent={e => <>
