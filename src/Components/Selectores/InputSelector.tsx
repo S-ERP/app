@@ -549,14 +549,14 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             />
             <SView
                 width={36}
-                height={12}
+                height={"100%"}
                 center
-                backgroundColor="yellow"
+                // backgroundColor="red"
                 onPress={() => { if (this.inputRef) this.inputRef.focus(); }}
                 style={{
                     transform: [{ rotate: "-90deg" }],
                     position: "absolute",
-                    top: 12,
+                    // top: 12,
                     right: 0,
                     // @ts-ignore
                     userSelect: "none",
@@ -564,7 +564,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                     outline: "none",
                     // @ts-ignore
                     tabIndex: -1,
-                    marginRight: -8
+                    marginRight: -4
                 }}
             >
                 <SIconApp name="Back" fill={STheme.color.lightGray} width={4}
