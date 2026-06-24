@@ -2,6 +2,7 @@ import React from "react";
 import { SHr, SInput, SLoad, SNavigation, SNotification, SPopup, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 import SIconApp from "../../../Assets/SIconApp";
+import InputSelector from "../../../Components/Selectores/InputSelector";
 
 type TransferenciaProps = {}
 
@@ -127,59 +128,54 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
     }
 
     getIconForCuenta(c: any): string {
-        return c?.tipo_pago?.icon ?? "pagoefectivo";
+        return c?.tipo_pago?.icon ?? "";
+        // return c?.tipo_pago?.icon ?? "pagoefectivo";
     }
 
     renderCuentaSelector(label: string, selected: any, options: any[], onSelect: (c: any) => void) {
         const popupKey = "select_cuenta_" + label.replace(/\s+/g, "_");
+        const sorted = [...options].sort((a, b) => {
+            const tipoA = (a?.key_tipo_pago ?? "").toLowerCase();
+            const tipoB = (b?.key_tipo_pago ?? "").toLowerCase();
+            if (tipoA !== tipoB) return tipoA.localeCompare(tipoB);
+            return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
+        });
         return (
             <SView col="xs-12">
                 <SText fontSize={11} color={STheme.color.lightGray}>{label}</SText>
                 <SHr h={4} />
                 <SView
-                    style={{ borderRadius: 6, borderWidth: 1, borderColor: selected ? STheme.color.primary + "80" : STheme.color.card, backgroundColor: STheme.color.card, padding: 8, minHeight: 44 } as any}
-                    onPress={() => {
-                        SPopup.open({
-                            key: popupKey,
-                            type: "1",
-                            content: (
-                                <SView style={{ maxWidth: 360, width: "100%", backgroundColor: STheme.color.background, borderRadius: 8, padding: 16 } as any} withoutFeedback>
-                                    <SText bold fontSize={15}>{label}</SText>
-                                    <SHr h={10} />
-                                    <SView style={{ maxHeight: 400, overflowY: "auto" } as any}>
-                                        {[...options].sort((a, b) => {
-                                            const tipoA = (a?.key_tipo_pago ?? "").toLowerCase();
-                                            const tipoB = (b?.key_tipo_pago ?? "").toLowerCase();
-                                            if (tipoA !== tipoB) return tipoA.localeCompare(tipoB);
-                                            return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
-                                        }).map((c: any) => (
-                                            <SView key={c.key} row style={{ alignItems: "center", paddingHorizontal: 6, paddingVertical: 4, marginBottom: 2, borderRadius: 4, backgroundColor: STheme.color.card, borderWidth: 1.5, borderColor: selected?.key === c.key ? STheme.color.primary : "transparent" } as any}
-                                                onPress={() => { onSelect(c); SPopup.close(popupKey); }}>
-                                                <SIconApp name={this.getIconForCuenta(c) as any} width={18} height={18} fill={STheme.color.primary} />
-                                                <SView width={6} />
-                                                <SText flex fontSize={11} numberOfLines={1}>{c.descripcion}</SText>
-                                                <SView width={6} />
-                                                <SText fontSize={10} color={STheme.color.lightGray}>{c.moneda?.observacion ?? ""}</SText>
-                                            </SView>
-                                        ))}
-                                    </SView>
+                    style={{ borderRadius: 6, borderWidth: 1, borderColor: selected ? STheme.color.primary + "60" : STheme.color.card, backgroundColor: STheme.color.card, paddingHorizontal: 8, paddingVertical: 6, minHeight: 36 } as any}
+                    onPress={() => SPopup.open({
+                        key: popupKey,
+                        type: "1",
+                        content: (
+                            <SView style={{ width: 320, backgroundColor: STheme.color.background, borderRadius: 8, padding: 12 } as any} withoutFeedback>
+                                <SText bold fontSize={13} color={STheme.color.lightGray}>{label}</SText>
+                                <SHr h={8} />
+                                <SView style={{ maxHeight: 380, overflowY: "auto" } as any}>
+                                    {sorted.map((c: any) => (
+                                        <SView key={c.key} row style={{ alignItems: "center", paddingHorizontal: 8, paddingVertical: 6, marginBottom: 2, borderRadius: 4, backgroundColor: selected?.key === c.key ? STheme.color.primary + "25" : STheme.color.card, borderLeftWidth: 3, borderColor: selected?.key === c.key ? STheme.color.primary : "transparent" } as any}
+                                            onPress={() => { onSelect(c); SPopup.close(popupKey); }}>
+                                            <SIconApp name={this.getIconForCuenta(c) as any} width={16} height={16} fill={STheme.color.primary} />
+                                            <SView width={8} />
+                                            <SText flex fontSize={11} numberOfLines={1}>{c.descripcion}</SText>
+                                            <SText fontSize={10} color={STheme.color.lightGray}>{c.moneda?.observacion ?? ""}</SText>
+                                        </SView>
+                                    ))}
                                 </SView>
-                            )
-                        });
-                    }}>
+                            </SView>
+                        )
+                    })}>
                     {selected ? (
                         <SView row style={{ alignItems: "center" } as any}>
-                            <SView width={30} height={30} center style={{ borderRadius: 15, backgroundColor: STheme.color.primary + "20" } as any}>
-                                <SIconApp name={this.getIconForCuenta(selected) as any} width={18} height={18} fill={STheme.color.primary} />
-                            </SView>
-                            <SView width={8} />
-                            <SView flex>
-                                <SText bold fontSize={13} numberOfLines={1}>{selected.descripcion}</SText>
-                                <SText fontSize={11} color={STheme.color.lightGray}>{selected.moneda?.observacion ?? ""}</SText>
-                            </SView>
+                            <SIconApp name={this.getIconForCuenta(selected) as any} width={16} height={16} fill={STheme.color.primary} />
+                            <SView width={6} />
+                            <SText flex bold fontSize={12} numberOfLines={1}>{selected.descripcion}</SText>
+                            <SText fontSize={11} color={STheme.color.lightGray}>{selected.moneda?.observacion ?? ""}</SText>
                         </SView>
                     ) : (
-                        <SText color={STheme.color.lightGray + "88"} fontSize={13}>Selecciona una cuenta...</SText>
+                        <SText color={STheme.color.lightGray + "66"} fontSize={12}>Selecciona una cuenta...</SText>
                     )}
                 </SView>
             </SView>
@@ -202,13 +198,38 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SText fontSize={18} color={STheme.color.lightGray}>{"Transferencia"}</SText>
             <SHr />
             <SView row col={"xs-12"}>
+
+
                 <SView flex>
-                    {this.renderCuentaSelector(
-                        "Cuenta de origen",
-                        this.state.origen,
-                        this.state.data.filter((c: any) => c.key !== this.state.destino?.key),
-                        (c) => { this.state.origen = c; this.calcular_tipo_cambio_cuentas(); this.forceUpdate(); }
-                    )}
+                    <SText fontSize={11} color={STheme.color.lightGray}>{"Cuenta de origen"}</SText>
+                    <SHr h={4} />
+                    <SView flex style={{ height: 20, backgroundColor: STheme.color.card, borderRadius: 2 }}>
+
+                        <InputSelector
+                            customStyle="erp"
+                            placeholder="Selecciona la cuenta de origen"
+                            options={[...this.state.data]
+                                .filter((c: any) => c.key !== this.state.destino?.key)
+                                .sort((a: any, b: any) => {
+                                    const ta = (a?.key_tipo_pago ?? "").toLowerCase();
+                                    const tb = (b?.key_tipo_pago ?? "").toLowerCase();
+                                    if (ta !== tb) return ta.localeCompare(tb);
+                                    return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
+                                })
+                                .map((c: any) => ({
+                                    label: c.descripcion,
+                                    value: c.key,
+                                    data: c,
+                                    customComponent: <SIconApp name={c?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} />,
+                                }))}
+                            defaultValue={this.state.origen?.key ?? null}
+                            onSelect={(selected: any) => {
+                                this.state.origen = selected.data;
+                                this.calcular_tipo_cambio_cuentas();
+                                this.forceUpdate();
+                            }}
+                        />
+                    </SView>
                 </SView>
                 <SView width={4} />
                 <SView width={160}>
@@ -269,12 +290,32 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SHr h={16} />
             <SView row col={"xs-12"}>
                 <SView flex>
-                    {this.renderCuentaSelector(
-                        "Cuenta de destino",
-                        this.state.destino,
-                        this.state.data.filter((c: any) => c.key !== this.state.origen?.key),
-                        (c) => { this.state.destino = c; this.calcular_tipo_cambio_cuentas(); this.forceUpdate(); }
-                    )}
+                    <SText fontSize={11} color={STheme.color.lightGray}>{"Cuenta de destino"}</SText>
+                    <SHr h={4} />
+                    <InputSelector
+                        customStyle="erp"
+                        placeholder="Selecciona la cuenta de destino"
+                        options={[...this.state.data]
+                            .filter((c: any) => c.key !== this.state.origen?.key)
+                            .sort((a: any, b: any) => {
+                                const ta = (a?.key_tipo_pago ?? "").toLowerCase();
+                                const tb = (b?.key_tipo_pago ?? "").toLowerCase();
+                                if (ta !== tb) return ta.localeCompare(tb);
+                                return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
+                            })
+                            .map((c: any) => ({
+                                label: c.descripcion,
+                                value: c.key,
+                                data: c,
+                                customComponent: <SIconApp name={c?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} />,
+                            }))}
+                        defaultValue={this.state.destino?.key ?? null}
+                        onSelect={(selected: any) => {
+                            this.state.destino = selected.data;
+                            this.calcular_tipo_cambio_cuentas();
+                            this.forceUpdate();
+                        }}
+                    />
                 </SView>
                 <SView width={4} />
                 <SView width={160}>
