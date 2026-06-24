@@ -58,6 +58,12 @@ export default class PopupUploadVoucher extends Component<Props> {
         return isImageOrPDF && isSizeOk
     }
 
+    toJfif = (file: File): File => {
+        if (!file.type.startsWith("image/")) return file
+        const baseName = file.name.replace(/\.[^/.]+$/, "")
+        return new File([file], `${baseName}.jfif`, { type: file.type, lastModified: file.lastModified })
+    }
+
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : []
         const rechazados = nuevos.filter((item: any) => !this.isFileValid(item.file))
@@ -72,14 +78,17 @@ export default class PopupUploadVoucher extends Component<Props> {
         }
         const nuevosArchivos: VoucherFile[] = nuevos
             .filter((item: any) => this.isFileValid(item.file))
-            .map((item: any) => ({
-                file: item.file,
-                name: item.file.name,
-                type: item.file.type,
-                size: item.file.size,
-                lastModified: item.file.lastModified,
-                url: URL.createObjectURL(item.file),
-            }))
+            .map((item: any) => {
+                const file = this.toJfif(item.file)
+                return {
+                    file,
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    lastModified: file.lastModified,
+                    url: URL.createObjectURL(file),
+                }
+            })
         const actualesServidor = this.state.uploadedVouchers.filter((v) => !v.file)
         const fusionados: VoucherFile[] = [...actualesServidor]
         nuevosArchivos.forEach((nuevo) => {
