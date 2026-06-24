@@ -86,32 +86,13 @@ export default class DetalleItem extends Component {
   botonesVoucher(vouchers = []) {
     if (!Array.isArray(vouchers) || vouchers.length === 0) return null;
 
-    const empresaKey = this.props?.empresa?.key;
-    const itemKey = this.props?.item?.key;
-
     return (
       <SView row flexWrap style={{ paddingVertical: 2 }}>
-        {vouchers.slice(0, 4).map((voucher, index) => (
+        {vouchers.map((voucher, index) => (
           <SView key={index} style={{ padding: 2 }}>
             {this.iconotipoArchivo(voucher?.name, voucher?.type)}
           </SView>
         ))}
-        {vouchers.length > 4 && (
-          <SView style={{
-            padding: 4,
-            backgroundColor: STheme.color.card,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: STheme.color.lightGray,
-            marginLeft: 4,
-          }} onPress={() => {
-            if (empresaKey && itemKey) {
-              PopupUploadVoucher.open(empresaKey, itemKey, vouchers);
-            }
-          }}>
-            <SText fontSize={10} color={STheme.color.link}>+{vouchers.length - 4}</SText>
-          </SView>
-        )}
       </SView>
     );
   }
