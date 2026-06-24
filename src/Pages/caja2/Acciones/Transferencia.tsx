@@ -200,37 +200,37 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SView row col={"xs-12"}>
 
 
-                <SView flex>
+                {/* <SView flex>
                     <SText fontSize={11} color={STheme.color.lightGray}>{"Cuenta de origen"}</SText>
-                    <SHr h={4} />
-                    <SView flex style={{ height: 20, backgroundColor: STheme.color.card, borderRadius: 2 }}>
+                    <SHr h={4} /> */}
+                <SView flex style={{ height: 36, backgroundColor: STheme.color.card, borderRadius: 2 }}>
 
-                        <InputSelector
-                            customStyle="erp"
-                            placeholder="Selecciona la cuenta de origen"
-                            options={[...this.state.data]
-                                .filter((c: any) => c.key !== this.state.destino?.key)
-                                .sort((a: any, b: any) => {
-                                    const ta = (a?.key_tipo_pago ?? "").toLowerCase();
-                                    const tb = (b?.key_tipo_pago ?? "").toLowerCase();
-                                    if (ta !== tb) return ta.localeCompare(tb);
-                                    return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
-                                })
-                                .map((c: any) => ({
-                                    label: c.descripcion,
-                                    value: c.key,
-                                    data: c,
-                                    customComponent: <SIconApp name={c?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} />,
-                                }))}
-                            defaultValue={this.state.origen?.key ?? null}
-                            onSelect={(selected: any) => {
-                                this.state.origen = selected.data;
-                                this.calcular_tipo_cambio_cuentas();
-                                this.forceUpdate();
-                            }}
-                        />
-                    </SView>
+                    <InputSelector
+                        customStyle="erp"
+                        placeholder="Selecciona la cuenta de origen"
+                        options={[...this.state.data]
+                            .filter((c: any) => c.key !== this.state.destino?.key)
+                            .sort((a: any, b: any) => {
+                                const ta = (a?.key_tipo_pago ?? "").toLowerCase();
+                                const tb = (b?.key_tipo_pago ?? "").toLowerCase();
+                                if (ta !== tb) return ta.localeCompare(tb);
+                                return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
+                            })
+                            .map((c: any) => ({
+                                label: c.descripcion,
+                                value: c.key,
+                                data: c,
+                                customComponent: <SIconApp name={c?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} />,
+                            }))}
+                        defaultValue={this.state.origen?.key ?? null}
+                        onSelect={(selected: any) => {
+                            this.state.origen = selected.data;
+                            this.calcular_tipo_cambio_cuentas();
+                            this.forceUpdate();
+                        }}
+                    />
                 </SView>
+                {/* </SView> */}
                 <SView width={4} />
                 <SView width={160}>
                     <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
