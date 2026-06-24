@@ -45,33 +45,45 @@ export default class PopupUploadVoucher extends Component<Props> {
         return this.state.fileValue.length === 0
     }
     isFileValid = (file: File) => {
-        const isImageOrPDF = file.type.startsWith("image/") || file.type === "application/pdf"
-        const isSizeOk = file.size <= 10 * 1024 * 1024
-        return isImageOrPDF && isSizeOk
+        return file.type.startsWith("image/") || file.type === "application/pdf"
+    }
+    toJfif = (file: File): File => {
+        if (!file.type.startsWith("image/")) return file
+        const baseName = file.name.replace(/\.[^/.]+$/, "")
+        return new File([file], `${baseName}.jfif`, { type: file.type, lastModified: file.lastModified })
     }
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : []
+        const rechazados = nuevos.filter((item: any) => !this.isFileValid(item.file))
+        if (rechazados.length > 0) {
+            SNotification.send({
+                key: "voucher_rechazo",
+                title: "Archivo no permitido",
+                body: `Solo se permiten imágenes y PDF de hasta 2 MB. ${rechazados.length} archivo(s) rechazado(s).`,
+                color: STheme.color.danger,
+                time: 4000,
+            })
+        }
         const nuevosArchivos = nuevos
-            .filter((item) => this.isFileValid(item.file))
-            .map((item) => ({
-                file: item.file,
-                name: item.file.name,
-                type: item.file.type,
-                size: item.file.size,
-                lastModified: item.file.lastModified,
-                url: URL.createObjectURL(item.file),
-            }))
-        const actualesServidor = this.state.uploadedVouchers.filter((v) => !v.file)
-        const fusionados: VoucherFile[] = [...actualesServidor]
-        nuevosArchivos.forEach((nuevo) => {
+            .filter((item: any) => this.isFileValid(item.file))
+            .map((item: any) => {
+                const file = this.toJfif(item.file)
+                return {
+                    file,
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    lastModified: file.lastModified,
+                    url: URL.createObjectURL(file),
+                }
+            })
+        const fusionados: VoucherFile[] = [...this.state.uploadedVouchers]
+        nuevosArchivos.forEach((nuevo: any) => {
             if (!fusionados.find((f) => f.name === nuevo.name && f.size === nuevo.size)) {
                 fusionados.push(nuevo)
             }
         })
-        const nombresActuales = nuevosArchivos.map((n) => n.name)
-        const filtrados = fusionados.filter((f) => (f.file ? nombresActuales.includes(f.name) : true))
-        this.files = nuevosArchivos.map((n) => n.file)
-        this.setState({ uploadedVouchers: filtrados, fileValue: nuevos })
+        this.setState({ uploadedVouchers: fusionados, fileValue: nuevos })
     }
     removeVoucher = (index: number) => {
         const updated = [...this.state.uploadedVouchers]
@@ -95,11 +107,10 @@ export default class PopupUploadVoucher extends Component<Props> {
             this.setState({ loading: true })
             const nuevosArchivos = this.state.uploadedVouchers.filter((v) => v.file)
             for (const v of nuevosArchivos) {
-                const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`
-                const formData = new FormData()
-                formData.append("file", v.file!)
-                const res = await fetch(uploadUrl, { method: "POST", body: formData })
-                if (!res.ok) throw `Error al subir ${v.name}: ${res.status}`
+                const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${encodeURIComponent(v.name)}`
+                console.log(`[Voucher] Subiendo: ${v.name} → ${uploadUrl}`)
+                await Upload.sendPromise({ file: v.file!, compress: false }, uploadUrl)
+                console.log(`[Voucher] ✓ ${v.name}`)
             }
             const vouchersFinales = this.state.uploadedVouchers.map((v) => ({
                 name: v.name,
