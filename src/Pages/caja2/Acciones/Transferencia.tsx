@@ -126,6 +126,66 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
         this.forceUpdate();
     }
 
+    getIconForCuenta(c: any): string {
+        return c?.tipo_pago?.icon ?? "pagoefectivo";
+    }
+
+    renderCuentaSelector(label: string, selected: any, options: any[], onSelect: (c: any) => void) {
+        const popupKey = "select_cuenta_" + label.replace(/\s+/g, "_");
+        return (
+            <SView col="xs-12">
+                <SText fontSize={11} color={STheme.color.lightGray}>{label}</SText>
+                <SHr h={4} />
+                <SView
+                    style={{ borderRadius: 6, borderWidth: 1, borderColor: selected ? STheme.color.primary + "80" : STheme.color.card, backgroundColor: STheme.color.card, padding: 8, minHeight: 44 } as any}
+                    onPress={() => {
+                        SPopup.open({
+                            key: popupKey,
+                            type: "1",
+                            content: (
+                                <SView style={{ maxWidth: 360, width: "100%", backgroundColor: STheme.color.background, borderRadius: 8, padding: 16 } as any} withoutFeedback>
+                                    <SText bold fontSize={15}>{label}</SText>
+                                    <SHr h={10} />
+                                    <SView style={{ maxHeight: 400, overflowY: "auto" } as any}>
+                                        {[...options].sort((a, b) => {
+                                            const tipoA = (a?.key_tipo_pago ?? "").toLowerCase();
+                                            const tipoB = (b?.key_tipo_pago ?? "").toLowerCase();
+                                            if (tipoA !== tipoB) return tipoA.localeCompare(tipoB);
+                                            return (a?.descripcion ?? "").localeCompare(b?.descripcion ?? "");
+                                        }).map((c: any) => (
+                                            <SView key={c.key} row style={{ alignItems: "center", paddingHorizontal: 6, paddingVertical: 4, marginBottom: 2, borderRadius: 4, backgroundColor: STheme.color.card, borderWidth: 1.5, borderColor: selected?.key === c.key ? STheme.color.primary : "transparent" } as any}
+                                                onPress={() => { onSelect(c); SPopup.close(popupKey); }}>
+                                                <SIconApp name={this.getIconForCuenta(c) as any} width={18} height={18} fill={STheme.color.primary} />
+                                                <SView width={6} />
+                                                <SText flex fontSize={11} numberOfLines={1}>{c.descripcion}</SText>
+                                                <SView width={6} />
+                                                <SText fontSize={10} color={STheme.color.lightGray}>{c.moneda?.observacion ?? ""}</SText>
+                                            </SView>
+                                        ))}
+                                    </SView>
+                                </SView>
+                            )
+                        });
+                    }}>
+                    {selected ? (
+                        <SView row style={{ alignItems: "center" } as any}>
+                            <SView width={30} height={30} center style={{ borderRadius: 15, backgroundColor: STheme.color.primary + "20" } as any}>
+                                <SIconApp name={this.getIconForCuenta(selected) as any} width={18} height={18} fill={STheme.color.primary} />
+                            </SView>
+                            <SView width={8} />
+                            <SView flex>
+                                <SText bold fontSize={13} numberOfLines={1}>{selected.descripcion}</SText>
+                                <SText fontSize={11} color={STheme.color.lightGray}>{selected.moneda?.observacion ?? ""}</SText>
+                            </SView>
+                        </SView>
+                    ) : (
+                        <SText color={STheme.color.lightGray + "88"} fontSize={13}>Selecciona una cuenta...</SText>
+                    )}
+                </SView>
+            </SView>
+        );
+    }
+
     nesecitaRecalcularElTipoCambio() {
         if (!this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return false;
         const montoOrigen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
@@ -143,25 +203,12 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SHr />
             <SView row col={"xs-12"}>
                 <SView flex>
-                    <SInput
-                        ref={ref => this._ref["cuenta_origen"] = ref}
-                        label={"Cuenta de origen"}
-                        type="select2"
-                        customStyle={"erp"}
-                        options={this.state.data.filter((c: any) => c.key !== this.state.destino?.key).map((c: any) => c.descripcion)}
-                        onChangeText={e => {
-                            const select = this.state.data.find((c: any) => c.descripcion == e);
-                            if (select) {
-                                this.state.origen = select;
-                                this.calcular_tipo_cambio_cuentas();
-                                this.forceUpdate();
-                            } else if (this.state.origen) {
-                                this.state.origen = null;
-                                this.forceUpdate();
-                            }
-                        }}
-                        placeholder={"Selecciona la cuenta de origen"}
-                    />
+                    {this.renderCuentaSelector(
+                        "Cuenta de origen",
+                        this.state.origen,
+                        this.state.data.filter((c: any) => c.key !== this.state.destino?.key),
+                        (c) => { this.state.origen = c; this.calcular_tipo_cambio_cuentas(); this.forceUpdate(); }
+                    )}
                 </SView>
                 <SView width={4} />
                 <SView width={160}>
@@ -185,8 +232,6 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         const monto_destino = this._ref["monto_destino"]?.getValue();
                         this.state.origen = destino;
                         this.state.destino = origen;
-                        this._ref["cuenta_origen"]?.setValue(destino?.descripcion);
-                        this._ref["cuenta_destino"]?.setValue(origen?.descripcion);
                         this._ref["monto_origen"]?.setValue(monto_destino);
                         this._ref["monto_destino"]?.setValue(monto_orige);
                         this.calcular_tipo_cambio_cuentas();
@@ -224,25 +269,12 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SHr h={16} />
             <SView row col={"xs-12"}>
                 <SView flex>
-                    <SInput
-                        ref={ref => this._ref["cuenta_destino"] = ref}
-                        label={"Cuenta de destino"}
-                        type="select2"
-                        customStyle={"erp"}
-                        options={this.state.data.filter((c: any) => c.key !== this.state.origen?.key).map((c: any) => c.descripcion)}
-                        onChangeText={e => {
-                            const select = this.state.data.find((c: any) => c.descripcion == e);
-                            if (select) {
-                                this.state.destino = select;
-                                this.calcular_tipo_cambio_cuentas();
-                                this.forceUpdate();
-                            } else if (this.state.destino) {
-                                this.state.destino = null;
-                                this.forceUpdate();
-                            }
-                        }}
-                        placeholder={"Selecciona la cuenta de destino"}
-                    />
+                    {this.renderCuentaSelector(
+                        "Cuenta de destino",
+                        this.state.destino,
+                        this.state.data.filter((c: any) => c.key !== this.state.origen?.key),
+                        (c) => { this.state.destino = c; this.calcular_tipo_cambio_cuentas(); this.forceUpdate(); }
+                    )}
                 </SView>
                 <SView width={4} />
                 <SView width={160}>
