@@ -46,11 +46,21 @@ export default class PopupUploadVoucher extends Component<Props> {
     }
     isFileValid = (file: File) => {
         const isImageOrPDF = file.type.startsWith("image/") || file.type === "application/pdf"
-        const isSizeOk = file.size <= 10 * 1024 * 1024
+        const isSizeOk = file.size <= 2 * 1024 * 1024
         return isImageOrPDF && isSizeOk
     }
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : []
+        const rechazados = nuevos.filter((item) => !this.isFileValid(item.file))
+        if (rechazados.length > 0) {
+            SNotification.send({
+                key: "voucher_rechazo",
+                title: "Archivo no permitido",
+                body: `${rechazados.length > 1 ? `${rechazados.length} archivos fueron` : `"${rechazados[0].file.name}" fue`} rechazado${rechazados.length > 1 ? "s" : ""}. Solo se permiten imágenes y PDF de hasta 2 MB.`,
+                color: STheme.color.danger,
+                time: 5000,
+            })
+        }
         const nuevosArchivos = nuevos
             .filter((item) => this.isFileValid(item.file))
             .map((item) => ({
@@ -90,16 +100,29 @@ export default class PopupUploadVoucher extends Component<Props> {
             time: 1500,
         })
     }
+    uploadConTimeout = (file: File, url: string, timeoutMs = 12000): Promise<any> => {
+        const upload = Upload.sendPromise({ file, compress: false }, url)
+        const timeout = new Promise<never>((_, reject) =>
+            setTimeout(() => reject({ status: 0, statusText: "Timeout", in: "timeout" }), timeoutMs)
+        )
+        return Promise.race([upload, timeout])
+    }
+
     handleSubmit = async () => {
         try {
             this.setState({ loading: true })
             const nuevosArchivos = this.state.uploadedVouchers.filter((v) => v.file)
+            console.log(`[Voucher] Iniciando subida de ${nuevosArchivos.length} archivo(s)`)
             for (const v of nuevosArchivos) {
-                const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`
-                const formData = new FormData()
-                formData.append("file", v.file!)
-                const res = await fetch(uploadUrl, { method: "POST", body: formData })
-                if (!res.ok) throw `Error al subir ${v.name}: ${res.status}`
+                const uploadUrl = `${(SSocket.api as any).empresa}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`
+                console.log(`[Voucher] Subiendo: ${v.name} (${(v.size / 5024).toFixed(1)} KB) → ${uploadUrl}`)
+                try {
+                    const result = await this.uploadConTimeout(v.file!, uploadUrl)
+                    console.log(`[Voucher] ✓ Subido OK: ${v.name}`, result)
+                } catch (uploadError) {
+                    console.error(`[Voucher] ✗ Error subiendo ${v.name}:`, uploadError)
+                    throw uploadError
+                }
             }
             const vouchersFinales = this.state.uploadedVouchers.map((v) => ({
                 name: v.name,
@@ -112,7 +135,9 @@ export default class PopupUploadVoucher extends Component<Props> {
                 key: this.props.key_caja_detalle,
                 vouchers: vouchersFinales,
             }
+            console.log(`[Voucher] Guardando metadata en caja_detalle:`, payload)
             const resp = await MDL.caja.editar_detalle(payload)
+            console.log(`[Voucher] ✓ Metadata guardada OK:`, resp)
             SNotification.send({
                 title: "Comprobantes guardados",
                 body: "Los comprobantes de pago se guardaron correctamente.",
@@ -122,7 +147,7 @@ export default class PopupUploadVoucher extends Component<Props> {
             if (this.props.onSuccess) this.props.onSuccess(resp)
             SPopup.close("PopupUploadVoucher_")
         } catch (error) {
-            console.error("Error al guardar comprobantes:", error)
+            console.error("[Voucher] ✗ Error general al guardar comprobantes:", error)
             SNotification.send({
                 title: "Error al guardar",
                 body: "No se pudieron guardar los comprobantes. Por favor, intenta nuevamente.",
@@ -251,7 +276,7 @@ export default class PopupUploadVoucher extends Component<Props> {
                         </SText>
                         <SHr h={10} />
                         <SText fontSize={11} color={STheme.color.lightGray}>
-                            PDF, JPG, PNG • Máximo 10MB
+                            PDF, JPG, PNG • Máximo 2MB
                         </SText>
                     </SView>
                 </SView>
