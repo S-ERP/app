@@ -55,12 +55,15 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 if (this.props.destino_inicial?.key) {
                     this._destinoSelectorRef?.setValue(this.props.destino_inicial.key);
                 }
+                if (this.props.origen_inicial || this.props.destino_inicial) {
+                    this.calcular_tipo_cambio_cuentas();
+                }
                 if (this.props.monto_origen_inicial && this.props.monto_origen_inicial > 0) {
                     this._ref["monto_origen"]?.setValue(this.props.monto_origen_inicial);
                     this.calcular_destino_desde_origen();
                 } else if (this.props.monto_destino_inicial && this.props.monto_destino_inicial > 0) {
                     this._ref["monto_destino"]?.setValue(this.props.monto_destino_inicial);
-                    this.calcular_origen_desde_destino();
+                    this.forceUpdate();
                 }
             });
         } catch (e: any) {
@@ -174,8 +177,13 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
     calcular_monto_destino_tipo_cambio() {
         if (!this._ref["monto_origen"] || !this._ref["tipo_cambio"] || !this._ref["monto_destino"]) return;
         const monto_origen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
+        const monto_destino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
         const tipo_cambio = parseFloat(this._ref["tipo_cambio"].getValue()) || 0;
-        this._ref["monto_destino"].setValue(monto_origen * tipo_cambio);
+        if (monto_origen > 0) {
+            this._ref["monto_destino"].setValue(Math.round(monto_origen * tipo_cambio * 100) / 100);
+        } else if (monto_destino > 0 && tipo_cambio > 0) {
+            this._ref["monto_origen"].setValue(Math.round(monto_destino / tipo_cambio * 100) / 100);
+        }
         this.forceUpdate();
     }
 
@@ -238,8 +246,9 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
         if (!this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return false;
         const montoOrigen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
         const montoDestino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
-        if (montoOrigen <= 0) return false;
         const tc = parseFloat(this._ref["tipo_cambio"].getValue()) || 0;
+        if (montoDestino > 0 && montoOrigen <= 0) return true;
+        if (montoOrigen <= 0) return false;
         const tcc = montoDestino / montoOrigen;
         return tc !== Math.round(tcc * 100000) / 100000;
     }
@@ -290,7 +299,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         type="money2"
                         ref={ref => this._ref["monto_origen"] = ref}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
-                        onChangeText={() => { this.calcular_tipo_cambio(); }}
+                        onChangeText={() => { this.calcular_destino_desde_origen(); }}
                     />
                 </SView>
             </SView>
@@ -377,7 +386,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         customStyle={"erp"}
                         type="money2"
                         ref={ref => this._ref["monto_destino"] = ref}
-                        onChangeText={() => { this.calcular_tipo_cambio(); }}
+                        onChangeText={() => { this.calcular_origen_desde_destino(); }}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Ingreso" /></SView>}
                     />
                 </SView>
