@@ -201,6 +201,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             }
 
                             const itemSinStock = items.find(it => {
+                                if ((it.modelo as any)?.tipo_producto?.tipo === 'servicio') return false;
                                 const stock = (it.modelo as any)?.stock ?? (it.modelo as any)?.stock_actual;
                                 if (stock === undefined || stock === null) return false;
                                 return Number(stock) < Number(it.cantidad);
