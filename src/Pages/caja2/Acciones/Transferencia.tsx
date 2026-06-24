@@ -19,6 +19,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
 
     _mounted = false;
     _ref: any = {};
+    _calculando = false;
     state: { data: any[]; origen: any; destino: any; loading: boolean } = {
         data: [],
         origen: null,
@@ -96,6 +97,36 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             const montoDestino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
             if (montoOrigen > 0 && montoDestino > 0) {
                 this._ref["tipo_cambio"].setValue(Math.round((montoDestino / montoOrigen) * 100000) / 100000);
+            }
+            this.forceUpdate();
+        })
+    }
+
+    calcular_destino_desde_origen() {
+        if (this._calculando) return;
+        new SThread(200, "calc_destino_origen", true).start(() => {
+            if (this._calculando) return;
+            const montoOrigen = parseFloat(this._ref["monto_origen"]?.getValue()) || 0;
+            const tc = parseFloat(this._ref["tipo_cambio"]?.getValue()) || 1;
+            if (montoOrigen > 0) {
+                this._calculando = true;
+                this._ref["monto_destino"]?.setValue(Math.round(montoOrigen * tc * 100) / 100);
+                this._calculando = false;
+            }
+            this.forceUpdate();
+        })
+    }
+
+    calcular_origen_desde_destino() {
+        if (this._calculando) return;
+        new SThread(200, "calc_origen_destino", true).start(() => {
+            if (this._calculando) return;
+            const montoDestino = parseFloat(this._ref["monto_destino"]?.getValue()) || 0;
+            const tc = parseFloat(this._ref["tipo_cambio"]?.getValue()) || 1;
+            if (montoDestino > 0 && tc > 0) {
+                this._calculando = true;
+                this._ref["monto_origen"]?.setValue(Math.round(montoDestino / tc * 100) / 100);
+                this._calculando = false;
             }
             this.forceUpdate();
         })
@@ -200,12 +231,10 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SView row col={"xs-12"}>
 
 
-                {/* <SView flex>
-                    <SText fontSize={11} color={STheme.color.lightGray}>{"Cuenta de origen"}</SText>
-                    <SHr h={4} /> */}
                 <SView flex style={{ height: 36, backgroundColor: STheme.color.card, borderRadius: 2 }}>
-
                     <InputSelector
+                        icon={this.state.origen ? <SIconApp name={this.state.origen?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} /> : undefined}
+                        label={"Cuenta de origen"}
                         customStyle="erp"
                         placeholder="Selecciona la cuenta de origen"
                         options={[...this.state.data]
@@ -289,10 +318,11 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             </SView>
             <SHr h={16} />
             <SView row col={"xs-12"}>
-                <SView flex>
-                    <SText fontSize={11} color={STheme.color.lightGray}>{"Cuenta de destino"}</SText>
-                    <SHr h={4} />
+                {/* <SView flex> */}
+                <SView flex style={{ height: 36, backgroundColor: STheme.color.card, borderRadius: 2 }}>
                     <InputSelector
+                        label={"Cuenta de destino"}
+                        icon={this.state.destino ? <SIconApp name={this.state.destino?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} /> : undefined}
                         customStyle="erp"
                         placeholder="Selecciona la cuenta de destino"
                         options={[...this.state.data]
