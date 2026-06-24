@@ -12,8 +12,14 @@ import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import DateTimeBetween from '../../Components/DateTimeBetween';
 import PopupUploadFactura from './Components/PopupUploadFactura';
 import { Linking } from 'react-native'
-import { color } from 'three/examples/jsm/nodes/Nodes';
 import FechaFullFilter from '../../Components/FechaFullFilter';
+
+const TIPO_PRODUCTO_MAP = {
+    servicio: { color: "#2563eb", label: "Servicio" },
+    inventario: { color: "#f59e0b", label: "Inventario" },
+};
+const getTiposProducto = (detalles = []) =>
+    [...new Set(detalles.map(d => d.data?.tipo_producto ?? "").filter(Boolean))];
 
 export default class tabla extends Component {
 
@@ -527,17 +533,13 @@ export default class tabla extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 4 }} width={40} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" headerStyle={{ paddingLeft: 4 }} width={90}
-                    data={(e) => {
-                        const tipos = (e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean);
-                        return [...new Set(tipos)].join(", ");
-                    }}
+                    data={(e) => getTiposProducto(e.row?.detalles).join(", ")}
                     customComponent={e => {
-                        const tipoPagoMap = { "servicio": { color: "#2563eb", label: "Servicio" }, "inventario": { color: "#f59e0b", label: "Inventario" }, };
-                        const tipos = [...new Set((e.row?.detalles ?? []).map(d => d.data?.tipo_producto ?? "").filter(Boolean))];
+                        const tipos = getTiposProducto(e.row?.detalles);
                         return (
                             <>
                                 {tipos.map((tipo, index) => {
-                                    const estilo = tipoPagoMap[tipo.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
+                                    const estilo = TIPO_PRODUCTO_MAP[tipo.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
                                     return (
                                         <SView key={index} col={"xs-12"} center row>
                                             <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5, marginBottom: 4 }}>
@@ -551,7 +553,7 @@ export default class tabla extends Component {
                     }}
                 />
 
-                <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} data={(e) => e.row?.observacion ?? ""} />
                 <DinamicTable.Col key="detalles_" label="Detalle" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 4 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 4 }} width={120} data={(e) => e.row?.sucursal?.descripcion}
@@ -566,6 +568,8 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
+                {/* punto venta */}
+
                 <DinamicTable.Col key="admin" label="Vendedor" headerStyle={{ paddingLeft: 4 }} width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
@@ -814,7 +818,7 @@ export default class tabla extends Component {
     }
     render() {
         return (
-            <SPage title="Tabla de Ventas" disableScroll>
+            <SPage title="Tabla de Vensstas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
