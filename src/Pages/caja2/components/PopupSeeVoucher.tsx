@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ScrollView } from "react-native";
+import { Linking, ScrollView } from "react-native";
 import {
     SView,
     SText,
@@ -68,10 +68,12 @@ export default class PopupSeeVoucher extends Component<Props> {
                     contentContainerStyle={{ paddingVertical: 10 }}
                 >
                     {data_vouchers.map((v, i) => {
-                        const url = `${SSocket.api.root}empresa/${key_empresa}/voucher/${key_caja_detalle}/${v.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+                        const url = `${SSocket.api.root}empresa/${key_empresa}/voucher/${key_caja_detalle}/${encodeURIComponent(v.name)}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+                        const esPDF = v.type === "application/pdf";
                         return (
                             <SView
                                 key={i}
+                                onPress={() => Linking.openURL(url)}
                                 style={{
                                     width: 120,
                                     height: 120,
@@ -80,12 +82,22 @@ export default class PopupSeeVoucher extends Component<Props> {
                                     overflow: "hidden",
                                     borderWidth: 1,
                                     borderColor: STheme.color.card,
+                                    backgroundColor: STheme.color.card,
+                                    justifyContent: "center",
+                                    alignItems: "center",
                                 }}
                             >
-                                <SImage
-                                    src={url}
-                                    style={{ width: "100%", height: "100%" }}
-                                />
+                                {esPDF ? (
+                                    <SView center style={{ padding: 8 }}>
+                                        <SText fontSize={36}>📄</SText>
+                                        <SHr h={4} />
+                                        <SText fontSize={9} center numberOfLines={2} color={STheme.color.text}>{v.name}</SText>
+                                        <SHr h={4} />
+                                        <SText fontSize={9} color={STheme.color.link}>Abrir PDF</SText>
+                                    </SView>
+                                ) : (
+                                    <SImage src={url} style={{ width: "100%", height: "100%" }} />
+                                )}
                             </SView>
                         );
                     })}

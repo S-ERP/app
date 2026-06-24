@@ -64,7 +64,7 @@ export default class DetalleItem extends Component {
     const itemKey = this.props?.item?.key;
     if (!empresaKey || !itemKey || !SSocket.api?.root) return null;
 
-    const url = `${SSocket.api.root}empresa/${empresaKey}/voucher/${itemKey}/${documento_name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+    const url = `${SSocket.api.root}empresa/${empresaKey}/voucher/${itemKey}/${encodeURIComponent(documento_name)}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
 
     return (
       <SView row center style={{
