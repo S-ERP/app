@@ -59,6 +59,7 @@ class index extends DPA.new {
         data.key_compra_venta = this._params.key_compra_venta
         data.data = {
             key_cuenta_contable: this.state.tipo_producto?.key_cuenta_contable,
+            tipo_producto: this.state.tipo_producto?.tipo,
         }
         Parent.model.Action.registro({
             data: data,
