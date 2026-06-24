@@ -4,7 +4,12 @@ import MDL from "../../../MDL";
 import SIconApp from "../../../Assets/SIconApp";
 import InputSelector from "../../../Components/Selectores/InputSelector";
 
-type TransferenciaProps = {}
+type TransferenciaProps = {
+    origen_inicial?: any;
+    monto_origen_inicial?: number;
+    destino_inicial?: any;
+    monto_destino_inicial?: number;
+}
 
 export default class Transferencia extends React.Component<TransferenciaProps> {
     static open(props: TransferenciaProps) {
@@ -20,10 +25,12 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
     _mounted = false;
     _ref: any = {};
     _calculando = false;
+    _origenSelectorRef: any = null;
+    _destinoSelectorRef: any = null;
     state: { data: any[]; origen: any; destino: any; loading: boolean } = {
         data: [],
-        origen: null,
-        destino: null,
+        origen: this.props.origen_inicial ?? null,
+        destino: this.props.destino_inicial ?? null,
         loading: false,
     }
 
@@ -41,7 +48,21 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             if (!key_punto_venta) throw "No se encontró una caja activa";
             const data = await MDL.empresa.tipo_pagoGetFullCaja(key_punto_venta);
             if (!this._mounted) return;
-            this.setState({ data: Array.isArray(data) ? data : Object.values(data ?? {}) });
+            this.setState({ data: Array.isArray(data) ? data : Object.values(data ?? {}) }, () => {
+                if (this.props.origen_inicial?.key) {
+                    this._origenSelectorRef?.setValue(this.props.origen_inicial.key);
+                }
+                if (this.props.destino_inicial?.key) {
+                    this._destinoSelectorRef?.setValue(this.props.destino_inicial.key);
+                }
+                if (this.props.monto_origen_inicial && this.props.monto_origen_inicial > 0) {
+                    this._ref["monto_origen"]?.setValue(this.props.monto_origen_inicial);
+                    this.calcular_destino_desde_origen();
+                } else if (this.props.monto_destino_inicial && this.props.monto_destino_inicial > 0) {
+                    this._ref["monto_destino"]?.setValue(this.props.monto_destino_inicial);
+                    this.calcular_origen_desde_destino();
+                }
+            });
         } catch (e: any) {
             if (!this._mounted) return;
             SNotification.send({ key: "transferencia_load", title: "Error al cargar cuentas", body: e?.error ?? JSON.stringify(e), color: STheme.color.danger, time: 5000 });
@@ -251,6 +272,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                                 data: c,
                                 customComponent: <SIconApp name={c?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} />,
                             }))}
+                        ref={(ref: any) => (this._origenSelectorRef = ref)}
                         defaultValue={this.state.origen?.key ?? null}
                         onSelect={(selected: any) => {
                             this.state.origen = selected.data;
@@ -339,6 +361,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                                 data: c,
                                 customComponent: <SIconApp name={c?.tipo_pago?.icon as any} fill={STheme.color.primary} width={16} height={16} />,
                             }))}
+                        ref={(ref: any) => (this._destinoSelectorRef = ref)}
                         defaultValue={this.state.destino?.key ?? null}
                         onSelect={(selected: any) => {
                             this.state.destino = selected.data;

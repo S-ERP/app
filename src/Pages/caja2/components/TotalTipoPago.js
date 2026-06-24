@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { SLoad, SMath, SNotification, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
+import Transferencia from '../Acciones/Transferencia';
 
 export default class TotalTipoPago extends Component {
 
@@ -111,13 +112,15 @@ export default class TotalTipoPago extends Component {
                         </SText>
                     </SView>
                     <SView flex col={"xs-12"} row style={{ borderTopWidth: 1, borderColor: STheme.color.card }}>
-                        <SView flex center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}>
+                        <SView flex center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}
+                            onPress={() => Transferencia.open({ origen_inicial: item, monto_origen_inicial: totalIngresos })}>
                             <SIconApp name='Ingreso' width={8} height={8} />
                             <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>
                                 {item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)}
                             </SText>
                         </SView>
-                        <SView flex center>
+                        <SView flex center
+                            onPress={() => Transferencia.open({ destino_inicial: item, monto_destino_inicial: Math.abs(totalEgresos) })}>
                             <SIconApp name='Egreso' width={8} height={8} />
                             <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>
                                 {item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)}
