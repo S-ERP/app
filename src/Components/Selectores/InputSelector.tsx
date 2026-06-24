@@ -525,8 +525,10 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         }
         return <>
             {/* <SView row center backgroundColor="red"> */}
-            {label && (
-                <SText style={{ position: "absolute", top: -3, left: 2, fontSize: 10, color: STheme.color.lightGray, backgroundColor: STheme.color.danger, paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap" } as any}>{label}</SText>
+            {label && (<SView width={"100%"} style={{ borderRadius: 40, backgroundColor: "green" }}>
+
+                <SText style={{ position: "absolute", top: -3, left: 2, fontSize: 10, color: STheme.color.lightGray, backgroundColor: STheme.color.background + "99", paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap" } as any}>{label}</SText>
+            </SView>
             )}
             {icon && (
                 <View style={{ position: "absolute", left: 6, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", zIndex: 1, pointerEvents: "none" } as any}>
