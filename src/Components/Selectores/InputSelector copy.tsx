@@ -520,11 +520,11 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             width: "100%",
             outlineStyle: "none",
             margin: 0,
+            
             paddingEnd: 20,
             paddingStart: icon ? 28 : undefined,
         }
-        return <>
-            {/* <SView row center backgroundColor="red"> */}
+        return <View style={{ position: "relative" }}>
             {label && (
                 <SText style={{ position: "absolute", top: -3, left: 2, fontSize: 10, color: STheme.color.lightGray, backgroundColor: STheme.color.danger, paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap" } as any}>{label}</SText>
             )}
@@ -548,23 +548,20 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 editable={!this.props.value}
             />
             <SView
-                width={36}
-                height={12}
+                width={12}
+                height={"100%"}
                 center
-                backgroundColor="yellow"
                 onPress={() => { if (this.inputRef) this.inputRef.focus(); }}
                 style={{
                     transform: [{ rotate: "-90deg" }],
                     position: "absolute",
-                    top: 12,
                     right: 0,
                     // @ts-ignore
                     userSelect: "none",
                     // @ts-ignore
                     outline: "none",
                     // @ts-ignore
-                    tabIndex: -1,
-                    marginRight: -8
+                    tabIndex: -1
                 }}
             >
                 <SIconApp name="Back" fill={STheme.color.lightGray} width={4}
@@ -572,8 +569,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                     style={{ userSelect: "none", pointerEvents: "none" }}
                 />
             </SView>
-            {/* </SView> */}
-        </>
+        </View>
     }
 }
 class ListSelectorContent extends React.Component<{
@@ -677,7 +673,7 @@ class ListSelectorContent extends React.Component<{
                     <SText style={{
                         fontSize: 8,
                         color: STheme.color.text + '80',
-                        textAlign: "right"
+                        textAlign:"right"
                     }}>
                         Mostrando {visibleOptions} de {totalOptions} {hiddenOptions > 0 ? `(${hiddenOptions} ocultos)` : ''}
                     </SText>

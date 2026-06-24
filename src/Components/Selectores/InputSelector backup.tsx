@@ -104,8 +104,6 @@ export type InputSelectorProps = {
     listItemStyle?: ViewStyle;
     listItemTextStyle?: TextStyle;
     listHorizontalScroll?: boolean;
-    icon?: React.ReactNode;
-    label?: string;
 }
 export default class InputSelector extends React.Component<InputSelectorProps> {
     scrollListener: (() => void) | null = null;
@@ -512,27 +510,22 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         if (_undoStack.length === 0) _removListeners();
     }
     render() {
-        const { icon, label } = this.props;
         const configInputs = Config.inputs()[this.props?.customStyle ?? "default"];
         const style: TextInputProps["style"] = {
+            // paddingTop: 12,
+            // ...configInputs.View,
             ...configInputs.InputText,
             flex: 1,
             width: "100%",
             outlineStyle: "none",
             margin: 0,
             paddingEnd: 20,
-            paddingStart: icon ? 28 : undefined,
+            // textAlignVertical: "center",
+            // textAlign: "left",
+            // height: 40,
+            // justifyContent: "center"
         }
         return <>
-            {/* <SView row center backgroundColor="red"> */}
-            {label && (
-                <SText style={{ position: "absolute", top: -3, left: 2, fontSize: 10, color: STheme.color.lightGray, backgroundColor: STheme.color.danger, paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap" } as any}>{label}</SText>
-            )}
-            {icon && (
-                <View style={{ position: "absolute", left: 6, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", zIndex: 1, pointerEvents: "none" } as any}>
-                    {icon}
-                </View>
-            )}
             <TextInput
                 {...this.props}
                 value={(this.state.displayValue ?? "").replace("\n", " - ")}
@@ -546,33 +539,44 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 ref={(ref) => this.inputRef = ref}
                 selectTextOnFocus={!this.props.value}
                 editable={!this.props.value}
+            // numberOfLines={4}
+            // multiline
+            // numberOfLines={2}
             />
             <SView
-                width={36}
-                height={12}
+                width={12}
+                height={"100%"}
                 center
-                backgroundColor="yellow"
-                onPress={() => { if (this.inputRef) this.inputRef.focus(); }}
+                onPress={() => {
+                    if (this.inputRef) {
+                        this.inputRef.focus();
+                    }
+                }}
                 style={{
                     transform: [{ rotate: "-90deg" }],
                     position: "absolute",
-                    top: 12,
                     right: 0,
                     // @ts-ignore
                     userSelect: "none",
+                    // pointerEvents: "none",
                     // @ts-ignore
                     outline: "none",
                     // @ts-ignore
-                    tabIndex: -1,
-                    marginRight: -8
+                    tabIndex: -1
                 }}
             >
-                <SIconApp name="Back" fill={STheme.color.lightGray} width={4}
+                <SIconApp
+                    name="Back"
+                    fill={STheme.color.lightGray}
+                    width={4}
+                    draggable={false}
                     // @ts-ignore
-                    style={{ userSelect: "none", pointerEvents: "none" }}
+                    style={{
+                        userSelect: "none",
+                        pointerEvents: "none"
+                    }}
                 />
             </SView>
-            {/* </SView> */}
         </>
     }
 }
@@ -677,7 +681,7 @@ class ListSelectorContent extends React.Component<{
                     <SText style={{
                         fontSize: 8,
                         color: STheme.color.text + '80',
-                        textAlign: "right"
+                        textAlign:"right"
                     }}>
                         Mostrando {visibleOptions} de {totalOptions} {hiddenOptions > 0 ? `(${hiddenOptions} ocultos)` : ''}
                     </SText>
