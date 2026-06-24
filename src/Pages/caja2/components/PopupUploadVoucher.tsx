@@ -96,7 +96,10 @@ export default class PopupUploadVoucher extends Component<Props> {
             const nuevosArchivos = this.state.uploadedVouchers.filter((v) => v.file)
             for (const v of nuevosArchivos) {
                 const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`
-                await Upload.sendPromise({ file: v.file!, compress: false }, uploadUrl)
+                const formData = new FormData()
+                formData.append("file", v.file!)
+                const res = await fetch(uploadUrl, { method: "POST", body: formData })
+                if (!res.ok) throw `Error al subir ${v.name}: ${res.status}`
             }
             const vouchersFinales = this.state.uploadedVouchers.map((v) => ({
                 name: v.name,
@@ -229,7 +232,8 @@ export default class PopupUploadVoucher extends Component<Props> {
                 <SView col={"xs-12"} row center flex>
                     <SView center>
                         <SView
-                            style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: "#4786b1", alignItems: "center", justifyContent: "center", shadowColor: "#000",
+                            style={{
+                                width: 56, height: 56, borderRadius: 28, backgroundColor: "#4786b1", alignItems: "center", justifyContent: "center", shadowColor: "#000",
                                 // shadowOffset: { width: 0, height: 2 },
                                 // shadowOpacity: 0.2,
                                 shadowRadius: 4,
@@ -288,7 +292,7 @@ export default class PopupUploadVoucher extends Component<Props> {
             </SView>
             <SHr h={10} />
             <SView row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
-                <Btn type="secondary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
+                <Btn type="danger" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
                 <SView width={12} />
                 <Btn type="primary" label={this.state.loading ? "GUARDANDO..." : "GUARDAR COMPROBANTES"} onPress={() => this.form?.submit()} />
             </SView>
