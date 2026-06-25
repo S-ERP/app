@@ -319,6 +319,64 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
+
+
+
+                <DinamicTable.Col
+                    key="admin"
+                    label="CAJERO"
+                    width={120}
+                    data={e => e.row?.cajero?.Nombres ?? "Sin cajero"}
+                    customComponent={e => {
+                        const key = e.row?.key_cajero;
+                        const nombre = e.row?.cajero?.Nombres ?? "Sin cajero";
+
+                        return key ? (
+                            <SView col="xs-12" row center>
+                                <SView
+                                    width={20}
+                                    height={20}
+                                    style={{
+                                        borderRadius: 100,
+                                        overflow: "hidden",
+                                        backgroundColor: STheme.color.card + "66",
+                                        marginRight: 6,
+                                    }}
+                                >
+                                    <SImage
+                                        src={`${SSocket.api.root}usuario/${key}`}
+                                        style={{ resizeMode: "cover", width: "100%", height: "100%" }}
+                                    />
+                                </SView>
+                                <SText flex numberOfLines={1} style={e.textStyle}>
+                                    {nombre}
+                                </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin cajero</SText>
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col
+                    key="punto"
+                    label="P.VENTA"
+                    width={60}
+                    color={STheme}
+                    data={e => e.row?.puntos_venta?.descripcion ? "PV-" + e.row?.puntos_venta?.descripcion : "Sin punto de venta"}
+                />
+
+                <DinamicTable.Col
+                    key="fecha_movimiento"
+                    label="FECHA TRANSACCIÓN"
+                    width={140}
+                    center
+                    dataType="date"
+                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
+                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                    dateFormat="yyyy-MM-dd hh:mm:ss"
+                />
+
                 <DinamicTable.Col
                     key="tipo"
                     wrap
@@ -386,13 +444,6 @@ export default class reporteMoviminetos extends Component {
                     width={180}
                     data={e => e.row?.descripcion ?? 0}
                 />
-                <DinamicTable.Col
-                    key="punto"
-                    label="P.VENTA"
-                    width={60}
-                    color={STheme}
-                    data={e => e.row?.puntos_venta?.descripcion ? "PV-" + e.row?.puntos_venta?.descripcion : "Sin punto de venta"}
-                />
 
                 {/* <DinamicTable.Col
                     key="fecha_apertura"
@@ -414,16 +465,7 @@ export default class reporteMoviminetos extends Component {
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 /> */}
-                <DinamicTable.Col
-                    key="fecha_movimiento"
-                    label="FECHA TRANSACCIÓN"
-                    width={140}
-                    center
-                    dataType="date"
-                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
-                    dateFormat="yyyy-MM-dd hh:mm:ss"
-                />
+
 
                 <DinamicTable.Col
                     key="codigo_comprobante"
@@ -436,16 +478,16 @@ export default class reporteMoviminetos extends Component {
                         return (
                             <SView col={"xs-12"} center height={20}   >
                                 <SView col={"xs-12"} row center height={20}   >
-                                    <SView  center style={{
+                                    <SView center style={{
                                         ...e.textStyle,
                                         borderWidth: 1, borderColor: STheme.color.link,
                                         borderRadius: 4,
-                                        padding:4,
+                                        padding: 4,
                                     }}
                                         onPress={() => {
                                             SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: e.row?.key_comprobante })
                                         }}
-                                    > <SText color={STheme.color.link}  fontSize={10}> {e.row?.codigo_comprobante} </SText>
+                                    > <SText color={STheme.color.link} fontSize={10}> {e.row?.codigo_comprobante} </SText>
                                     </SView>
                                 </SView>
                             </SView>
@@ -620,41 +662,7 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
-                <DinamicTable.Col
-                    key="admin"
-                    label="CAJERO"
-                    width={120}
-                    data={e => e.row?.cajero?.Nombres ?? "Sin cajero"}
-                    customComponent={e => {
-                        const key = e.row?.key_cajero;
-                        const nombre = e.row?.cajero?.Nombres ?? "Sin cajero";
 
-                        return key ? (
-                            <SView col="xs-12" row center>
-                                <SView
-                                    width={20}
-                                    height={20}
-                                    style={{
-                                        borderRadius: 100,
-                                        overflow: "hidden",
-                                        backgroundColor: STheme.color.card + "66",
-                                        marginRight: 6,
-                                    }}
-                                >
-                                    <SImage
-                                        src={`${SSocket.api.root}usuario/${key}`}
-                                        style={{ resizeMode: "cover", width: "100%", height: "100%" }}
-                                    />
-                                </SView>
-                                <SText flex numberOfLines={1} style={e.textStyle}>
-                                    {nombre}
-                                </SText>
-                            </SView>
-                        ) : (
-                            <SText>Sin cajero</SText>
-                        );
-                    }}
-                />
 
             </DinamicTable >
         );
