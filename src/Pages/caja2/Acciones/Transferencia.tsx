@@ -308,13 +308,11 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
 
                     {/* ahora */}
                     <SInput2
+                        bug
                         ref={ref => this._ref["monto_origen"] = ref}
-                        icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
+                        icon={<SText width={40}  >{this.state?.origen?.moneda?.observacion}</SText>}
                         label={"Monto a enviar"}
-                        labelStyle={{ fontSize: 10, backgroundColor: "red" }}
                         type="money"
-                        // style={{ backgroundColor: "pink" }}
-                        // inputStyle={{ fontSize: 14,   paddingRight: 2, textAlign: "right", backgroundColor: "blue" }}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
                         onChangeText={() => { this.calcular_destino_desde_origen(); }}
                     />

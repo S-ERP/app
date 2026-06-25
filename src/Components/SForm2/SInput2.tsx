@@ -16,6 +16,7 @@ type SInput2Props = {
     label?: string;
     labelStyle?: any;
     inputStyle?: any;
+    bug?: boolean;
 }
 
 const SInput2 = forwardRef((props: SInput2Props, ref: React.Ref<SInput2Class>) => {
@@ -368,8 +369,9 @@ export class SInput2Class extends React.Component<SInput2Props, {
     }
 
     render() {
-        const { type, decimals, name, defaultValue, onChangeText: _, value: _v, style, icon, iconR, label, labelStyle, inputStyle, ...rest } = this.props;
+        const { type, decimals, name, defaultValue, onChangeText: _, value: _v, style, icon, iconR, label, labelStyle, inputStyle, bug, ...rest } = this.props;
         const hasWrapper = !!(icon || iconR || label);
+        const d = bug ? { borderWidth: 1, borderColor: "pink" } as any : null;
         const textInput = <TextInput
             keyboardType={type === 'money' ? 'numeric' : 'default'}
             {...rest}
@@ -391,19 +393,23 @@ export class SInput2Class extends React.Component<SInput2Props, {
                 hasWrapper ? { flex: 1, height: "100%" } as any : null,
                 icon ? { paddingRight: 2, textAlign: "right" } as any : { paddingLeft: 4 } as any,
                 inputStyle,
+                d,
             ]}
         />;
 
         if (!hasWrapper) return textInput;
 
+        const withLines = (node: React.ReactNode) =>
+            React.isValidElement(node) ? React.cloneElement(node as any, { numberOfLines: 1 }) : node;
+
         return (
-            <SView row style={[{ flex: 1, height: "100%", position: "relative" } as any, style]} backgroundColor={STheme.color.card}>
+            <SView row style={[{ flex: 1, height: "100%", position: "relative" } as any, style, d]} backgroundColor={STheme.color.card}>
                 {label && (
-                    <SText width={"100%"} style={{ position: "absolute", top: -3, left: 2, fontSize: 9, color: STheme.color.lightGray, backgroundColor: STheme.color.background + "99", paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap", borderRadius: 3, ...labelStyle } as any}> {label} </SText>
+                    <SText width={"100%"} style={{ position: "absolute", top: -3, left: 2, fontSize: 9, color: STheme.color.lightGray, backgroundColor: STheme.color.background + "99", paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap", borderRadius: 3, ...labelStyle, ...(bug ? { borderWidth: 1, borderColor: "pink" } : {}) } as any}> {label} </SText>
                 )}
-                {icon && <SView center style={{ height: "100%", paddingLeft: 3 }}>{icon}</SView>}
-                <SView flex height>{textInput}</SView>
-                {iconR && <SView center style={{ height: "100%", paddingRight: 3 }}>{iconR}</SView>}
+                {icon && <SView center style={[{ height: "100%", paddingLeft: 3 }, d]}>{withLines(icon)}</SView>}
+                <SView flex height style={d}>{textInput}</SView>
+                {iconR && <SView center style={[{ height: "100%", paddingRight: 3 }, d]}>{withLines(iconR)}</SView>}
             </SView>
         );
     }
