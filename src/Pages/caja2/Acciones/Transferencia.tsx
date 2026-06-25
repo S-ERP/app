@@ -3,6 +3,7 @@ import { SHr, SInput, SLoad, SNavigation, SNotification, SPopup, SText, STheme, 
 import MDL from "../../../MDL";
 import SIconApp from "../../../Assets/SIconApp";
 import InputSelector from "../../../Components/Selectores/InputSelector";
+import SInput2 from "../../../Components/SForm2/SInput2";
 
 type TransferenciaProps = {
     origen_inicial?: any;
@@ -293,11 +294,27 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 {/* </SView> */}
                 <SView width={4} />
                 <SView width={160}>
-                    <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
+
+
+                    {/* antes */}
+                    {/* <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
                         label={"Monto a enviar"}
                         customStyle={"erp"}
                         type="money2"
                         ref={ref => this._ref["monto_origen"] = ref}
+                        iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
+                        onChangeText={() => { this.calcular_destino_desde_origen(); }}
+                    /> */}
+
+                    {/* ahora */}
+                    <SInput2
+                        ref={ref => this._ref["monto_origen"] = ref}
+                        icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
+                        label={"Monto a enviar"}
+                        labelStyle={{ fontSize: 10, backgroundColor: "red" }}
+                        type="money"
+                        style={{ backgroundColor: "cyan" }}
+                        inputStyle={{ fontSize: 14, padding: 0, paddingRight: 4, textAlign: "right", backgroundColor: "blue" }}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
                         onChangeText={() => { this.calcular_destino_desde_origen(); }}
                     />
@@ -333,6 +350,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         label={"Tipo de cambio"}
                         customStyle={"erp"}
                         type="money2"
+
                         decimales={5}
                         defaultValue={1}
                         ref={ref => this._ref["tipo_cambio"] = ref}
@@ -381,9 +399,22 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 </SView>
                 <SView width={4} />
                 <SView width={160}>
+
+                    {/* <SInput2
+                        ref={ref => this._ref["monto_origen"] = ref}
+                        icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
+                        label={"Monto a enviar"}
+                        labelStyle={{ fontSize: 10, backgroundColor: "red" }}
+                        type="money"
+                        style={{ backgroundColor: "cyan" }}
+                        inputStyle={{ fontSize: 14, padding: 0, paddingRight: 4, textAlign: "right", backgroundColor: "blue" }}
+                        iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
+                        onChangeText={() => { this.calcular_destino_desde_origen(); }}
+                    /> */}
+
+
                     <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.destino?.moneda?.observacion}</SText>}
                         label={"Monto a recibir"}
-                        customStyle={"erp"}
                         type="money2"
                         ref={ref => this._ref["monto_destino"] = ref}
                         onChangeText={() => { this.calcular_origen_desde_destino(); }}
@@ -392,7 +423,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 </SView>
             </SView>
             <SHr h={40} />
-            <SInput label={"Descripcion"} type="textArea" customStyle={"erp" as any} style={{ paddingTop: 4 }}
+            <SInput label={"Motivo de la transferencia"} type="textArea" customStyle={"erp" as any} style={{ paddingTop: 4 }}
                 ref={ref => this._ref["descripcion"] = ref}
                 placeholder={"Ingresa el motivo de la transferencia..."}
             />
