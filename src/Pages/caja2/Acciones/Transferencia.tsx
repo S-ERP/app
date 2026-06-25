@@ -9,7 +9,7 @@ type TransferenciaProps = {
     origen_inicial?: any;
     monto_origen_inicial?: number;
     destino_inicial?: any;
-    monto_destino_inicial?: number;
+    monto_destino_inicial?: number | string;
 }
 
 export default class Transferencia extends React.Component<TransferenciaProps> {
@@ -62,7 +62,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 if (this.props.monto_origen_inicial && this.props.monto_origen_inicial > 0) {
                     this._ref["monto_origen"]?.setValue(this.props.monto_origen_inicial);
                     this.calcular_destino_desde_origen();
-                } else if (this.props.monto_destino_inicial && this.props.monto_destino_inicial > 0) {
+                } else if (Number(this.props.monto_destino_inicial) > 0) {
                     this._ref["monto_destino"]?.setValue(this.props.monto_destino_inicial);
                     this.forceUpdate();
                 }
@@ -86,14 +86,14 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             if (!this.state?.origen?.key) throw "Selecciona la cuenta de origen";
             if (!this.state?.destino?.key) throw "Selecciona la cuenta de destino";
             if (this.state.origen.key === this.state.destino.key) throw "La cuenta de origen y destino no pueden ser la misma";
-            const monto_origen = parseFloat(this._ref["monto_origen"].getValue()) || 0;
-            const monto_destino = parseFloat(this._ref["monto_destino"].getValue()) || 0;
+            const monto_origen = parseFloat(this._ref["monto_origen"]?.getValue() ?? "0") || 0;
+            const monto_destino = parseFloat(this._ref["monto_destino"]?.getValue() ?? "0") || 0;
             if (monto_origen <= 0) throw "El monto de origen debe ser mayor a 0";
             if (monto_destino <= 0) throw "El monto de destino debe ser mayor a 0";
             if (!MDL.usuario.session?.key) throw "Sesión de usuario no encontrada";
             if (!this.state.origen?.moneda?.key) throw `La cuenta "${this.state.origen.descripcion}" no tiene moneda configurada`;
             if (!this.state.destino?.moneda?.key) throw `La cuenta "${this.state.destino.descripcion}" no tiene moneda configurada`;
-            const tipo_cambio = parseFloat(this._ref["tipo_cambio"]?.getValue()) || 1;
+            const tipo_cambio = parseFloat(this._ref["tipo_cambio"]?.getValue() ?? "1") || 1;
             const data = {
                 key_usuario: MDL.usuario.session?.key,
                 key_caja: key_caja_final,
@@ -102,7 +102,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 monto_origen,
                 monto_destino,
                 tipo_cambio,
-                descripcion: this._ref["descripcion"].getValue() || "",
+                descripcion: this._ref["descripcion"]?.getValue() || "",
             }
             this.setState({ loading: true });
             await MDL.caja.traspaso(data);
@@ -234,9 +234,9 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         ref={(ref: any) => (this._origenSelectorRef = ref)}
                         defaultValue={this.state.origen?.key ?? null}
                         onSelect={(selected: any) => {
-                            this.state.origen = selected.data;
-                            this.calcular_tipo_cambio_cuentas();
-                            this.forceUpdate();
+                            this.setState({ origen: selected.data }, () => {
+                                this.calcular_tipo_cambio_cuentas();
+                            });
                         }}
                     />
                 </SView>
@@ -247,8 +247,10 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
 
                     <SInput2
                         ref={ref => this._ref["monto_origen"] = ref}
-                        icon={<SText width={40}>{this.state?.origen?.moneda?.observacion}</SText>}
+                        icon={<SText width={40} color={this.state?.origen?.moneda?.observacion ? STheme.color.text : STheme.color.lightGray + "66"}>{this.state?.origen?.moneda?.observacion ?? "$"}</SText>}
                         label={"Monto a enviar"}
+                        placeholder="0.00"
+
                         type="money"
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
                         onChangeText={() => { this.calcular_destino_desde_origen(); }}
@@ -269,7 +271,6 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                             this._ref["monto_origen"]?.setValue(monto_destino);
                             this._ref["monto_destino"]?.setValue(monto_orige);
                             this.calcular_tipo_cambio_cuentas();
-                            this.calcular_tipo_cambio();
                         });
                     }}>
                         <SView height={20} style={{ transform: [{ rotate: "-90deg" }] }}>
@@ -327,9 +328,9 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         ref={(ref: any) => (this._destinoSelectorRef = ref)}
                         defaultValue={this.state.destino?.key ?? null}
                         onSelect={(selected: any) => {
-                            this.state.destino = selected.data;
-                            this.calcular_tipo_cambio_cuentas();
-                            this.forceUpdate();
+                            this.setState({ destino: selected.data }, () => {
+                                this.calcular_tipo_cambio_cuentas();
+                            });
                         }}
                     />
                 </SView>
@@ -337,9 +338,10 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 <SView width={160}>
 
 
-                    <SInput2 icon={<SText width={40} numberOfLines={1}>{this.state?.destino?.moneda?.observacion}</SText>}
+                    <SInput2
                         label={"Monto a recibir"}
                         type="money"
+                        icon={<SText width={40} color={this.state?.destino?.moneda?.observacion ? STheme.color.text : STheme.color.lightGray + "66"}>{this.state?.destino?.moneda?.observacion ?? "$"}</SText>}
                         ref={ref => this._ref["monto_destino"] = ref}
                         onChangeText={() => { this.calcular_origen_desde_destino(); }}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Ingreso" /></SView>}

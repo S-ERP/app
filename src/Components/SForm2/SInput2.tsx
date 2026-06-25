@@ -17,6 +17,8 @@ type SInput2Props = {
     labelStyle?: any;
     inputStyle?: any;
     bug?: boolean;
+    placeholder?: string;
+    placeholderTextColor?: string;
 }
 
 const SInput2 = forwardRef((props: SInput2Props, ref: React.Ref<SInput2Class>) => {
@@ -374,6 +376,7 @@ export class SInput2Class extends React.Component<SInput2Props, {
         const d = bug ? { borderWidth: 1, borderColor: "pink" } as any : null;
         const textInput = <TextInput
             keyboardType={type === 'money' ? 'numeric' : 'default'}
+            placeholderTextColor={STheme.color.lightGray+"66"}
             {...rest}
             ref={(r) => { this._inputRef = r; }}
             value={this.state.value}
@@ -445,7 +448,8 @@ export class SMoneyInput extends React.Component<SMoneyInputProps> {
             <>
                 {icon && <SView center style={{ height: "100%" }}>{icon}</SView>}
                 <SView flex height>
-                    <SInput2Class ref={r => { this._ref = r; }} {...rest} type="money" style={inputStyle} />
+                    <SInput2Class ref={r => { this._ref = r; }} {...rest} type="money" style={inputStyle}
+                      />
                 </SView>
                 {iconR && <SView center style={{ height: "100%" }}>{iconR}</SView>}
             </>
