@@ -313,8 +313,8 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                         label={"Monto a enviar"}
                         labelStyle={{ fontSize: 10, backgroundColor: "red" }}
                         type="money"
-                        style={{ backgroundColor: "cyan" }}
-                        inputStyle={{ fontSize: 14, padding: 0, paddingRight: 4, textAlign: "right", backgroundColor: "blue" }}
+                        // style={{ backgroundColor: "pink" }}
+                        // inputStyle={{ fontSize: 14,   paddingRight: 2, textAlign: "right", backgroundColor: "blue" }}
                         iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
                         onChangeText={() => { this.calcular_destino_desde_origen(); }}
                     />
@@ -400,21 +400,10 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
                 <SView width={4} />
                 <SView width={160}>
 
-                    {/* <SInput2
-                        ref={ref => this._ref["monto_origen"] = ref}
-                        icon={<SText width={40} numberOfLines={1}>{this.state?.origen?.moneda?.observacion}</SText>}
-                        label={"Monto a enviar"}
-                        labelStyle={{ fontSize: 10, backgroundColor: "red" }}
-                        type="money"
-                        style={{ backgroundColor: "cyan" }}
-                        inputStyle={{ fontSize: 14, padding: 0, paddingRight: 4, textAlign: "right", backgroundColor: "blue" }}
-                        iconR={<SView width={24} height={24} padding={2}><SIconApp name="Egreso" /></SView>}
-                        onChangeText={() => { this.calcular_destino_desde_origen(); }}
-                    /> */}
-
 
                     <SInput icon={<SText width={40} numberOfLines={1}>{this.state?.destino?.moneda?.observacion}</SText>}
                         label={"Monto a recibir"}
+                        customStyle={"erp"}
                         type="money2"
                         ref={ref => this._ref["monto_destino"] = ref}
                         onChangeText={() => { this.calcular_origen_desde_destino(); }}

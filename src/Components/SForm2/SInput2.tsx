@@ -389,6 +389,7 @@ export class SInput2Class extends React.Component<SInput2Props, {
             style={[
                 { outline: "none", fontSize: 12, color: STheme.color.text } as any,
                 hasWrapper ? { flex: 1, height: "100%" } as any : null,
+                icon ? { paddingRight: 2, textAlign: "right" } as any : { paddingLeft: 4 } as any,
                 inputStyle,
             ]}
         />;
@@ -398,7 +399,7 @@ export class SInput2Class extends React.Component<SInput2Props, {
         return (
             <SView row style={[{ flex: 1, height: "100%", position: "relative" } as any, style]} backgroundColor={STheme.color.card}>
                 {label && (
-                    <SText width={"100%"} style={{ position: "absolute", top: -3, left: 2, fontSize: 9, color: STheme.color.lightGray, backgroundColor: STheme.color.background+"99", paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap", borderRadius: 3, ...labelStyle } as any}> {label} </SText>
+                    <SText width={"100%"} style={{ position: "absolute", top: -3, left: 2, fontSize: 9, color: STheme.color.lightGray, backgroundColor: STheme.color.background + "99", paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap", borderRadius: 3, ...labelStyle } as any}> {label} </SText>
                 )}
                 {icon && <SView center style={{ height: "100%", paddingLeft: 3 }}>{icon}</SView>}
                 <SView flex height>{textInput}</SView>
