@@ -74,22 +74,11 @@ export default class TotalTipoPago extends Component {
         const movimientos = this.props.movimientos ?? [];
         const propios = movimientos.filter(mov => mov.key_empresa_tipo_pago === item.key);
         const total = propios.reduce((sum, mov) => sum + (mov.monto || 0), 0);
-        const totalIngresos = propios.filter(mov => mov.monto > 0).reduce((sum, mov) => sum + (mov.monto || 0), 0);
-        const totalEgresos = propios.filter(mov => mov.monto < 0).reduce((sum, mov) => sum + (mov.monto || 0), 0);
-
+        // const totalIngresos = propios.filter(mov => mov.monto > 0).reduce((sum, mov) => sum + (mov.monto || 0), 0);
+        // const totalEgresos = propios.filter(mov => mov.monto < 0).reduce((sum, mov) => sum + (mov.monto || 0), 0);
         return (
             <SView key={item.key} style={{ padding: 6, maxWidth: 180 }} col={"xs-6 sm-4"}>
-                <SView style={{
-                    width: "100%",
-                    height: 130,
-                    borderWidth: 1,
-                    borderColor: STheme.color.card,
-                    borderRadius: 8,
-                    padding: 4,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: STheme.color.background,
-                }}>
+                <SView style={{ width: "100%", height: 130, borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8, padding: 4, justifyContent: "center", alignItems: "center", backgroundColor: STheme.color.background, }}>
                     <SView row col={"xs-12"} style={{ alignItems: "center", padding: 4 }}>
                         <View style={{ width: 22, height: 22 }}>
                             <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
@@ -107,24 +96,20 @@ export default class TotalTipoPago extends Component {
                         </SView>
                     </SView>
                     <SView flex col={"xs-12"} center>
-                        <SText bold color={this.getColor(total)} fontSize={18}>
-                            {item.moneda?.observacion} {SMath.formatMoney(total)}
-                        </SText>
+                        <SText bold color={this.getColor(total)} fontSize={18}> {item.moneda?.observacion} {SMath.formatMoney(total)} </SText>
                     </SView>
                     <SView flex col={"xs-12"} row style={{ borderTopWidth: 1, borderColor: STheme.color.card }}>
                         <SView flex center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}
-                            onPress={() => Transferencia.open({ origen_inicial: item, monto_origen_inicial: totalIngresos })}>
+                            onPress={() => Transferencia.open({ destino_inicial: item, monto_destino_inicial: "" })}>
                             <SIconApp name='Ingreso' width={8} height={8} />
-                            <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>
-                                {item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)}
-                            </SText>
+                            <SText numberOfLines={1} color={STheme.color.text} fontSize={10}>Recibir</SText>
+                            {/* <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}> {item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)} </SText> */}
                         </SView>
                         <SView flex center
-                            onPress={() => Transferencia.open({ destino_inicial: item, monto_destino_inicial: Math.abs(totalEgresos) })}>
+                            onPress={() => Transferencia.open({ origen_inicial: item, monto_origen_inicial: total })}>
                             <SIconApp name='Egreso' width={8} height={8} />
-                            <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>
-                                {item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)}
-                            </SText>
+                            <SText numberOfLines={1} color={STheme.color.text} fontSize={10}>Enviar</SText>
+                            {/* <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}> {item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)} </SText> */}
                         </SView>
                     </SView>
                 </SView>
