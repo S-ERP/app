@@ -289,7 +289,7 @@ export default class Abierta extends Component {
                 <SText bold fontSize={16}>Cuentas y Saldos</SText>
             </SView>
             <SHr h={10} />
-            <TotalTipoPago key_punto_venta={caja?.key_punto_venta} movimientos={this.state.movimientos} />
+            <TotalTipoPago key_punto_venta={caja?.key_punto_venta} movimientos={this.state.movimientos} soloLectura={!!caja?.fecha_cierre} />
             <SHr h={32} />
             {esCajaAjena && (
                 <SView col={"xs-11 sm-10 md-8 lg-6"} style={{ backgroundColor: STheme.color.warning + "20", borderWidth: 1, borderColor: STheme.color.warning, borderRadius: 8, padding: 12, marginBottom: 16 }}>

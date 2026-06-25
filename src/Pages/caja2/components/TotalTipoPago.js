@@ -98,18 +98,16 @@ export default class TotalTipoPago extends Component {
                     <SView flex col={"xs-12"} center>
                         <SText bold color={this.getColor(total)} fontSize={18}> {item.moneda?.observacion} {SMath.formatMoney(total)} </SText>
                     </SView>
-                    <SView flex col={"xs-12"} row style={{ borderTopWidth: 1, borderColor: STheme.color.card }}>
+                    <SView flex col={"xs-12"} row style={{ borderTopWidth: 1, borderColor: STheme.color.card, opacity: this.props.soloLectura ? 0.35 : 1 }}>
                         <SView flex center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}
-                            onPress={() => Transferencia.open({ destino_inicial: item, monto_destino_inicial: "" })}>
+                            onPress={this.props.soloLectura ? undefined : () => Transferencia.open({ destino_inicial: item, monto_destino_inicial: "" })}>
                             <SIconApp name='Ingreso' width={8} height={8} />
                             <SText numberOfLines={1} color={STheme.color.text} fontSize={10}>Recibir</SText>
-                            {/* <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}> {item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)} </SText> */}
                         </SView>
                         <SView flex center
-                            onPress={() => Transferencia.open({ origen_inicial: item, monto_origen_inicial: total })}>
+                            onPress={this.props.soloLectura ? undefined : () => Transferencia.open({ origen_inicial: item, monto_origen_inicial: total })}>
                             <SIconApp name='Egreso' width={8} height={8} />
                             <SText numberOfLines={1} color={STheme.color.text} fontSize={10}>Enviar</SText>
-                            {/* <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}> {item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)} </SText> */}
                         </SView>
                     </SView>
                 </SView>
