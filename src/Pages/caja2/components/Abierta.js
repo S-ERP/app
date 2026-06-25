@@ -11,6 +11,7 @@ import DetalleItemVenta from './DetalleItemVenta';
 export default class Abierta extends Component {
     state = {
         movimientos: [],
+        detalle: [],
         ready: false,
         caja: null,
         loading: false,
@@ -79,12 +80,8 @@ export default class Abierta extends Component {
             });
 
             //DETALLE COMPRA VENTA
-            const detalle = await MDL.compra_venta.getCompraVentaDetalleCaja("venta", "2025-01-01", "2030-09-05", caja?.key);
-            //  const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-            // if (detalle) {
-            //     this.setState({ detalle: detalle });
-            //     console.log("DETALLE", detalle)
-            // }
+            const rawDetalle = await MDL.compra_venta.getCompraVentaDetalleCaja("venta", "2025-01-01", "2030-09-05", caja?.key);
+            const detalle = Array.isArray(rawDetalle) ? rawDetalle : Object.values(rawDetalle ?? {});
             if (this._mounted) this.setState({ movimientos, tipo_pago, ready: true, detalle });
         } catch (e) {
             if (this._mounted) this.setState({ ready: true });
@@ -243,7 +240,7 @@ export default class Abierta extends Component {
                 key_compra_venta: key,
                 fecha_on: fecha_on,
                 items: [],
-                detalle: this.state.detalle.find(det => det.key === key),
+                detalle: (this.state.detalle ?? []).find(det => det.key === key),
             };
             // if (!acc[key]) acc[key] = { items: [] };
             acc[key].items.push(item);
@@ -268,7 +265,6 @@ export default class Abierta extends Component {
 
         const { opcionSeleccionada } = this.state;
         const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
-        console.log("DATA", data)
         return (
             <SView col={"xs-12"} center flex>
                 <FlatList
@@ -282,9 +278,6 @@ export default class Abierta extends Component {
                     //     borderColor: STheme.color.card,
                     // }}
                     ListHeaderComponent={() => {
-                        console.log("Movimientos", this.state.movimientos)
-                        console.log("agrupado", agrupado)
-
                         return <SView col={"xs-12"} center>
                             <SHr h={20} />
                             <SView col={"xs-11 sm-10 md-8 lg-6"}>

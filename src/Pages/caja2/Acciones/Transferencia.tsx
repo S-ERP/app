@@ -159,7 +159,7 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
 
     calcular_tipo_cambio_cuentas() {
         new SThread(200, "calcular_tipo_cambio_cuentas", true).start(() => {
-            if (!this.state.origen || !this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return;
+            if (!this.state.origen || !this.state.destino || !this._ref["monto_origen"] || !this._ref["monto_destino"] || !this._ref["tipo_cambio"]) return;
             const tco = this.state?.origen?.moneda?.tipo_cambio ?? 1;
             const tcd = this.state?.destino?.moneda?.tipo_cambio ?? 1;
             const montoOrigen = parseFloat(this._ref["monto_origen"].getValue()) || 0;

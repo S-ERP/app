@@ -406,13 +406,13 @@ export class SInput2Class extends React.Component<SInput2Props, {
             React.isValidElement(node) ? React.cloneElement(node as any, { numberOfLines: 1 }) : node;
 
         return (
-            <SView row style={[{ flex: 1, height: "100%", position: "relative" } as any, style, d]} backgroundColor={STheme.color.card}>
+            <SView row style={{ flex: 1, height: "100%", position: "relative", ...style, ...d } as any} backgroundColor={STheme.color.card}>
                 {label && (
                     <SText width={"100%"} style={{ position: "absolute", top: -3, fontSize: 9, color: STheme.color.lightGray, backgroundColor: STheme.color.background + "99", paddingHorizontal: 3, zIndex: 2, whiteSpace: "nowrap", borderRadius: 3, ...labelStyle, ...(bug ? { borderWidth: 1, borderColor: "pink" } : {}) } as any}> {label} </SText>
                 )}
-                {icon && <SView center style={[{ height: "100%", paddingLeft: 3 }, d]}>{withLines(icon)}</SView>}
+                {icon && <SView center style={{ height: "100%", paddingLeft: 3, ...d } as any}>{withLines(icon)}</SView>}
                 <SView flex height style={d}>{textInput}</SView>
-                {iconR && <SView center style={[{ height: "100%", paddingRight: 3 }, d]}>{withLines(iconR)}</SView>}
+                {iconR && <SView center style={{ height: "100%", paddingRight: 3, ...d } as any}>{withLines(iconR)}</SView>}
             </SView>
         );
     }
