@@ -356,9 +356,9 @@ export default class Transferencia extends React.Component<TransferenciaProps> {
             <SHr h={16} />
             <SView row style={{ gap: 12 } as any}>
                 <SView card padding={4} style={{ minWidth: 100, alignItems: "center", justifyContent: "center" }} onPress={() => SPopup.close("Transferencia")}>
-                    <SText color={STheme.color.danger}>{"Cancelar"}</SText>
+                    <SText color={STheme.color.lightGray}>{"Cancelar"}</SText>
                 </SView>
-                <SView card padding={4} style={{ minWidth: 100, alignItems: "center", justifyContent: "center", opacity: loading ? 0.6 : 1 }} onPress={() => { if (!loading) this.submit(); }}>
+                <SView backgroundColor={"blue"} padding={4} style={{ minWidth: 100, alignItems: "center", justifyContent: "center", opacity: loading ? 0.6 : 1 }} onPress={() => { if (!loading) this.submit(); }}>
                     {loading ? <SLoad /> : <SText>{"Confirmar Transferencia"}</SText>}
                 </SView>
             </SView>
