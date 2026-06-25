@@ -1,16 +1,10 @@
 import { SAssets } from "servisofts-component";
 
 import Logo, { ReactComponent as LogoW } from "./svg/logo.svg";
-import logoCompleto, {
-  ReactComponent as logoCompletoW,
-} from "./svg/logoCompleto.svg";
+import logoCompleto, { ReactComponent as logoCompletoW, } from "./svg/logoCompleto.svg";
 import profile2, { ReactComponent as profile2W } from "./svg/profile2.svg";
-import IconChecked, {
-  ReactComponent as IconCheckedW,
-} from "./svg/iconChecked.svg";
-import IconCheckedOk, {
-  ReactComponent as IconCheckedOkW,
-} from "./svg/iconCheckedOk.svg";
+import IconChecked, { ReactComponent as IconCheckedW, } from "./svg/iconChecked.svg";
+import IconCheckedOk, { ReactComponent as IconCheckedOkW, } from "./svg/iconCheckedOk.svg";
 import pregunta1, { ReactComponent as pregunta1W } from "./svg/pregunta1.svg";
 import empresa, { ReactComponent as empresaW } from "./svg/empresa.svg";
 import empresaBuscar, {
@@ -326,6 +320,13 @@ import collapse, { ReactComponent as collapseW, } from "./svg/collapse.svg";
 import dashboard, { ReactComponent as dashboardW, } from "./svg/dashboard.svg";
 
 
+import compra, { ReactComponent as compraW } from "./svg/compra.svg";
+import venta, { ReactComponent as ventaW } from "./svg/venta.svg";
+import cargarEfectivo, { ReactComponent as cargarEfectivoW } from "./svg/cargarEfectivo.svg";
+import cerrarCaja, { ReactComponent as cerrarCajaW } from "./svg/cerrarCaja.svg";
+import clientes, { ReactComponent as clientesW } from "./svg/clientes.svg";
+import proveedores, { ReactComponent as proveedoresW } from "./svg/proveedores.svg";
+import transferir, { ReactComponent as transferirW } from "./svg/transferir.svg";
 
 
 
@@ -533,6 +534,13 @@ export const svg = {
   collapse: { Native: collapse, Web: collapseW },
   dashboard: { Native: dashboard, Web: dashboardW },
   nuevaGestion: { Native: nuevaGestion, Web: nuevaGestionW },
+  compra: { Native: compra, Web: compraW },
+  venta: { Native: venta, Web: ventaW },
+  cargarEfectivo: { Native: cargarEfectivo, Web: cargarEfectivoW },
+  cerrarCaja: { Native: cerrarCaja, Web: cerrarCajaW },
+  clientes: { Native: clientes, Web: clientesW },
+  proveedores: { Native: proveedores, Web: proveedoresW },
+  transferir: { Native: transferir, Web: transferirW },
 
 
   arrowRight: { Native: arrowRight, Web: arrowRightW },
