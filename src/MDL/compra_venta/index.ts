@@ -195,6 +195,18 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
+   async getCompraVentaDetalleCaja(_tipo: String, fecha_inicio_: String, fecha_fin_: String, key_caja: String) {
+    const key_empresa = MDL.empresa?.select?.key || {};
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_compras_ventas_detalle_caja",
+      params: ["'" + key_empresa + "'", "'" + fecha_inicio_ + "'", "'" + fecha_fin_ + "'", "'" + _tipo + "'", "'" + key_caja + "'"],
+    });
+    return resp.data || [];
+  }
+
 
   async getsuscripciones(_key_compra_venta_detalle: String) {
     const resp: any = await SSocket.sendPromise({

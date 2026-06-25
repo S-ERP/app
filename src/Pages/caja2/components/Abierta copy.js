@@ -6,7 +6,6 @@ import TotalTipoPago from './TotalTipoPago';
 import DetalleItem from './DetalleItem';
 import MenuAcciones from './MenuAcciones';
 import Model from '../../../Model';
-import DetalleItemVenta from './DetalleItemVenta';
 
 export default class Abierta extends Component {
     state = {
@@ -14,7 +13,6 @@ export default class Abierta extends Component {
         ready: false,
         caja: null,
         loading: false,
-        opcionSeleccionada: "movimientos",
     }
 
     getCaja() {
@@ -39,20 +37,13 @@ export default class Abierta extends Component {
     }
 
     async loadCaja() {
-
-
         try {
             const _key_caja = SNavigation.getParam("key");
-
             if (!_key_caja) return;
-
             const cajaCargada = await MDL.caja.getByKey(_key_caja);
             if (cajaCargada && this._mounted) {
                 this.setState({ caja: cajaCargada });
-
             }
-
-
         } catch (e) { }
     }
 
@@ -77,15 +68,7 @@ export default class Abierta extends Component {
             movimientos.forEach((m) => {
                 m.empresa_tipo_pago = empresa_tipo_pago?.[m.key_empresa_tipo_pago];
             });
-
-            //DETALLE COMPRA VENTA
-            const detalle = await MDL.compra_venta.getCompraVentaDetalleCaja("venta", "2025-01-01", "2030-09-05", caja?.key);
-            //  const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-            // if (detalle) {
-            //     this.setState({ detalle: detalle });
-            //     console.log("DETALLE", detalle)
-            // }
-            if (this._mounted) this.setState({ movimientos, tipo_pago, ready: true, detalle });
+            if (this._mounted) this.setState({ movimientos, tipo_pago, ready: true });
         } catch (e) {
             if (this._mounted) this.setState({ ready: true });
             SNotification.send({
@@ -235,54 +218,37 @@ export default class Abierta extends Component {
             amortizacion_venta: "cantidadAmortizaciones",
         };
 
-        const agrupado = this.state.movimientos.reduce((acc, item) => {
-            const key = item.key_compra_venta;
-            const fecha_on = item.fecha_on;
-            if (!key) return acc;
-            if (!acc[key]) acc[key] = {
-                key_compra_venta: key,
-                fecha_on: fecha_on,
-                items: [],
-                detalle: this.state.detalle.find(det => det.key === key),
-            };
-            // if (!acc[key]) acc[key] = { items: [] };
-            acc[key].items.push(item);
-            const campo = tiposMap[item.tipo];
-            if (campo) acc[key][campo] = 1;
-            return acc;
-        }, {});
-
-        const totales = Object.values(agrupado).reduce((acc, item) => {
-            acc.cantidadVentas += item.cantidadVentas || 0;
-            acc.cantidadCompras += item.cantidadCompras || 0;
-            acc.cantidadAnulacionesVenta += item.cantidadAnulacionesVenta || 0;
-            acc.cantidadAnulacionesCompra += item.cantidadAnulacionesCompra || 0;
-            acc.cantidadAmortizaciones += item.cantidadAmortizaciones || 0;
-            acc.cantidadAperturas += item.cantidadAperturas || 0;
-            return acc;
-        }, {
-            cantidadVentas: 0, cantidadCompras: 0,
-            cantidadAnulacionesVenta: 0, cantidadAnulacionesCompra: 0,
-            cantidadAmortizaciones: 0, cantidadAperturas: 0,
-        });
-
-        const { opcionSeleccionada } = this.state;
-        const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
-        console.log("DATA", data)
         return (
             <SView col={"xs-12"} center flex>
                 <FlatList
                     style={{ flex: 1, width: "100%" }}
-                    data={data}
-                    // ItemSeparatorComponent={() => <SHr />}
-                    // contentContainerStyle={{
-                    //     borderRadius: 8,
-                    //     backgroundColor: STheme.color.primary + "50",
-                    //     borderWidth: 1,
-                    //     borderColor: STheme.color.card,
-                    // }}
+                    data={this.state.movimientos}
+                    ItemSeparatorComponent={() => <SHr />}
                     ListHeaderComponent={() => {
-                        console.log("Movimientos", this.state.movimientos)
+                        const agrupado = this.state.movimientos.reduce((acc, item) => {
+                            const key = item.key_compra_venta;
+                            if (!key) return acc;
+                            if (!acc[key]) acc[key] = { key_compra_venta: key, items: [] };
+                            acc[key].items.push(item);
+                            const campo = tiposMap[item.tipo];
+                            if (campo) acc[key][campo] = 1;
+                            return acc;
+                        }, {});
+
+                        const totales = Object.values(agrupado).reduce((acc, item) => {
+                            acc.cantidadVentas += item.cantidadVentas || 0;
+                            acc.cantidadCompras += item.cantidadCompras || 0;
+                            acc.cantidadAnulacionesVenta += item.cantidadAnulacionesVenta || 0;
+                            acc.cantidadAnulacionesCompra += item.cantidadAnulacionesCompra || 0;
+                            acc.cantidadAmortizaciones += item.cantidadAmortizaciones || 0;
+                            acc.cantidadAperturas += item.cantidadAperturas || 0;
+                            return acc;
+                        }, {
+                            cantidadVentas: 0, cantidadCompras: 0,
+                            cantidadAnulacionesVenta: 0, cantidadAnulacionesCompra: 0,
+                            cantidadAmortizaciones: 0, cantidadAperturas: 0,
+                        });
+                        console.log("Movimientos",this.state.movimientos)
                         console.log("agrupado", agrupado)
 
                         return <SView col={"xs-12"} center>
@@ -311,60 +277,15 @@ export default class Abierta extends Component {
                                 {totales.cantidadAmortizaciones > 0 && boxCant({ text: `${totales.cantidadAmortizaciones}`, color: STheme.color.info, subtitulo: "Amortizaciones", icon: "Mamortizacion" })}
                                 {totales.cantidadAperturas > 0 && boxCant({ text: `${totales.cantidadAperturas}`, color: STheme.color.success, subtitulo: "Aperturas", icon: "Mapertura" })}
                             </SView>
-                            <SHr h={20} />
-                            <SView col={"xs-11 sm-10 md-8 lg-6"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
-                                <SView flex height={44} center style={{
-                                    borderWidth: opcionSeleccionada === "movimientos" ? 1 : 0,
-                                    borderBottomWidth: opcionSeleccionada === "movimientos" ? 2 : 0,
-                                    borderColor: STheme.color.card,
-                                    backgroundColor: opcionSeleccionada === "movimientos" ? STheme.color.primary + "50" : "transparent",
-                                    borderTopLeftRadius: 8,
-                                    borderTopRightRadius: 8
-                                }} onPress={() => this.setState({ opcionSeleccionada: "movimientos" })}>
-                                    <SText bold={opcionSeleccionada === "movimientos"} color={opcionSeleccionada === "movimientos" ? STheme.color.text : STheme.color.lightGray}>Movimientos de caja</SText>
-                                </SView>
-                                <SView flex height={44} center style={{
-                                    borderWidth: opcionSeleccionada === "ventas" ? 1 : 0,
-                                    borderBottomWidth: opcionSeleccionada === "ventas" ? 2 : 0,
-                                    borderColor: STheme.color.card,
-                                    backgroundColor: opcionSeleccionada === "ventas" ? STheme.color.primary + "50" : "transparent",
-                                    borderTopLeftRadius: 8,
-                                    borderTopRightRadius: 8
-                                }} onPress={() => this.setState({ opcionSeleccionada: "ventas" })}>
-                                    <SText bold={opcionSeleccionada === "ventas"} color={opcionSeleccionada === "ventas" ? STheme.color.text : STheme.color.lightGray}>Ventas en caja</SText>
-                                </SView>
-                            </SView>
-                            <SHr h={10} />
                         </SView>;
                     }}
-
-                    renderItem={opcionSeleccionada === "movimientos"
-                        ? ({ item, index }) => (
-                            <SView col={"xs-12"} center >
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5} style={{
-                                    // borderRadius: 8,
-                                    //backgroundColor: STheme.color.primary + "50",
-                                    //borderWidth: 1,
-                                    //borderColor: STheme.color.card,
-                                }}>
-                                    <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
-                                </SView>
+                    renderItem={({ item, index }) => (
+                        <SView col={"xs-12"} center>
+                            <SView col={"xs-11 sm-10 md-8 lg-6"}>
+                                <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
                             </SView>
-                        )
-                        : ({ item, index }) => (
-                            <SView col={"xs-12"} center>
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5} style={{
-                                    // borderRadius: 8,
-                                    //backgroundColor: STheme.color.primary + "50",
-                                    //borderWidth: 1,
-                                    //borderColor: STheme.color.card,
-                                }}>
-                                    <DetalleItemVenta movimientos={item.items?.length ?? 0} index={this.state.detalle.length - index} empresa={this.state.empresa} item={item} data={this.state.detalle} />
-                                </SView>
-
-                            </SView>
-                        )
-                    }
+                        </SView>
+                    )}
                 />
                 <SHr h={20} />
             </SView>
