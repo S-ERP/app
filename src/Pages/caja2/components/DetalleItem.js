@@ -213,8 +213,8 @@ export default class DetalleItem extends Component {
               {this.botonesVoucher(item.vouchers)}
             </SView>
 
-            <SView row flexWrap>
-              <SView style={styles.botonSubir} onPress={() => {
+            <SView row flexWrap style={{ opacity: this.props.soloLectura ? 0.35 : 1 }}>
+              <SView style={styles.botonSubir} onPress={this.props.soloLectura ? undefined : () => {
                 if (empresa?.key && item?.key) {
                   PopupUploadVoucher.open(empresa.key, item.key, item.vouchers ?? []);
                 }

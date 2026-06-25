@@ -215,7 +215,7 @@ export default class MenuAcciones extends Component {
                         <BtnAccion text={"Proveedores"} margin={4} padding={10} background={"#ea580c66"} borderColor={"#ea580c"} onPress={() => { SNavigation.navigate("/proveedor") }} icon="proveedores" />
                         <BtnAccion text={"Clientes"} margin={4} padding={10} background={"#e11d4866"} borderColor={"#e11d48"} onPress={() => { SNavigation.navigate("/cliente") }} icon="clientes" />
 
-                        {_key_caja && usuario && (<CajeroCard usuario={usuario} key_usuario={caja?.key_usuario} />)}
+                        {/* {_key_caja && usuario && (<CajeroCard usuario={usuario} key_usuario={caja?.key_usuario} />)} */}
                         <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="cerrarCaja" />
                     </>
                 )}
@@ -264,13 +264,14 @@ const CajeroCard = ({ usuario, key_usuario }) => {
 
 const BtnAccion = (props) => {
     return <SView row style={{
-        backgroundColor: props.background || STheme.color.card,
+        backgroundColor: props.disabled ? STheme.color.card : (props.background || STheme.color.card),
         borderRadius: 8,
         borderWidth: 2,
-        borderColor: props.borderColor || STheme.color.card,
-    }} padding={props.padding || 8} margin={props.margin || 4} onPress={props.onPress}>
-        {props.icon && <SIconApp width={18} height={18} name={props.icon} fill={STheme.color.text} />}
-        <SView width={props.icon ? 8 : 0} fill={"blue"} />
-        <SText>{props.text}</SText>
+        borderColor: props.disabled ? STheme.color.lightGray + "30" : (props.borderColor || STheme.color.card),
+        opacity: props.disabled ? 0.35 : 1,
+    }} padding={props.padding || 8} margin={props.margin || 4} onPress={props.disabled ? undefined : props.onPress}>
+        {props.icon && <SIconApp width={18} height={18} name={props.icon} fill={props.disabled ? STheme.color.lightGray : STheme.color.text} />}
+        <SView width={props.icon ? 8 : 0} />
+        <SText color={props.disabled ? STheme.color.lightGray : undefined}>{props.text}</SText>
     </SView>;
 };

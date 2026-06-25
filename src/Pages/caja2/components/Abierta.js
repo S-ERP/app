@@ -25,7 +25,11 @@ export default class Abierta extends Component {
     componentDidMount() {
         this._mounted = true;
         this._loadingData = false;
-        this.loadCaja().then(() => this.loadMovimientos());
+        if (this.props.caja) {
+            this.loadMovimientos();
+        } else {
+            this.loadCaja().then(() => this.loadMovimientos());
+        }
         this.ondetallechange = MDL.caja.addEventListener("onDetalleChange", () => {
             this.loadMovimientos();
         });
@@ -131,11 +135,32 @@ export default class Abierta extends Component {
             <SHr />
             <SView col={"xs-12"} padding={15} row style={{
                 borderRadius: 8,
-                backgroundColor: STheme.color.primary + "50",
+                backgroundColor: (caja.fecha_cierre ? STheme.color.danger : !SNavigation.getParam("key") ? STheme.color.success : STheme.color.warning) + "20",
                 borderWidth: 1,
-                borderColor: STheme.color.card,
+                borderColor: (caja.fecha_cierre ? STheme.color.danger : !SNavigation.getParam("key") ? STheme.color.success : STheme.color.warning) + "60",
             }}>
-                <SText bold fontSize={16}>Estado de la Caja</SText>
+                {(() => {
+                    const esCajaAjena = !!SNavigation.getParam("key") && !caja.fecha_cierre;
+                    if (caja.fecha_cierre) return (
+                        <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", paddingVertical: 4 }}>
+                            <SText bold fontSize={14} color={STheme.color.text}>ESTADO CAJA</SText>
+                            <SText fontSize={11} color={STheme.color.lightGray}>SOLO HISTORIAL 🔴</SText>
+                        </SView>
+                    );
+                    if (esCajaAjena) return (
+                        <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", paddingVertical: 4 }}>
+                            <SText bold fontSize={14} color={STheme.color.text}>ESTADO CAJA</SText>
+                            <SText fontSize={11} color={STheme.color.lightGray}>SOLO CONSULTA 🟡</SText>
+                        </SView>
+                    );
+                    return (
+                        <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", paddingVertical: 4 }}>
+                            <SText bold fontSize={14} color={STheme.color.text}>ESTADO CAJA</SText>
+                            {/* <SText bold fontSize={14} color={STheme.color.success}>🟢 MI CAJA</SText> */}
+                            <SText fontSize={11} color={STheme.color.lightGray}>Caja Abierta 🟢</SText>
+                        </SView>
+                    );
+                })()}
                 <SHr height={10} />
                 <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
                 <SHr height={20} />
@@ -175,27 +200,32 @@ export default class Abierta extends Component {
                     </SText>
                 </SView>
                 {!caja.fecha_cierre && <SView row col={"xs-12 xl-3"} center>
-                    <SView width={160} height={42} row center style={{
-                        backgroundColor: STheme.color.card, borderWidth: 2, borderColor: STheme.color.card,
-                        padding: 10, borderRadius: 8,
-                    }}>
-                        <SText onPress={() => {
-                            SPopup.date("Selecciona la fecha", (a) => {
-                                Model.caja.Action.editar({
-                                    data: { ...caja, fecha: a.fecha + "T00:00:00" },
-                                    key_usuario: Model.usuario.Action.getKey(),
-                                }).then(() => { }).catch(e => {
-                                    SNotification.send({
-                                        key: "cambiar_fecha",
-                                        title: "Error al cambiar fecha",
-                                        body: e?.error ?? JSON.stringify(e),
-                                        color: STheme.color.danger,
-                                        time: 4000,
+                    {(() => {
+                        const esCajaAjena = !!SNavigation.getParam("key");
+                        return (
+                            <SView width={160} height={42} row center style={{
+                                backgroundColor: STheme.color.card, borderWidth: 2, borderColor: STheme.color.card,
+                                padding: 10, borderRadius: 8, opacity: esCajaAjena ? 0.35 : 1,
+                            }}>
+                                <SText color={esCajaAjena ? STheme.color.lightGray : undefined} onPress={esCajaAjena ? undefined : () => {
+                                    SPopup.date("Selecciona la fecha", (a) => {
+                                        Model.caja.Action.editar({
+                                            data: { ...caja, fecha: a.fecha + "T00:00:00" },
+                                            key_usuario: Model.usuario.Action.getKey(),
+                                        }).then(() => { }).catch(e => {
+                                            SNotification.send({
+                                                key: "cambiar_fecha",
+                                                title: "Error al cambiar fecha",
+                                                body: e?.error ?? JSON.stringify(e),
+                                                color: STheme.color.danger,
+                                                time: 4000,
+                                            });
+                                        });
                                     });
-                                });
-                            });
-                        }}>Cambiar fecha gestión</SText>
-                    </SView>
+                                }}>Cambiar fecha gestión</SText>
+                            </SView>
+                        );
+                    })()}
                 </SView>}
                 <SHr height={10} />
                 <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
@@ -223,6 +253,8 @@ export default class Abierta extends Component {
     renderHeader = () => {
         const caja = this.getCaja();
         const { opcionSeleccionada } = this.state;
+        const esCajaAjena = !!SNavigation.getParam("key") && !caja?.fecha_cierre;
+        const soloLectura = esCajaAjena || !!caja?.fecha_cierre;
         const tiposMap = {
             venta: "cantidadVentas",
             compra: "cantidadCompras",
@@ -259,10 +291,16 @@ export default class Abierta extends Component {
             <SHr h={10} />
             <TotalTipoPago key_punto_venta={caja?.key_punto_venta} movimientos={this.state.movimientos} />
             <SHr h={32} />
+            {esCajaAjena && (
+                <SView col={"xs-11 sm-10 md-8 lg-6"} style={{ backgroundColor: STheme.color.warning + "20", borderWidth: 1, borderColor: STheme.color.warning, borderRadius: 8, padding: 12, marginBottom: 16 }}>
+                    <SText bold fontSize={14} color={STheme.color.warning}>⚠ Esta caja pertenece a otro cajero.</SText>
+                    <SText fontSize={12} color={STheme.color.lightGray}>No puedes realizar operaciones.</SText>
+                </SView>
+            )}
             <SView col={"xs-11 sm-10 md-8 lg-6"}>
                 <SText bold fontSize={16}>Acciones Rápidas</SText>
                 <SHr h={10} />
-                <MenuAcciones caja={caja} movimientos={this.state.movimientos} key_punto_venta={caja?.key_punto_venta} />
+                <MenuAcciones caja={caja} movimientos={this.state.movimientos} key_punto_venta={caja?.key_punto_venta} soloLectura={soloLectura} />
                 <SHr h={32} />
             </SView>
             {this.mensaje()}
@@ -330,6 +368,9 @@ export default class Abierta extends Component {
         }, {});
 
         const { opcionSeleccionada } = this.state;
+        const esCajaAjena = !!SNavigation.getParam("key") && !this.getCaja()?.fecha_cierre;
+        const cajaCerrada = !!this.getCaja()?.fecha_cierre;
+        const soloLectura = esCajaAjena || cajaCerrada;
         const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
         return (
             <SView col={"xs-12"} center flex>
@@ -341,27 +382,16 @@ export default class Abierta extends Component {
                     renderItem={opcionSeleccionada === "movimientos"
                         ? ({ item, index }) => (
                             <SView col={"xs-12"} center >
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5} style={{
-                                    // borderRadius: 8,
-                                    //backgroundColor: STheme.color.primary + "50",
-                                    //borderWidth: 1,
-                                    //borderColor: STheme.color.card,
-                                }}>
-                                    <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
+                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
+                                    <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} soloLectura={soloLectura} />
                                 </SView>
                             </SView>
                         )
                         : ({ item, index }) => (
                             <SView col={"xs-12"} center>
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5} style={{
-                                    // borderRadius: 8,
-                                    //backgroundColor: STheme.color.primary + "50",
-                                    //borderWidth: 1,
-                                    //borderColor: STheme.color.card,
-                                }}>
-                                    <DetalleItemVenta movimientos={item.items?.length ?? 0} index={this.state.detalle.length - index} empresa={this.state.empresa} item={item} data={this.state.detalle} />
+                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
+                                    <DetalleItemVenta movimientos={item.items?.length ?? 0} index={this.state.detalle.length - index} empresa={this.state.empresa} item={item} data={this.state.detalle} soloLectura={soloLectura} />
                                 </SView>
-
                             </SView>
                         )
                     }
