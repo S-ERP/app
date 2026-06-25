@@ -1,16 +1,19 @@
 import React, { forwardRef } from "react";
-import { STheme, SView } from "servisofts-component";
+import { SText, STheme, SView } from "servisofts-component";
 import { TextInput } from "react-native";
 
 
 type SInput2Props = {
-    name: string;
+    name?: string;
     onChangeText?: (value: string) => void;
     defaultValue?: string;
     value?: string;
     style?: TextInput["props"]["style"];
     type?: "text" | "money";
     decimals?: number;
+    icon?: React.ReactNode;
+    iconR?: React.ReactNode;
+    label?: string;
 }
 
 const SInput2 = forwardRef((props: SInput2Props, ref: React.Ref<SInput2Class>) => {
@@ -32,7 +35,7 @@ export default SInput2;
 
 type UndoEntry =
     | { kind: 'money'; instance: SInput2Class; value: string; cursor: number }
-    | { kind: 'text';  element: HTMLElement; prevValue: string };
+    | { kind: 'text'; element: HTMLElement; prevValue: string };
 
 const _undoStack: UndoEntry[] = [];
 
@@ -108,11 +111,11 @@ function _popUndo(shouldFocusMoney: boolean) {
 
 function _addListeners() {
     (document as any).addEventListener('beforeinput', _onGlobalBeforeInput, true);
-    (document as any).addEventListener('input',       _onGlobalInput,       true);
+    (document as any).addEventListener('input', _onGlobalInput, true);
 }
 function _removeListeners() {
     (document as any).removeEventListener('beforeinput', _onGlobalBeforeInput, true);
-    (document as any).removeEventListener('input',       _onGlobalInput,       true);
+    (document as any).removeEventListener('input', _onGlobalInput, true);
 }
 
 // ─── Component ─────────────────────────────────────────────────────────────
@@ -140,14 +143,14 @@ export class SInput2Class extends React.Component<SInput2Props, {
             _moneyMountCount++;
             if (_moneyMountCount === 1) _addListeners();
             (document as any).addEventListener('beforeinput', this._onBeforeInput, true);
-            (document as any).addEventListener('keydown',     this._onDocumentKeyDown, true);
+            (document as any).addEventListener('keydown', this._onDocumentKeyDown, true);
         }
     }
 
     componentWillUnmount() {
         if (this.props.type === 'money') {
             (document as any).removeEventListener('beforeinput', this._onBeforeInput, true);
-            (document as any).removeEventListener('keydown',     this._onDocumentKeyDown, true);
+            (document as any).removeEventListener('keydown', this._onDocumentKeyDown, true);
             for (let i = _undoStack.length - 1; i >= 0; i--) {
                 const e = _undoStack[i];
                 if (e.kind === 'money' && e.instance === this) _undoStack.splice(i, 1);
@@ -363,8 +366,8 @@ export class SInput2Class extends React.Component<SInput2Props, {
     }
 
     render() {
-        const { type, decimals, name, defaultValue, onChangeText: _, value: _v, style, ...rest } = this.props;
-        return <TextInput
+        const { type, decimals, name, defaultValue, onChangeText: _, value: _v, style, icon, iconR, label, ...rest } = this.props;
+        const textInput = <TextInput
             keyboardType={type === 'money' ? 'numeric' : 'default'}
             {...rest}
             ref={(r) => { this._inputRef = r; }}
@@ -380,8 +383,22 @@ export class SInput2Class extends React.Component<SInput2Props, {
                 if ((rest as any).onBlur) (rest as any).onBlur(e);
             }}
             onChangeText={this.onChangeText.bind(this)}
-            style={[{ outline: "none", fontSize: 12, color: STheme.color.text } as any, style]}
-        />
+            style={[{ outline: "none", fontSize: 12, color: STheme.color.text, flex: 1, height: "100%" } as any, style]}
+        />;
+
+        if (!icon && !iconR && !label) return textInput;
+
+        return (
+            <SView row style={{ flex: 1, height: "100%",   } as any} backgroundColor={STheme.color.card}>
+                {label && (
+                    <SText width={"100%"} style={{ position: "absolute", top: -3, left: 2, fontSize: 10, color: STheme.color.lightGray, backgroundColor: STheme.color.danger, paddingHorizontal: 3, zIndex: 2,whiteSpace: "nowrap" } as any}> {label} </SText>
+                    // <SText style={{ position: "absolute", top: -3, left: 2, fontSize: 10, color: STheme.color.lightGray, backgroundColor: STheme.color.background, paddingHorizontal: 3, zIndex: 2 } as any}> {label} </SText>
+                )}
+                {icon && <SView center style={{ height: "100%" }}>{icon}</SView>}
+                <SView flex height>{textInput}</SView>
+                {iconR && <SView center style={{ height: "100%" }}>{iconR}</SView>}
+            </SView>
+        );
     }
 }
 
@@ -408,7 +425,7 @@ export class SMoneyInput extends React.Component<SMoneyInputProps> {
     render() {
         const { icon, iconR, ...rest } = this.props;
         const inputStyle = [
-            { flex: 1, height: "100%", textAlign: icon ? "right" : "left", paddingRight:4 },
+            { flex: 1, height: "100%", textAlign: icon ? "right" : "left", paddingRight: 4 },
             rest.style,
         ] as any;
         return (
