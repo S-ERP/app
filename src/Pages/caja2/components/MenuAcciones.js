@@ -214,7 +214,6 @@ export default class MenuAcciones extends Component {
                         <BtnAccion text={"Comprar"}         margin={4} padding={10} background={ColorCompraVenta.compra + "70"} borderColor={ColorCompraVenta.compra} onPress={() => { SNavigation.navigate("/compra3") }} icon="compra"         disabled={soloLectura} />
                         <BtnAccion text={"Proveedores"}     margin={4} padding={10} background={"#ea580c66"}                   borderColor={"#ea580c"}            onPress={() => { SNavigation.navigate("/proveedor") }}    icon="proveedores"    disabled={soloLectura} />
                         <BtnAccion text={"Clientes"}        margin={4} padding={10} background={"#e11d4866"}                   borderColor={"#e11d48"}            onPress={() => { SNavigation.navigate("/cliente") }}      icon="clientes"       disabled={soloLectura} />
-
                         {/* {_key_caja && usuario && (<CajeroCard usuario={usuario} key_usuario={caja?.key_usuario} />)} */}
                         <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="cerrarCaja" />
                     </>
