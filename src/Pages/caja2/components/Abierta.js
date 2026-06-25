@@ -220,8 +220,89 @@ export default class Abierta extends Component {
         </SView>;
     }
 
-    render() {
+    renderHeader = () => {
         const caja = this.getCaja();
+        const { opcionSeleccionada } = this.state;
+        const tiposMap = {
+            venta: "cantidadVentas",
+            compra: "cantidadCompras",
+            apertura: "cantidadAperturas",
+            anulacion_venta: "cantidadAnulacionesVenta",
+            anulacion_compra: "cantidadAnulacionesCompra",
+            amortizacion_compra: "cantidadAmortizaciones",
+            amortizacion_venta: "cantidadAmortizaciones",
+        };
+        const agrupado = this.state.movimientos.reduce((acc, item) => {
+            const key = item.key_compra_venta;
+            if (!key) return acc;
+            if (!acc[key]) acc[key] = { key_compra_venta: key, fecha_on: item.fecha_on, items: [], detalle: (this.state.detalle ?? []).find(det => det.key === key) };
+            acc[key].items.push(item);
+            const campo = tiposMap[item.tipo];
+            if (campo) acc[key][campo] = 1;
+            return acc;
+        }, {});
+        const totales = Object.values(agrupado).reduce((acc, item) => {
+            acc.cantidadVentas += item.cantidadVentas || 0;
+            acc.cantidadCompras += item.cantidadCompras || 0;
+            acc.cantidadAnulacionesVenta += item.cantidadAnulacionesVenta || 0;
+            acc.cantidadAnulacionesCompra += item.cantidadAnulacionesCompra || 0;
+            acc.cantidadAmortizaciones += item.cantidadAmortizaciones || 0;
+            acc.cantidadAperturas += item.cantidadAperturas || 0;
+            return acc;
+        }, { cantidadVentas: 0, cantidadCompras: 0, cantidadAnulacionesVenta: 0, cantidadAnulacionesCompra: 0, cantidadAmortizaciones: 0, cantidadAperturas: 0 });
+
+        return <SView col={"xs-12"} center>
+            <SHr h={20} />
+            <SView col={"xs-11 sm-10 md-8 lg-6"}>
+                <SText bold fontSize={16}>Cuentas y Saldos</SText>
+            </SView>
+            <SHr h={10} />
+            <TotalTipoPago key_punto_venta={caja?.key_punto_venta} movimientos={this.state.movimientos} />
+            <SHr h={32} />
+            <SView col={"xs-11 sm-10 md-8 lg-6"}>
+                <SText bold fontSize={16}>Acciones Rápidas</SText>
+                <SHr h={10} />
+                <MenuAcciones caja={caja} movimientos={this.state.movimientos} key_punto_venta={caja?.key_punto_venta} />
+                <SHr h={32} />
+            </SView>
+            {this.mensaje()}
+            <SHr h={32} />
+            {!this.state.ready && <SText color={STheme.color.lightGray}>Cargando movimientos...</SText>}
+            {this.state.ready && this.state.movimientos.length <= 0 && <SText color={STheme.color.lightGray}>No hay movimientos</SText>}
+            <SView col={"xs-12"} center row wrap>
+                {totales.cantidadVentas > 0 && boxCant({ text: `${totales.cantidadVentas}`, color: STheme.color.success, subtitulo: "Ventas", icon: "ventaCarro" })}
+                {totales.cantidadCompras > 0 && boxCant({ text: `${totales.cantidadCompras}`, color: STheme.color.warning, subtitulo: "Compras", icon: "compraCarro" })}
+                {totales.cantidadAnulacionesVenta > 0 && boxCant({ text: `${totales.cantidadAnulacionesVenta}`, color: STheme.color.danger, subtitulo: "Anulaciones de venta", icon: "cancelado" })}
+                {totales.cantidadAnulacionesCompra > 0 && boxCant({ text: `${totales.cantidadAnulacionesCompra}`, color: STheme.color.danger, subtitulo: "Anulaciones de compra", icon: "cancelado" })}
+                {totales.cantidadAmortizaciones > 0 && boxCant({ text: `${totales.cantidadAmortizaciones}`, color: STheme.color.info, subtitulo: "Amortizaciones", icon: "Mamortizacion" })}
+                {totales.cantidadAperturas > 0 && boxCant({ text: `${totales.cantidadAperturas}`, color: STheme.color.success, subtitulo: "Aperturas", icon: "Mapertura" })}
+            </SView>
+            <SHr h={20} />
+            <SView col={"xs-11 sm-10 md-8 lg-6"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
+                <SView flex height={44} center style={{
+                    borderWidth: opcionSeleccionada === "movimientos" ? 1 : 0,
+                    borderBottomWidth: opcionSeleccionada === "movimientos" ? 2 : 0,
+                    borderColor: STheme.color.card,
+                    backgroundColor: opcionSeleccionada === "movimientos" ? STheme.color.primary + "50" : "transparent",
+                    borderTopLeftRadius: 8, borderTopRightRadius: 8,
+                }} onPress={() => this.setState({ opcionSeleccionada: "movimientos" })}>
+                    <SText bold={opcionSeleccionada === "movimientos"} color={opcionSeleccionada === "movimientos" ? STheme.color.text : STheme.color.lightGray}>Movimientos de caja</SText>
+                </SView>
+                <SView flex height={44} center style={{
+                    borderWidth: opcionSeleccionada === "ventas" ? 1 : 0,
+                    borderBottomWidth: opcionSeleccionada === "ventas" ? 2 : 0,
+                    borderColor: STheme.color.card,
+                    backgroundColor: opcionSeleccionada === "ventas" ? STheme.color.primary + "50" : "transparent",
+                    borderTopLeftRadius: 8, borderTopRightRadius: 8,
+                }} onPress={() => this.setState({ opcionSeleccionada: "ventas" })}>
+                    <SText bold={opcionSeleccionada === "ventas"} color={opcionSeleccionada === "ventas" ? STheme.color.text : STheme.color.lightGray}>Ventas en caja</SText>
+                </SView>
+            </SView>
+            <SHr h={10} />
+        </SView>;
+    }
+
+    render() {
         const tiposMap = {
             venta: "cantidadVentas",
             compra: "cantidadCompras",
@@ -242,26 +323,11 @@ export default class Abierta extends Component {
                 items: [],
                 detalle: (this.state.detalle ?? []).find(det => det.key === key),
             };
-            // if (!acc[key]) acc[key] = { items: [] };
             acc[key].items.push(item);
             const campo = tiposMap[item.tipo];
             if (campo) acc[key][campo] = 1;
             return acc;
         }, {});
-
-        const totales = Object.values(agrupado).reduce((acc, item) => {
-            acc.cantidadVentas += item.cantidadVentas || 0;
-            acc.cantidadCompras += item.cantidadCompras || 0;
-            acc.cantidadAnulacionesVenta += item.cantidadAnulacionesVenta || 0;
-            acc.cantidadAnulacionesCompra += item.cantidadAnulacionesCompra || 0;
-            acc.cantidadAmortizaciones += item.cantidadAmortizaciones || 0;
-            acc.cantidadAperturas += item.cantidadAperturas || 0;
-            return acc;
-        }, {
-            cantidadVentas: 0, cantidadCompras: 0,
-            cantidadAnulacionesVenta: 0, cantidadAnulacionesCompra: 0,
-            cantidadAmortizaciones: 0, cantidadAperturas: 0,
-        });
 
         const { opcionSeleccionada } = this.state;
         const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
@@ -270,66 +336,7 @@ export default class Abierta extends Component {
                 <FlatList
                     style={{ flex: 1, width: "100%" }}
                     data={data}
-                    // ItemSeparatorComponent={() => <SHr />}
-                    // contentContainerStyle={{
-                    //     borderRadius: 8,
-                    //     backgroundColor: STheme.color.primary + "50",
-                    //     borderWidth: 1,
-                    //     borderColor: STheme.color.card,
-                    // }}
-                    ListHeaderComponent={() => {
-                        return <SView col={"xs-12"} center>
-                            <SHr h={20} />
-                            <SView col={"xs-11 sm-10 md-8 lg-6"}>
-                                <SText bold fontSize={16}>Cuentas y Saldos</SText>
-                            </SView>
-                            <SHr h={10} />
-                            <TotalTipoPago key_punto_venta={caja?.key_punto_venta} movimientos={this.state.movimientos} />
-                            <SHr h={32} />
-                            <SView col={"xs-11 sm-10 md-8 lg-6"}>
-                                <SText bold fontSize={16}>Acciones Rápidas</SText>
-                                <SHr h={10} />
-                                <MenuAcciones caja={caja} movimientos={this.state.movimientos} key_punto_venta={caja?.key_punto_venta} />
-                                <SHr h={32} />
-                            </SView>
-                            {this.mensaje()}
-                            <SHr h={32} />
-                            {!this.state.ready && <SText color={STheme.color.lightGray}>Cargando movimientos...</SText>}
-                            {this.state.ready && this.state.movimientos.length <= 0 && <SText color={STheme.color.lightGray}>No hay movimientos</SText>}
-                            <SView col={"xs-12"} center row wrap>
-                                {totales.cantidadVentas > 0 && boxCant({ text: `${totales.cantidadVentas}`, color: STheme.color.success, subtitulo: "Ventas", icon: "ventaCarro" })}
-                                {totales.cantidadCompras > 0 && boxCant({ text: `${totales.cantidadCompras}`, color: STheme.color.warning, subtitulo: "Compras", icon: "compraCarro" })}
-                                {totales.cantidadAnulacionesVenta > 0 && boxCant({ text: `${totales.cantidadAnulacionesVenta}`, color: STheme.color.danger, subtitulo: "Anulaciones de venta", icon: "cancelado" })}
-                                {totales.cantidadAnulacionesCompra > 0 && boxCant({ text: `${totales.cantidadAnulacionesCompra}`, color: STheme.color.danger, subtitulo: "Anulaciones de compra", icon: "cancelado" })}
-                                {totales.cantidadAmortizaciones > 0 && boxCant({ text: `${totales.cantidadAmortizaciones}`, color: STheme.color.info, subtitulo: "Amortizaciones", icon: "Mamortizacion" })}
-                                {totales.cantidadAperturas > 0 && boxCant({ text: `${totales.cantidadAperturas}`, color: STheme.color.success, subtitulo: "Aperturas", icon: "Mapertura" })}
-                            </SView>
-                            <SHr h={20} />
-                            <SView col={"xs-11 sm-10 md-8 lg-6"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
-                                <SView flex height={44} center style={{
-                                    borderWidth: opcionSeleccionada === "movimientos" ? 1 : 0,
-                                    borderBottomWidth: opcionSeleccionada === "movimientos" ? 2 : 0,
-                                    borderColor: STheme.color.card,
-                                    backgroundColor: opcionSeleccionada === "movimientos" ? STheme.color.primary + "50" : "transparent",
-                                    borderTopLeftRadius: 8,
-                                    borderTopRightRadius: 8
-                                }} onPress={() => this.setState({ opcionSeleccionada: "movimientos" })}>
-                                    <SText bold={opcionSeleccionada === "movimientos"} color={opcionSeleccionada === "movimientos" ? STheme.color.text : STheme.color.lightGray}>Movimientos de caja</SText>
-                                </SView>
-                                <SView flex height={44} center style={{
-                                    borderWidth: opcionSeleccionada === "ventas" ? 1 : 0,
-                                    borderBottomWidth: opcionSeleccionada === "ventas" ? 2 : 0,
-                                    borderColor: STheme.color.card,
-                                    backgroundColor: opcionSeleccionada === "ventas" ? STheme.color.primary + "50" : "transparent",
-                                    borderTopLeftRadius: 8,
-                                    borderTopRightRadius: 8
-                                }} onPress={() => this.setState({ opcionSeleccionada: "ventas" })}>
-                                    <SText bold={opcionSeleccionada === "ventas"} color={opcionSeleccionada === "ventas" ? STheme.color.text : STheme.color.lightGray}>Ventas en caja</SText>
-                                </SView>
-                            </SView>
-                            <SHr h={10} />
-                        </SView>;
-                    }}
+                    ListHeaderComponent={this.renderHeader}
 
                     renderItem={opcionSeleccionada === "movimientos"
                         ? ({ item, index }) => (
