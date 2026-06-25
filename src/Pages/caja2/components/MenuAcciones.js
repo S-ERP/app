@@ -4,11 +4,11 @@ import MDL from '../../../MDL';
 import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
 import Transferencia from '../Acciones/Transferencia';
 import SIconApp from '../../../Assets/SIconApp';
-import { ColorCompraVenta } from '../../../Config/theme';
 import TotalTipoPagoTabla from './TotalTipoPagoTabla';
 import PdfCierreCaja from '../../../Components/PDF/venta/PdfCierreCaja';
 import SelectTipoPagoVenta from './SelectTipoPagoVenta';
 import SSocket from 'servisofts-socket';
+import { ColorCompraVenta } from '../../../Config/theme';
 
 export default class MenuAcciones extends Component {
 
@@ -120,6 +120,7 @@ export default class MenuAcciones extends Component {
                                         }).then(() => {
                                             SPopup.close("barcode_scanner");
                                             SNotification.remove("caja_cerrar");
+                                            PdfCierreCaja.imprimirPDF(caja.key);
                                         }).catch(e => {
                                             SNotification.send({
                                                 key: "caja_cerrar",
@@ -199,29 +200,23 @@ export default class MenuAcciones extends Component {
             <SView row wrap>
                 {!cajaCerrada && (
                     <>
-                        <BtnAccion text={"Transferir"} margin={4} padding={10} background={"#2563eb"} borderColor={STheme.color.card} onPress={this.transferir.bind(this)} icon="transferir" />
-                        <BtnAccion text={"Cargar Efectivo"} margin={4} padding={10} background={"#16a34a"} borderColor={STheme.color.success} onPress={this.cargarEfectivoDelBanco.bind(this)} icon="cargarEfectivo" />
-                        <BtnAccion text={"Vender"} margin={4} padding={10} background={"#22c55e"} borderColor={ColorCompraVenta.venta} onPress={() => { SNavigation.navigate("/puntoventa") }} icon="venta" />
-                        <BtnAccion text={"Comprar"} margin={4} padding={10} background={"#8b5cf6"} borderColor={ColorCompraVenta.compra} onPress={() => { SNavigation.navigate("/compra2") }} icon="compra" />
-                        <BtnAccion text={"Proveedores"} margin={4} padding={10} background={"#f59e0b"} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/proveedor") }} icon="proveedores" />
-                        <BtnAccion text={"Clientes"} margin={4} padding={10} background={"#ef4444"} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/cliente") }} icon="clientes" />
-
-                        {/* <BtnAccion text={"Transferir"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={this.transferir.bind(this)} icon="transferir" />
-                        <BtnAccion text={"Cargar Efectivo"} margin={4} padding={10} background={STheme.color.success + "70"} borderColor={STheme.color.success} onPress={this.cargarEfectivoDelBanco.bind(this)} icon="cargarEfectivo" />
+                        <BtnAccion text={"Transferir"} margin={4} padding={10} background={"#2563eb66"} borderColor={"#2563eb"} onPress={this.transferir.bind(this)} icon="transferir" />
+                        {/* <BtnAccion text={"Cargar Efectivo"} margin={4} padding={10} background={"#0890b293"} borderColor={"#0891b2"} onPress={this.cargarEfectivoDelBanco.bind(this)} icon="cargarEfectivo" /> */}
+                        <BtnAccion text={"Cargar Efectivo"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={this.cargarEfectivoDelBanco.bind(this)} icon="cargarEfectivo" />
                         <BtnAccion text={"Vender"} margin={4} padding={10} background={ColorCompraVenta.venta + "70"} borderColor={ColorCompraVenta.venta} onPress={() => { SNavigation.navigate("/puntoventa") }} icon="venta" />
                         <BtnAccion text={"Comprar"} margin={4} padding={10} background={ColorCompraVenta.compra + "70"} borderColor={ColorCompraVenta.compra} onPress={() => { SNavigation.navigate("/compra2") }} icon="compra" />
-                        <BtnAccion text={"Proveedores"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/proveedor") }} icon="proveedores" />
-                        <BtnAccion text={"Clientes"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/cliente") }} icon="clientes" /> */}
+                        <BtnAccion text={"Proveedores"} margin={4} padding={10} background={"#ea580c66"} borderColor={"#ea580c"} onPress={() => { SNavigation.navigate("/proveedor") }} icon="proveedores" />
+                        <BtnAccion text={"Clientes"} margin={4} padding={10} background={"#e11d4866"} borderColor={"#e11d48"} onPress={() => { SNavigation.navigate("/cliente") }} icon="clientes" />
 
                         {_key_caja && usuario && (<CajeroCard usuario={usuario} key_usuario={caja?.key_usuario} />)}
-                        <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={"#DC2626"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="cerrarCaja" />
-                        {/* <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="cerrarCaja" /> */}
+                        <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="cerrarCaja" />
                     </>
                 )}
-                <BtnAccion text={"Imprimir Cierre Caja"} margin={4} padding={10} background={"#475569"} borderColor={STheme.color.lightGray} onPress={() => {
-                    // <BtnAccion text={"Imprimir Cierre Caja"} margin={4} padding={10} background={STheme.color.warning + "70"} borderColor={STheme.color.lightGray} onPress={() => {
-                    if (caja?.key) PdfCierreCaja.imprimirPDF(caja.key);
-                }} icon="imprimir" />
+                {cajaCerrada && (
+                    <BtnAccion text={"Imprimir Cierre Caja"} margin={4} padding={10} background={"#475569"} borderColor={STheme.color.lightGray} onPress={() => {
+                        if (caja?.key) PdfCierreCaja.imprimirPDF(caja.key);
+                    }} icon="imprimir" />
+                )}
             </SView>
         );
     }
