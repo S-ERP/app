@@ -118,7 +118,7 @@ export default class ReciboRollo extends Component {
                     {ReciboRollo.Cajero(compraVentaData.cajero)}
                     {ReciboRollo.espacio()}
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                    <SPDF.View style={{ width: '100%', height: 70 }}></SPDF.View>.
+                    <SPDF.View style={{ width: '100%', height: 70 }}></SPDF.View>
 
                     {/* {!dataQR ? <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View> :
                         <SPDF.View style={{ width: '100%', height: 156 }}></SPDF.View>

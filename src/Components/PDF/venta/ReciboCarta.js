@@ -11,7 +11,7 @@ const textStyle = {
 
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
-const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
+const formatCurrency = (val, moneda) => `${toNumber(val).toFixed(2)} si` + moneda;
 
 export default class ReciboCarta extends Component {
     constructor(props) {
@@ -30,26 +30,11 @@ export default class ReciboCarta extends Component {
 
     static async imprimir(key) {
         try {
-
-            // let dataQR = {};
-            // try {
-            //     dataQR = await ReciboCarta.getQR(key);
-            //     console.log('QR ', dataQR?.data?.b64);
-            // } catch (error) {
-            //     console.error("Error al obtener QR:", error);
-            // }
-
-
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
-            if (!data) {
-                console.error("No se encontraron datos para la venta con key:", key);
-                return;
-            }
+            if (!data) { console.error("ReciboCarta: no data para key:", key); return; }
 
             const empresa = await MDL.empresa.getFull();
-            if (!empresa?.key) {
-                throw new Error('empresa data is missing or invalid');
-            }
+            if (!empresa?.key) throw new Error('empresa data is missing or invalid');
 
             const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
 
@@ -59,35 +44,22 @@ export default class ReciboCarta extends Component {
                     const usuarios = await MDL.usuario.getByKeys([data.key_cajero]);
                     cajero = Array.isArray(usuarios) ? usuarios[0] : usuarios[data.key_cajero] || {};
                 } catch (error) {
-                    console.error("Error al obtener datos del cajero:", error);
-                }
-            }
-
-            // Obtener datos del cliente
-            let cliente = {};
-            if (data?.key_cliente) {
-                try {
-                    cliente = await MDL.crm.cliente.getByKey(data.key_cliente) || {};
-                } catch (error) {
-                    console.error("Error al obtener datos del cliente:", error);
+                    console.error("ReciboCarta: error cajero:", error);
                 }
             }
 
             const clientes = await MDL.crm.cliente.getAll();
 
-
-            // Obtener datos del proveedor (si aplica)
             let proveedor = {};
             if (data?.key_proveedor) {
                 try {
                     proveedor = await MDL.inventario.proveedor.getByKey(data.key_proveedor) || {};
                 } catch (error) {
-                    console.error("Error al obtener datos del proveedor:", error);
+                    console.error("ReciboCarta: error proveedor:", error);
                 }
             }
 
             const moneda = empresa.monedas?.find(m => m.key === data.key_moneda) || {};
-
 
             const compraVentaData = {
                 ...data,
@@ -100,24 +72,22 @@ export default class ReciboCarta extends Component {
             };
 
             SPDF.create(
-                <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
-                    <SPDF.View style={{ width: "100%" }}>
-                        {ReciboCarta.HeaderRecibo(compraVentaData)}
-                        {ReciboCarta.espacio()}
-                        {ReciboCarta.cliente(compraVentaData)}
-                        {ReciboCarta.espacio()}
-                        {ReciboCarta.detalle(compraVentaData)}
-                        {ReciboCarta.espacio()}
-                        {ReciboCarta.Cajero(compraVentaData.cajero)}
-                        {ReciboCarta.espacio()}
-                        {/* {ReciboCarta.FooterRecibo(dataQR?.data?.b64, compraVentaData)} */}
-                        {ReciboCarta.espacio()}
-                        {ReciboCarta.pagina()}
-                    </SPDF.View>
+                <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
+                    footer={ReciboCarta.pagina()}
+                >
+                    {ReciboCarta.HeaderRecibo(compraVentaData)}
+                    {ReciboCarta.espacio()}
+                    {ReciboCarta.cliente(compraVentaData)}
+                    {ReciboCarta.espacio()}
+                    {ReciboCarta.detalle(compraVentaData)}
+                    {ReciboCarta.espacio()}
+                    {ReciboCarta.Cajero(compraVentaData.cajero)}
                 </SPDF.Page>
-            );
+            ).catch(e => {
+                console.error("ReciboCarta: SPDF.create error:", e);
+            });
         } catch (error) {
-            console.error("Error al generar el recibo:", error);
+            console.error("ReciboCarta: error general:", error);
         }
     }
 
@@ -150,7 +120,10 @@ export default class ReciboCarta extends Component {
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 100, height: 50 }} />
+                    {SSocket.api?.empresa && data?.empresa?.key
+                        ? <SPDF.Image src={`${SSocket.api.empresa}empresa/${data.empresa.key}`} style={{ width: 100, height: 50 }} />
+                        : <SPDF.View style={{ width: 100, height: 50 }} />
+                    }
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(data?.empresa?.razon_social, 'EMPRESA')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(data?.sucursal?.descripcion, 'Sin sucursal')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text>
@@ -365,16 +338,26 @@ export default class ReciboCarta extends Component {
 
     static subtotales(data) {
         const detalles = data?.detalle || {};
+        const moneda = data?.moneda || {};
+
         const items = Object.values(detalles);
         let subtotal = 0;
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
+        console.clear();
+        console.log(JSON.stringify(data));
         const descuento = toNumber(data?.descuento);
         const montoGiftCard = toNumber(data?.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
         const montoPagado = toNumber(data?.monto_pagado);
         const cambio = montoPagado - total;
+
+        const monedassssss = 'uwu';
+        // const monedassssss = '₲';
+        // const monedassssss = moneda ? moneda?.observacion : 'Bs';
+
+        console.log(monedassssss);
         return (
             <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
@@ -386,14 +369,14 @@ export default class ReciboCarta extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ flex: 3, height: "100%", justifyContent: "center", alignItems: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
-                        {ReciboCarta.renderTotalesDetalle({ label: "SUBTOTAL Bs", monto: formatCurrency(subtotal) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "DESCUENTO Bs", monto: formatCurrency(descuento) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "TOTAL Bs", monto: formatCurrency(total) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "MONTO GIFT CARD Bs", monto: formatCurrency(montoGiftCard) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "MONTO A PAGAR Bs", monto: formatCurrency(total) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "MONTO PAGADO Bs", monto: formatCurrency(montoPagado) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "CAMBIO Bs", monto: formatCurrency(cambio >= 0 ? cambio : 0) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: "IMPORTE BASE CRÉDITO FISCAL Bs", monto: formatCurrency(total) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `SUBTOTAL ${monedassssss}`, monto: formatCurrency(subtotal, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `DESCUENTO ${monedassssss}`, monto: formatCurrency(descuento, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `TOTAL ${monedassssss}`, monto: formatCurrency(total, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO GIFT CARD ${monedassssss}`, monto: formatCurrency(montoGiftCard, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO A PAGAR ${monedassssss}`, monto: formatCurrency(total, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO PAGADO ${monedassssss}`, monto: formatCurrency(montoPagado, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `CAMBIO ${monedassssss}`, monto: formatCurrency(cambio >= 0 ? cambio : 0, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `IMPORTE BASE CRÉDITO FISCAL ${monedassssss}`, monto: formatCurrency(total, monedassssss) })}
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
