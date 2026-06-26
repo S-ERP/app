@@ -554,7 +554,7 @@ export default class tabla extends Component {
                 />
 
                 <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} data={(e) => e.row?.observacion ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="detalles_" label="Detalle" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 4 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 4 }} width={120} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
@@ -683,7 +683,7 @@ export default class tabla extends Component {
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)} />
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas.cantidad ?? ""} /> <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""} />
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.moneda?.descripcion ?? ""} />
-                <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
+                <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={80} data={(e) => e.row?.monto_amortizado ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.success + "33"
@@ -702,14 +702,14 @@ export default class tabla extends Component {
                         }}
                         format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 />
-                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={60}
+                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={80}
                     data={(e) => (e.row?.cuotas.total_base ? e.row.cuotas.total_base : "0")}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}
                     format={(e) => SMath.formatMoney(e.data)}
                 />
-                <DinamicTable.Col key="monto_amortizado_base" wrap label="Monto Pagado Base" width={60} data={(e) => e.row?.monto_amortizado_base ?? ""}
+                <DinamicTable.Col key="monto_amortizado_base" wrap label="Monto Pagado Base" width={80} data={(e) => e.row?.monto_amortizado_base ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.success + "33"
@@ -730,7 +730,7 @@ export default class tabla extends Component {
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 />
 
-                <DinamicTable.Col key="detallesw_" label="Concepto" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="detallesw_" label="Concepto" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
                 {/* <DinamicTable.Col key="detalles__2" label="key_compra_venta_detalle" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.key)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.key}</SText>))} </SView>)} /> */}
 
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
@@ -818,7 +818,7 @@ export default class tabla extends Component {
     }
     render() {
         return (
-            <SPage title="Tabla de Ventas" disableScroll>
+            <SPage title="Tabla de Vessntas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
