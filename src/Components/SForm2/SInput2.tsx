@@ -440,10 +440,10 @@ export class SMoneyInput extends React.Component<SMoneyInputProps> {
 
     render() {
         const { icon, iconR, ...rest } = this.props;
-        const inputStyle = [
-            { flex: 1, height: "100%", textAlign: icon ? "right" : "left", paddingRight: 4 },
-            rest.style,
-        ] as any;
+        const inputStyle = {
+            flex: 1, height: "100%", textAlign: icon ? "right" : "left", paddingRight: 4,
+            ...(rest.style as any),
+        } as any;
         return (
             <>
                 {icon && <SView center style={{ height: "100%" }}>{icon}</SView>}
