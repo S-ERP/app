@@ -14,6 +14,10 @@ export default new SModel<Action, Reducer>({
         "repleg_ci": { type: "text", editable: true, label: "R.L. C.I." },
         "repleg_nombre": { type: "text", editable: true, label: "R.L. Nombre" },
         "repleg_email": { type: "text", editable: true, label: "R.L. Email" },
+
+        "codigo_pais": { type: "text", label: "Codigo Pais", editable: true, },
+
+
         "repleg_telefono": { type: "text", editable: true, label: "R.L. Telefono" },
         "fecha_on": { type: "timestamp", label: "Fecha de registro" },
         "ia_info": { type: "text", label: "IA Info", editable: true, },
