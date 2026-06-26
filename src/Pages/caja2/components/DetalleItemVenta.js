@@ -167,7 +167,16 @@ export default class DetalleItemVenta extends Component {
             </View>
             <SView width={8} />
 
-
+            {item?.detalle?.cliente && <>
+              <View style={styles.etiquetaRow}>
+                <SView row center>
+                  <SView center>
+                    <SText color={STheme.color.text} fontSize={11}>{item?.detalle?.cliente?.razon_social != "" ? item?.detalle?.cliente?.razon_social : "Sin Nombre"}</SText>
+                  </SView>
+                </SView>
+              </View>
+              <SView width={8} />
+            </>}
 
             {item?.key_compra_venta && <>
               <SView row style={{
@@ -186,6 +195,8 @@ export default class DetalleItemVenta extends Component {
               </SView>
               <SView width={8} />
             </>}
+
+
 
             {item.tipo === "compra" && <>
               <SView row style={{
