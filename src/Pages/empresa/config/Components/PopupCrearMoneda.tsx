@@ -53,7 +53,7 @@ export default class PopupCrearMoneda extends Component<Props> {
                         type: "select2",
                         defaultValue: this.props.editObject?.tipo || "",
                         options: ["base", "referencial"],
-                        label: "Tipo", placeholder: "Ingresa el tipo", 
+                        label: "Tipo", placeholder: "Ingresa el tipo",
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("descripcion");
                         }
@@ -81,6 +81,15 @@ export default class PopupCrearMoneda extends Component<Props> {
                         label: "Tipo de cambio", placeholder: "Ingresa el tipo de cambio", type: "money", isRequired: true,
                         onSubmitEditing: () => {
                             if (this.form) this.form.submit();
+                        }
+                    },
+
+                    "nombre_plural": {
+                        col: "xs-4",
+                        label: "Nombre Plural", placeholder: "Ingresa el nombre plural de la moneda", isRequired: true,
+                        defaultValue: this.props.editObject?.nombre_plural,
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("tipo_cambio");
                         }
                     },
                 }}
