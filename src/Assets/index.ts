@@ -171,7 +171,7 @@ import adicionar, {
 } from "./svg/factura/adicionar.svg";
 import whatsappIcon, {
   ReactComponent as whatsappIconW,
-} from "./svg/whatsapp.svg";
+} from "./svg/invite2.svg";
 import invite2, { ReactComponent as invite2W } from "./svg/invite2.svg";
 
 import guion, { ReactComponent as guionW } from "./svg/proyecto/guion.svg";
