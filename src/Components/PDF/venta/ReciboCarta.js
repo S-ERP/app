@@ -262,6 +262,7 @@ export default class ReciboCarta extends Component {
 
     static detalle(data) {
         const detalles = data?.detalle || {};
+        const simbolo = data?.moneda?.observacion || 'Bs';
         const items = Object.values(detalles).length
             ? Object.values(detalles)
             : [
@@ -312,7 +313,6 @@ export default class ReciboCarta extends Component {
                     </SPDF.View>
                 </SPDF.View>
                 {items.map((item, i) => {
-                    const simbolo = data?.moneda?.observacion || 'Bs';
                     const cantidad = toNumber(item.cantidad);
                     const precio = toNumber(item.precio_unitario);
                     const descuentoItem = toNumber(item.descuento || 0);

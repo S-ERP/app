@@ -8,7 +8,11 @@ const textStyle = { fontSize: 14, font: 'Roboto', paddingBottom: 4 };
 
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
-const formatCurrency = (val, simbolo = 'Bs') => `${toNumber(val).toFixed(2)} ${simbolo}`;
+const formatCurrency = (val = 0, simbolo = 'Bs') => {
+    const [integer, decimal] = toNumber(val).toFixed(2).split('.');
+    const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${intStr},${decimal} ${simbolo}`;
+};
 const formatDate = (dateStr, fallback = 'Sin fecha') =>
     dateStr && !isNaN(new Date(dateStr))
         ? new Date(dateStr).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })
