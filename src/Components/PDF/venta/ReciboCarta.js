@@ -11,7 +11,7 @@ const textStyle = {
 
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
-const formatCurrency = (val, moneda) => `${toNumber(val).toFixed(2)} si` + moneda;
+const formatCurrency = (val, moneda) => `${toNumber(val).toFixed(2)} ${moneda}`;
 
 export default class ReciboCarta extends Component {
     constructor(props) {
@@ -156,6 +156,12 @@ export default class ReciboCarta extends Component {
 
     static cliente(data) {
         const cliente = data?.cliente || {};
+
+
+        const _empresa = data?.empresa || {};
+        const _telefono = _empresa?.codigo_pais + " 000-000-000";
+
+
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center", height: 80 }}>
                 <SPDF.View style={{ width: "100%", alignItems: "center" }}>
@@ -217,7 +223,7 @@ export default class ReciboCarta extends Component {
                                 {"TELEFONO:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(cliente?.telefono, '+591 00000000')}
+                                {validarDato(cliente?.telefono, _telefono)}
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
@@ -353,17 +359,17 @@ export default class ReciboCarta extends Component {
         const montoPagado = toNumber(data?.monto_pagado);
         const cambio = montoPagado - total;
 
-        const monedassssss = 'uwu';
+        //const monedassssss = 'uwu';
         // const monedassssss = '₲';
-        // const monedassssss = moneda ? moneda?.observacion : 'Bs';
-
+        const monedassssss = moneda ? moneda?.observacion : 'Bs';
+        const nombre_plural = moneda ? moneda?.nombre_plural : 'Bolivianos';
         console.log(monedassssss);
         return (
             <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>
-                            {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}
+                            {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 "}{nombre_plural}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
