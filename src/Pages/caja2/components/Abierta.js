@@ -372,6 +372,7 @@ export default class Abierta extends Component {
         const cajaCerrada = !!this.getCaja()?.fecha_cierre;
         const soloLectura = esCajaAjena || cajaCerrada;
         const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
+        console.log("DATA", data)
         return (
             <SView col={"xs-12"} center flex>
                 <FlatList

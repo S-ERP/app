@@ -101,7 +101,7 @@ export default class DetalleItemVenta extends Component {
     const { item, index, empresa } = this.props;
     if (!item) return null;
 
-    const monto = item.detalle?.monto_amortizado ?? 0;
+    const monto = item.detalle?.cuotas?.total_base ?? 0;
     const color = monto < 0 ? STheme.color.danger : STheme.color.success;
     const moneda = empresa?.monedas?.find(e => e.key === item.detalle?.key_moneda);
     const detalleTipo = MDL.caja.detalle_types?.[item.tipo];
@@ -261,15 +261,38 @@ export default class DetalleItemVenta extends Component {
             </SView> */}
           </SView>
         </SView>
-      </SView>
+        <SView flex col={"xs-12"}>
+          <SView style={{ alignItems: "flex-end" }} >
 
-      <SView center style={{ position: "absolute", right: 0, top: 4 }}>
-        <SView center>
-          <SText fontSize={18} bold color={color}>
-            {moneda?.observacion} {SMath.formatMoney(monto)}
-          </SText>
+            {(item?.items ?? []).map((d, index) => (<>
+              <SView style={{ alignItems: "flex-end" }} row>
+                <SText key={index} fontSize={11} style={{ color: STheme.color.text }}>
+                  {d?.empresa_tipo_pago?.descripcion}
+                </SText>
+                <SView width={10} />
+                <SText key={index} fontSize={14} bold color={color}>
+                  {SMath.formatMoney(d?.monto)}
+                </SText>
+              </SView>
+            </>
+            ))}
+            {/* <SText fontSize={14} bold color={color}>
+              {moneda?.observacion} {SMath.formatMoney(monto)}
+            </SText>
+            <SText fontSize={14} bold color={color}>
+              {moneda?.observacion} {SMath.formatMoney(monto)}
+            </SText> */}
+            <SHr height={5} />
+            <SView col={"xs-10"} style={{ borderBottomWidth: 1, borderBottomColor: STheme.color.card, height: 5 }} />
+            <SHr height={5} />
+            <SText fontSize={18} bold color={color}>
+              {moneda?.observacion} {SMath.formatMoney(monto)}
+            </SText>
+          </SView>
         </SView>
       </SView>
+
+
     </>);
   }
 }
