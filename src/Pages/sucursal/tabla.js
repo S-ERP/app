@@ -158,6 +158,9 @@ export default class tabla extends Component {
 
 
             <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
+
+            {/* necesito que se actualice el componente DinamicTable que lleve el codigo para que se sleeciono por defecto, que on este el de oblivia por defecto  */}
+
             <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
             <DinamicTable.Col key="direccion" label="Dirección" width={200} data={(e) => e.row?.direccion} />
             <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />

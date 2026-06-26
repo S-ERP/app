@@ -49,6 +49,10 @@ export default class PopupCrearSucursal extends Component<Props> {
     form: SForm | undefined = undefined;
     _ref: any = {}
     render() {
+
+        {/* necesito que se actualice el componente DinamicTable que lleve el codigo para que se sleeciono por defecto, que on este el de oblivia por defecto  */ }
+
+
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" sucursal"}</SText>
             <SText fontSize={16} style={{ userSelect: "text" }} >{this.props.editObject?.key}</SText>
@@ -80,6 +84,7 @@ export default class PopupCrearSucursal extends Component<Props> {
                         "municipio": { label: "Municipio", placeholder: "Ingresa el municipio", defaultValue: this.props.editObject?.municipio, col: "xs-5" },
                         "codigo_facturacion": { label: "Codigo SIAT", placeholder: "", defaultValue: this.props.editObject?.codigo_facturacion, col: "xs-5" },
                         "direccion": { label: "Direccion", placeholder: "Ingresa la direccion", defaultValue: this.props.editObject?.direccion, col: "xs-12" },
+
                         "telefono": { label: "Telefono", placeholder: "00000000000000000", type: "phone", defaultValue: this.props.editObject?.telefono, col: "xs-5.7" },
                         "correo": { label: "Correo", placeholder: "example@email.com", type: "email", defaultValue: this.props.editObject?.correo, col: "xs-5.7" },
                         "observacion": { label: "Detalles", placeholder: "Ingresa mas detalles sobre la sucursal", type: "textArea", defaultValue: this.props.editObject?.observacion, },
