@@ -39,7 +39,7 @@ export default class MonedaTabla extends Component {
                     SNavigation.goBack();
                     return;
                 }
-
+//a
                 const MenuOptions = [];
                 if (MDL.rolesPermisos.getPermiso({ url: "/empresa/moneda", permiso: "edit" })) {
                     MenuOptions.push({
@@ -140,7 +140,9 @@ export default class MonedaTabla extends Component {
             <DinamicTable.Col key="index" label="#" textStyle={{
                 color: STheme.color.lightGray
             }} width={40} data={(e) => e.index + 1} />
+            <DinamicTable.Col key="nombre_plural" label="Nombre Plural" width={100} data={(e) => e.row?.nombre_plural} />
             <DinamicTable.Col key="descripcion" label="Moneda" width={80} data={(e) => e.row?.descripcion} />
+
             <DinamicTable.Col key="observacion" label="Observación" width={90} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={90} data={(e) => e.row?.tipo_cambio} />
             <DinamicTable.Col key="tipo" label="Tipo" width={90} data={(e) => e.row?.tipo} />
