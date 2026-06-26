@@ -1,4 +1,5 @@
 // // key = "tabla"
+// hola
 // // center
 // // ref = { ref => this.table = ref }
 // // language = "es"
