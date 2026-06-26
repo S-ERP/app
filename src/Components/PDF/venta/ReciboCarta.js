@@ -11,7 +11,11 @@ const textStyle = {
 
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
-const formatCurrency = (val, moneda) => `${toNumber(val).toFixed(2)} ${moneda}`;
+const formatCurrency = (val = 0, moneda = 'Bs') => {
+    const [integer, decimal] = toNumber(val).toFixed(2).split('.');
+    const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${intStr},${decimal} ${moneda}`;
+};
 
 export default class ReciboCarta extends Component {
     constructor(props) {
@@ -308,6 +312,7 @@ export default class ReciboCarta extends Component {
                     </SPDF.View>
                 </SPDF.View>
                 {items.map((item, i) => {
+                    const simbolo = data?.moneda?.observacion || 'Bs';
                     const cantidad = toNumber(item.cantidad);
                     const precio = toNumber(item.precio_unitario);
                     const descuentoItem = toNumber(item.descuento || 0);
@@ -326,13 +331,13 @@ export default class ReciboCarta extends Component {
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.descripcion}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
-                                <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{parseFloat(precio).toFixed(2)}</SPDF.Text>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{formatCurrency(precio, simbolo)}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
-                                <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{parseFloat(descuentoItem).toFixed(2)}</SPDF.Text>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{formatCurrency(descuentoItem, simbolo)}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
-                                <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{((cantidad * precio) - descuentoItem).toFixed(2)}</SPDF.Text>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{formatCurrency((cantidad * precio) - descuentoItem, simbolo)}</SPDF.Text>
                             </SPDF.View>
                         </SPDF.View>
                     );
