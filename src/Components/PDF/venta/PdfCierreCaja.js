@@ -1,14 +1,22 @@
 import React from 'react';
-import { SDate, SMath, STheme } from "servisofts-component";
+import { SDate, STheme } from "servisofts-component";
 import * as SPDF from 'servisofts-rn-spdf';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
+//verlo
 
 const fontSize = 9;
 const labelSize = 11;
 const text = { fontSize: fontSize, font: "Roboto" };
 const label = { fontSize: labelSize, fontWeight: "bold", font: "Roboto" };
 const line = { width: "100%", height: 1.5, backgroundColor: "#DDDDDD" };
+
+const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
+const formatCurrency = (val = 0, simbolo = '') => {
+    const [integer, decimal] = toNumber(val).toFixed(2).split('.');
+    const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return simbolo ? `${intStr},${decimal} ${simbolo}` : `${intStr},${decimal}`;
+};
 
 export default class PdfCierreCaja {
     static espacio(h = 15) {
@@ -18,6 +26,7 @@ export default class PdfCierreCaja {
     static linea() {
         return <SPDF.View style={line} />;
     }
+
     static Header(caja) {
         const empresaLogo = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : null;
 
@@ -55,30 +64,8 @@ export default class PdfCierreCaja {
             );
         }
 
-        // <SImage src={require("/src/Assets/img/cajero.png")} style={{ resizeMode: "cover", width: 50, height: 50 }} />
-        // <SImage src={require("/src/Assets/img/sucursal.png")} style={{ resizeMode: "cover", width: 50, height: 50 }} />
-
-        // const sucursalFoto = "../../../assets/img/bancoContinental.jpg";
-        // const sucursalFoto = require("/src/Assets/img/sucursal.png");
-        // const usuarioFoto = require("/src/Assets/img/cajero.png");
-        // const sucursalFoto = require("../../../Assets/img/sucursal.png");
-        // const usuarioFoto = require("../../../Assets/img/cajero.png");
         const sucursalFoto = "https://raw.githubusercontent.com/S-ERP/app/refs/heads/three/src/Assets/img/sucursal.png";
-        // const sucursalFoto = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : "https://www.w3schools.com/css/img_lights.jpg";
-        // const usuarioFoto = "https://www.w3schools.com/w3images/avatar2.png";
-        // const usuarioFoto = caja?.cajero?.key ? `${SSocket.api.root}usuario/${caja.cajero.key}` : "https://www.w3schools.com/w3images/avatar2.png";
         const usuarioFoto = "https://raw.githubusercontent.com/S-ERP/app/refs/heads/three/src/Assets/img/cajero.png";
-        // const usuarioFoto = "https://raw.githubusercontent.com/S-ERP/app/2117c66a09f5dd50795807fdeda6dffae0e71c47/src/Assets/svg/cajero___.svg";
-
-        console.clear();
-
-        console.log("%c" + JSON.stringify(caja, null, 2), "color: #2ECC40; font-weight: bold;");
-        console.log("%c" + JSON.stringify(sucursalFoto, null, 2), "color: #2e58cc; font-weight: bold;");
-        console.log("%c" + JSON.stringify(usuarioFoto, null, 2), "color: #b22ecc; font-weight: bold;");
-
-
-        // const empresaLogo = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : null;
-
 
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
@@ -102,7 +89,6 @@ export default class PdfCierreCaja {
                     {PdfCierreCaja.espacio(8)}
                     <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
                         <SPDF.View style={{ width: 29, height: 30, }}>
-                            {/* <SPDF.Image src={usuarioFoto} style={{  height: "100%", resizeMode: "cover" }} /> */}
                             <SPDF.Image src={usuarioFoto} style={{ width: 25, height: 30, resizeMode: "cover" }} />
                         </SPDF.View>
                         <SPDF.View style={{ flex: 1, marginTop: -4, height: 60, }}>
@@ -115,6 +101,7 @@ export default class PdfCierreCaja {
             </SPDF.View>
         );
     }
+
     static detalleMovimientos(movimientos) {
         return movimientos.map((mov, i) => (
             <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", marginBottom: 6 }}>
@@ -128,11 +115,12 @@ export default class PdfCierreCaja {
                     <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
                     <SPDF.Text style={text}>tipo: {mov.key_tipo_pago}</SPDF.Text>
                     <SPDF.Text style={text}>transación: {mov.tipo_}</SPDF.Text>
-                    <SPDF.Text style={{ ...text, color: mov.monto < 0 ? "#ff0000" : STheme.color.background }}>Monto: {mov.monto} {mov.moneda.observacion}</SPDF.Text>
+                    <SPDF.Text style={{ ...text, color: mov.monto < 0 ? "#ff0000" : STheme.color.background }}>{formatCurrency(mov.monto, mov.moneda?.observacion)}</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         ));
     }
+
     static Resumen(resumen) {
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
@@ -148,7 +136,7 @@ export default class PdfCierreCaja {
                                 {isTotal && (<SPDF.View style={{ width: "100%", borderTopWidth: 1, marginBottom: 5, marginTop: 5 }} />)}
                                 <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
                                     <SPDF.View style={{ flex: 1 }}> <SPDF.Text style={text}>{r.label}</SPDF.Text> </SPDF.View>
-                                    <SPDF.View style={{ flex: 1, alignItems: "end", }}> <SPDF.Text style={{ ...text, color: r.value < 0 ? "#ff0000" : STheme.color.background }}>{r.value} {r.moneda.observacion}</SPDF.Text> </SPDF.View>
+                                    <SPDF.View style={{ flex: 1, alignItems: "end", }}> <SPDF.Text style={{ ...text, color: r.value < 0 ? "#ff0000" : STheme.color.background }}>{formatCurrency(r.value, r.moneda?.observacion)}</SPDF.Text> </SPDF.View>
                                 </SPDF.View>
                             </SPDF.View>
                         );
@@ -157,6 +145,7 @@ export default class PdfCierreCaja {
             </SPDF.View>
         );
     }
+
     static TablaPagos(tabla) {
         return (
             <SPDF.View style={{ width: "100%", marginLeft: 20, marginRight: 20 }}>
@@ -190,25 +179,26 @@ export default class PdfCierreCaja {
                             <SPDF.Text style={{
                                 ...text, fontSize: 8,
                                 color: item.saldos < 0 ? "#ff0000" : item.saldos > 0 ? "#00bb00" : STheme.color.background
-                            }}> {SMath.formatMoney(item.saldos)} </SPDF.Text>
+                            }}> {formatCurrency(item.saldos)} </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", paddingLeft: 4 }}>
                             <SPDF.Text style={{
                                 ...text, fontSize: 8,
                                 color: item.entradas < 0 ? "#ff0000" : item.entradas > 0 ? "#00bb00" : STheme.color.background
-                            }}> {item.moneda.observacion}{SMath.formatMoney(item.entradas)} </SPDF.Text>
+                            }}> {formatCurrency(item.entradas, item.moneda?.observacion)} </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", paddingLeft: 4 }}>
                             <SPDF.Text style={{
                                 ...text, fontSize: 8,
                                 color: item.salidas < 0 ? "#ff0000" : item.salidas > 0 ? "#00bb00" : STheme.color.background
-                            }}>{item.moneda.observacion} {SMath.formatMoney(item.salidas)} </SPDF.Text>
+                            }}>{formatCurrency(item.salidas, item.moneda?.observacion)} </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
                 ))}
             </SPDF.View>
         );
     }
+
     static Firmas() {
         return (
             <SPDF.View style={{ width: "100%", marginTop: 40, flexDirection: "row" }}>
@@ -223,6 +213,7 @@ export default class PdfCierreCaja {
             </SPDF.View>
         );
     }
+
     static Footer() {
         return (
             <SPDF.View style={{ width: "100%", height: 20, flexDirection: "row" }}>

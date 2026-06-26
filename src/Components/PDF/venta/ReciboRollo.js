@@ -291,8 +291,11 @@ export default class ReciboRollo extends Component {
     }
 
     static TipoPago(data) {
-        const detalles = data?.detalle;
-        if (!detalles) return null;
+        const detalles = data?.detalle || {};
+        if (!Object.keys(detalles).length) return null;
+
+        
+        const simbolo = data?.moneda?.observacion || 'Bs';
         const items = Object.values(detalles);
         let subtotal = 0;
         for (const item of items) {
@@ -318,7 +321,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>MONTO PAGADO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(pagado > 0 ? pagado : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(pagado > 0 ? pagado : 0, simbolo)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -326,7 +329,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>CAMBIO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cambio >= 0 ? cambio : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cambio >= 0 ? cambio : 0, simbolo)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
@@ -334,15 +337,18 @@ export default class ReciboRollo extends Component {
     }
 
     static detalle(data) {
-        const detalles = data?.detalle;
-        const items = Object.values(detalles).length ? Object.values(detalles) : [
-            {
-                key: 'PINT-001',
-                descripcion: 'Bote de Pintura Acrílica, Blanco Mate, 5 Litros',
-                cantidad: 1,
-                precio_unitario: 25.0,
-            },
-        ];
+        const detalles = data?.detalle || {};
+        const simbolo = data?.moneda?.observacion || 'Bs';
+        const items = Object.values(detalles).length
+            ? Object.values(detalles)
+            : [
+                {
+                    key: 'PINT-001',
+                    descripcion: 'Bote de Pintura Acrílica, Blanco Mate, 5 Litros',
+                    cantidad: 1,
+                    precio_unitario: 25.0,
+                },
+            ];
         return (
             <SPDF.View style={{ width: '100%' }}>
                 <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
@@ -357,10 +363,10 @@ export default class ReciboRollo extends Component {
                             <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>{item.descripcion}</SPDF.Text>
                             <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                                 <SPDF.View style={{ width: '50%' }}>
-                                    <SPDF.Text style={{ ...textStyle }}>cant {cantidad} x {formatCurrency(precio)}</SPDF.Text>
+                                    <SPDF.Text style={{ ...textStyle }}>cant {cantidad} x {formatCurrency(precio, simbolo)}</SPDF.Text>
                                 </SPDF.View>
                                 <SPDF.View style={{ width: '50%', alignItems: 'end' }}>
-                                    <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cantidad * precio)}</SPDF.Text>
+                                    <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cantidad * precio, simbolo)}</SPDF.Text>
                                 </SPDF.View>
                             </SPDF.View>
                         </SPDF.View>
@@ -371,8 +377,14 @@ export default class ReciboRollo extends Component {
     }
 
     static subtotales(data) {
-        const detalles = data?.detalle;
-        if (!detalles) return null;
+        const detalles = data?.detalle || {};
+        const simbolo = data?.moneda?.observacion || 'Bs';
+
+
+        
+ 
+
+        const nombre_plural = data?.moneda?.nombre_plural || 'Bolivianos';
         const items = Object.values(detalles);
         let subtotal = 0;
         for (const item of items) {
@@ -386,47 +398,47 @@ export default class ReciboRollo extends Component {
                 <SPDF.View style={{ height: 4 }} />
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                     <SPDF.View style={{ width: '60%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{'SUBTOTAL Bs. '}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{`SUBTOTAL ${simbolo}. `}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '40%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(subtotal > 0 ? subtotal : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(subtotal > 0 ? subtotal : 0, simbolo)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ height: 4 }} />
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                     <SPDF.View style={{ width: '60%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{'DESCUENTO Bs. '}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{`DESCUENTO ${simbolo}. `}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '40%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(descuento > 0 ? descuento : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(descuento > 0 ? descuento : 0, simbolo)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ height: 4 }} />
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                     <SPDF.View style={{ width: '60%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{'TOTAL Bs. '}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{`TOTAL ${simbolo}. `}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '40%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(total > 0 ? total : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(total > 0 ? total : 0, simbolo)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ height: 4 }} />
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                     <SPDF.View style={{ width: '60%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{'MONTO GIFT CARD Bs. '}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{`MONTO GIFT CARD ${simbolo}. `}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '40%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(montoGiftCard > 0 ? montoGiftCard : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(montoGiftCard > 0 ? montoGiftCard : 0, simbolo)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ height: 4 }} />
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                     <SPDF.View style={{ width: '60%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>{'MONTO A PAGAR Bs. '}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>{`MONTO A PAGAR ${simbolo}. `}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '40%', alignItems: 'end' }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>
-                            {formatCurrency(total > 0 ? total : 0)}
+                            {formatCurrency(total > 0 ? total : 0, simbolo)}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -434,18 +446,18 @@ export default class ReciboRollo extends Component {
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
                     <SPDF.View style={{ width: '60%', alignItems: 'end' }}>
                         <SPDF.Text style={{ ...textStyle, fontSize: 13, fontWeight: 'bold' }}>
-                            {'IMPORTE BASE CRÉDITO FISCAL Bs. '}
+                            {`IMPORTE BASE CRÉDITO FISCAL ${simbolo}. `}
                         </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '40%', alignItems: 'end' }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>
-                            {formatCurrency(total > 0 ? total : 0)}
+                            {formatCurrency(total > 0 ? total : 0, simbolo)}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', height: 40 }}></SPDF.View>
                 <SPDF.Text style={{ ...textStyle, paddingLeft: 8 }}>
-                    {'Son: '}{SMath.numberToLetter(total, { p: '', s: '' }).toLowerCase()}{'00/100 Bolivianos'}
+                    {'Son: '}{SMath.numberToLetter(total, { p: '', s: '' }).toLowerCase()}{`00/100 ${nombre_plural}`}
                 </SPDF.Text>
             </SPDF.View>
         );
