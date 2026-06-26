@@ -240,7 +240,7 @@ export default class ReciboCarta extends Component {
                         {"CAJERO:"}
                     </SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                        {validarDato(cajero?.Nombres.toUpperCase(), 'S/N')}
+                        {validarDato(cajero?.Nombres?.toUpperCase(), 'S/N')}
                     </SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ height: 4 }} />
@@ -351,19 +351,14 @@ export default class ReciboCarta extends Component {
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
-        console.clear();
-        console.log(JSON.stringify(data));
         const descuento = toNumber(data?.descuento);
         const montoGiftCard = toNumber(data?.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
         const montoPagado = toNumber(data?.monto_pagado);
         const cambio = montoPagado - total;
 
-        //const monedassssss = 'uwu';
-        // const monedassssss = '₲';
-        const monedassssss = moneda ? moneda?.observacion : 'Bs';
-        const nombre_plural = moneda ? moneda?.nombre_plural : 'Bolivianos';
-        console.log(monedassssss);
+        const simbolo = moneda?.observacion || 'Bs';
+        const nombre_plural = moneda?.nombre_plural || 'Bolivianos';
         return (
             <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
@@ -375,14 +370,14 @@ export default class ReciboCarta extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ flex: 3, height: "100%", justifyContent: "center", alignItems: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
-                        {ReciboCarta.renderTotalesDetalle({ label: `SUBTOTAL ${monedassssss}`, monto: formatCurrency(subtotal, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `DESCUENTO ${monedassssss}`, monto: formatCurrency(descuento, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `TOTAL ${monedassssss}`, monto: formatCurrency(total, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO GIFT CARD ${monedassssss}`, monto: formatCurrency(montoGiftCard, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO A PAGAR ${monedassssss}`, monto: formatCurrency(total, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO PAGADO ${monedassssss}`, monto: formatCurrency(montoPagado, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `CAMBIO ${monedassssss}`, monto: formatCurrency(cambio >= 0 ? cambio : 0, monedassssss) })}
-                        {ReciboCarta.renderTotalesDetalle({ label: `IMPORTE BASE CRÉDITO FISCAL ${monedassssss}`, monto: formatCurrency(total, monedassssss) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `SUBTOTAL ${simbolo}`, monto: formatCurrency(subtotal, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `DESCUENTO ${simbolo}`, monto: formatCurrency(descuento, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `TOTAL ${simbolo}`, monto: formatCurrency(total, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO GIFT CARD ${simbolo}`, monto: formatCurrency(montoGiftCard, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO A PAGAR ${simbolo}`, monto: formatCurrency(total, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `MONTO PAGADO ${simbolo}`, monto: formatCurrency(montoPagado, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `CAMBIO ${simbolo}`, monto: formatCurrency(cambio >= 0 ? cambio : 0, simbolo) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: `IMPORTE BASE CRÉDITO FISCAL ${simbolo}`, monto: formatCurrency(total, simbolo) })}
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
