@@ -7,6 +7,7 @@ const textStyle = {
     font: "Roboto",
     fontSize: 9,
 }
+//verlo
 export default class PDF extends Component {
     constructor(props) {
         super(props);

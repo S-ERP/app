@@ -9,36 +9,56 @@ const tableBorderColor = "#B8B8B8";
 // const tableBorderColor = "#4e4e4e";
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
-const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
+const formatCurrency = (val = 0, simbolo = 'Bs') => {
+    const [integer, decimal] = toNumber(val).toFixed(2).split('.');
+    const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${intStr},${decimal} ${simbolo}`;
+};
 
 export default class ComprobanteCarta extends Component {
     static async imprimir(key) {
         try {
             const compraVenta = await MDL.compra_venta.getByKeyComraVenta(key);
-            if (!compraVenta) {
-                throw new Error(`compraVenta not found for ID: ${key}`);
-            }
+            if (!compraVenta) { console.error("ComprobanteCarta: no data para key:", key); return; }
+
             const empresa = await MDL.empresa.getFull();
-            if (!empresa?.key) {
-                throw new Error('empresa data is missing or invalid');
-            }
+            if (!empresa?.key) throw new Error('empresa data is missing or invalid');
+
             const sucursal = empresa.sucursales?.find(a => a?.key === compraVenta?.key_sucursal) || {};
+
+            let cajero = {};
+            if (compraVenta?.key_cajero) {
+                try {
+                    const usuarios = await MDL.usuario.getByKeys([compraVenta.key_cajero]);
+                    cajero = Array.isArray(usuarios) ? usuarios[0] : usuarios[compraVenta.key_cajero] || {};
+                } catch (error) {
+                    console.error("ComprobanteCarta: error cajero:", error);
+                }
+            }
+
             let proveedor = {};
             if (compraVenta?.key_proveedor) {
                 try {
                     proveedor = await MDL.inventario.proveedor.getByKey(compraVenta.key_proveedor) || {};
                 } catch (error) {
-                    console.error("Error al obtener datos del proveedor:", error);
+                    console.error("ComprobanteCarta: error proveedor:", error);
                 }
             }
+
             const moneda = empresa.monedas?.find(m => m.key === compraVenta.key_moneda) || {};
+
             const compraVentaData = {
                 ...compraVenta,
                 empresa,
                 sucursal,
+                cajero,
                 proveedor,
                 moneda
-            }; SPDF.create(
+            };
+            console.clear();
+            console.log("ComprobanteCarta: Generating PDF for compraVentaData:", compraVentaData);
+
+            SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
                     footer={ComprobanteCarta.pagina()}
                 >
@@ -48,21 +68,18 @@ export default class ComprobanteCarta extends Component {
                     <SPDF.View style={{ width: "100%", height: 4 }} />
                     {ComprobanteCarta.detalleHeader()}
                     {ComprobanteCarta.detalle(compraVentaData)}
-
                     <SPDF.View style={{ width: "100%", height: 4 }} />
                     {ComprobanteCarta.detalleFooter(compraVentaData)}
-                    {/* <SPDF.View style={{ width: "100%", height: 80 }} />
-
-                    <SPDF.View style={{ width: "100%", paddingBottom: 4 }}>
-                        <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View>
-                        {ComprobanteCarta.firmas()}
-                    </SPDF.View> */}
                 </SPDF.Page>
-            );
+            ).catch(e => {
+                console.error("ComprobanteCarta: SPDF.create error:", e);
+            });
         } catch (error) {
-            console.error("Error al generar el comprobante:", error);
+            console.error("ComprobanteCarta: error general:", error);
         }
-    } static espacio() {
+    }
+
+    static espacio() {
         return <SPDF.View style={{ width: "100%", height: 12 }} />;
     }
 
@@ -223,6 +240,8 @@ export default class ComprobanteCarta extends Component {
     }
 
     static subtotales(data) {
+        const simbolo = data?.moneda?.observacion || 'Bs';
+        const nombre_plural = data?.moneda?.nombre_plural || 'Bolivianos';
         const detalles = data?.detalle || {};
         const items = Object.values(detalles);
         let subtotal = 0;
@@ -237,17 +256,17 @@ export default class ComprobanteCarta extends Component {
         return (
             <SPDF.View style={{ width: "100%", height: 92, flexDirection: "row", }}>
                 <SPDF.View style={{ flex: 6, height: "100%", alignItems: "flex-start" }}>
-                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 10, fontWeight: "bold" }}> {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"} </SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 10, fontWeight: "bold" }}> {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{`00/100 ${nombre_plural}`} </SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 3, height: "100%", minHeight: 50, justifyContent: "center", alignItems: "center", }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "SUBTOTAL Bs", monto: formatCurrency(subtotal) })}
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "DESCUENTO Bs", monto: formatCurrency(descuento) })}
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "MONTO GIFT CARD Bs", monto: formatCurrency(montoGiftCard) })}
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "TOTAL Bs", monto: formatCurrency(total) })}
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "MONTO A PAGAR Bs", monto: formatCurrency(total) })}
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "MONTO PAGADO Bs", monto: formatCurrency(montoPagado) })}
-                        {ComprobanteCarta.renderTotalesDetalle({ label: "CAMBIO Bs", monto: formatCurrency(cambio >= 0 ? cambio : 0) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `SUBTOTAL ${simbolo}`, monto: formatCurrency(subtotal, simbolo) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `DESCUENTO ${simbolo}`, monto: formatCurrency(descuento, simbolo) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `MONTO GIFT CARD ${simbolo}`, monto: formatCurrency(montoGiftCard, simbolo) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `TOTAL ${simbolo}`, monto: formatCurrency(total, simbolo) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `MONTO A PAGAR ${simbolo}`, monto: formatCurrency(total, simbolo) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `MONTO PAGADO ${simbolo}`, monto: formatCurrency(montoPagado, simbolo) })}
+                        {ComprobanteCarta.renderTotalesDetalle({ label: `CAMBIO ${simbolo}`, monto: formatCurrency(cambio >= 0 ? cambio : 0, simbolo) })}
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>

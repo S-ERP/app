@@ -52,7 +52,7 @@ export default class index extends Component {
             <SView col={"xs-12"} row center>
                 <SView col={"xs-12"} center>
                     <SHr />
-                    <SText bold>EXPORTAR COMPROBANTE</SText>
+                    <SText bold>EXPORTAR s COMPROBANTE</SText>
                     <SHr />
                 </SView>
                 <SView col={"xs-12"} center row>

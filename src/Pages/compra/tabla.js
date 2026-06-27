@@ -10,6 +10,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteCarta from '../../Components/PDF/compra/ComprobanteCarta';
 import DateTimeBetween from '../../Components/DateTimeBetween';
+import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 
 const TIPO_PRODUCTO_MAP = {
     servicio: { color: "#2563eb", label: "Servicio" },
@@ -200,7 +201,9 @@ export default class tabla extends Component {
                             {
                                 label: "Imprimir tamaño carta",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => { ComprobanteCarta.imprimir(e?.row?.key) }
+                                // onPress: () => { ComprobanteCarta.imprimir(e?.row?.key) }
+                                onPress: () => { ReciboCarta.imprimir(e?.row?.key) }
+
                             },
                         ]
                     });
