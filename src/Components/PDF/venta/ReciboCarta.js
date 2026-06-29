@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SMath, SView, SText, SDate } from 'servisofts-component';
+import { SMath, SView, SText, SDate, SNotification, STheme } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
@@ -23,17 +23,17 @@ export default class ReciboCarta extends Component {
         this.state = {};
     }
 
-    static async fetchCompraVentaData(keyVenta) {
-        try {
-
-            return compraVentaData;
-        } catch (error) {
-            throw new Error(`Failed to fetch compraVenta data: ${error.message}`);
-        }
-    }
-
     static async imprimir(key) {
+        const notificationKey = `pdf_carta_${key}`;
         try {
+            SNotification.send({
+                key: notificationKey,
+                title: "Generando recibo...",
+                type: "loading",
+            });
+
+            //const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
             if (!data) { console.error("ReciboCarta: no data para key:", key); return; }
 
@@ -70,10 +70,12 @@ export default class ReciboCarta extends Component {
                 empresa,
                 sucursal,
                 cajero,
-                cliente: clientes.find(a => a?.key === data.key_cliente) || {},
+                cliente: (Array.isArray(clientes) ? clientes : Object.values(clientes || {})).find(a => a?.key === data.key_cliente) || {},
                 proveedor,
                 moneda
             };
+
+            console.log("ReciboCarta: compraVentaData:", compraVentaData);
 
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
@@ -90,8 +92,22 @@ export default class ReciboCarta extends Component {
             ).catch(e => {
                 console.error("ReciboCarta: SPDF.create error:", e);
             });
+
+            SNotification.send({
+                key: notificationKey,
+                title: "Recibo generado",
+                body: "El PDF se generó correctamente.",
+                color: STheme.color.success,
+            });
         } catch (error) {
             console.error("ReciboCarta: error general:", error);
+            SNotification.send({
+                key: notificationKey,
+                title: "Error al generar recibo",
+                body: error?.message || "Ocurrió un error inesperado.",
+                color: STheme.color.danger,
+                time: 5000,
+            });
         }
     }
 
@@ -369,7 +385,7 @@ export default class ReciboCarta extends Component {
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>
-                            {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 "}{nombre_plural}
+                            {"Son: "}{(SMath.numberToLetter(total > 0 ? total : 0, { p: "", s: "" }) || "").toLowerCase()}{"00/100 "}{nombre_plural}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
