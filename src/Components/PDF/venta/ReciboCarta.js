@@ -40,6 +40,14 @@ export default class ReciboCarta extends Component {
             const empresa = await MDL.empresa.getFull();
             if (!empresa?.key) throw new Error('empresa data is missing or invalid');
 
+
+
+
+            const sssssssss = await MDL.compra_venta.tipooooooooooo(key);
+
+            console.clear();
+            console.log("ReciboCarta: sssssssss:", sssssssss);
+
             const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
 
             let cajero = {};
@@ -72,7 +80,8 @@ export default class ReciboCarta extends Component {
                 cajero,
                 cliente: (Array.isArray(clientes) ? clientes : Object.values(clientes || {})).find(a => a?.key === data.key_cliente) || {},
                 proveedor,
-                moneda
+                moneda,
+                tipo_pago: sssssssss || {},
             };
 
             console.log("ReciboCarta: compraVentaData:", compraVentaData);
@@ -87,7 +96,7 @@ export default class ReciboCarta extends Component {
                     {ReciboCarta.espacio()}
                     {ReciboCarta.detalle(compraVentaData)}
                     {ReciboCarta.espacio()}
-                    {ReciboCarta.Cajero(compraVentaData.cajero)}
+                    {ReciboCarta.Cajero(compraVentaData.cajero, compraVentaData)}
                 </SPDF.Page>
             ).catch(e => {
                 console.error("ReciboCarta: SPDF.create error:", e);
@@ -214,7 +223,7 @@ export default class ReciboCarta extends Component {
                                 {"FORMA DE PAGO:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(data?.tipo_pago?.toUpperCase(), 'S/D')}
+                                {validarDato(data?.tipo_pago != null ? String(data.tipo_pago).toUpperCase() : null, 'S/D')}
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
@@ -252,26 +261,91 @@ export default class ReciboCarta extends Component {
         );
     }
 
-    static Cajero(cajero) {
+    static Cajero(cajero, data) {
+        const simbolo = data?.moneda?.observacion || 'Bs';
+        const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
+
+        const items = Object.values(data?.detalle || {});
+        let subtotal = 0;
+        for (const item of items) {
+            subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
+        }
+        const descuento = toNumber(data?.descuento);
+        const montoGiftCard = toNumber(data?.monto_gift_card);
+        const total = subtotal - descuento - montoGiftCard;
+        const montoPagado = toNumber(data?.monto_pagado);
+        const cambio = montoPagado - total;
+
         return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
-                <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                    <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                        {"CAJERO:"}
-                    </SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                        {validarDato(cajero?.Nombres?.toUpperCase(), 'S/N')}
-                    </SPDF.Text>
+            <SPDF.View style={{ width: "100%" }}>
+                {/* Cajero y Caja */}
+                <SPDF.View style={{ width: "100%", flexDirection: "row", marginBottom: 6 }}>
+                    <SPDF.View style={{ flex: 1, flexDirection: "row" }}>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"CAJERO: "}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{validarDato(cajero?.Nombres?.toUpperCase(), 'S/N')}</SPDF.Text>
+                    </SPDF.View>
+
+                    <SPDF.View style={{ flex: 1, flexDirection: "row" }}>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"CAJA: "}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{"01"}</SPDF.Text>
+                    </SPDF.View>
                 </SPDF.View>
-                <SPDF.View style={{ height: 4 }} />
-                <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                    <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                        {"CAJA:"}
-                    </SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                        {"01"}
-                    </SPDF.Text>
-                </SPDF.View>
+
+
+
+                {/* Tabla forma de pago — ancho completo, debajo de totales */}
+                {tipoPagos.length > 0 && (
+                    <SPDF.View style={{ width: "100%", marginTop: 8 }}>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold", marginBottom: 4 }}>{"FORMA DE PAGO"}</SPDF.Text>
+                        <SPDF.View style={{ width: "100%", flexDirection: "row", height: 18, backgroundColor: "#D0D0D0" }}>
+                            <SPDF.View style={{ width: 24, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 7, fontWeight: "bold" }}>{"N°"}</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 7, fontWeight: "bold" }}>{"TIPO"}</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 2, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 7, fontWeight: "bold" }}>{"MÉTODO DE PAGO"}</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 7, fontWeight: "bold" }}>{"MONEDA"}</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 7, fontWeight: "bold" }}>{"T. CAMBIO"}</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                <SPDF.Text style={{ ...textStyle, fontSize: 7, fontWeight: "bold" }}>{"MONTO"}</SPDF.Text>
+                            </SPDF.View>
+                        </SPDF.View>
+                        {tipoPagos.map((tp, i) => {
+                            const mon = (data?.empresa?.monedas || []).find(m => m.key === tp?.key_moneda);
+                            const sim = mon?.observacion || simbolo;
+                            return (
+                                <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", height: 18, backgroundColor: i % 2 === 0 ? "#F5F5F5" : "#FFFFFF" }}>
+                                    <SPDF.View style={{ width: 24, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                        <SPDF.Text style={{ ...textStyle, fontSize: 7 }}>{i + 1}</SPDF.Text>
+                                    </SPDF.View>
+                                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                        <SPDF.Text style={{ ...textStyle, fontSize: 7 }}>{String(tp?.tipo || '').toUpperCase()}</SPDF.Text>
+                                    </SPDF.View>
+                                    <SPDF.View style={{ flex: 2, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                        <SPDF.Text style={{ ...textStyle, fontSize: 7 }}>{String(tp?.tipo_pago || '').toUpperCase()}</SPDF.Text>
+                                    </SPDF.View>
+                                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                        <SPDF.Text style={{ ...textStyle, fontSize: 7 }}>{sim}</SPDF.Text>
+                                    </SPDF.View>
+                                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                        <SPDF.Text style={{ ...textStyle, fontSize: 7 }}>{toNumber(tp?.tipo_cambio)}</SPDF.Text>
+                                    </SPDF.View>
+                                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 2 }}>
+                                        <SPDF.Text style={{ ...textStyle, fontSize: 7 }}>{formatCurrency(toNumber(tp?.monto), sim)}</SPDF.Text>
+                                    </SPDF.View>
+                                </SPDF.View>
+                            );
+                        })}
+                    </SPDF.View>
+                )}
+
             </SPDF.View>
         );
     }
@@ -380,6 +454,14 @@ export default class ReciboCarta extends Component {
 
         const simbolo = moneda?.observacion || 'Bs';
         const nombre_plural = moneda?.nombre_plural || 'Bolivianos';
+
+        /* {(Array.isArray(data?.tipo_pago) ? data.tipo_pago : []).map((tp) =>
+                          ReciboCarta.renderTotalesDetalle({
+                              label: String(tp?.tipo_pago || tp?.tipo || 'PAGO').toUpperCase(),
+                              monto: formatCurrency(toNumber(tp?.monto), simbolo)
+                          })
+                      )} */
+
         return (
             <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
@@ -399,6 +481,7 @@ export default class ReciboCarta extends Component {
                         {ReciboCarta.renderTotalesDetalle({ label: `MONTO PAGADO ${simbolo}`, monto: formatCurrency(montoPagado, simbolo) })}
                         {ReciboCarta.renderTotalesDetalle({ label: `CAMBIO ${simbolo}`, monto: formatCurrency(cambio >= 0 ? cambio : 0, simbolo) })}
                         {ReciboCarta.renderTotalesDetalle({ label: `IMPORTE BASE CRÉDITO FISCAL ${simbolo}`, monto: formatCurrency(total, simbolo) })}
+
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>

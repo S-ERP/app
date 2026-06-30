@@ -218,7 +218,18 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-
+  
+  
+  async tipooooooooooo(_key_compra_venta_detalle: String) {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "reporte",
+      type: "execute_function",
+      func: "_gettipopago",
+      params: ["'" + _key_compra_venta_detalle + "'"],
+    });
+    return resp.data || [];
+  }
 
   async getAllCostos() {
     const key_empresa = MDL.empresa?.select?.key || {};

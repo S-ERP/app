@@ -204,7 +204,7 @@ export default class ComprobanteCarta extends Component {
                                 {"FORMA DE PAGO:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(data?.tipo_pago?.toUpperCase(), 'S/D')}
+                                {validarDato(data?.tipo_pago != null ? String(data.tipo_pago).toUpperCase() : null, 'S/D')}
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
