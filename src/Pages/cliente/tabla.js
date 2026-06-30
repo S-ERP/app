@@ -216,6 +216,22 @@ export default class ListaClientes extends Component {
         return Object.values(map || {}).reduce((s, v) => s + v, 0) || '';
     }
 
+    formatMap(map, monedas) {
+        return Object.entries(map || {}).map(([k, monto]) => {
+            const mon = (monedas || []).find(m => m.key === k);
+            const sim = mon?.observacion || 'Bs';
+            const fmt = SMath.formatMoney(monto);
+            return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
+        }).join('\n') || '';
+    }
+
+    formatBase(monto, monedas) {
+        if (!monto) return '';
+        const sim = (monedas || []).find(m => m.tipo === 'base')?.observacion || 'Bs';
+        const fmt = SMath.formatMoney(monto);
+        return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
+    }
+
     mostrarTabla() {
         return (
             <DinamicTable
@@ -428,32 +444,28 @@ export default class ListaClientes extends Component {
 
 
                 <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={90}
-                    data={e => this.sumMap(e.row?.deuda_por_moneda) + e.row?.empresa?.monedas.observacion}
+                    data={e => this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas)}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => this.renderMoneyList(e.row?.deuda_por_moneda, e.row?.empresa?.monedas, STheme.color.warning)} />
 
 
                 <DinamicTable.Col key="deuda_base_casdol" wrap label="M. Pendiente Base" width={90}
-                    data={e => e.row?.totales_base?.deuda || ''}
-                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
-                    format={e => { if (!e.data) return ''; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; const fmt = SMath.formatMoney(e.data); return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`; }} />
+                    data={e => this.formatBase(e.row?.totales_base?.deuda, e.row?.empresa?.monedas)}
+                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }} />
 
 
                 <DinamicTable.Col key="cuota_4" wrap label="# Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
 
-
-
                 <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={90}
-                    data={e => this.sumMap(e.row?.mora_por_moneda)}
+                    data={e => this.formatMap(e.row?.mora_por_moneda, e.row?.empresa?.monedas)}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => this.renderMoneyList(e.row?.mora_por_moneda, e.row?.empresa?.monedas, STheme.color.danger)} />
 
 
                 <DinamicTable.Col key="mora_base_casdol" wrap label="Monto Mora Base" width={90}
-                    data={e => e.row?.totales_base?.mora || ''}
-                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
-                    format={e => { if (!e.data) return ''; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; const fmt = SMath.formatMoney(e.data); return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`; }} />
+                    data={e => this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)}
+                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }} />
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
