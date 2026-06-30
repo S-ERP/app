@@ -11,6 +11,7 @@ const textStyle = {
 
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
+const safeSimbolo = (simbolo) => (simbolo === '₲' ? 'Gs' : simbolo);
 const formatCurrency = (val = 0, moneda = 'Bs') => {
     const [integer, decimal] = toNumber(val).toFixed(2).split('.');
     const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -33,12 +34,27 @@ export default class ComprobanteCarta extends Component {
             });
 
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
-            if (!data) { console.error("ComprobanteCarta: no data para key:", key); return; }
+            if (!data) {
+                console.error("ComprobanteCarta: no data para key:", key);
+                SNotification.send({
+                    key: notificationKey,
+                    title: "Error al generar comprobante",
+                    body: "No se encontraron datos para esta compra.",
+                    color: STheme.color.danger,
+                    time: 5000,
+                });
+                return;
+            }
 
             const empresa = await MDL.empresa.getFull();
             if (!empresa?.key) throw new Error('empresa data is missing or invalid');
 
-            const tipoPago = await MDL.compra_venta.getTipoPago(key);
+            let tipoPago = [];
+            try {
+                tipoPago = await MDL.compra_venta.getTipoPago(key);
+            } catch (error) {
+                console.error("ComprobanteCarta: error tipoPago:", error);
+            }
 
             const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
 
@@ -271,7 +287,7 @@ export default class ComprobanteCarta extends Component {
                         </SPDF.View>
                         {tipoPagos.map((tp, i) => {
                             const mon = (data?.empresa?.monedas || []).find(m => m.key === tp?.key_moneda);
-                            const sim = mon?.observacion || data?.moneda?.observacion || 'Gs';
+                            const sim = safeSimbolo(mon?.observacion || data?.moneda?.observacion) || 'Gs';
                             return (
                                 <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", height: 20 }}>
                                     <SPDF.View style={{ flex: 1, height: "100%", justifyContent: "center", padding: 4, borderWidth: 1 }}>
@@ -317,7 +333,7 @@ export default class ComprobanteCarta extends Component {
 
     static detalle(data) {
         const detalles = data?.detalle || {};
-        const simbolo = data?.moneda?.observacion || 'Bs';
+        const simbolo = safeSimbolo(data?.moneda?.observacion) || 'Bs';
         const items = Object.values(detalles).length
             ? Object.values(detalles)
             : [
@@ -383,7 +399,7 @@ export default class ComprobanteCarta extends Component {
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{"unidad"}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 3, borderWidth: 1, height: "100%", justifyContent: "center", padding: 8 }}>
-                                <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.descripcion.toUpperCase()}</SPDF.Text>
+                                <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{(item.descripcion || '').toUpperCase()}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
                                 <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{formatCurrency(precio, simbolo)}</SPDF.Text>
@@ -418,7 +434,7 @@ export default class ComprobanteCarta extends Component {
         const montoPagado = toNumber(data?.monto_pagado);
         const cambio = montoPagado - total;
 
-        const simbolo = moneda?.observacion || 'Bs';
+        const simbolo = safeSimbolo(moneda?.observacion) || 'Bs';
         const nombre_plural = moneda?.nombre_plural || 'Bolivianos';
 
         return (
