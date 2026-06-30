@@ -276,16 +276,16 @@ export default class ReciboCarta extends Component {
                 {tipoPagos.length > 0 && (
                     <SPDF.View style={{ width: "100%", marginBottom: 10 }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 10 }}>
-                            {"Detalle de Forma de Pago"}
+                            {"DETALLE DE PAGOS"}
                         </SPDF.Text>
-                        <SPDF.View style={{ height: 6 }} />
+                        <SPDF.View style={{ height: 10 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", height: 24 }}>
                             {th(1, "#")}
-                            {th(1, "Tipo")}
-                            {th(3, "Detalle")}
-                            {th(1, "Moneda")}
+                            {th(1, "TIPO")}
+                            {th(3, "DETALLE")}
+                            {th(1, "MONEDA")}
                             {th(1, "T. CAMBIO")}
-                            {th(1, "Monto")}
+                            {th(1, "MONTO")}
                         </SPDF.View>
                         {tipoPagos.map((tp, i) => {
                             const mon = (data?.empresa?.monedas || []).find(m => m.key === tp?.key_moneda);
@@ -437,7 +437,7 @@ static Cajero(cajero, data) {
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{"unidad"}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 3, borderWidth: 1, height: "100%", justifyContent: "center", padding: 8 }}>
-                                <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.descripcion}</SPDF.Text>
+                                <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.descripcion.toUpperCase()}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
                                 <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{formatCurrency(precio, simbolo)}</SPDF.Text>
