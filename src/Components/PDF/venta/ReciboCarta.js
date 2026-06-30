@@ -32,21 +32,13 @@ export default class ReciboCarta extends Component {
                 type: "loading",
             });
 
-            //const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
             if (!data) { console.error("ReciboCarta: no data para key:", key); return; }
 
             const empresa = await MDL.empresa.getFull();
             if (!empresa?.key) throw new Error('empresa data is missing or invalid');
 
-
-
-
-            const sssssssss = await MDL.compra_venta.tipooooooooooo(key);
-
-            console.clear();
-            console.log("ReciboCarta: sssssssss:", sssssssss);
+            const tipoPago = await MDL.compra_venta.getTipoPago(key);
 
             const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
 
@@ -81,10 +73,8 @@ export default class ReciboCarta extends Component {
                 cliente: (Array.isArray(clientes) ? clientes : Object.values(clientes || {})).find(a => a?.key === data.key_cliente) || {},
                 proveedor,
                 moneda,
-                tipo_pago_: sssssssss || {},
+                tipo_pago_: tipoPago || {},
             };
-
-            console.log("ReciboCarta: compraVentaData:", compraVentaData);
 
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
@@ -331,44 +321,6 @@ export default class ReciboCarta extends Component {
     }
 
 
-    /*
-static Cajero(cajero, data) {
-      const simbolo = data?.moneda?.observacion || 'Bs';
-      const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
-
-      const items = Object.values(data?.detalle || {});
-      let subtotal = 0;
-      for (const item of items) {
-          subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
-      }
-      const descuento = toNumber(data?.descuento);
-      const montoGiftCard = toNumber(data?.monto_gift_card);
-      const total = subtotal - descuento - montoGiftCard;
-      const montoPagado = toNumber(data?.monto_pagado);
-      const cambio = montoPagado - total;
-      return (
-          <SPDF.View style={{ width: "100%" }}>
-              <SPDF.View style={{ width: "100%", height: 80, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
-                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
-                      <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>hola</SPDF.Text>
-                  </SPDF.View>
-
-                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
-                      <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>
-                          Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since 1966 is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham
-                      </SPDF.Text>
-                  </SPDF.View>
-                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
-                      <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>chaval</SPDF.Text>
-                  </SPDF.View>
-                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
-                  </SPDF.View>
-              </SPDF.View>
-          </SPDF.View>
-      );
-  }
-  */
-
     static detalle(data) {
         const detalles = data?.detalle || {};
         const simbolo = data?.moneda?.observacion || 'Bs';
@@ -507,38 +459,6 @@ static Cajero(cajero, data) {
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, height: "100%", padding: 3, borderWidth: 1, justifyContent: "flex-end", alignItems: "flex-end" }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8, textAlign: "right", width: "100%" }}>{monto}</SPDF.Text>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
-
-    static FooterRecibo(qr, data) {
-        return (
-            <SPDF.View style={{ width: "100%", alignItems: "center" }}>
-                <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-                    <SPDF.View style={{ flex: 1, height: 50 }}>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"ESTE RECIBO CONFIRMA EL PAGO RECIBIDO."}
-                        </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"Este documento constituye únicamente una constancia de la operación efectuada entre las partes"}
-                        </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"\"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de registro en línea\""}
-                        </SPDF.Text>
-                    </SPDF.View>
-                    {qr ? (
-                        <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70 }} />
-                    ) : (
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8, color: 'red' }}>{"QR no disponible"}</SPDF.Text>
-                    )}
-                </SPDF.View>
-                <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su compra!</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Guarde este recibo para devoluciones.</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                        Visítenos en www.{validarDato(data?.empresa?.razon_social, 'EMPRESA')}.com
-                    </SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         );

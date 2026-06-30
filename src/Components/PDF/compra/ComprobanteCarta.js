@@ -38,9 +38,7 @@ export default class ComprobanteCarta extends Component {
             const empresa = await MDL.empresa.getFull();
             if (!empresa?.key) throw new Error('empresa data is missing or invalid');
 
-            const sssssssss = await MDL.compra_venta.tipooooooooooo(key);
-            console.log("RecibossssssssssssssCarta: sssssssss:", sssssssss);
-
+            const tipoPago = await MDL.compra_venta.getTipoPago(key);
 
             const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
 
@@ -72,11 +70,8 @@ export default class ComprobanteCarta extends Component {
                 cajero,
                 proveedor,
                 moneda,
-                tipo_pago_: sssssssss || {},
-
+                tipo_pago_: tipoPago || {},
             };
-
-            console.log("ComprobanteCarta: compraData:", compraData);
 
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
@@ -459,38 +454,6 @@ export default class ComprobanteCarta extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, height: "100%", padding: 3, borderWidth: 1, justifyContent: "flex-end", alignItems: "flex-end" }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8, textAlign: "right", width: "100%" }}>{monto}</SPDF.Text>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
-
-    static FooterRecibo(qr, data) {
-        return (
-            <SPDF.View style={{ width: "100%", alignItems: "center" }}>
-                <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-                    <SPDF.View style={{ flex: 1, height: 50 }}>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"ESTE COMPROBANTE CONFIRMA LA COMPRA REALIZADA."}
-                        </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"Este documento constituye únicamente una constancia de la operación efectuada entre las partes"}
-                        </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"\"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de registro en línea\""}
-                        </SPDF.Text>
-                    </SPDF.View>
-                    {qr ? (
-                        <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70 }} />
-                    ) : (
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8, color: 'red' }}>{"QR no disponible"}</SPDF.Text>
-                    )}
-                </SPDF.View>
-                <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su preferencia!</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Guarde este comprobante para sus registros.</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                        Visítenos en www.{validarDato(data?.empresa?.razon_social, 'EMPRESA')}.com
-                    </SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         );

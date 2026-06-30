@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Recibo de Venta</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      padding: 30px;
+    }
+
+    .recibo {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border: 1px solid #ddd;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .subtitulo {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .info table {
+      width: 100%;
+    }
+
+    .info td {
+      padding: 4px 0;
+    }
+
+    .label {
+      font-weight: bold;
+      width: 140px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #222;
+      color: #fff;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+    }
+
+    .totales {
+      width: 350px;
+      margin-left: auto;
+      margin-top: 20px;
+    }
+
+    .totales td {
+      padding: 8px;
+    }
+
+    .totales tr td:first-child {
+      font-weight: bold;
+    }
+
+    .total {
+      background: #222;
+      color: white;
+      font-size: 16px;
+    }
+
+    .pagos {
+      margin-top: 30px;
+    }
+
+    .pagos h3 {
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      margin-top: 35px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media print {
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .recibo {
+        border: none;
+        box-shadow: none;
+      }
+
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="recibo">
+
+    <h1>RECIBO DE VENTA</h1>
+    <div class="subtitulo">
+      Comprobante de Pago
+    </div>
+
+    <div class="info">
+
+      <table>
+        <tr>
+          <td class="label">Fecha</td>
+          <td>29/06/2026</td>
+        </tr>
+
+        <tr>
+          <td class="label">Código Cliente</td>
+          <td>0001</td>
+        </tr>
+
+        <tr>
+          <td class="label">Forma de Pago</td>
+          <td>CONTADO</td>
+        </tr>
+
+      </table>
+
+      <table>
+
+        <tr>
+          <td class="label">NIT / CI</td>
+          <td>6456</td>
+        </tr>
+
+        <tr>
+          <td class="label">Cliente</td>
+          <td>ROMINA SOLEDAD TREJO SANCHEZ</td>
+        </tr>
+
+        <tr>
+          <td class="label">Teléfono</td>
+          <td>+355 000 000 000</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>Código</th>
+          <th>Cantidad</th>
+          <th>Unidad</th>
+          <th>Descripción</th>
+          <th>P. Unitario</th>
+          <th>Desc.</th>
+          <th>Subtotal</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr>
+
+          <td>C184436-974</td>
+          <td>39</td>
+          <td>Unidad</td>
+          <td>Gummi</td>
+          <td>54.645 Gs</td>
+          <td>0</td>
+          <td>2.131.155 Gs</td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+    <div style="margin-top:15px;font-weight:bold;">
+      Son: Dos millones ciento treinta y un mil ciento cincuenta y cinco guaraníes.
+    </div>
+
+    <table class="totales">
+
+      <tr>
+        <td>Subtotal</td>
+        <td align="right">2.131.155 Gs</td>
+      </tr>
+
+      <tr>
+        <td>Descuento</td>
+        <td align="right">0 Gs</td>
+      </tr>
+
+      <tr class="total">
+        <td>TOTAL</td>
+        <td align="right">2.131.155 Gs</td>
+      </tr>
+
+      <tr>
+        <td>Pagado</td>
+        <td align="right">2.131.155 Gs</td>
+      </tr>
+
+      <tr>
+        <td>Cambio</td>
+        <td align="right">0 Gs</td>
+      </tr>
+
+    </table>
+
+    <div class="pagos">
+
+      <h3>Detalle de Forma de Pago</h3>
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>#</th>
+            <th>Tipo</th>
+            <th>Detalle</th>
+            <th>Moneda</th>
+            <th>Monto</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>1</td>
+            <td>Efectivo</td>
+            <td>Caja Principal</td>
+            <td>BOB</td>
+            <td>500.00</td>
+          </tr>
+
+          <tr>
+            <td>2</td>
+            <td>Tarjeta Débito</td>
+            <td>Visa</td>
+            <td>BOB</td>
+            <td>300.00</td>
+          </tr>
+
+          <tr>
+            <td>3</td>
+            <td>Tarjeta Crédito</td>
+            <td>Mastercard</td>
+            <td>BOB</td>
+            <td>250.00</td>
+          </tr>
+
+          <tr>
+            <td>4</td>
+            <td>Transferencia</td>
+            <td>Tigo Money</td>
+            <td>BOB</td>
+            <td>150.00</td>
+          </tr>
+
+          <tr>
+            <td>5</td>
+            <td>Crédito</td>
+            <td>30 días</td>
+            <td>BOB</td>
+            <td>931.155</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div class="footer">
+
+      <div>
+        <b>Cajero:</b> ING. ALVARO
+      </div>
+
+      <div>
+        <b>Caja:</b> 01
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+
+</html>

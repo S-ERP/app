@@ -220,7 +220,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
   
   
-  async tipooooooooooo(_key_compra_venta_detalle: String) {
+  async getTipoPago(_key_compra_venta_detalle: String) {
     const resp: any = await SSocket.sendPromise({
       service: "caja",
       component: "reporte",

@@ -84,8 +84,6 @@ export default class ReciboRollo extends Component {
                 moneda
             };
 
-            console.log("ReciboRollo: compraVentaData:", compraVentaData);
-
             let qr = null;
             try {
                 const qrResponse = await ReciboRollo.getQR(key);

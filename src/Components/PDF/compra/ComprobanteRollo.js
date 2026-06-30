@@ -81,8 +81,6 @@ export default class ComprobanteRollo extends Component {
                 moneda
             };
 
-            console.log("ComprobanteRollo: compraData:", compraData);
-
             let qr = null;
             try {
                 const qrResponse = await ComprobanteRollo.getQR(key);
