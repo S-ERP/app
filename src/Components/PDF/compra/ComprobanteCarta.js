@@ -263,7 +263,7 @@ export default class ComprobanteCarta extends Component {
                 {tipoPagos.length > 0 && (
                     <SPDF.View style={{ width: "100%", marginBottom: 10 }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 10 }}>
-                            {"DETALLE DE PAGOS"}
+                            {"DETALLE FORMAS DE PAGOS"}
                         </SPDF.Text>
                         <SPDF.View style={{ height: 10 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", height: 24 }}>
