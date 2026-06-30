@@ -15,7 +15,7 @@ const safeSimbolo = (simbolo) => (simbolo === '₲' ? 'Gs' : simbolo);
 const formatCurrency = (val = 0, moneda = 'Bs') => {
     const [integer, decimal] = toNumber(val).toFixed(2).split('.');
     const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${intStr},${decimal} ${moneda}`;
+    return `${moneda} ${intStr},${decimal}`;
 };
 
 export default class ReciboCarta extends Component {
@@ -263,7 +263,7 @@ export default class ReciboCarta extends Component {
     }
 
     static Cajero(cajero, data) {
-        const tipoPagos = Array.isArray(data?.tipo_pago_) ? data.tipo_pago_ : [];
+        const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
 
         const th = (flex, label) => (
             <SPDF.View style={{ flex, height: "100%", justifyContent: "center", padding: 4, borderWidth: 1, backgroundColor: "#D0D0D0" }}>
