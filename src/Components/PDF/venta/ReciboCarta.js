@@ -81,7 +81,7 @@ export default class ReciboCarta extends Component {
                 cliente: (Array.isArray(clientes) ? clientes : Object.values(clientes || {})).find(a => a?.key === data.key_cliente) || {},
                 proveedor,
                 moneda,
-                tipo_pago: sssssssss || {},
+                tipo_pago_: sssssssss || {},
             };
 
             console.log("ReciboCarta: compraVentaData:", compraVentaData);
@@ -267,7 +267,7 @@ export default class ReciboCarta extends Component {
 
     static Cajero(cajero, data) {
         const simbolo = data?.moneda?.observacion || 'Bs';
-        const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
+        const tipoPagos = Array.isArray(data?.tipo_pago_) ? data.tipo_pago_ : [];
         const items = Object.values(data?.detalle || {});
         let subtotal = 0;
         for (const item of items) {
