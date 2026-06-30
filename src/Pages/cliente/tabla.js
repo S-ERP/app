@@ -387,7 +387,7 @@ export default class ListaClientes extends Component {
 
                 <DinamicTable.Col key='key-habilidades' label='# habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160} />
 
- 
+
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
                     data={e => {
                         const resumen = e.row?.resumen_cuota;
@@ -428,7 +428,7 @@ export default class ListaClientes extends Component {
 
 
                 <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={90}
-                    data={e => this.sumMap(e.row?.deuda_por_moneda)}
+                    data={e => this.sumMap(e.row?.deuda_por_moneda) + e.row?.empresa?.monedas.observacion}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => this.renderMoneyList(e.row?.deuda_por_moneda, e.row?.empresa?.monedas, STheme.color.warning)} />
 
