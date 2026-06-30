@@ -677,57 +677,63 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key="cuotas_total" label="Total" headerStyle={{ paddingLeft: 8 }} wrap bold width={80}
+                <DinamicTable.Col key="cuotas_total" label="Total" headerStyle={{ paddingLeft: 8 }} wrap bold width={95}
                     data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)} />
+                    format={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; return `${sim} ${SMath.formatMoney(e.data)}`; }} />
+
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas.cantidad ?? ""} /> <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""} />
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.moneda?.descripcion ?? ""} />
-                <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={80} data={(e) => e.row?.monto_amortizado ?? ""}
+                <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={95} data={(e) => e.row?.monto_amortizado ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.success + "33"
                     }}
-                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
-                <DinamicTable.Col key="monto_deuda" wrap label="Deuda total" width={60}
+                    format={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; return !e.data ? "" : `${sim} ${SMath.formatMoney(e.data)}`; }} />
+                <DinamicTable.Col key="monto_deuda" wrap label="Deuda total" width={95}
                     data={(e) => (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0) ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.warning + "33"
                     }}
-                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} /><DinamicTable.Col wrap key="en_mora" label="Monto en Mora" width={60} data={(e) => e.row?.cuotas_en_mora.monto ?? ""}
+                    format={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; return !e.data ? "" : `${sim} ${SMath.formatMoney(e.data)}`; }} /><DinamicTable.Col wrap key="en_mora" label="Monto en Mora" width={60} data={(e) => e.row?.cuotas_en_mora.monto ?? ""}
                         cellStyle={{
                             alignItems: "flex-end",
                             backgroundColor: STheme.color.danger + "33"
                         }}
-                        format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+                        format={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; return !e.data ? "" : `${sim} ${SMath.formatMoney(e.data)}`; }}
                 />
-                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={80}
+
+                <DinamicTable.Col key="moneda__" label="Moneda Base" wrap width={60} headerStyle={{ paddingLeft: 8 }}
+                    data={(e) => e.row?.empresa?.monedas?.find(m => m.tipo === "base")?.descripcion ?? ""} />
+
+
+                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={95}
                     data={(e) => (e.row?.cuotas.total_base ? e.row.cuotas.total_base : "0")}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}
-                    format={(e) => SMath.formatMoney(e.data)}
+                    format={(e) => { const sim = e.row?.empresa?.monedas?.find(m => m.tipo === "base")?.observacion || 'Bs'; return `${sim} ${SMath.formatMoney(e.data)}`; }}
                 />
-                <DinamicTable.Col key="monto_amortizado_base" wrap label="Monto Pagado Base" width={80} data={(e) => e.row?.monto_amortizado_base ?? ""}
+                <DinamicTable.Col key="monto_amortizado_base" wrap label="Monto Pagado Base" width={95} data={(e) => e.row?.monto_amortizado_base ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.success + "33"
                     }}
-                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
-                <DinamicTable.Col key="monto_deuda_base" wrap label="Deuda total Base" width={60}
+                    format={(e) => { if (!e.data) return ""; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === "base")?.observacion || 'Bs'; return `${sim} ${SMath.formatMoney(e.data)}`; }} />
+                <DinamicTable.Col key="monto_deuda_base" wrap label="Deuda total Base" width={95}
                     data={(e) => (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0) ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.warning + "33"
                     }}
-                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
-                <DinamicTable.Col wrap key="en_mora_base" label="Monto en Mora Base" width={60} data={(e) => e.row?.cuotas_en_mora.monto_base ?? ""}
+                    format={(e) => { if (!e.data) return ""; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === "base")?.observacion || 'Bs'; return `${sim} ${SMath.formatMoney(e.data)}`; }} />
+                <DinamicTable.Col wrap key="en_mora_base" label="Monto en Mora Base" width={95} data={(e) => e.row?.cuotas_en_mora.monto_base ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.danger + "33"
                     }}
-                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+                    format={(e) => { if (!e.data) return ""; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === "base")?.observacion || 'Bs'; return `${sim} ${SMath.formatMoney(e.data)}`; }}
                 />
 
                 <DinamicTable.Col key="detallesw_" label="Concepto" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
