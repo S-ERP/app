@@ -227,7 +227,9 @@ export default class ReciboCarta extends Component {
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
+
                     <SPDF.View style={{ flex: 3 }} />
+
                     <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
@@ -256,6 +258,8 @@ export default class ReciboCarta extends Component {
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
+                    <SPDF.View style={{ flex: 3 }} />
+
                 </SPDF.View>
             </SPDF.View>
         );
@@ -264,7 +268,6 @@ export default class ReciboCarta extends Component {
     static Cajero(cajero, data) {
         const simbolo = data?.moneda?.observacion || 'Bs';
         const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
-
         const items = Object.values(data?.detalle || {});
         let subtotal = 0;
         for (const item of items) {
@@ -277,6 +280,7 @@ export default class ReciboCarta extends Component {
         const cambio = montoPagado - total;
 
         return (
+
             <SPDF.View style={{ width: "100%" }}>
                 {/* Cajero y Caja */}
                 <SPDF.View style={{ width: "100%", flexDirection: "row", marginBottom: 6 }}>
@@ -349,6 +353,45 @@ export default class ReciboCarta extends Component {
             </SPDF.View>
         );
     }
+
+
+    /*
+static Cajero(cajero, data) {
+      const simbolo = data?.moneda?.observacion || 'Bs';
+      const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
+
+      const items = Object.values(data?.detalle || {});
+      let subtotal = 0;
+      for (const item of items) {
+          subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
+      }
+      const descuento = toNumber(data?.descuento);
+      const montoGiftCard = toNumber(data?.monto_gift_card);
+      const total = subtotal - descuento - montoGiftCard;
+      const montoPagado = toNumber(data?.monto_pagado);
+      const cambio = montoPagado - total;
+      return (
+          <SPDF.View style={{ width: "100%" }}>
+              <SPDF.View style={{ width: "100%", height: 80, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
+                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
+                      <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>hola</SPDF.Text>
+                  </SPDF.View>
+
+                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
+                      <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>
+                          Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since 1966 is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham
+                      </SPDF.Text>
+                  </SPDF.View>
+                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
+                      <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>chaval</SPDF.Text>
+                  </SPDF.View>
+                  <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
+                  </SPDF.View>
+              </SPDF.View>
+          </SPDF.View>
+      );
+  }
+  */
 
     static detalle(data) {
         const detalles = data?.detalle || {};
