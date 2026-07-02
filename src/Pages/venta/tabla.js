@@ -815,7 +815,7 @@ export default class tabla extends Component {
     }
     render() {
         return (
-            <SPage title="Tabla de Vessntas" disableScroll>
+            <SPage title="Tabla de Ventas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
