@@ -113,6 +113,8 @@ export default class index extends Component {
     }
     render() {
         const prueba = this.props.data;
+// anular venta
+
         const data = this.props.data;
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
         this.isAdmin = !!permiso ? true : Model.compra_venta_participante.Action.allowAdmin({ key_compra_venta: this.props.data.key });
@@ -177,12 +179,11 @@ export default class index extends Component {
                             <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
                         </SView>
                     </SView>
-
                     <SText bold col={"xs-3"} fontSize={12}>Empresa: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.razon_social}</SText>
                     <SText bold fontSize={12} col={"xs-3"}>NIT: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.nit}</SText>
-                    <SText bold col={"xs-3"} fontSize={12}>Obs: </SText>
+                    <SText bold col={"xs-3"} fontSize={12}>Obsww: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.observacion}</SText>
                 </SView>
                 <SHr height={10} />

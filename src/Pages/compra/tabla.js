@@ -168,7 +168,7 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 4 }} width={40} height={60} data={(e) => e.index + 1} />
-                <DinamicTable.Col key="tipo_producto_" label="Tipos" headerStyle={{ paddingLeft: 4 }} width={90} height={60}
+                <DinamicTable.Col key="tipo_producto_" label="Tipos" headerStyle={{ paddingLeft: 4 }} width={90} height={80}
                     data={(e) => getTiposProducto(e.row?.detalles).join(", ")}
                     customComponent={e => {
                         const tipos = getTiposProducto(e.row?.detalles);
@@ -189,7 +189,7 @@ export default class tabla extends Component {
                     }}
                 />
                 <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={60} headerStyle={{ paddingLeft: 8 }}
+                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={100} headerStyle={{ paddingLeft: 8 }}
                     data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
                     customComponent={(e) => (
                         <SView col>

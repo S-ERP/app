@@ -336,7 +336,9 @@ export default class Abierta extends Component {
                     <SText bold={opcionSeleccionada === "ventas"} color={opcionSeleccionada === "ventas" ? STheme.color.text : STheme.color.lightGray}>Ventas en caja</SText>
                 </SView>
             </SView>
-            {/* <SHr h={10} /> */}
+            {/* <SHr h={10} /> 
+            en cada iten que haya anular venta
+            */}
         </SView>;
     }
 

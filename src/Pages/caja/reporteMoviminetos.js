@@ -242,6 +242,7 @@ export default class reporteMoviminetos extends Component {
                         return;
                     }
 
+                    //anular venta
                     const menuOptions = [
                         // View Vouchers
                         {

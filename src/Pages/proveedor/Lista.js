@@ -233,7 +233,7 @@ export default class Lista extends Component {
             >
                 <DinamicTable.Col key="index" label="#" headerStyle={{ paddingLeft: 4 }} width={40} height={60} data={e => e.index + 1} />
                 <DinamicTable.Col key="nombre_completo" label="Proveedor" headerStyle={{ paddingLeft: 4 }} width={200} height={60} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
-                <DinamicTable.Col key="tipo_cliente" label="Tipo proveedor" data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)} width={120} height={60}
+                <DinamicTable.Col key="tipo_cliente" label="Tipo proveedor" data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)} width={120} height={80}
                     headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{ flexDirection: "row", justifyContent: "flex-start", flexWrap: "wrap", alignItems: "flex-start", gap: 4 }}
                     customComponent={e => (e.row.tipo_cliente ?? []).map(tc => (

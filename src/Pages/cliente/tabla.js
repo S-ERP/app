@@ -352,7 +352,7 @@ export default class ListaClientes extends Component {
                 <DinamicTable.Col key="nombre_completo"
                     headerStyle={{ paddingLeft: 4 }}
                     label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
-                <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={60}
+                <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={80}
                     headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{
                         flexDirection: "row",
@@ -387,7 +387,7 @@ export default class ListaClientes extends Component {
                 />
                 <DinamicTable.Col key='key-habilidades' label='Habilidades'
                     headerStyle={{ paddingLeft: 4 }}
-                    data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={100} height={60}
+                    data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={100} height={80}
                     cellStyle={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start', gap: 4, padding: 4 }}
                     customComponent={e => (e.row?.habilidades ?? []).map(h => (
                         <SView key={h.key} style={{ borderWidth: 1, borderColor: STheme.colorFromText(h.descripcion) + '50', backgroundColor: STheme.colorFromText(h.descripcion) + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
