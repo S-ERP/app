@@ -289,12 +289,12 @@ export default class Lista extends Component {
 
                 <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pend." width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
-                <DinamicTable.Col key="monto_deuda_col" wrap label="Deuda" width={150}
+                <DinamicTable.Col key="monto_deuda_col" wrap label="Deuda" width={150} height={60}
                     data={e => [this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.deuda, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.text;
+                        const color = STheme.color.warning;
                         const entries = Object.entries(e.row?.deuda_por_moneda || {});
                         const baseMonto = e.row?.totales_base?.deuda || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -303,21 +303,21 @@ export default class Lista extends Component {
                         const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         if (!entries.length && !baseMonto) return null;
                         return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
+                            <SView col style={{ padding: 4, alignItems: 'flex-end', gap: 3 }}>
                                 {entries.map(([key_moneda, monto]) => {
                                     const mon = monedas.find(m => m.key === key_moneda);
                                     const sim = mon?.observacion || 'Bs';
                                     const fmt = SMath.formatMoney(monto);
                                     const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
                                     return (
-                                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
+                                        <SView key={key_moneda} style={{ borderWidth: 1, borderColor: color + '50', backgroundColor: color + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6, alignItems: 'flex-end' }}>
                                             <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                         </SView>
                                     );
                                 })}
                                 {showBase && (
-                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
+                                    <SView style={{ alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.7 }}>({baseSim} {baseNum})</SText>
                                     </SView>
                                 )}
                             </SView>
@@ -326,12 +326,12 @@ export default class Lista extends Component {
 
                 <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
-                <DinamicTable.Col key="en_mora_col" wrap label="Mora" width={150}
+                <DinamicTable.Col key="en_mora_col" wrap label="Mora" width={150} height={60}
                     data={e => [this.formatMap(e.row?.mora_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.text;
+                        const color = STheme.color.danger;
                         const entries = Object.entries(e.row?.mora_por_moneda || {});
                         const baseMonto = e.row?.totales_base?.mora || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -340,21 +340,21 @@ export default class Lista extends Component {
                         const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         if (!entries.length && !baseMonto) return null;
                         return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
+                            <SView col style={{ padding: 4, alignItems: 'flex-end', gap: 3 }}>
                                 {entries.map(([key_moneda, monto]) => {
                                     const mon = monedas.find(m => m.key === key_moneda);
                                     const sim = mon?.observacion || 'Bs';
                                     const fmt = SMath.formatMoney(monto);
                                     const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
                                     return (
-                                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
+                                        <SView key={key_moneda} style={{ borderWidth: 1, borderColor: color + '50', backgroundColor: color + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6, alignItems: 'flex-end' }}>
                                             <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                         </SView>
                                     );
                                 })}
                                 {showBase && (
-                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
+                                    <SView style={{ alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.7 }}>({baseSim} {baseNum})</SText>
                                     </SView>
                                 )}
                             </SView>

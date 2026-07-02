@@ -386,7 +386,15 @@ export default class ListaClientes extends Component {
                         })
                     }}
                 />
-                <DinamicTable.Col key='key-habilidades' label='Habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160} />
+                <DinamicTable.Col key='key-habilidades' label='Habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160}
+                    cellStyle={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start', gap: 4, padding: 4 }}
+                    customComponent={e => (e.row?.habilidades ?? []).map(h => (
+                        <SView key={h.key} style={{ borderWidth: 1, borderColor: STheme.colorFromText(h.descripcion) + '50', backgroundColor: STheme.colorFromText(h.descripcion) + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
+                            <SText style={{ fontSize: 10 }}>{h.descripcion}</SText>
+                        </SView>
+                    ))}
+                />
+
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={90}
                     data={e => {
                         const r = e.row?.resumen_cuota;
@@ -418,7 +426,7 @@ export default class ListaClientes extends Component {
 
 
 
-                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={50}
+                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={60}
                     data={e => [this.formatMap(e.row?.mora_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
@@ -464,7 +472,7 @@ export default class ListaClientes extends Component {
 
 
                 <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-                <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" width={100}
+                <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" width={100} height={60}
                     data={e => [this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.deuda, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => {
