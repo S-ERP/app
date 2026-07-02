@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SText, STheme, SNavigation, SPopup, SHr, SNotification, SImage, SDate, SMath, SIcon } from 'servisofts-component';
+import { SPage, SView, SText, STheme, SNavigation, SPopup, SHr, SNotification, SDate, SMath, SIcon, SImage } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../MDL';
@@ -132,10 +132,12 @@ export default class Lista extends Component {
 
     renderUsuario(usuario = {}) {
         const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
+        const inicial = (usuario?.Nombres || "?")[0].toUpperCase();
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    {usuario?.key ? <SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ resizeMode: "cover" }} /> : null}
+                <SView style={{ width: 24, height: 24, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                    <SText style={{ fontSize: 11, color: STheme.color.text, opacity: 0.7 }}>{inicial}</SText>
+                    {usuario?.key ? <SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ width: 24, height: 24, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
                 </SView>
                 <SView width={5} />
                 <SText flex numberOfLines={1} style={{ fontSize: 13 }} color={STheme.color.lightGray}>{nombre}</SText>
@@ -145,12 +147,14 @@ export default class Lista extends Component {
 
     renderProveedor(proveedor = {}) {
         const nombre = `${proveedor?.nombres || "Sin Nombre"} ${proveedor?.apellidos || ""}`;
+        const inicial = (proveedor?.nombres || "?")[0].toUpperCase();
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    {proveedor?.key ? <SImage src={`${SSocket.api.root}usuario/${proveedor.key}`} style={{ resizeMode: "cover" }} /> : null}
+                <SView style={{ width: 24, height: 24, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                    <SText style={{ fontSize: 11, color: STheme.color.text, opacity: 0.7 }}>{inicial}</SText>
+                    {proveedor?.key ? <SImage src={`${SSocket.api.root}usuario/${proveedor.key}`} style={{ width: 24, height: 24, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
                 </SView>
-                <SView width={8} />
+                <SView width={4} />
                 <SText flex numberOfLines={1} style={{ fontSize: 12 }}>{nombre}</SText>
             </SView>
         );
@@ -227,9 +231,9 @@ export default class Lista extends Component {
                 }}
                 loadData={() => this.loadInitialData()}
             >
-                <DinamicTable.Col key="index" label="#" headerStyle={{ paddingLeft: 4 }} width={40} data={e => e.index + 1} />
-                <DinamicTable.Col key="nombre_completo" label="Proveedor" headerStyle={{ paddingLeft: 4 }} width={200} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
-                <DinamicTable.Col key="tipo_cliente" label="Tipo cliente" data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)} width={240}
+                <DinamicTable.Col key="index" label="#" headerStyle={{ paddingLeft: 4 }} width={40} height={60} data={e => e.index + 1} />
+                <DinamicTable.Col key="nombre_completo" label="Proveedor" headerStyle={{ paddingLeft: 4 }} width={200} height={60} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
+                <DinamicTable.Col key="tipo_cliente" label="Tipo proveedor" data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)} width={120} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{ flexDirection: "row", justifyContent: "flex-start", flexWrap: "wrap", alignItems: "flex-start", gap: 4 }}
                     customComponent={e => (e.row.tipo_cliente ?? []).map(tc => (
@@ -245,7 +249,7 @@ export default class Lista extends Component {
                         </SView>
                     ))}
                 />
-                <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={90}
+                <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={90} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
                         const r = e.row?.resumen_cuota;
@@ -259,10 +263,10 @@ export default class Lista extends Component {
                         return <SView row center><SView backgroundColor={s.color} style={{ borderRadius: 4, padding: 5 }}><SText color={STheme.color.text} fontSize={10}>{s.label}</SText></SView></SView>;
                     }}
                 />
-                <DinamicTable.Col key="nit" label="NIT" width={90} data={e => e.row?.nit} />
-                <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
-                <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} />
-                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="nit" label="NIT" width={90} height={60} data={e => e.row?.nit} />
+                <DinamicTable.Col key="razon_social" label="Razón Social" width={150} height={60} data={e => e.row?.razon_social} />
+                <DinamicTable.Col key="telefono" label="Teléfono" width={130} height={60} data={e => e.row?.telefono} />
+                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={100} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
@@ -305,7 +309,7 @@ export default class Lista extends Component {
                             </SView>
                         );
                     }} />
-                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" width={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" width={60} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
@@ -349,8 +353,8 @@ export default class Lista extends Component {
                         );
                     }} />
 
-                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} headerStyle={{ paddingLeft: 4 }} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="key_usuario" label="Responsable" width={100} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
+                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} height={60} headerStyle={{ paddingLeft: 4 }} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="key_usuario" label="Responsable" width={100} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
         );
     }
