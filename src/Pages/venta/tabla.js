@@ -9,7 +9,6 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
-import DateTimeBetween from '../../Components/DateTimeBetween';
 import PopupUploadFactura from './Components/PopupUploadFactura';
 import { Linking } from 'react-native'
 import FechaFullFilter from '../../Components/FechaFullFilter';
@@ -42,7 +41,6 @@ export default class tabla extends Component {
                 title: "Cargando ventas...",
                 type: "loading",
             });
-
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
             if (!registros) console.warn("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
@@ -208,7 +206,6 @@ export default class tabla extends Component {
                                 </SView>
                             </>
                         )}
-
                         {tipoLabel === "Factura SIAT" && (
                             <>
                                 <SInput
@@ -241,11 +238,9 @@ export default class tabla extends Component {
                             <SView style={{ marginRight: 8 }} onPress={() => SPopup.close("registrar_factura_" + tipoFactura + "_" + venta.key)}>
                                 <SText color={STheme.color.text}>Cancelar</SText>
                             </SView>
-
                             <SView
                                 onPress={async () => {
                                     const notificationKey = `factura_registrar_${tipoFactura}_${venta.key}`;
-
                                     if (isManual) {
                                         if (!nroFactura.trim()) {
                                             SNotification.send({ key: notificationKey, title: "Complete los datos", body: "Debe ingresar el número de factura.", color: STheme.color.danger, time: 4000, });
@@ -257,7 +252,6 @@ export default class tabla extends Component {
                                             return;
                                         }
                                     }
-
                                     try {
                                         SNotification.send({ key: notificationKey, title: "Registrando factura...", type: "loading", });
                                         const facturaData = {
@@ -273,7 +267,6 @@ export default class tabla extends Component {
                                             link_factura: isManual ? this.state.pdfFiles?.[venta.key]?.link || null : "",
                                             factura_seleccionada: tipoLabel,
                                         };
-
                                         const updatedVenta = {
                                             ...venta,
                                             facturar: true,
@@ -300,7 +293,6 @@ export default class tabla extends Component {
                             >
                                 <SText color={STheme.color.success}> Registrar </SText>
                             </SView>
-
                         </SView>
                     </SView>
                 )
@@ -341,7 +333,6 @@ export default class tabla extends Component {
                 )
             });
         };
-
         const RenderOption = ({ label, icon, iconProps, onPress }) => {
             return (
                 <>
@@ -354,7 +345,6 @@ export default class tabla extends Component {
                 </>
             );
         };
-
         const groups = [
             {
                 title: "FACTURACIÓN",
@@ -370,7 +360,6 @@ export default class tabla extends Component {
                                     },
                                     onPress: async () => {
                                         const notificationKey = `pdf_${row.key}`;
-
                                         try {
                                             if (!row?.factura?.link_factura) { SNotification.send({ key: notificationKey, title: "Archivo no disponible", body: "No existe un enlace para la factura.", color: STheme.color.danger, time: 4000, }); return; }
                                             SNotification.send({ key: notificationKey, title: "Abriendo archivo...", type: "loading", });
@@ -441,7 +430,6 @@ export default class tabla extends Component {
                             });
                         },
                     },
-
                     row?.factura?.cuf ? {
                         label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text, },
                         onPress: () => {
@@ -474,7 +462,6 @@ export default class tabla extends Component {
                         : null,
                 ].filter(Boolean),
             }
-
         ].filter(Boolean);
         return (
             <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
@@ -490,7 +477,6 @@ export default class tabla extends Component {
             </SView>
         );
     }
-
     mostrarTabla() {
         return (
             <DinamicTable
@@ -510,7 +496,7 @@ export default class tabla extends Component {
                 // height: 28,
                 // alignContent: "center",
                 // alignItems: "center",
-                //     textTransform: "uppercase",
+                //textTransform: "uppercase",
                 // }}
                 selectType="single"
                 keyExtractor={(e) => e.key}
@@ -552,7 +538,6 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-
                 <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} data={(e) => e.row?.observacion ?? ""} />
                 <DinamicTable.Col key="detalles_" label="Detalle" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 4 }} width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
@@ -568,8 +553,6 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-                {/* punto venta */}
-
                 <DinamicTable.Col key="admin" label="Vendedor" headerStyle={{ paddingLeft: 4 }} width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
@@ -594,7 +577,6 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
                 <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" headerStyle={{ paddingLeft: 8 }} width={80}
                     data={(e) => e.row?.tipo_pago ?? ""}
                     customComponent={e => {
@@ -706,11 +688,9 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""} />
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.moneda?.descripcion ?? ""} />
-
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={95} height={60}
                     data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.monto_amortizado || 0; const base = e.row?.monto_amortizado_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.success + "33" }}
@@ -740,7 +720,6 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-
                 <DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={95} height={60}
                     data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.warning + "33" }}
@@ -770,7 +749,6 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-
                 <DinamicTable.Col wrap key="en_mora" label="Mora" width={95} height={60}
                     data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.cuotas_en_mora?.monto || 0; const base = e.row?.cuotas_en_mora?.monto_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.danger + "33" }}
@@ -800,10 +778,7 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-
                 <DinamicTable.Col key="detallesw_" label="Concepto" width={210} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
-                {/* <DinamicTable.Col key="detalles__2" label="key_compra_venta_detalle" width={180} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles ?? []).map(d => d.key)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.key}</SText>))} </SView>)} /> */}
-
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
                 < DinamicTable.Col key="total_suscriptos" label="Registrados" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_suscriptos ?? ""} />
                 < DinamicTable.Col key="total_disponibles" label="Pendientes" width={80} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_disponibles ?? ""}
@@ -817,7 +792,6 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }}
-
                 />
                 <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
@@ -838,7 +812,6 @@ export default class tabla extends Component {
                         const porcentaje = Math.min((totalSuscriptores / totalCupos) * 100, 100);
                         let color = "#ea580c";
                         let icono = "🔴";
-
                         if (porcentaje >= 100) {
                             color = "#16a34a";
                             icono = "🟢";
@@ -859,11 +832,10 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-
-
             </DinamicTable>
         );
     }
+    
     async confirmarBorradoFacturas() {
         const notificationKey = "borrar_facturas";
         SPopup.confirm({
@@ -887,6 +859,7 @@ export default class tabla extends Component {
             },
         });
     }
+
     render() {
         return (
             <SPage title="Tabla de Ventas" disableScroll>

@@ -38,7 +38,6 @@ export default class ListaClientes extends Component {
                     color: STheme.color.danger,
                 });
             });
-
         window.addEventListener("keydown", this.handleKeyDown);
     }
 
@@ -93,7 +92,6 @@ export default class ListaClientes extends Component {
             const usuariosArr = Array.isArray(usuarios) ? usuarios : Object.values(usuarios || {});
             const registrosArr = Array.isArray(registros) ? registros : Object.values(registros || {});
             const habilidadArr = Array.isArray(habilidad) ? habilidad : Object.values(habilidad || {});
-
             let data = Object.values(clientes).map(cliente => {
                 const c = { ...cliente };
                 c.usuario = usuariosArr.find(u => u.key === c.key_usuario) || null;
@@ -127,7 +125,6 @@ export default class ListaClientes extends Component {
                 c.totales_base = { total: total_base, pagado: pagado_base, mora: mora_base, deuda: total_base - pagado_base };
                 return c;
             });
-
             if (this.state.selectedEstadoPago?.key) {
                 const filtro = this.state.selectedEstadoPago.key;
                 data = data.filter(c => {
@@ -138,9 +135,7 @@ export default class ListaClientes extends Component {
                     return filtro === "Deudor";
                 });
             }
-
             return data;
-
         } catch (error) {
             console.error('Error al cargar los datos iniciales:', error);
             SNotification.send({
@@ -244,8 +239,6 @@ export default class ListaClientes extends Component {
                     const { row, evt } = e;
                     const nombreCliente = `CLIENTE: ${row?.nombres ?? 'Sin nombre'}`;
                     const options = [];
-
-
                     options.push({
                         label: 'Ver perfil',
                         icon: <SIcon name="Eyes" fill={STheme.color.text} />,
@@ -261,8 +254,6 @@ export default class ListaClientes extends Component {
                             SNavigation.navigate("/cliente/transacciones", { key: e.row.key })
                         },
                     });
-
-
                     if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
                         options.push({
                             label: 'Editar',
@@ -385,7 +376,7 @@ export default class ListaClientes extends Component {
                                     backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)),
 
                                 }}></SView>
-                                <SText key={tc.key} fontSize={10}  >{tc.titulo}</SText>
+                                <SText key={tc.key} fontSize={10}>{tc.titulo}</SText>
                             </SView>
                         })
                     }}
@@ -400,11 +391,8 @@ export default class ListaClientes extends Component {
                         </SView>
                     ))}
                 />
-
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={90}
                     headerStyle={{ paddingLeft: 4 }}
-
-
                     data={e => {
                         const r = e.row?.resumen_cuota;
                         if (!r) return 'Sin Deuda';
@@ -417,23 +405,9 @@ export default class ListaClientes extends Component {
                         return <SView row center><SView backgroundColor={s.color} style={{ borderRadius: 4, padding: 5 }}><SText color={STheme.color.text} fontSize={10}>{s.label}</SText></SView></SView>;
                     }}
                 />
-
                 <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" width={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
@@ -444,9 +418,6 @@ export default class ListaClientes extends Component {
                         const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         return [this.formatMap(e.row?.mora_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
                     }}
-
-
-
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
@@ -479,17 +450,6 @@ export default class ListaClientes extends Component {
                             </SView>
                         );
                     }} />
-
-
-
-
-
-
-
-
-
-
-
                 <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
@@ -535,9 +495,6 @@ export default class ListaClientes extends Component {
                             </SView>
                         );
                     }} />
-
-
-
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} headerStyle={{ paddingLeft: 4 }} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Responsable" width={100} headerStyle={{ paddingLeft: 4 }} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>

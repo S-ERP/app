@@ -58,42 +58,40 @@ export default class Lista extends Component {
                 MDL.usuario.getByKeys(keysUsuarios),
                 MDL.compra_venta.getCuotasResumenTotal_compras(),
             ]);
-            const usuariosArr  = Array.isArray(usuarios)  ? usuarios  : Object.values(usuarios  || {});
+            const usuariosArr = Array.isArray(usuarios) ? usuarios : Object.values(usuarios || {});
             const registrosArr = Array.isArray(registros) ? registros : Object.values(registros || {});
-
             let data = Object.values(proveedores).map(proveedor => {
                 const p = { ...proveedor };
-                p.usuario       = usuariosArr.find(u => u.key === p.key_usuario) || null;
+                p.usuario = usuariosArr.find(u => u.key === p.key_usuario) || null;
                 p.resumen_cuota = registrosArr.find(r => r.key_proveedor === p.key) || null;
-                p.compras       = transaccionesArr.filter(t => t.key_proveedor === p.key);
-                p.empresa       = empresa;
+                p.compras = transaccionesArr.filter(t => t.key_proveedor === p.key);
+                p.empresa = empresa;
                 const total_map = {}, pagado_map = {}, mora_map = {};
                 let total_base = 0, pagado_base = 0, mora_base = 0;
                 p.compras.forEach(v => {
-                    const key  = v.key_moneda || 'desconocida';
-                    const tot  = Number(v.cuotas?.total || 0);
-                    const pag  = Number(v.monto_amortizado || 0);
+                    const key = v.key_moneda || 'desconocida';
+                    const tot = Number(v.cuotas?.total || 0);
+                    const pag = Number(v.monto_amortizado || 0);
                     const mora = Number(v.cuotas_en_mora?.monto || 0);
-                    if (tot  > 0) total_map[key]  = (total_map[key]  || 0) + tot;
-                    if (pag  > 0) pagado_map[key] = (pagado_map[key] || 0) + pag;
-                    if (mora > 0) mora_map[key]   = (mora_map[key]   || 0) + mora;
-                    total_base  += Number(v.cuotas?.total_base || 0);
+                    if (tot > 0) total_map[key] = (total_map[key] || 0) + tot;
+                    if (pag > 0) pagado_map[key] = (pagado_map[key] || 0) + pag;
+                    if (mora > 0) mora_map[key] = (mora_map[key] || 0) + mora;
+                    total_base += Number(v.cuotas?.total_base || 0);
                     pagado_base += Number(v.monto_amortizado_base || 0);
-                    mora_base   += Number(v.cuotas_en_mora?.monto_base || 0);
+                    mora_base += Number(v.cuotas_en_mora?.monto_base || 0);
                 });
                 const deuda_map = {};
                 Object.keys(total_map).forEach(k => {
                     const d = (total_map[k] || 0) - (pagado_map[k] || 0);
                     if (d > 0) deuda_map[k] = d;
                 });
-                p.total_por_moneda  = total_map;
+                p.total_por_moneda = total_map;
                 p.pagado_por_moneda = pagado_map;
-                p.deuda_por_moneda  = deuda_map;
-                p.mora_por_moneda   = mora_map;
+                p.deuda_por_moneda = deuda_map;
+                p.mora_por_moneda = mora_map;
                 p.totales_base = { total: total_base, pagado: pagado_base, mora: mora_base, deuda: total_base - pagado_base };
                 return p;
             });
-
             if (this.state.selectedEstadoPago?.key) {
                 const filtro = this.state.selectedEstadoPago.key;
                 data = data.filter(p => {
@@ -231,7 +229,6 @@ export default class Lista extends Component {
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
                 <DinamicTable.Col key="nombre_completo" label="Proveedor" width={200} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
-
                 <DinamicTable.Col key="tipo_cliente" label="Categoría" data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)} width={160}
                     headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{ flexDirection: "row", justifyContent: "flex-start", flexWrap: "wrap", alignItems: "flex-start", gap: 4 }}
@@ -248,7 +245,6 @@ export default class Lista extends Component {
                         </SView>
                     ))}
                 />
-
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={100}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
@@ -263,13 +259,10 @@ export default class Lista extends Component {
                         return <SView row center><SView backgroundColor={s.color} style={{ borderRadius: 4, padding: 5 }}><SText color={STheme.color.text} fontSize={10}>{s.label}</SText></SView></SView>;
                     }}
                 />
-
                 <DinamicTable.Col key="nit" label="NIT" width={90} data={e => e.row?.nit} />
                 <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} />
-
                 <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pend." width={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
                 <DinamicTable.Col key="monto_deuda_col" wrap label="Deuda" width={150} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
@@ -312,9 +305,7 @@ export default class Lista extends Component {
                             </SView>
                         );
                     }} />
-
                 <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
                 <DinamicTable.Col key="en_mora_col" wrap label="Mora" width={150} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
