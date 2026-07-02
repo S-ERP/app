@@ -390,69 +390,41 @@ export default class ListaClientes extends Component {
                 <DinamicTable.Col key='key-habilidades' label='# habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160} />
 
 
-                <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
+                <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={100}
                     data={e => {
-                        const resumen = e.row?.resumen_cuota;
-                        if (!resumen) return 'Sin Deuda';
-                        if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) return 'En Mora';
-                        if (resumen.monto_pendiente <= 0) return 'Sin Deuda';
-                        // if (resumen.monto_pendiente <= 0) return 'Pagado';
+                        const r = e.row?.resumen_cuota;
+                        if (!r) return 'Sin Deuda';
+                        if (r.cantidad_en_mora > 0 || r.monto_en_mora > 0) return 'En Mora';
+                        if (r.monto_pendiente <= 0) return 'Sin Deuda';
                         return 'Deudor';
-                        // return 'Al Día';
                     }}
                     customComponent={e => {
-                        const statesTipo = {
-                            'Sin Deuda': { color: STheme.color.gray, label: 'Sin Deuda' },
-                            'Deudor': { color: STheme.color.warning, label: 'Deudor' },
-                            // 'Al Día': { color: STheme.color.warning, label: 'Al Día' },
-                            'En Mora': { color: STheme.color.danger, label: 'En Mora' },
-                            // 'Sin Deuda': { color: STheme.color.success, label: 'Sin Deuda' },
-                            // 'Pagado': { color: STheme.color.success, label: 'Pagado' },
-                        }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
-                        return (
-                            <SView row center>
-                                <SView backgroundColor={statesTipo.color} style={{ borderRadius: 4, padding: 5 }}>
-                                    <SText color={STheme.color.text} fontSize={10}>
-                                        {statesTipo.label}
-                                    </SText>
-                                </SView>
-                            </SView>
-                        );
+                        const s = { 'Sin Deuda': { color: STheme.color.gray, label: 'Sin Deuda' }, 'Deudor': { color: STheme.color.warning, label: 'Deudor' }, 'En Mora': { color: STheme.color.danger, label: 'En Mora' } }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
+                        return <SView row center><SView backgroundColor={s.color} style={{ borderRadius: 4, padding: 5 }}><SText color={STheme.color.text} fontSize={10}>{s.label}</SText></SView></SView>;
                     }}
                 />
 
+                <DinamicTable.Col key="cuota_6" wrap label="# Pend." width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
-
-
-                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas Pendientes" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
-
-
-
-                <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={40}
+                <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={150}
                     data={e => this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas)}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => this.renderMoneyList(e.row?.deuda_por_moneda, e.row?.empresa?.monedas, STheme.color.warning)} />
 
-
-                <DinamicTable.Col key="deuda_base_casdol" wrap label="M. Pendiente Base" width={90}
+                <DinamicTable.Col key="deuda_base_casdol" wrap label="Pend. Base" width={130}
                     data={e => this.formatBase(e.row?.totales_base?.deuda, e.row?.empresa?.monedas)}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }} />
 
+                <DinamicTable.Col key="cuota_4" wrap label="# Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
-                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
-
-                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={90}
+                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={150}
                     data={e => this.formatMap(e.row?.mora_por_moneda, e.row?.empresa?.monedas)}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => this.renderMoneyList(e.row?.mora_por_moneda, e.row?.empresa?.monedas, STheme.color.danger)} />
 
-
-                <DinamicTable.Col key="mora_base_casdol" wrap label="Monto Mora Base" width={90}
-                    data={e => e.row?.totales_base?.mora || ''}
-                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
-                    format={e => { if (!e.data) return ''; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; const fmt = SMath.formatMoney(e.data); return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`; }} />
+                <DinamicTable.Col key="mora_base_casdol" wrap label="Mora Base" width={130}
+                    data={e => this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)}
+                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }} />
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
