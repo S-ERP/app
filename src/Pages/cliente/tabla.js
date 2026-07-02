@@ -97,7 +97,7 @@ export default class ListaClientes extends Component {
                 c.usuario = usuariosArr.find(u => u.key === c.key_usuario) || null;
                 c.resumen_cuota = registrosArr.find(r => r.key_cliente === c.key) || null;
                 c.ventas = transaccionesArr.filter(t => t.key_cliente === c.key);
-                c.habilidades = habilidadArr.filter(h => h.key_usuarios?.includes(c.key));
+                c.habilidades = habilidadArr.filter(h => Array.isArray(h.key_usuarios) && h.key_usuarios.includes(c.key));
                 c.empresa = empresa;
                 const total_map = {}, pagado_map = {}, mora_map = {};
                 let total_base = 0, pagado_base = 0, mora_base = 0;

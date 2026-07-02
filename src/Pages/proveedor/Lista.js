@@ -63,7 +63,7 @@ export default class Lista extends Component {
             let data = Object.values(proveedores).map(proveedor => {
                 const p = { ...proveedor };
                 p.usuario = usuariosArr.find(u => u.key === p.key_usuario) || null;
-                p.resumen_cuota = registrosArr.find(r => r.key_proveedor === p.key) || null;
+                p.resumen_cuota = registrosArr.find(r => r.key_proveedor === p.key || r.key_cliente === p.key) || null;
                 p.compras = transaccionesArr.filter(t => t.key_proveedor === p.key);
                 p.empresa = empresa;
                 const total_map = {}, pagado_map = {}, mora_map = {};
@@ -183,7 +183,7 @@ export default class Lista extends Component {
                     }
                     FloatMenu.open({
                         e: e.evt,
-                        label: `Proveedor: ${e.row.razon_social}`,
+                        label: `Proveedor: ${e.row.razon_social ?? e.row.nombres ?? 'Sin nombre'}`,
                         options: [
                             {
                                 label: 'Ver perfil',
