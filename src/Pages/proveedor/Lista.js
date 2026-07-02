@@ -294,12 +294,13 @@ export default class Lista extends Component {
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.warning;
+                        const color = STheme.color.text;
                         const entries = Object.entries(e.row?.deuda_por_moneda || {});
                         const baseMonto = e.row?.totales_base?.deuda || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
                         const baseFmt = SMath.formatMoney(baseMonto);
                         const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
+                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         if (!entries.length && !baseMonto) return null;
                         return (
                             <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
@@ -310,15 +311,13 @@ export default class Lista extends Component {
                                     const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
                                     return (
                                         <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
-                                            <SText style={{ fontSize: 8, color, opacity: 0.6 }}>{sim}</SText>
-                                            <SText style={{ fontSize: 11, color }}>{num}</SText>
+                                            <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                         </SView>
                                     );
                                 })}
-                                {baseMonto > 0 && (
-                                    <SView style={{ marginTop: 3, paddingTop: 3, borderTopWidth: 0.5, borderColor: color + '55', alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 7, color, opacity: 0.5 }}>{baseSim} base</SText>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.7 }}>{baseNum}</SText>
+                                {showBase && (
+                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
                                     </SView>
                                 )}
                             </SView>
@@ -332,12 +331,13 @@ export default class Lista extends Component {
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.danger;
+                        const color = STheme.color.text;
                         const entries = Object.entries(e.row?.mora_por_moneda || {});
                         const baseMonto = e.row?.totales_base?.mora || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
                         const baseFmt = SMath.formatMoney(baseMonto);
                         const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
+                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         if (!entries.length && !baseMonto) return null;
                         return (
                             <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
@@ -348,15 +348,13 @@ export default class Lista extends Component {
                                     const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
                                     return (
                                         <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
-                                            <SText style={{ fontSize: 8, color, opacity: 0.6 }}>{sim}</SText>
-                                            <SText style={{ fontSize: 11, color }}>{num}</SText>
+                                            <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                         </SView>
                                     );
                                 })}
-                                {baseMonto > 0 && (
-                                    <SView style={{ marginTop: 3, paddingTop: 3, borderTopWidth: 0.5, borderColor: color + '55', alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 7, color, opacity: 0.5 }}>{baseSim} base</SText>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.7 }}>{baseNum}</SText>
+                                {showBase && (
+                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
                                     </SView>
                                 )}
                             </SView>
