@@ -87,6 +87,9 @@ export default class ReciboCarta extends Component {
                 tipo_pago_: tipoPago || {},
             };
 
+            console.clear();
+            console.log("ReciboCarta: Generating PDF for compraVentaData:", compraVentaData);
+
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
                     footer={ReciboCarta.pagina()}
@@ -263,7 +266,7 @@ export default class ReciboCarta extends Component {
     }
 
     static Cajero(cajero, data) {
-        const tipoPagos = Array.isArray(data?.tipo_pago) ? data.tipo_pago : [];
+        const tipoPagos = Array.isArray(data?.tipo_pago_) ? data.tipo_pago_ : [];
 
         const th = (flex, label) => (
             <SPDF.View style={{ flex, height: "100%", justifyContent: "center", padding: 4, borderWidth: 1, backgroundColor: "#D0D0D0" }}>
