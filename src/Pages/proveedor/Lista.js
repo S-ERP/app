@@ -112,27 +112,6 @@ export default class Lista extends Component {
         }
     }
 
-    renderMoneyList(map, monedas, color) {
-        const entries = Object.entries(map || {});
-        if (!entries.length) return null;
-        return (
-            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                {entries.map(([key_moneda, monto]) => {
-                    const mon = (monedas || []).find(m => m.key === key_moneda);
-                    const sim = mon?.observacion || 'Bs';
-                    const fmt = SMath.formatMoney(monto);
-                    const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
-                    return (
-                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
-                            <SText style={{ fontSize: 8, color, opacity: 0.6 }}>{sim}</SText>
-                            <SText style={{ fontSize: 11, color }}>{num}</SText>
-                        </SView>
-                    );
-                })}
-            </SView>
-        );
-    }
-
     sumMap(map) {
         return Object.values(map || {}).reduce((s, v) => s + v, 0) || '';
     }
@@ -254,6 +233,7 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="nombre_completo" label="Proveedor" width={200} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
 
                 <DinamicTable.Col key="tipo_cliente" label="Categoría" data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)} width={160}
+                    headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{ flexDirection: "row", justifyContent: "flex-start", flexWrap: "wrap", alignItems: "flex-start", gap: 4 }}
                     customComponent={e => (e.row.tipo_cliente ?? []).map(tc => (
                         <SView key={tc.key} style={{
@@ -270,6 +250,7 @@ export default class Lista extends Component {
                 />
 
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={100}
+                    headerStyle={{ paddingLeft: 4 }}
                     data={e => {
                         const r = e.row?.resumen_cuota;
                         if (!r) return 'Sin Deuda';
@@ -287,9 +268,10 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} />
 
-                <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pend." width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pend." width={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col key="monto_deuda_col" wrap label="Deuda" width={150} height={60}
+                    headerStyle={{ paddingLeft: 4 }}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -301,7 +283,7 @@ export default class Lista extends Component {
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.warning;
+                        const color = STheme.color.text;
                         const entries = Object.entries(e.row?.deuda_por_moneda || {});
                         const baseMonto = e.row?.totales_base?.deuda || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -310,30 +292,31 @@ export default class Lista extends Component {
                         const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         if (!entries.length && !baseMonto) return null;
                         return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end', gap: 3 }}>
+                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
                                 {entries.map(([key_moneda, monto]) => {
                                     const mon = monedas.find(m => m.key === key_moneda);
                                     const sim = mon?.observacion || 'Bs';
                                     const fmt = SMath.formatMoney(monto);
                                     const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
                                     return (
-                                        <SView key={key_moneda} style={{ borderWidth: 1, borderColor: color + '50', backgroundColor: color + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6, alignItems: 'flex-end' }}>
+                                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
                                             <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                         </SView>
                                     );
                                 })}
                                 {showBase && (
-                                    <SView style={{ alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.7 }}>({baseSim} {baseNum})</SText>
+                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
                                     </SView>
                                 )}
                             </SView>
                         );
                     }} />
 
-                <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col key="en_mora_col" wrap label="Mora" width={150} height={60}
+                    headerStyle={{ paddingLeft: 4 }}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -345,7 +328,7 @@ export default class Lista extends Component {
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.danger;
+                        const color = STheme.color.text;
                         const entries = Object.entries(e.row?.mora_por_moneda || {});
                         const baseMonto = e.row?.totales_base?.mora || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -354,21 +337,21 @@ export default class Lista extends Component {
                         const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
                         if (!entries.length && !baseMonto) return null;
                         return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end', gap: 3 }}>
+                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
                                 {entries.map(([key_moneda, monto]) => {
                                     const mon = monedas.find(m => m.key === key_moneda);
                                     const sim = mon?.observacion || 'Bs';
                                     const fmt = SMath.formatMoney(monto);
                                     const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
                                     return (
-                                        <SView key={key_moneda} style={{ borderWidth: 1, borderColor: color + '50', backgroundColor: color + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6, alignItems: 'flex-end' }}>
+                                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
                                             <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                         </SView>
                                     );
                                 })}
                                 {showBase && (
-                                    <SView style={{ alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.7 }}>({baseSim} {baseNum})</SText>
+                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
                                     </SView>
                                 )}
                             </SView>
