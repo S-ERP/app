@@ -434,9 +434,6 @@ export default class ListaClientes extends Component {
 
 
 
-
-
-
                 <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
