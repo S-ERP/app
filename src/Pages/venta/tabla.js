@@ -90,6 +90,10 @@ export default class tabla extends Component {
                 const total_disponibles = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.disponibles) || 0), 0);
                 const total_suscriptos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.suscriptos) || 0), 0);
                 const total_cupos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.cupos) || 0), 0);
+                const cuotas = cv.cuotas || {};
+                const cuotaUnitaria = cuotas.total && cuotas.cantidad ? cuotas.total / cuotas.cantidad : 0;
+                const cantidad_pagada = cuotaUnitaria > 0 ? Math.round((cv.monto_amortizado || 0) / cuotaUnitaria) : 0;
+                const cantidad_pendiente = Math.max(0, (cuotas.cantidad || 0) - (cv.cuotas_en_mora?.cantidad || 0) - cantidad_pagada);
                 return {
                     ...cv,
                     total_disponibles,
@@ -102,7 +106,8 @@ export default class tabla extends Component {
                     empresa,
                     proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
                     cliente: clientesMap[cv.key_cliente] || {},
-                    subtotal: totalesMap[cv.key]?.subtotal || "0"
+                    subtotal: totalesMap[cv.key]?.subtotal || "0",
+                    cuotas: { ...cuotas, cantidad_pagada, cantidad_pendiente },
                 };
             });
             SNotification.send({
@@ -112,7 +117,8 @@ export default class tabla extends Component {
                 color: STheme.color.success,
                 time: 2000,
             });
-
+            console.clear();
+            console.log("Ventas enriquecidas:", ventasEnriquecidas);
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -488,16 +494,6 @@ export default class tabla extends Component {
                 language="es"
                 center
                 {...Config.table.applyTheme()}
-                // headerStyle={{
-                // backgroundColor:STheme.color.danger,
-                // paddingLeft:50,
-                // marginLeft:20,
-                // paddingHorizontal: 8,
-                // height: 28,
-                // alignContent: "center",
-                // alignItems: "center",
-                //textTransform: "uppercase",
-                // }}
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 pageLimit={100}
@@ -703,9 +699,9 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
-                <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""} />
+                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas?.cantidad ?? ""} />
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.moneda?.descripcion ?? ""} />
+                <DinamicTable.Col key="cuotas_cantidad_pagadas" label="# Pago" headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.success + "33" }} data={(e) => e.row?.cuotas?.cantidad_pagada ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={95} height={60}
                     data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.monto_amortizado || 0; const base = e.row?.monto_amortizado_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.success + "33" }}
@@ -735,6 +731,11 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
+
+                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+
+
+
                 <DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={95} height={60}
                     data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.warning + "33" }}
@@ -764,6 +765,9 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
+
+                <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+
                 <DinamicTable.Col wrap key="en_mora" label="Mora" width={95} height={60}
                     data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.cuotas_en_mora?.monto || 0; const base = e.row?.cuotas_en_mora?.monto_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.danger + "33" }}
@@ -851,7 +855,7 @@ export default class tabla extends Component {
             </DinamicTable>
         );
     }
-    
+
     async confirmarBorradoFacturas() {
         const notificationKey = "borrar_facturas";
         SPopup.confirm({
