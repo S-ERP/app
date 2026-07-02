@@ -336,7 +336,7 @@ export default class Abierta extends Component {
                     <SText bold={opcionSeleccionada === "ventas"} color={opcionSeleccionada === "ventas" ? STheme.color.text : STheme.color.lightGray}>Ventas en caja</SText>
                 </SView>
             </SView>
-            <SHr h={10} />
+            {/* <SHr h={10} /> */}
         </SView>;
     }
 
@@ -379,7 +379,7 @@ export default class Abierta extends Component {
                     style={{ flex: 1, width: "100%" }}
                     data={data}
                     ListHeaderComponent={this.renderHeader}
-
+                    // ItemSeparatorComponent={a => <SHr h={8} />}
                     renderItem={opcionSeleccionada === "movimientos"
                         ? ({ item, index }) => (
                             <SView col={"xs-12"} center >
@@ -390,7 +390,7 @@ export default class Abierta extends Component {
                         )
                         : ({ item, index }) => (
                             <SView col={"xs-12"} center>
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
+                                <SView col={"xs-11 sm-10 md-8 lg-6"}>
                                     <DetalleItemVenta movimientos={item.items?.length ?? 0} index={this.state.detalle.length - index} empresa={this.state.empresa} item={item} data={this.state.detalle} soloLectura={soloLectura} />
                                 </SView>
                             </SView>

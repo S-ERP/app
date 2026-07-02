@@ -134,10 +134,11 @@ export default class DetalleItemVenta extends Component {
     const tipoPagoInfo = tipoPagoMap[item.detalle?.tipo_pago];
 
     return (<>
-      <SView key={index} row padding={4} style={{
+      <SView key={index} row  style={{
         borderBottomWidth: 1,
         borderColor: STheme.color.card,
         borderRadius: 4,
+        paddingVertical: 10,
       }}>
         <SView flex>
           <SView row style={{ alignItems: "center" }}>
@@ -147,36 +148,48 @@ export default class DetalleItemVenta extends Component {
               <SText color={STheme.color.lightGray} fontSize={10}>{index}</SText>
             </SView>
             <SView width={4} />
-            <SText>{item.descripcion}</SText>
+
+            <SText fontSize={10} color={STheme.color.lightGray}>{fechaStr}</SText>
           </SView>
 
           <SHr h={4} />
 
-          <SView row style={{ alignItems: "center", flexWrap: 'wrap' }}>
-            <View style={styles.etiqueta}>
-              <SText fontSize={10} color={STheme.color.lightGray}>{fechaStr}</SText>
+          {item?.detalle?.cliente && <>
+            <View >
+              <SView row >
+                <SView row center>
+                  <SIconApp width={10} height={10} name={"cajero"} fill={STheme.color.text} />
+                  <SView width={5} />
+                  <SText color={STheme.color.text} fontSize={11}>{item?.detalle?.cliente?.razon_social != "" ? item?.detalle?.cliente?.razon_social : "Sin Nombre"}</SText>
+                  <SHr h={3} />
+                </SView>
+              </SView>
             </View>
             <SView width={8} />
+          </>}
 
-            <View style={{
-              ...styles.etiqueta,
+
+          <SView row style={{ alignItems: "center", flexWrap: 'wrap' }}>
+
+            {item?.detalle?.observacion && <>
+              <View  col={"xs-12"}>
+                {/* <SText fontSize={10} color={STheme.color.lightGray}>{fechaStr}</SText> */}
+                <SText fontSize={10}>{item?.detalle?.observacion}</SText>
+              </View>
+              <SView width={8} />
+            </>}
+
+
+            <SView col={"xs-12"} style={{
+              // ...styles.etiqueta,
               backgroundColor: detalleTipo ? `${detalleTipo.color}66` : "transparent",
               borderColor: detalleTipo?.color ?? STheme.color.card,
             }}>
               <SView col> {(item?.detalle?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {moneda?.observacion} x{d.cantidad}</SText>))} </SView>
-            </View>
-            <SView width={8} />
+            </SView>
+            <SHr height={5} />
 
-            {item?.detalle?.cliente && <>
-              <View style={styles.etiquetaRow}>
-                <SView row center>
-                  <SView center>
-                    <SText color={STheme.color.text} fontSize={11}>{item?.detalle?.cliente?.razon_social != "" ? item?.detalle?.cliente?.razon_social : "Sin Nombre"}</SText>
-                  </SView>
-                </SView>
-              </View>
-              <SView width={8} />
-            </>}
+
 
             {item?.key_compra_venta && <>
               <SView row style={{
@@ -216,23 +229,28 @@ export default class DetalleItemVenta extends Component {
               <SView width={8} />
             </>}
 
-            <View style={styles.etiquetaRow}>
+            <View >
               <SView row center>
-                <SView backgroundColor={tipoPagoInfo?.color} style={{ borderRadius: 4, padding: 4 }} center>
-                  <SText color={STheme.color.text} fontSize={11}>{tipoPagoInfo?.label}</SText>
+                <SView backgroundColor={tipoPagoInfo?.color + "85"} style={{
+                  borderRadius: 4,
+                  padding: 2,
+                  borderWidth: 1,
+                  borderColor: tipoPagoInfo.color
+                }} center>
+                  <SText color={STheme.color.text} fontSize={10}>{tipoPagoInfo?.label}</SText>
                 </SView>
               </SView>
             </View>
             <SView width={8} />
 
-            <View style={styles.etiquetaRow}>
+            {/* <View style={styles.etiquetaRow}>
               <SView row center>
                 <SView backgroundColor={estadoInfo?.color} style={{ borderRadius: 4, padding: 4 }} center>
                   <SText color={STheme.color.text} fontSize={11}>{estadoInfo?.label}</SText>
                 </SView>
               </SView>
             </View>
-            <SView width={8} />
+            <SView width={8} /> */}
 
 
 
@@ -262,7 +280,7 @@ export default class DetalleItemVenta extends Component {
           </SView>
         </SView>
         <SView flex col={"xs-12"}>
-          <SView style={{ alignItems: "flex-end" }} >
+          <SView style={{ alignItems: "flex-end", backgroundColor: STheme.color.gray + "90", borderRadius: 6 }} padding={6}>
 
             {(item?.items ?? []).map((d, index) => (<>
               <SView style={{ alignItems: "flex-end" }} row>
@@ -283,15 +301,19 @@ export default class DetalleItemVenta extends Component {
               {moneda?.observacion} {SMath.formatMoney(monto)}
             </SText> */}
             <SHr height={5} />
-            <SView col={"xs-10"} style={{ borderBottomWidth: 1, borderBottomColor: STheme.color.card, height: 5 }} />
+            <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderBottomColor: STheme.color.card, height: 5 }} />
             <SHr height={5} />
-            <SText fontSize={18} bold color={color}>
-              {moneda?.observacion} {SMath.formatMoney(monto)}
-            </SText>
+            <SView col={"xs-12"} row style={{ alignItems: "flex-end" }}>
+              <SText fontSize={11} bold style={{ color: STheme.color.text }}>
+                TOTAL
+              </SText>
+              <SText fontSize={18} bold color={color} style={{ flex: 1, textAlign: "right" }}>
+                {moneda?.observacion} {SMath.formatMoney(monto)}
+              </SText>
+            </SView>
           </SView>
         </SView>
       </SView>
-
 
     </>);
   }
