@@ -230,9 +230,6 @@ export default class ListaClientes extends Component {
                 language="es"
                 selectType="single"
                 colors={Config.table.colors()}
-
- 
-
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
                 loadData={() => this.loadInitialData()}
@@ -355,9 +352,13 @@ export default class ListaClientes extends Component {
                     });
                 }}
             >
-                <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
-                <DinamicTable.Col key="nombre_completo" label="Cliente" width={200} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+                <DinamicTable.Col key="index" label="#" headerStyle={{ paddingLeft: 4 }}
+                    width={40} data={e => e.index + 1} />
+                <DinamicTable.Col key="nombre_completo"
+                    headerStyle={{ paddingLeft: 4 }}
+                    label="Cliente" width={200} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
                 <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={240}
+                    headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{
                         flexDirection: "row",
                         justifyContent: "flex-start",
@@ -389,7 +390,9 @@ export default class ListaClientes extends Component {
                         })
                     }}
                 />
-                <DinamicTable.Col key='key-habilidades' label='Habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160} height={60}
+                <DinamicTable.Col key='key-habilidades' label='Habilidades'
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160} height={60}
                     cellStyle={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start', gap: 4, padding: 4 }}
                     customComponent={e => (e.row?.habilidades ?? []).map(h => (
                         <SView key={h.key} style={{ borderWidth: 1, borderColor: STheme.colorFromText(h.descripcion) + '50', backgroundColor: STheme.colorFromText(h.descripcion) + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
@@ -399,6 +402,9 @@ export default class ListaClientes extends Component {
                 />
 
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={90}
+                    headerStyle={{ paddingLeft: 4 }}
+
+
                     data={e => {
                         const r = e.row?.resumen_cuota;
                         if (!r) return 'Sin Deuda';
@@ -412,7 +418,9 @@ export default class ListaClientes extends Component {
                     }}
                 />
 
-                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" width={60}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
 
 
@@ -430,7 +438,18 @@ export default class ListaClientes extends Component {
 
 
                 <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={60}
-                    data={e => [this.formatMap(e.row?.mora_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => {
+                        const monedas = e.row?.empresa?.monedas || [];
+                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+                        const entries = Object.entries(e.row?.mora_por_moneda || {});
+                        const baseMonto = e.row?.totales_base?.mora || 0;
+                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
+                        return [this.formatMap(e.row?.mora_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
+                    }}
+
+
+
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
@@ -474,9 +493,19 @@ export default class ListaClientes extends Component {
 
 
 
-                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" width={100} height={60}
-                    data={e => [this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.deuda, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => {
+                        const monedas = e.row?.empresa?.monedas || [];
+                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+                        const entries = Object.entries(e.row?.deuda_por_moneda || {});
+                        const baseMonto = e.row?.totales_base?.deuda || 0;
+                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
+                        return [this.formatMap(e.row?.deuda_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
+                    }}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
@@ -512,8 +541,8 @@ export default class ListaClientes extends Component {
 
 
 
-                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="key_usuario" label="Responsable" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
+                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} headerStyle={{ paddingLeft: 4 }} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="key_usuario" label="Responsable" width={100} headerStyle={{ paddingLeft: 4 }} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
         );
     }

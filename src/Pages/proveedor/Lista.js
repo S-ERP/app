@@ -290,7 +290,14 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pend." width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col key="monto_deuda_col" wrap label="Deuda" width={150} height={60}
-                    data={e => [this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.deuda, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
+                    data={e => {
+                        const monedas = e.row?.empresa?.monedas || [];
+                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+                        const entries = Object.entries(e.row?.deuda_por_moneda || {});
+                        const baseMonto = e.row?.totales_base?.deuda || 0;
+                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
+                        return [this.formatMap(e.row?.deuda_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
+                    }}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
@@ -327,7 +334,14 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col key="en_mora_col" wrap label="Mora" width={150} height={60}
-                    data={e => [this.formatMap(e.row?.mora_por_moneda, e.row?.empresa?.monedas), this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)].filter(Boolean).join(' | ')}
+                    data={e => {
+                        const monedas = e.row?.empresa?.monedas || [];
+                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+                        const entries = Object.entries(e.row?.mora_por_moneda || {});
+                        const baseMonto = e.row?.totales_base?.mora || 0;
+                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
+                        return [this.formatMap(e.row?.mora_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
+                    }}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
