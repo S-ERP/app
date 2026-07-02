@@ -230,6 +230,9 @@ export default class ListaClientes extends Component {
                 language="es"
                 selectType="single"
                 colors={Config.table.colors()}
+
+ 
+
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
                 loadData={() => this.loadInitialData()}
@@ -386,7 +389,7 @@ export default class ListaClientes extends Component {
                         })
                     }}
                 />
-                <DinamicTable.Col key='key-habilidades' label='Habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160}
+                <DinamicTable.Col key='key-habilidades' label='Habilidades' data={e => (e.row.habilidades ?? []).map(h => h.descripcion)} wrap width={160} height={60}
                     cellStyle={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start', gap: 4, padding: 4 }}
                     customComponent={e => (e.row?.habilidades ?? []).map(h => (
                         <SView key={h.key} style={{ borderWidth: 1, borderColor: STheme.colorFromText(h.descripcion) + '50', backgroundColor: STheme.colorFromText(h.descripcion) + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
