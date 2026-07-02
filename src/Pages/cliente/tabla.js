@@ -71,7 +71,10 @@ export default class ListaClientes extends Component {
                 });
                 return [];
             }
-            if (!transacciones || !transacciones.length) {
+            const transaccionesArr = Array.isArray(transacciones)
+                ? transacciones
+                : Object.values(transacciones || {});
+            if (!transaccionesArr.length) {
                 SNotification.send({
                     title: 'Advertencia',
                     body: 'No se encontraron ventas en el rango de fechas especificado.',
@@ -82,73 +85,56 @@ export default class ListaClientes extends Component {
             const keysUsuarios = Object.values(clientes)
                 .map(c => c.key_usuario)
                 .filter(Boolean);
-            const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-            if (!usuarios || !Object.keys(usuarios).length) {
-                console.warn('No se encontraron usuarios para los clientes.');
-            }
-            const registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
-            const habilidad = await MDL.habilidad.getAllWithUsuarios();
-            // return Object.values(clientes).map(cliente => {
-            //     cliente.usuario = usuarios.find(u => u.key === cliente.key_usuario) || null;
-            //     cliente.resumen_cuota = registros.find(r => r.key_cliente === cliente.key) || null;
-            //     cliente.ventas = transacciones ? transacciones.filter(t => t.key_cliente === cliente.key) : [];
-            //     cliente.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(cliente.key));
-            //     return cliente;
-            // });
+            const [usuarios, registros, habilidad] = await Promise.all([
+                MDL.usuario.getByKeys(keysUsuarios),
+                MDL.compra_venta.getCuotasResumenTotal_ventas(),
+                MDL.habilidad.getAllWithUsuarios(),
+            ]);
+            const usuariosArr  = Array.isArray(usuarios)  ? usuarios  : Object.values(usuarios  || {});
+            const registrosArr = Array.isArray(registros) ? registros : Object.values(registros || {});
+            const habilidadArr = Array.isArray(habilidad) ? habilidad : Object.values(habilidad || {});
 
             let data = Object.values(clientes).map(cliente => {
-                cliente.usuario = usuarios.find(u => u.key === cliente.key_usuario) || null;
-                cliente.resumen_cuota = registros.find(r => r.key_cliente === cliente.key) || null;
-                cliente.ventas = transacciones ? transacciones.filter(t => t.key_cliente === cliente.key) : [];
-                cliente.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(cliente.key));
-                cliente.empresa = empresa;
+                const c = { ...cliente };
+                c.usuario = usuariosArr.find(u => u.key === c.key_usuario) || null;
+                c.resumen_cuota = registrosArr.find(r => r.key_cliente === c.key) || null;
+                c.ventas = transaccionesArr.filter(t => t.key_cliente === c.key);
+                c.habilidades = habilidadArr.filter(h => h.key_usuarios?.includes(c.key));
+                c.empresa = empresa;
                 const total_map = {}, pagado_map = {}, mora_map = {};
                 let total_base = 0, pagado_base = 0, mora_base = 0;
-                (cliente.ventas || []).forEach(v => {
-                    const key = v.key_moneda;
-                    const tot = v.cuotas?.total || 0;
-                    const pag = v.monto_amortizado || 0;
-                    const mora = v.cuotas_en_mora?.monto || 0;
+                c.ventas.forEach(v => {
+                    const key = v.key_moneda || 'desconocida';
+                    const tot = Number(v.cuotas?.total || 0);
+                    const pag = Number(v.monto_amortizado || 0);
+                    const mora = Number(v.cuotas_en_mora?.monto || 0);
                     if (tot > 0) total_map[key] = (total_map[key] || 0) + tot;
                     if (pag > 0) pagado_map[key] = (pagado_map[key] || 0) + pag;
                     if (mora > 0) mora_map[key] = (mora_map[key] || 0) + mora;
-                    total_base += v.cuotas?.total_base || 0;
-                    pagado_base += v.monto_amortizado_base || 0;
-                    mora_base += v.cuotas_en_mora?.monto_base || 0;
+                    total_base += Number(v.cuotas?.total_base || 0);
+                    pagado_base += Number(v.monto_amortizado_base || 0);
+                    mora_base += Number(v.cuotas_en_mora?.monto_base || 0);
                 });
                 const deuda_map = {};
                 Object.keys(total_map).forEach(k => {
                     const d = (total_map[k] || 0) - (pagado_map[k] || 0);
                     if (d > 0) deuda_map[k] = d;
                 });
-                cliente.total_por_moneda = total_map;
-                cliente.pagado_por_moneda = pagado_map;
-                cliente.deuda_por_moneda = deuda_map;
-                cliente.mora_por_moneda = mora_map;
-                cliente.totales_base = { total: total_base, pagado: pagado_base, mora: mora_base, deuda: total_base - pagado_base };
-                return cliente;
+                c.total_por_moneda = total_map;
+                c.pagado_por_moneda = pagado_map;
+                c.deuda_por_moneda = deuda_map;
+                c.mora_por_moneda = mora_map;
+                c.totales_base = { total: total_base, pagado: pagado_base, mora: mora_base, deuda: total_base - pagado_base };
+                return c;
             });
 
-            // ← Aquí aplicamos el filtro de estado de pago
             if (this.state.selectedEstadoPago?.key) {
                 const filtro = this.state.selectedEstadoPago.key;
-
-                data = data.filter(cliente => {
-                    const resumen = cliente.resumen_cuota;
-
-                    if (!resumen) {
-                        return filtro === "Sin Deuda";
-                    }
-
-                    if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) {
-                        return filtro === "En Mora";
-                    }
-
-                    if (resumen.monto_pendiente <= 0) {
-                        return filtro === "Sin Deuda";
-                    }
-
-                    // Si tiene monto pendiente > 0 y no está en mora → Deudor
+                data = data.filter(c => {
+                    const r = c.resumen_cuota;
+                    if (!r) return filtro === "Sin Deuda";
+                    if (r.cantidad_en_mora > 0 || r.monto_en_mora > 0) return filtro === "En Mora";
+                    if (r.monto_pendiente <= 0) return filtro === "Sin Deuda";
                     return filtro === "Deudor";
                 });
             }
@@ -380,8 +366,8 @@ export default class ListaClientes extends Component {
                         return (e.row.tipo_cliente ?? []).map((tc) => {
                             return <SView style={{
                                 borderWidth: 1,
-                                backgroundColor: (tc.color + "15" ?? STheme.colorFromText(tc.titulo) + "15"),
-                                borderColor: tc.color + "50" ?? STheme.colorFromText(tc.titulo) + "50",
+                                backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "15",
+                                borderColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "50",
                                 padding: 2,
                                 paddingHorizontal: 4,
                                 borderRadius: 4,
@@ -443,7 +429,7 @@ export default class ListaClientes extends Component {
 
 
 
-                <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={90}
+                <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={40}
                     data={e => this.formatMap(e.row?.deuda_por_moneda, e.row?.empresa?.monedas)}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
                     customComponent={e => this.renderMoneyList(e.row?.deuda_por_moneda, e.row?.empresa?.monedas, STheme.color.warning)} />
@@ -464,8 +450,9 @@ export default class ListaClientes extends Component {
 
 
                 <DinamicTable.Col key="mora_base_casdol" wrap label="Monto Mora Base" width={90}
-                    data={e => this.formatBase(e.row?.totales_base?.mora, e.row?.empresa?.monedas)}
-                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }} />
+                    data={e => e.row?.totales_base?.mora || ''}
+                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
+                    format={e => { if (!e.data) return ''; const sim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; const fmt = SMath.formatMoney(e.data); return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`; }} />
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
