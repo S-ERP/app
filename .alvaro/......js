@@ -1,3 +1,12 @@
+Ahora ./limpiar.js va a funcionar directo.
+
+./test.json — los archivos JSON no se pueden ejecutar, son datos. Para verlo usá:
+
+
+cat test.json
+chmod +x solo sirve para scripts (.js, .sh, .py, etc.).
+
+
 ### Registrar un Producto
 
 1. Ir a **Inventario**.
