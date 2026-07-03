@@ -232,6 +232,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     key_modelo: modelo.key || null,
                     moneda: effectiveKeyMoneda,
                     fecha_vencimiento: modelo?.fecha_vencimiento || null,
+                    data: {
+                        tipo_producto: modelo?.tipo_producto?.tipo,
+                    },
                 };
             });
             const descripcion = descripcionBase;
