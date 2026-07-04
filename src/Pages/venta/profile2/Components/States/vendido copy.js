@@ -8,28 +8,57 @@ import PlanPagos from '../PlanPagos';
 import Proveedor from '../Proveedor';
 import ReciboCarta from '../../../../../Components/PDF/venta/ReciboCarta';
 import ReciboRollo from '../../../../../Components/PDF/venta/ReciboRollo';
+import ReciboSmall from '../../../../../Components/PDF/venta/ReciboSmall';
 import Estado from './Components/Estado';
 import SSocket from 'servisofts-socket';
 import Separador1 from './Components/Separador1';
 import TotalesVenta from '../TotalesVenta';
 import MDL from '../../../../../MDL';
 import PopupSuscriptor from '../PopupSuscriptor';
-export default class index extends Component {
+import SIconApp from '../../../../../Assets/SIconApp';
+import PopupDescripcion from '../../../Components/PopupDescripcion';
+const URL = "/venta/profile2";
+export default class vendido extends Component {
     constructor(props) {
         super(props);
         this.state = {
             data: props.data,
-            miSucursal: null
+            miSucursal: null,
+            anulada: false,
         };
+        this.popupAbierto = false;
     }
     async componentDidMount() {
         let sucursal = await MDL.empresa.getAllSucursales()
         let miSucursal = sucursal.find(s => s.key == this.props.data.key_sucursal)
         this.setState({ miSucursal })
+        // if (this.props.data) {
+        //     console.log("DATAP1", this.props.data);
+        //     PopupSuscriptor.open({ data: this.props.data });
+        // }
+        // 👇 abrir con el mismo tipo de data que usa Detalle
+        const primerDetalle = this.props.data?.detalle?.[0];
+
+        if (primerDetalle) {
+            console.log("DATA", this.props.data);
+            console.log("DATAP1", primerDetalle);
+            //PopupSuscriptor.open({ data: primerDetalle });
+        }
     }
+    // componentDidUpdate(prevProps) {
+    //     if (prevProps.data !== this.props.data) {
+    //         this.setState({ data: this.props.data });
+    //     }
+    //     if (!this.popupAbierto && this.props.data) {
+    //         this.popupAbierto = true;
+    //         PopupSuscriptor.open({ data: this.props.data });
+    //     }
+    // }
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
+            console.log("DATAP1", this.props.data);
+            // PopupSuscriptor.open({ data: this.props.data });
         }
     }
     openPdfFromBase64(base64) {
@@ -85,22 +114,67 @@ export default class index extends Component {
     }
     render() {
         const prueba = this.props.data;
+        const puedeAnularVenta = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" });
+        const puedeAnularCompra = MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" });
+
+        console.log("puedeAnularVenta", JSON.stringify(prueba));
         const data = this.props.data;
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
         this.isAdmin = !!permiso ? true : Model.compra_venta_participante.Action.allowAdmin({ key_compra_venta: this.props.data.key });
         this.isSuperAdmin = !!permiso;
         this.sucursal = this.state?.miSucursal;
         this.data = { ...prueba, sucursal: this.state?.miSucursal };
+        const anulada = this.state.anulada || Number(this.data?.estado) === 0;
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
-            <SView col={"xs-12"} padding={10} row style={{ justifyContent: "space-between" }}>
+            <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                 {this.data?.factura?.cuf ? <>
                     <SView width={170} center
                         style={{ backgroundColor: STheme.color.card, borderBottomLeftRadius: 10, borderBottomRightRadius: 10, marginRight: 8, borderBottomColor: STheme.color.card, borderBottomWidth: 3 }}
-                        padding={5}>
+                        padding={15}>
                         <SText bold fontSize={18} style={{ textTransform: "uppercase" }}>Factura Nro. {this.data?.factura?.numero}</SText>
                     </SView>
                 </> : null}
                 <Estado data={this.data} />
+                {anulada ? (
+                    <SView style={{ backgroundColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}>
+                        <SText bold color={"#fff"} fontSize={12}>VENTA ANULADA</SText>
+                    </SView>
+                ) : (
+                    <SView
+                        onPress={() => {
+                            if (!puedeAnularVenta) {
+                                SNotification.send({
+                                    key: "anular_venta_permiso",
+                                    title: "Sin permisos para anular",
+                                    body: "Tu rol dentro del sistema no permite anular ventas. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                    color: STheme.color.danger,
+                                    time: 6000,
+                                });
+                                return;
+                            }
+                            SPopup.confirm({
+                                title: "Anular venta1",
+                                message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
+                                onPress: () => {
+                                    const notificationKey = `anular_v_${this.data?.key}`;
+                                    SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading" });
+                                    MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
+                                        .then(() => {
+                                            SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success });
+                                            this.setState({ anulada: true });
+                                            if (this.props.onReload) this.props.onReload({ anulada: true });
+                                        })
+                                        .catch((error) => {
+                                            SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.message || String(error), color: STheme.color.danger });
+                                        });
+                                }
+                            });
+                        }}
+                        style={{ backgroundColor: STheme.color.danger + "22", borderWidth: 1, borderColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}
+                    >
+                        <SText bold color={STheme.color.danger} fontSize={12}>ANULAR wVENTA</SText>
+                    </SView>
+                )}
             </SView>
             <SView col={"xs-12"} padding={10} row>
                 <SView style={{ paddingRight: 15 }} center>
@@ -123,20 +197,55 @@ export default class index extends Component {
                     }
                 </SView>
                 <SView col={"xs-8"} row center>
-                    <SText col={"xs-12"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                    <SView row col={"xs-12"}>
+                        <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
+                        <SText col={"xs-7"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                        <SView col={"xs-2"} row center onPress={() => {
+                            if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                                PopupDescripcion.open({
+                                    data: this.data,
+                                    onReload: () => {
+                                        console.log("RELOAD")
+                                        this.props.onReload();
+                                        SPopup.close("PopupDescripcion");
+                                    }
+                                })
+                            } else {
+                                SNotification.send({
+                                    key: "editar_descripcion",
+                                    title: "Sin permisos de edición",
+                                    body: "Tu rol dentro del sistema no permite realizar modificaciones en este módulo. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                    color: STheme.color.danger,
+                                    time: 9000,
+                                });
+                            }
+                        }}>
+                            <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
+                        </SView>
+                    </SView>
                     <SText bold col={"xs-3"} fontSize={12}>Empresa: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.razon_social}</SText>
                     <SText bold fontSize={12} col={"xs-3"}>NIT: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.nit}</SText>
-                    <SText bold col={"xs-3"} fontSize={12}>Obs: </SText>
+                    <SText bold col={"xs-3"} fontSize={12}>Obsww: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.observacion}</SText>
                 </SView>
                 <SHr height={10} />
                 <Separador1 />
                 <SView col={"xs-12"} row center>
                     {(this.data.tipo == "venta") ?
-                        <Cliente data={this.data} disabled /> :
-                        <Proveedor data={this.data} disabled />
+                        <Cliente data={this.data} disabled tipo={"cliente"}
+                            onReload={() => {
+                                console.log("RELOAD 2")
+                                this.props.onReload();
+                            }}
+                        /> :
+                        <Proveedor data={this.data} disabled tipo={"proveedor"}
+                            onReload={() => {
+                                console.log("RELOAD 2")
+                                this.props.onReload();
+                            }}
+                        />
                     }
                 </SView>
                 <Separador1 />
@@ -148,7 +257,7 @@ export default class index extends Component {
                 <TotalesVenta data={this.data} />
                 <Separador1 />
                 <SHr height={10} />
-                <PlanPagos ref={ref => this.pp = ref} data={this.data} disabled />
+                <PlanPagos ref={ref => this.pp = ref} data={this.data} onReload={this.props.onReload} disabled />
                 <Separador1 />
                 <SView col={"xs-12"} style={{ alignItems: "flex-end", paddingBottom: 10, paddingTop: 10 }}>
                     <Components.compra_venta.QRVenta data={this.data} />
@@ -218,6 +327,13 @@ export default class index extends Component {
                             <SView width={8} />
                             <SView onPress={() => ReciboCarta.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF CARTA</SText>
+                            </SView>
+                        </SView>
+                        <SView col={"xs-5.5"} style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.card, borderColor: STheme.color.card, borderWidth: 1 }} row center>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                            <SView width={8} />
+                            <SView onPress={() => ReciboSmall.imprimir(this.data.key)}>
+                                <SText>DESCARGAR PDF SMALL</SText>
                             </SView>
                         </SView>
                         {/* <SView width={8} />
