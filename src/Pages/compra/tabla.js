@@ -128,6 +128,26 @@ export default class tabla extends Component {
                                 label: "Anular compra",
                                 icon: <SIconApp name='Delete' fill="#e4e4e4ff" />,
                                 onPress: () => {
+                                    if (!MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" })) {
+                                        SNotification.send({
+                                            key: "anular_compra_permiso",
+                                            title: "Sin permisos para anular",
+                                            body: "Tu rol dentro del sistema no permite anular compras. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                            color: STheme.color.danger,
+                                            time: 6000,
+                                        });
+                                        return;
+                                    }
+                                    if (Number(e.row?.estado) === 0) {
+                                        SNotification.send({
+                                            key: "anular_compra_ya",
+                                            title: "Compra ya anulada",
+                                            body: "Esta compra ya se encuentra anulada.",
+                                            color: STheme.color.warning,
+                                            time: 4000,
+                                        });
+                                        return;
+                                    }
                                     SPopup.confirm({
                                         title: "¿Anular compra?",
                                         message: "¿Estás seguro de que deseas anular esta compra? Esta acción no se puede deshacer.",

@@ -17,7 +17,7 @@ import MDL from '../../../../../MDL';
 import PopupSuscriptor from '../PopupSuscriptor';
 import SIconApp from '../../../../../Assets/SIconApp';
 import PopupDescripcion from '../../../Components/PopupDescripcion';
-const URL = "/venta/profile2";
+const PAGE_URL = "/venta/profile2";
 export default class vendido extends Component {
     constructor(props) {
         super(props);
@@ -25,6 +25,7 @@ export default class vendido extends Component {
             data: props.data,
             miSucursal: null,
             anulada: false,
+            anulando: false,
         };
         this.popupAbierto = false;
     }
@@ -137,7 +138,7 @@ export default class vendido extends Component {
                         <SText bold fontSize={18} style={{ textTransform: "uppercase" }}>Factura Nro. {this.data?.factura?.numero}</SText>
                     </SView>
                 </> : null}
-                <Estado data={this.data} />
+                {!anulada && <Estado data={this.data} />}
                 {anulada ? (
                     <SView style={{ backgroundColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}>
                         <SText bold color={"#fff"} fontSize={12}>{esVenta ? "VENTA ANULADA" : "COMPRA ANULADA"}</SText>
@@ -145,6 +146,7 @@ export default class vendido extends Component {
                 ) : (
                     <SView
                         onPress={() => {
+                            if (this.state.anulando) return;
                             if (!puedeAnularVenta) {
                                 SNotification.send({
                                     key: "anular_venta_permiso",
@@ -156,33 +158,27 @@ export default class vendido extends Component {
                                 return;
                             }
 
-
-
-
-
                             SPopup.confirm({
                                 title: "Anular venta",
                                 message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
                                 onPress: () => {
                                     const notificationKey = `anular_v_${this.data?.key}`;
+                                    this.setState({ anulando: true });
                                     SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading" });
                                     MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
                                         .then(() => {
                                             SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success });
-                                            this.setState({ anulada: true });
+                                            this.setState({ anulada: true, anulando: false });
                                             if (this.props.onReload) this.props.onReload({ anulada: true });
                                         })
                                         .catch((error) => {
-                                            SNotification.send({ key: notificationKey, title: "Error al anular venta", body: error?.message || String(error), color: STheme.color.danger });
+                                            this.setState({ anulando: false });
+                                            SNotification.send({ key: notificationKey, title: "Error al anular venta", body: error?.error || error?.message || String(error), color: STheme.color.danger });
                                         });
                                 }
                             });
-
-
-
-
                         }}
-                        style={{ backgroundColor: STheme.color.danger + "22", borderWidth: 1, borderColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}
+                        style={{ backgroundColor: STheme.color.danger + "22", borderWidth: 1, borderColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6, opacity: this.state.anulando ? 0.5 : 1 }}
                     >
                         <SText bold color={STheme.color.danger} fontSize={12}>{esVenta ? "ANULAR VENTA" : "ANULAR COMPRA"}</SText>
                     </SView>
@@ -213,7 +209,7 @@ export default class vendido extends Component {
                         <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
                         <SText col={"xs-7"} fontSize={12} bold>{this.data?.descripcion}</SText>
                         <SView col={"xs-2"} row center onPress={() => {
-                            if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                            if (MDL.rolesPermisos.getPermiso({ url: PAGE_URL, permiso: 'edit' })) {
                                 PopupDescripcion.open({
                                     data: this.data,
                                     onReload: () => {

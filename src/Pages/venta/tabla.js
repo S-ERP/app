@@ -414,6 +414,26 @@ export default class tabla extends Component {
                     {
                         label: "Anular venta", icon: "cancelado", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
                         onPress: () => {
+                            if (!MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })) {
+                                SNotification.send({
+                                    key: "anular_venta_permiso",
+                                    title: "Sin permisos para anular",
+                                    body: "Tu rol dentro del sistema no permite anular ventas. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                    color: STheme.color.danger,
+                                    time: 6000,
+                                });
+                                return;
+                            }
+                            if (Number(row?.estado) === 0) {
+                                SNotification.send({
+                                    key: "anular_venta_ya",
+                                    title: "Venta ya anulada",
+                                    body: "Esta venta ya se encuentra anulada.",
+                                    color: STheme.color.warning,
+                                    time: 4000,
+                                });
+                                return;
+                            }
                             SPopup.confirm({
                                 icon: "cancelado",
                                 title: "Anular venta",
