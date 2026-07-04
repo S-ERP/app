@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Linking } from 'react-native';
 import {
-  SDate, SHr, SIcon, SMath, SNavigation, SText,
+  SDate, SHr, SIcon, SMath, SNavigation, SNotification, SPopup, SText,
   STheme, SView
 } from 'servisofts-component';
 import MDL from '../../../MDL';
@@ -11,6 +11,10 @@ import SSocket from 'servisofts-socket';
 import { ColorCompraVenta } from '../../../Config/theme';
 
 export default class DetalleItem extends Component {
+
+  state = {
+    anulando: false,
+  };
 
   iconotipoArchivo(documento_name = "", documento_type = "") {
     if (!documento_type) return null;
@@ -98,13 +102,18 @@ export default class DetalleItem extends Component {
   }
 
   render() {
-    const { item, index, empresa } = this.props;
+    const { item, index, empresa, anulado } = this.props;
     if (!item) return null;
 
     const monto = item.monto ?? 0;
     const color = monto < 0 ? STheme.color.danger : STheme.color.success;
     const moneda = empresa?.monedas?.find(e => e.key === item.key_moneda);
     const detalleTipo = MDL.caja.detalle_types?.[item.tipo];
+    const esAnulacion = item.tipo === "anulacion_venta" || item.tipo === "anulacion_compra";
+    const esVenta = item.tipo === "venta";
+    const puedeAnular = !esAnulacion && !anulado && (esVenta
+      ? MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })
+      : MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" }));
     const fechaStr = item.fecha_on
       ? new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")
       : "—";
@@ -114,6 +123,7 @@ export default class DetalleItem extends Component {
         borderBottomWidth: 1,
         borderColor: STheme.color.card,
         borderRadius: 4,
+        opacity: anulado ? 0.45 : 1,
       }}>
         <SView flex>
           <SView row style={{ alignItems: "center" }}>
@@ -170,7 +180,39 @@ export default class DetalleItem extends Component {
               </SView>
               <SView width={8} />
             </>}
-
+            {item?.key_compra_venta && puedeAnular && <>
+              <SView row style={{ borderWidth: 1, borderColor: STheme.color.danger, padding: 2, borderRadius: 4, opacity: this.state.anulando ? 0.5 : 1 }}
+                backgroundColor={STheme.color.danger + "30"}
+                onPress={() => {
+                  if (this.state.anulando) return;
+                  SPopup.confirm({
+                    title: esVenta ? "Anular venta" : "Anular compra",
+                    message: `¿Está seguro de que desea anular esta ${esVenta ? "venta" : "compra"}? Esta acción no se puede deshacer.`,
+                    onPress: () => {
+                      const notificationKey = `anular_${item.key_compra_venta}`;
+                      this.setState({ anulando: true });
+                      SNotification.send({ key: notificationKey, title: esVenta ? "Anulando venta..." : "Anulando compra...", type: "loading" });
+                      const promesa = esVenta
+                        ? MDL.caja.anular_venta({ key_compra_venta: item.key_compra_venta })
+                        : MDL.caja.anular_compra({ key_compra_venta: item.key_compra_venta });
+                      promesa
+                        .then(() => {
+                          this.setState({ anulando: false });
+                          SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
+                        })
+                        .catch((error) => {
+                          this.setState({ anulando: false });
+                          SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
+                        });
+                    }
+                  });
+                }}>
+                <SIconApp width={13} height={13} name={"cancelado"} fill={STheme.color.danger} />
+                <SView width={3} />
+                <SText fontSize={10} color={STheme.color.danger}>{esVenta ? "Anular venta" : "Anular compra"}</SText>
+              </SView>
+              <SView width={8} />
+            </>}
             {item.tipo === "compra" && <>
               <SView row style={{
                 borderWidth: 1,
@@ -229,7 +271,7 @@ export default class DetalleItem extends Component {
         </SView>
       </SView>
 
-      <SView center style={{ position: "absolute", right: 0, top: 4 }}>
+      <SView center style={{ position: "absolute", right: 0, top: 4, opacity: anulado ? 0.45 : 1 }}>
         <SView center>
           <SText fontSize={18} bold color={color}>
             {moneda?.observacion} {SMath.formatMoney(monto)}

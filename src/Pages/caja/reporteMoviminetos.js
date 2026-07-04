@@ -43,6 +43,15 @@ export default class reporteMoviminetos extends Component {
         }
     }
 
+    estaAnulado(row, dataset) {
+        const key_compra_venta = row?.key_compra_venta;
+        if (!key_compra_venta) return false;
+        return (dataset || []).some(d =>
+            d.key_compra_venta === key_compra_venta &&
+            ["anulacion_venta", "anulacion_compra"].includes((d.tipo || "").toLowerCase())
+        );
+    }
+
     colorTipoPago(estado) {
         switch (estado?.toUpperCase()) {
             case "CAJA":
@@ -242,7 +251,18 @@ export default class reporteMoviminetos extends Component {
                         return;
                     }
 
-                    //anular venta
+                    const tipoLower = (e.row?.tipo || "").toLowerCase();
+                    const esVenta = tipoLower === "venta";
+                    const esCompra = tipoLower === "compra";
+                    const esAnulacion = tipoLower === "anulacion_venta" || tipoLower === "anulacion_compra";
+                    const dataset = this.DinamicTable?.data || this.state.data || [];
+                    const yaAnulada = this.estaAnulado(e.row, dataset);
+                    const puedeAnular = !esAnulacion && !yaAnulada && (
+                        esVenta ? MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })
+                            : esCompra ? MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" })
+                                : false
+                    );
+
                     const menuOptions = [
                         // View Vouchers
                         {
@@ -257,6 +277,34 @@ export default class reporteMoviminetos extends Component {
                                 PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, vouchers);
                             },
                         },
+                        ...(puedeAnular ? [{
+                            label: esVenta ? 'Anular venta' : 'Anular compra',
+                            icon: <SIconApp name="cancelado" fill="#db0606ff" width={16} />,
+                            onPress: () => {
+                                SPopup.confirm({
+                                    title: esVenta ? "Anular venta" : "Anular compra",
+                                    message: `¿Está seguro de que desea anular esta ${esVenta ? "venta" : "compra"}? Esta acción no se puede deshacer.`,
+                                    onPress: () => {
+                                        const notificationKey = `anular_${e.row?.key_compra_venta}`;
+                                        SNotification.send({ key: notificationKey, title: esVenta ? "Anulando venta..." : "Anulando compra...", type: "loading" });
+                                        const promesa = esVenta
+                                            ? MDL.caja.anular_venta({ key_compra_venta: e.row?.key_compra_venta })
+                                            : MDL.caja.anular_compra({ key_compra_venta: e.row?.key_compra_venta });
+                                        promesa
+                                            .then(() => {
+                                                SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
+                                                this.loadInitialData().then(data => {
+                                                    this.setState({ data });
+                                                    if (this.DinamicTable) this.DinamicTable.loadData();
+                                                });
+                                            })
+                                            .catch((error) => {
+                                                SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
+                                            });
+                                    }
+                                });
+                            },
+                        }] : []),
                         // View Accounting Voucher (Conditional)
                         ...(e.row?.key_comprobante ? [{
                             label: 'Ver Comprobante Contable',
@@ -277,6 +325,11 @@ export default class reporteMoviminetos extends Component {
                         label: 'Opciones',
                         options: menuOptions,
                     });
+                }}
+
+                buildRowStyle={({ item, dinamicTable }) => {
+                    const anulado = this.estaAnulado(item, dinamicTable?.data);
+                    return anulado ? { opacity: 0.45 } : {};
                 }}
 
                 loadInitialState={async () => ({
