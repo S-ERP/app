@@ -383,13 +383,19 @@ export default class Abierta extends Component {
                     ListHeaderComponent={this.renderHeader}
                     // ItemSeparatorComponent={a => <SHr h={8} />}
                     renderItem={opcionSeleccionada === "movimientos"
-                        ? ({ item, index }) => (
-                            <SView col={"xs-12"} center >
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
-                                    <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} soloLectura={soloLectura} />
+                        ? ({ item, index }) => {
+                            const anulado = !!item.key_compra_venta && this.state.movimientos.some(m =>
+                                m.key_compra_venta === item.key_compra_venta &&
+                                (m.tipo === "anulacion_venta" || m.tipo === "anulacion_compra")
+                            );
+                            return (
+                                <SView col={"xs-12"} center >
+                                    <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
+                                        <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} soloLectura={soloLectura} anulado={anulado} />
+                                    </SView>
                                 </SView>
-                            </SView>
-                        )
+                            );
+                        }
                         : ({ item, index }) => (
                             <SView col={"xs-12"} center>
                                 <SView col={"xs-11 sm-10 md-8 lg-6"}>
