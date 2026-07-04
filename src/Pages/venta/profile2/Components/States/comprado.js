@@ -64,7 +64,7 @@ export default class index extends Component {
                             if (!puedeAnularCompra) {
                                 SNotification.send({
                                     key: "anular_compra_permiso",
-                                    title: "Sin permisos para anular",
+                                    title: "Sin permisos para anular alvaro",
                                     body: `Tu rol dentro del sistema no permite anular ${esVenta ? "ventas" : "compras"}. Si crees que esto es un error, comunícate con el administrador del sistema.`,
                                     color: STheme.color.danger,
                                     time: 6000,

@@ -117,7 +117,8 @@ export default class vendido extends Component {
         const prueba = this.props.data;
         const esVenta = prueba?.tipo === "venta";
         const puedeAnularVenta = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" });
-        const puedeAnularCompra = MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" });
+
+        console.log("puedeAnularVenta", puedeAnularVenta);
 
         console.log("puedeAnularVenta", JSON.stringify(prueba));
         const data = this.props.data;
@@ -144,10 +145,10 @@ export default class vendido extends Component {
                 ) : (
                     <SView
                         onPress={() => {
-                            if (!puedeAnularVenta && prueba.tipo === "venta") {
+                            if (!puedeAnularVenta) {
                                 SNotification.send({
                                     key: "anular_venta_permiso",
-                                    title: "Sin permisos para anular",
+                                    title: "Sin permisos para anular ventas",
                                     body: "Tu rol dentro del sistema no permite anular ventas. Si crees que esto es un error, comunícate con el administrador del sistema.",
                                     color: STheme.color.danger,
                                     time: 6000,
@@ -155,70 +156,29 @@ export default class vendido extends Component {
                                 return;
                             }
 
-                            if (!puedeAnularCompra && prueba.tipo === "compra") {
-                                SNotification.send({
-                                    key: "anular_compra_permiso",
-                                    title: "Sin permisos para anular",
-                                    body: "Tu rol dentro del sistema no permite anular compras. Si crees que esto es un error, comunícate con el administrador del sistema.",
-                                    color: STheme.color.danger,
-                                    time: 6000,
-                                });
-                                return;
-                            }
 
 
-                            if (puedeAnularVenta && prueba.tipo === "venta") {
-
-                                SPopup.confirm({
-                                    title: "Anular venta",
-                                    message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
-                                    onPress: () => {
-                                        const notificationKey = `anular_v_${this.data?.key}`;
-                                        SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading" });
-                                        MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
-                                            .then(() => {
-                                                SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success });
-                                                this.setState({ anulada: true });
-                                                if (this.props.onReload) this.props.onReload({ anulada: true });
-                                            })
-                                            .catch((error) => {
-                                                SNotification.send({ key: notificationKey, title: "Error al anular venta", body: error?.message || String(error), color: STheme.color.danger });
-                                            });
-                                    }
-                                });
-                            }
 
 
-                            if (puedeAnularCompra && prueba.tipo === "compra") {
-
-                                console.log("Anulando compra con key:", JSON.stringify(this.data?.key_compra_venta));
-
-                                console.log("Anulando compra con key:", this.data?.key_compra_venta);
-                                SPopup.confirm({
-                                    title: "Anular compra",
-                                    message: "¿Está seguro de que desea anular esta compra? Esta acción no se puede deshacer.",
-                                    onPress: () => {
-                                        const notificationKey = `anular_c_${this.data?.key_compra_venta}`;
-                                        SNotification.send({ key: notificationKey, title: "Anulando compra...", type: "loading" });
-
-                                        SSocket.sendPromise({
-                                            service: "caja",
-                                            component: "caja_detalle",
-                                            type: "anularCompra",
-                                            key_empresa: MDL.empresa.select?.key,
-                                            key_usuario: MDL.usuario.session?.key,
-                                            key_compra_venta: this.data?.key_compra_venta,
-                                            key_caja: MDL.caja.activa?.key,
-                                        }).then(() => {
-                                            SNotification.send({ key: notificationKey, title: "Compra anulada", body: "La compra se anuló correctamente.", color: STheme.color.success });
+                            SPopup.confirm({
+                                title: "Anular venta",
+                                message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
+                                onPress: () => {
+                                    const notificationKey = `anular_v_${this.data?.key}`;
+                                    SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading" });
+                                    MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
+                                        .then(() => {
+                                            SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success });
                                             this.setState({ anulada: true });
                                             if (this.props.onReload) this.props.onReload({ anulada: true });
-                                        }).catch((error) => {
-                                            SNotification.send({ key: notificationKey, title: "Error al anular compra", body: error?.message || String(error), color: STheme.color.danger });
+                                        })
+                                        .catch((error) => {
+                                            SNotification.send({ key: notificationKey, title: "Error al anular venta", body: error?.message || String(error), color: STheme.color.danger });
                                         });
-                                    }
-                                });
-                            }
+                                }
+                            });
+
+
 
 
                         }}
