@@ -124,9 +124,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 
   getTotales(value: any) {
     var compra_venta_detalle = value
-    console.log("compra_venta_detalle", compra_venta_detalle)
-    var descuentoData = compra_venta_detalle.descuento;
     if (!compra_venta_detalle) return null;
+    var descuentoData = compra_venta_detalle.descuento ?? 0;
     var t = {
       subtotal: 0,
       descuento: 0,
@@ -135,7 +134,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       total_a_pagar: 0,
       credito_fiscal: 0,
     }
-    Object.values(compra_venta_detalle.detalle).map(((obj: any) => {
+    Object.values(compra_venta_detalle.detalle || {}).map(((obj: any) => {
       if (!obj.estado) return;
       const { precio_unitario, precio_unitario_base, precio_facturado, cantidad, descuento } = obj;
       const precio = (((precio_unitario_base ?? 0) * cantidad) - (descuento ?? 0));

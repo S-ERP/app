@@ -83,10 +83,29 @@ export default class Abierta extends Component {
                 m.empresa_tipo_pago = empresa_tipo_pago?.[m.key_empresa_tipo_pago];
             });
 
+            // Agrupar cada anulación justo debajo de su venta/compra original para que se entienda mejor.
+            const ANULACION_TIPOS = ["anulacion_venta", "anulacion_compra"];
+            const anulaciones = movimientos.filter(m => ANULACION_TIPOS.includes(m.tipo));
+            const originales = movimientos.filter(m => !ANULACION_TIPOS.includes(m.tipo));
+            const anulacionesUsadas = new Set();
+            const movimientosAgrupados = [];
+            originales.forEach(orig => {
+                movimientosAgrupados.push(orig);
+                anulaciones.forEach(anu => {
+                    if (!anulacionesUsadas.has(anu) && orig.key_compra_venta && anu.key_compra_venta === orig.key_compra_venta) {
+                        movimientosAgrupados.push(anu);
+                        anulacionesUsadas.add(anu);
+                    }
+                });
+            });
+            anulaciones.forEach(anu => {
+                if (!anulacionesUsadas.has(anu)) movimientosAgrupados.push(anu);
+            });
+
             //DETALLE COMPRA VENTA
             const rawDetalle = await MDL.compra_venta.getCompraVentaDetalleCaja("venta", "2025-01-01", "2030-09-05", caja?.key);
             const detalle = Array.isArray(rawDetalle) ? rawDetalle : Object.values(rawDetalle ?? {});
-            if (this._mounted) this.setState({ movimientos, tipo_pago, ready: true, detalle });
+            if (this._mounted) this.setState({ movimientos: movimientosAgrupados, tipo_pago, ready: true, detalle });
         } catch (e) {
             if (this._mounted) this.setState({ ready: true });
             SNotification.send({
@@ -383,13 +402,19 @@ export default class Abierta extends Component {
                     ListHeaderComponent={this.renderHeader}
                     // ItemSeparatorComponent={a => <SHr h={8} />}
                     renderItem={opcionSeleccionada === "movimientos"
-                        ? ({ item, index }) => (
-                            <SView col={"xs-12"} center >
-                                <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
-                                    <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} soloLectura={soloLectura} />
+                        ? ({ item, index }) => {
+                            const anulado = !!item.key_compra_venta && this.state.movimientos.some(m =>
+                                m.key_compra_venta === item.key_compra_venta &&
+                                (m.tipo === "anulacion_venta" || m.tipo === "anulacion_compra")
+                            );
+                            return (
+                                <SView col={"xs-12"} center >
+                                    <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
+                                        <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} soloLectura={soloLectura} anulado={anulado} />
+                                    </SView>
                                 </SView>
-                            </SView>
-                        )
+                            );
+                        }
                         : ({ item, index }) => (
                             <SView col={"xs-12"} center>
                                 <SView col={"xs-11 sm-10 md-8 lg-6"}>

@@ -16,6 +16,7 @@ type SelectTipoPagoCompraProps = {
     color?: string,
     onSelect?: (item: any) => void
 }
+// alvaro tengo que trabajar en que no permita 2 bveces registar porque eso es un bug
 export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompraProps> {
     static openPopup(props: SelectTipoPagoCompraProps) {
         SPopup.open({

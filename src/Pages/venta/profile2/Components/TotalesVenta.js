@@ -35,7 +35,7 @@ export default class TotalesVenta extends Component {
         if (!t) return null;
         this.state.totales = t;
         if (!this.state.monedas) return null;
-        let moneda = this.state.monedas.find(m => m.key === this.data.key_moneda);
+        let moneda = this.state.monedas.find(m => m.key === this.data.key_moneda) || { observacion: "", descripcion: "" };
         return <SView col={"xs-12"} center>
             <SHr />
             {this.totales_item({ label: `SUBTOTAL ${moneda.observacion}`, bold: true, value: this.state.totales.subtotal })}

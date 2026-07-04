@@ -37,7 +37,7 @@ export default class Root extends Component {
 
     }
 
-    async loadData() {
+    async loadData(opts) {
 
         let empresa = MDL.empresa.select
         let data = await MDL.compra_venta.getJson(this.pk);
@@ -51,6 +51,16 @@ export default class Root extends Component {
 
         if (!t.total_a_pagar) {
             t.total_a_pagar = 0;
+        }
+
+        if (opts?.anulada) {
+            data.estado = 0;
+        }
+
+        if (data.tipo) {
+            this.tipoConocido = data.tipo;
+        } else if (this.tipoConocido) {
+            data.tipo = this.tipoConocido;
         }
 
         let moneda = monedas.find(m => m.key === data.key_moneda);
@@ -119,6 +129,10 @@ export default class Root extends Component {
 
         console.log("STATEOK", dataOk?.state)
         var ITEM = States[dataOk?.state];
+        const estadoAnulado = ["anulado", "anulada", "cancelado", "cancelada"].includes(String(dataOk?.state || "").toLowerCase());
+        if (Number(dataOk?.estado) === 0 || estadoAnulado) {
+            ITEM = dataOk?.tipo === "venta" ? States["vendido"] : States["comprado"];
+        }
         if (!ITEM) {
             ITEM = States["default"];
         }
@@ -129,9 +143,9 @@ export default class Root extends Component {
                         <ITEM
                             // key={dataOk?.key + "_" + dataOk?.state}
                             data={this.state.datas}
-                            onReload={() => {
+                            onReload={(opts) => {
                                 console.log("RELOAD 3")
-                                this.loadData()
+                                this.loadData(opts)
                                 // this.componentDidMount();
                                 // this.forceUpdate()
                             }} />
