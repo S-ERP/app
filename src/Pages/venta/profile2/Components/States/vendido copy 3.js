@@ -25,6 +25,7 @@ export default class vendido extends Component {
             data: props.data,
             miSucursal: null,
             anulada: false,
+            anulando: false,
         };
         this.popupAbierto = false;
     }
@@ -112,19 +113,19 @@ export default class vendido extends Component {
             })
         })
     }
+    //alvaro
     render() {
         const prueba = this.props.data;
-        const puedeAnularVenta = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" });
-        const puedeAnularCompra = MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" });
-
-        console.log("puedeAnularVenta", JSON.stringify(prueba));
-        const data = this.props.data;
+        const esVenta = prueba?.tipo === "venta";
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
         this.isAdmin = !!permiso ? true : Model.compra_venta_participante.Action.allowAdmin({ key_compra_venta: this.props.data.key });
         this.isSuperAdmin = !!permiso;
+        // reutiliza el mismo permiso "admin" ya validado en el sistema de roles, en vez de una clave nueva no registrada
+        const puedeAnularVenta = this.isAdmin;
         this.sucursal = this.state?.miSucursal;
         this.data = { ...prueba, sucursal: this.state?.miSucursal };
-        const anulada = this.state.anulada || Number(this.data?.estado) === 0;
+        const estadoAnulado = ["anulado", "anulada", "cancelado", "cancelada"].includes(String(this.data?.state || "").toLowerCase());
+        const anulada = this.state.anulada || Number(this.data?.estado) === 0 || estadoAnulado;
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                 {this.data?.factura?.cuf ? <>
@@ -134,92 +135,48 @@ export default class vendido extends Component {
                         <SText bold fontSize={18} style={{ textTransform: "uppercase" }}>Factura Nro. {this.data?.factura?.numero}</SText>
                     </SView>
                 </> : null}
-                <Estado data={this.data} />
+                {!anulada && <Estado data={this.data} />}
                 {anulada ? (
                     <SView style={{ backgroundColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}>
-                        <SText bold color={"#fff"} fontSize={12}>VENTA ANULADA</SText>
+                        <SText bold color={"#fff"} fontSize={12}>{esVenta ? "VENTA ANULADA" : "COMPRA ANULADA"}</SText>
                     </SView>
                 ) : (
                     <SView
                         onPress={() => {
-                            if (!puedeAnularVenta && prueba.tipo === "venta") {
+                            if (this.state.anulando) return;
+                            if (!puedeAnularVenta) {
                                 SNotification.send({
                                     key: "anular_venta_permiso",
                                     title: "Sin permisos para anular",
-                                    body: "Tu rol dentro del sistema no permite anular ventas. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                    body: `Tu rol dentro del sistema no permite anular ${esVenta ? "ventas" : "compras"}. Si crees que esto es un error, comunícate con el administrador del sistema.`,
                                     color: STheme.color.danger,
                                     time: 6000,
                                 });
                                 return;
                             }
-
-                            if (!puedeAnularCompra && prueba.tipo === "compra") {
-                                SNotification.send({
-                                    key: "anular_compra_permiso",
-                                    title: "Sin permisos para anular",
-                                    body: "Tu rol dentro del sistema no permite anular compras. Si crees que esto es un error, comunícate con el administrador del sistema.",
-                                    color: STheme.color.danger,
-                                    time: 6000,
-                                });
-                                return;
-                            }
-
-
-                            if (puedeAnularVenta && prueba.tipo === "venta") {
-
-                                SPopup.confirm({
-                                    title: "Anular venta",
-                                    message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
-                                    onPress: () => {
-                                        const notificationKey = `anular_v_${this.data?.key}`;
-                                        SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading" });
-                                        MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
-                                            .then(() => {
-                                                SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success });
-                                                this.setState({ anulada: true });
-                                                if (this.props.onReload) this.props.onReload({ anulada: true });
-                                            })
-                                            .catch((error) => {
-                                                SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.message || String(error), color: STheme.color.danger });
-                                            });
-                                    }
-                                });
-                            }
-
-
-                             if (puedeAnularCompra && prueba.tipo === "compra") {
-
-                                SPopup.confirm({
-                                    title: "Anular compra",
-                                    message: "¿Está seguro de que desea anular esta compra? Esta acción no se puede deshacer.",
-                                    onPress: () => {
-                                        const notificationKey = `anular_c_${this.data?.key}`;
-                                        SNotification.send({ key: notificationKey, title: "Anulando compra...", type: "loading" });
-
-                                        SSocket.sendPromise({
-                                            service: "caja",
-                                            component: "caja_detalle",
-                                            type: "anularCompra",
-                                            key_empresa: MDL.empresa.select?.key,
-                                            key_usuario: MDL.usuario.session?.key,
-                                            key_compra_venta: this.data?.key,
-                                            key_caja: MDL.caja.activa?.key,
-                                        }).then(() => {
-                                            SNotification.send({ key: notificationKey, title: "Compra anulada", body: "La compra se anuló correctamente.", color: STheme.color.success });
-                                            this.setState({ anulada: true });
+                            SPopup.confirm({
+                                title: esVenta ? "Anular venta" : "Anular compra",
+                                message: `¿Está seguro de que desea anular esta ${esVenta ? "venta" : "compra"}? Esta acción no se puede deshacer.`,
+                                onPress: () => {
+                                    const notificationKey = `anular_v_${this.data?.key}`;
+                                    this.setState({ anulando: true });
+                                    SNotification.send({ key: notificationKey, title: esVenta ? "Anulando venta..." : "Anulando compra...", type: "loading" });
+                                    MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
+                                        .then(() => {
+                                            SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
+                                            this.setState({ anulada: true, anulando: false });
                                             if (this.props.onReload) this.props.onReload({ anulada: true });
-                                        }).catch((error) => {
+                                        })
+                                        .catch((error) => {
+                                            this.setState({ anulando: false });
                                             SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.message || String(error), color: STheme.color.danger });
                                         });
-                                    }
-                                });
-                            }
-
-
+                                }
+                            });
                         }}
-                        style={{ backgroundColor: STheme.color.danger + "22", borderWidth: 1, borderColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}
+                        style={{ backgroundColor: STheme.color.danger + "22", borderWidth: 1, borderColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6, opacity: this.state.anulando ? 0.5 : 1 }}
                     >
-                        <SText bold color={STheme.color.danger} fontSize={12}>ANULAR wVENTA</SText>
+                        <SText bold color={STheme.color.danger} fontSize={12}>{esVenta ? "ANULAR VENTA" : "ANULAR COMPRA"}</SText>
                     </SView>
                 )}
             </SView>
