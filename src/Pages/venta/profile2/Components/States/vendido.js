@@ -113,7 +113,7 @@ export default class index extends Component {
     }
     render() {
         const prueba = this.props.data;
-// anular venta
+        // anular venta
 
         const data = this.props.data;
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
@@ -131,6 +131,34 @@ export default class index extends Component {
                     </SView>
                 </> : null}
                 <Estado data={this.data} />
+                <SView
+                    onPress={() => {
+                        SPopup.confirm({
+                            title: "Anular venta1",
+                            message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
+                            onPress: () => {
+
+                                alert("Función de anulación de venta estamos trabajando.");
+
+                                const notificationKey = `anular_v_${this.data?.key}`;
+                                SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading" });
+                                MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
+                                    .then(() => {
+                                        SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success });
+                                        if (this.props.onReload) this.props.onReload();
+
+                                        cuanod anule , que salga un mensaje venta anulada
+                                    })
+                                    .catch((error) => {
+                                        SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.message || String(error), color: STheme.color.danger });
+                                    });
+                            }
+                        });
+                    }}
+                    style={{ backgroundColor: STheme.color.danger + "22", borderWidth: 1, borderColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}
+                >
+                    <SText bold color={STheme.color.danger} fontSize={12}>ANULAR wVENTA</SText>
+                </SView>
             </SView>
             <SView col={"xs-12"} padding={10} row>
                 <SView style={{ paddingRight: 15 }} center>
