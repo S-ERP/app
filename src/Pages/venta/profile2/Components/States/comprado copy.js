@@ -78,18 +78,7 @@ export default class index extends Component {
                                     const notificationKey = `anular_c_${this.data?.key}`;
                                     this.setState({ anulando: true });
                                     SNotification.send({ key: notificationKey, title: esVenta ? "Anulando venta..." : "Anulando compra...", type: "loading" });
-                                    const promesa = esVenta
-                                        ? MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
-                                        : SSocket.sendPromise({
-                                            service: "caja",
-                                            component: "caja_detalle",
-                                            type: "anularCompra",
-                                            key_empresa: MDL.empresa.select?.key,
-                                            key_usuario: MDL.usuario.session?.key,
-                                            key_compra_venta: this.data?.key,
-                                            key_caja: MDL.caja.activa?.key,
-                                        });
-                                    promesa
+                                    MDL.caja.anular_venta({ key_compra_venta: this.data?.key })
                                         .then(() => {
                                             SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
                                             this.setState({ anulada: true, anulando: false });
@@ -97,7 +86,7 @@ export default class index extends Component {
                                         })
                                         .catch((error) => {
                                             this.setState({ anulando: false });
-                                            SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
+                                            SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.message || String(error), color: STheme.color.danger });
                                         });
                                 }
                             });
