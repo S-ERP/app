@@ -1,5 +1,5 @@
 import React from 'react';
-import { SDate, SMath, STheme } from "servisofts-component";
+import { SDate, STheme } from "servisofts-component";
 import * as SPDF from 'servisofts-rn-spdf';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
@@ -199,101 +199,6 @@ export default class PdfCierreCaja {
         );
     }
 
-    static VentasCaja(lista = []) {
-        console.log("LISTA PDF", lista);
-        return (
-            <SPDF.View style={{ width: "100%" }}>
-
-                <SPDF.Text style={label}>
-                    Ventas en Caja
-                </SPDF.Text>
-
-                {PdfCierreCaja.espacio(10)}
-
-
-                {lista.map((item, i) => (
-                    < SPDF.View
-                        key={i}
-                        style={{
-                            width: "100%",
-                            minHeight: 22,
-                            flexDirection: "row"
-                        }}>
-
-                        <SPDF.View style={{ flex: 1, justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {new SDate(item.fecha_on).toString("HH:mm")}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.cliente?.razon_social ?? "-"}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.observacion ?? "-"}
-                            </SPDF.Text>
-                        </SPDF.View>
-
-                        {/* <SPDF.View style={{ flex: 1, justifyContent: "center", paddingLeft: 3 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.cliente?.nombre ?? "-"}
-                            </SPDF.Text>
-                        </SPDF.View>
-
-                        <SPDF.View style={{ width: 110, justifyContent: "center", paddingLeft: 3 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.observacion ?? "-"}
-                            </SPDF.Text>
-                        </SPDF.View> */}
-                        <SPDF.View style={{ flex: 1, justifyContent: "center", paddingRight: 3 }}>
-                            {(item?.detalle?.detalles ?? []).map((d, index) => (
-                                <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                    • {d.descripcion} {d.precio_unitario_base} {item?.moneda_base?.observacion} x{d.cantidad}
-                                </SPDF.Text>))}
-                        </SPDF.View>
-
-                        <SPDF.View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end", paddingRight: 3 }}>
-                            {(item?.items ?? []).map((d, index) => (
-                                <SPDF.View key={index} style={{ alignItems: "flex-end" }} >
-                                    <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                        {d?.tipo}
-                                    </SPDF.Text>
-                                    <SPDF.View style={{ width: 8 }} />
-                                    <SPDF.Text style={{ ...text, fontSize: 11, fontWeight: "bold" }} >
-                                        {formatCurrency(d?.monto, d.moneda?.observacion)}
-                                        {/* {d?.monto} */}
-                                    </SPDF.Text>
-                                </SPDF.View>
-                            ))}
-
-                            {/* <SPDF.View style={line} /> */}
-                            {/* <SPDF.Text style={{ ...text, fontSize: 13, fontWeight: "bold" }}>
-                                {item?.moneda_base?.observacion} {formatCurrency(
-                                    item.items.reduce((a, b) => a + Number(b.monto), 0)
-                                )}
-                            </SPDF.Text> */}
-                            {/* <SPDF.View
-                                style={{
-                                    width: 90,          // Ajusta el ancho según necesites
-                                    // flex: 1,
-                                    height: 1,
-                                    backgroundColor: STheme.color.text,
-                                    marginTop: 4,
-                                    marginBottom: 4,
-                                }}
-                            /> */}
-                            <SPDF.Text style={{ ...text, fontSize: 13, fontWeight: "bold" }}>
-                                {formatCurrency(item?.detalle?.cuotas?.total_base, item?.moneda_base?.observacion)}
-                            </SPDF.Text>
-                        </SPDF.View>
-
-                    </SPDF.View>
-
-                ))
-                }
-
-            </SPDF.View>
-        );
-    }
-
     static Firmas() {
         return (
             <SPDF.View style={{ width: "100%", marginTop: 40, flexDirection: "row" }}>
@@ -335,18 +240,10 @@ export default class PdfCierreCaja {
             cajero: usuarios[cajaRaw.key_usuario]
         };
 
-        const [movimientosRaw, empresa_tipo_pago, rawDetalle] = await Promise.all([
+        const [movimientosRaw, empresa_tipo_pago] = await Promise.all([
             MDL.caja.getDetalle(key_caja),
-            MDL.caja.empresa_tipo_pago_getAll(),
-            MDL.compra_venta.getCompraVentaDetalleCaja(
-                "venta",
-                "2025-01-01",
-                "2030-09-05",
-                key_caja
-            )
+            MDL.caja.empresa_tipo_pago_getAll()
         ]);
-
-
 
         movimientosRaw.sort((a, b) =>
             new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() -
@@ -384,7 +281,6 @@ export default class PdfCierreCaja {
             }
 
             return {
-                key_compra_venta: m.key_compra_venta,
                 hora: new SDate(m.fecha_on).toString("HH:mm"),
                 descripcion: m.descripcion,
                 persona: usuarios[m.key_usuario]?.Nombres || "",
@@ -411,43 +307,6 @@ export default class PdfCierreCaja {
                 egresos += m.monto;
             }
         });
-
-        //detalle venta
-        const detalle = Array.isArray(rawDetalle)
-            ? rawDetalle
-            : Object.values(rawDetalle ?? {});
-
-        const ventasCaja = movimientos.reduce((acc, item) => {
-
-            const key = item.key_compra_venta;
-
-            if (!key) return acc;
-
-            if (!acc[key]) {
-                acc[key] = {
-                    key_compra_venta: key,
-                    fecha_on: item.fecha_on,
-                    items: [],
-                    detalle: detalle.find(d => d.key === key),
-                    moneda_base: moneda_base
-                };
-            }
-
-            acc[key].items.push(item);
-
-            // const campo = tiposMap[item.tipo_];
-
-            // if (campo) {
-            //     acc[key][campo] = true;
-            // }
-
-            return acc;
-
-        }, {});
-
-        const listaVentas = Object.values(ventasCaja);
-        //fin detalle venta
-
         const resumen = [];
 
         resumen.push({
@@ -503,12 +362,7 @@ export default class PdfCierreCaja {
                 {PdfCierreCaja.Resumen(resumen)}
                 {PdfCierreCaja.espacio()}
                 {PdfCierreCaja.TablaPagos(empresa_tipo_pago_pv)}
-                {PdfCierreCaja.espacio(20)}
-                {PdfCierreCaja.linea()}
-                {PdfCierreCaja.VentasCaja(listaVentas)}
-                {PdfCierreCaja.espacio(40)}
-                {/* {PdfCierreCaja.linea()} */}
-                {/* {PdfCierreCaja.espacio()} */}
+                {PdfCierreCaja.espacio()}
                 {PdfCierreCaja.Firmas()}
             </SPDF.Page>
         );

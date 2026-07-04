@@ -182,7 +182,7 @@ export default class DetalleItemVenta extends Component {
 
             <SView col={"xs-12"} style={{
               // ...styles.etiqueta,
-              backgroundColor: detalleTipo ? `${detalleTipo.color}66` : "transparent",
+              backgroundColor: detalleTipo ? `${detalleTipo?.color}66` : "transparent",
               borderColor: detalleTipo?.color ?? STheme.color.card,
             }}>
               <SView col> {(item?.detalle?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {moneda?.observacion} x{d.cantidad}</SText>))} </SView>
@@ -235,7 +235,7 @@ export default class DetalleItemVenta extends Component {
                   borderRadius: 4,
                   padding: 2,
                   borderWidth: 1,
-                  borderColor: tipoPagoInfo.color
+                  borderColor: tipoPagoInfo?.color
                 }} center>
                   <SText color={STheme.color.text} fontSize={10}>{tipoPagoInfo?.label}</SText>
                 </SView>
