@@ -192,7 +192,7 @@ export default class Lista extends Component {
                             {
                                 label: 'Ver perfil',
                                 icon: <SIcon name="Eyes" fill={STheme.color.text} />,
-                                onPress: () => SNavigation.navigate("/cliente/perfil", { key: e.row.key }),
+                                onPress: () => SNavigation.navigate("/cliente/perfil", { key: e.row.key, tipo: "proveedor" }),
                             },
                             {
                                 icon: <SIconApp name="Edit" />,
