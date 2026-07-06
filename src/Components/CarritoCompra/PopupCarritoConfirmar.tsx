@@ -43,6 +43,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     evento: any;
     proveedor: any;
     _mounted = false;
+    _posibleDuplicado = false;
     state: {
         almacen: any;
         moneda: any;
@@ -144,6 +145,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 return;
             }
             const total = this.state.subtotal * (selectedMoneda.tipo_cambio || 1);
+            //0
             SelectTipoPagoCompra.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total,
@@ -194,12 +196,27 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             )
         });
     }
+    confirmarSiPosibleDuplicado(): Promise<boolean> {
+        if (!this._posibleDuplicado) return Promise.resolve(true);
+        return new Promise((resolve) => {
+            SPopup.confirm({
+                title: "¿Reintentar la compra?",
+                message: "El intento anterior demoró demasiado y es posible que la compra ya se haya registrado en el servidor. ¿Está seguro de que desea reintentar? Esto podría generar una compra duplicada.",
+                onPress: () => resolve(true),
+                onClose: () => resolve(false),
+            } as any);
+        });
+    }
     handleSubmit = async (tipos_pago: any, key_moneda: string, saveRecurrente?: boolean) => {
+        if (!(await this.confirmarSiPosibleDuplicado())) return;
         try {
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
             const descripcionBase = this.inputDescripcionVenta?.getValue?.() || "";
+            
+            
             if (keyPago === "credito" && !this.proveedor) {
                 this.setState({ esCredito: true });
+                //1
                 SelectTipoPagoCompra.closePopup();
                 SNotification.send({
                     key: "compra_rapida",
@@ -216,10 +233,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 SNotification.send({ key: "compra_rapida", title: "Carrito vacío", body: "No hay productos en el carrito.", color: STheme.color.danger, time: 3000 });
                 return;
             }
+
+
             const almacen = this.state.almacen;
             const effectiveKeyMoneda = key_moneda || this.state.moneda?.key || this.props.moneda?.key;
             const keyUsuario = MDL.usuario.session?.key;
             const keyCaja = MDL.caja.activa?.key;
+
+
             const detalle = carritoItems.map((ci) => {
                 const modelo = (ci?.modelo || {}) as any;
                 return {
@@ -239,6 +260,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
             const descripcion = descripcionBase;
 
+           
+           
+           
+           
+           
             const data: any = {
                 descripcion: "",
                 observacion: descripcion,
@@ -264,49 +290,53 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             };
 
             SNotification.send({ key: "compra_rapida", title: "Cargando", type: "loading" });
-            if (saveRecurrente) {
-                await SSocket.sendPromise({
-                    service: "caja",
-                    component: "recurrente",
-                    type: "registro",
-                    estado: "cargando",
-                    data: {
-                        key_empresa: MDL.empresa.select?.key,
-                        key_usuario: MDL.usuario.session?.key,
-                        data: { service: "caja", component: "caja_detalle", type: "compra", estado: "cargando", data },
-                    },
-                });
-                SelectTipoPagoCompra.closePopup();
-                SNotification.remove("compra_rapida");
-            } else {
-                const compraResp = await SSocket.sendPromise({
-                    service: "caja",
-                    component: "caja_detalle",
-                    type: "compra",
-                    estado: "cargando",
-                    data,
-                });
-                const keyCompra = (compraResp as any)?.data?.key_compra_venta;
-                if (!keyCompra) throw new Error("El servidor no devolvió la clave de la compra.");
-                MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-                SelectTipoPagoCompra.closePopup();
-                SNotification.remove("compra_rapida");
-                SPopup.close("PopupCarritoConfirmar");
-                SPopup.close("PopupCarrito");
-                MDL.carrito.limpiarCarritoCompras();
-                this.showCompraPopup(keyCompra);
-                MDL.caja.dispatchEvent({ type: "onDetalleChange" });
-            }
-        } catch (error: any) {
-            const mensaje = error instanceof Error ? error.message : (error?.error || JSON.stringify(error));
-            console.error("Error al realizar la compra:", error);
-            SNotification.send({
-                key: "compra_rapida",
-                title: "Error al realizar la compra",
-                body: mensaje,
-                color: STheme.color.danger,
-                time: 4000,
+
+            const compraResp = await SSocket.sendPromise({
+                service: "caja",
+                component: "caja_detalle",
+                type: "compra",
+                estado: "cargando",
+                data,
             });
+            const keyCompra = (compraResp as any)?.data?.key_compra_venta;
+            if (!keyCompra) throw new Error("El servidor no devolvió la clave de la compra.");
+            MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
+            //3
+            SelectTipoPagoCompra.closePopup();
+            SNotification.remove("compra_rapida");
+
+
+            SPopup.close("PopupCarritoConfirmar");
+            SPopup.close("PopupCarrito");
+
+
+            
+            MDL.carrito.limpiarCarritoCompras();
+            this.showCompraPopup(keyCompra);
+            MDL.caja.dispatchEvent({ type: "onDetalleChange" });
+
+        } catch (error: any) {
+            const esTimeout = error?.error === "timeOut";
+            this._posibleDuplicado = esTimeout;
+            console.error("Error al realizar la compra:", error);
+            if (esTimeout) {
+                SNotification.send({
+                    key: "compra_rapida",
+                    title: "La compra tardó demasiado en responder",
+                    body: "No se pudo confirmar si la compra se registró. Verifique el historial de compras antes de reintentar.",
+                    color: STheme.color.danger,
+                    time: 7000,
+                });
+            } else {
+                const mensaje = error instanceof Error ? error.message : (error?.error || JSON.stringify(error));
+                SNotification.send({
+                    key: "compra_rapida",
+                    title: "Error al realizar la compra",
+                    body: mensaje,
+                    color: STheme.color.danger,
+                    time: 4000,
+                });
+            }
         }
     }
     render() {

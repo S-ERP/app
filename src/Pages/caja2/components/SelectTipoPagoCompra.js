@@ -356,20 +356,20 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     montoTotal += parseFloat(item.monto)
                                 });
 
-                               this.setState({ loading: true });
+                                this.setState({ loading: true });
 
-await new Promise(resolve => requestAnimationFrame(resolve));
+                                await new Promise(resolve => requestAnimationFrame(resolve));
 
-try {
-    if (this.props.onSelect) {
-        await this.props.onSelect(elm);
-    }
-} finally {
-    this._submitting = false;
-    if (this._mounted) {
-        this.setState({ loading: false });
-    }
-}
+                                try {
+                                    if (this.props.onSelect) {
+                                        await this.props.onSelect(elm);
+                                    }
+                                } finally {
+                                    this._submitting = false;
+                                    if (this._mounted) {
+                                        this.setState({ loading: false });
+                                    }
+                                }
                             }}>
                             {this.state.loading ? <SLoad /> : <SText bold color={STheme.color.text}>{"Aceptar"}</SText>}
                         </SView>

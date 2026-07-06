@@ -4,8 +4,8 @@ import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import FiltroMoneda from "../FiltroMoneda";
-import ComprobanteRollo from "../PDF/venta/ReciboSmall";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
+import ReciboCarta from "../PDF/venta/ReciboCarta";
 const HEADER_COLOR = "#198754";
 
 interface ClienteType {
@@ -39,6 +39,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         })
     }
     evento: any;
+    _posibleDuplicado = false;
     handleKeyDown = (e: any) => {
         if (e.key === "Escape") SPopup.close("PopupCarritoConfirmarResumen");
     }
@@ -79,16 +80,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 return;
             }
             const montoMaximo = total * (selectedMoneda?.tipo_cambio || 1);
+            //0
             SelectTipoPagoCompra.openPopup({
-                key_punto_venta: keyPuntoVenta,
+                key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo,
                 key_moneda: selectedMoneda.key,
-                onSelect: (tipos_pago: any[]) => {
-                    this.handleSubmit(tipos_pago, selectedMoneda.key, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado);
+                onSelect: async (tipos_pago: any[]) => {
+                  await  this.handleSubmit(tipos_pago, selectedMoneda.key, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado);
                 },
                 solo_para_caja: false,
-                venta: true,
-                color: "#198754",
+                venta: true
             });
         } catch (error) {
             const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
@@ -116,8 +117,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         </SView>
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.card}
                             style={{ borderWidth: 1, borderColor: "#198754" }}
-                            onPress={() => { ComprobanteRollo.imprimir(key_venta); }}>
-                            <SText color={STheme.color.text} center>Imprimir rollo</SText>
+                            onPress={() => { ReciboCarta.imprimir(key_venta); }}>
+                            <SText color={STheme.color.text} center>Imprimir PDF</SText>
                         </SView>
                     </SView>
                 </SView>
@@ -129,7 +130,20 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         return "F-" + Date.now();
     }
 
+    confirmarSiPosibleDuplicado(): Promise<boolean> {
+        if (!this._posibleDuplicado) return Promise.resolve(true);
+        return new Promise((resolve) => {
+            SPopup.confirm({
+                title: "¿Reintentar la venta?",
+                message: "El intento anterior demoró demasiado y es posible que la venta ya se haya registrado en el servidor. ¿Está seguro de que desea reintentar? Esto podría generar una venta duplicada.",
+                onPress: () => resolve(true),
+                onClose: () => resolve(false),
+            });
+        });
+    }
+
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean | undefined, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
+        if (!(await this.confirmarSiPosibleDuplicado())) return;
         try {
             const monedaActual = MDL.carrito.selectedMoneda || this.props.moneda || { key: key_moneda };
             const almacen = this.props.almacen || almacen_;
@@ -145,6 +159,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const clientefull = this.props.cliente || {};
             if (esCredito && !clientefull?.key) {
                 this.props.onTipoPagoChange(true);
+                //1
                 SelectTipoPagoCompra.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
                 SNotification.send({
@@ -263,9 +278,21 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             this.showVentaPopup(keyVenta);
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
-            const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
+            const esTimeout = error?.error === "timeOut";
+            this._posibleDuplicado = esTimeout;
             console.error("Error al realizar la venta:", error);
-            SNotification.send({ key: "venta_rapida", title: "Error al realizar la venta", body: mensaje, color: STheme.color.danger, time: 4000 });
+            if (esTimeout) {
+                SNotification.send({
+                    key: "venta_rapida",
+                    title: "La venta tardó demasiado en responder",
+                    body: "No se pudo confirmar si la venta se registró. Verifique el historial de ventas antes de reintentar.",
+                    color: STheme.color.danger,
+                    time: 7000,
+                });
+            } else {
+                const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
+                SNotification.send({ key: "venta_rapida", title: "Error al realizar la venta", body: mensaje, color: STheme.color.danger, time: 4000 });
+            }
         }
     }
 
