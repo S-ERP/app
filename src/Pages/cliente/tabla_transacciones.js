@@ -9,7 +9,7 @@ import SIconApp from '../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
-import SelectTipoPagoVenta from '../caja2/components/SelectTipoPagoVenta';
+import SelectTipoPagoVenta from '../caja2/components/SelectTipoPagoCompra';
 
 export default class TablaTransacciones extends Component {
     constructor(props) {

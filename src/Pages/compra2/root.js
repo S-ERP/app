@@ -6,7 +6,7 @@ import detalle from "../compra/detalle";
 import { FlatList } from "react-native";
 import SSocket from "servisofts-socket";
 import PButtom from "../../Components/PButtom";
-import SelectTipoPagoVenta from "../caja2/components/SelectTipoPagoVenta";
+import SelectTipoPagoVenta from "../caja2/components/SelectTipoPagoCompra";
 // import SelectTipoPago from "../caja2/components/SelectTipoPagoVenta";
 
 

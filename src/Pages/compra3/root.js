@@ -8,7 +8,7 @@ import SSocket from "servisofts-socket";
 import Categoria from "./Components/Categoria";
 import Modelo from "./Components/Modelo";
 import Carrito from "./Components/Carrito";
-import SelectTipoPagoVenta from "../caja2/components/SelectTipoPagoVenta";
+import SelectTipoPagoVenta from "../caja2/components/SelectTipoPagoCompra";
 
 export default class Root extends React.Component {
     cajaActiva = false; // Bandera sin usar state

@@ -8,7 +8,7 @@ import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
 import PButtom from '../../../Components/PButtom';
 import Root from '../root';
-import SelectTipoPagoVenta from '../../caja2/components/SelectTipoPagoVenta';
+import SelectTipoPagoVenta from '../../caja2/components/SelectTipoPagoCompra';
 // import SelectTipoPago from '../../caja2/components/SelectTipoPagoVenta';
 
 export default class Carrito extends Component {

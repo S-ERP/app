@@ -5,7 +5,7 @@ import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
-import SelectTipoPagoVenta from '../../../caja2/components/SelectTipoPagoVenta';
+import SelectTipoPagoVenta from '../../../caja2/components/SelectTipoPagoCompra';
 // import SelectTipoPago from '../../../caja2/components/SelectTipoPagoVenta';
 export default class PopupConfirmaPago extends Component {
     async componentDidMount() {

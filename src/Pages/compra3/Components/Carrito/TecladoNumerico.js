@@ -8,7 +8,7 @@ import FotoCliente from '../Foto/FotoCliente';
 import MDL from '../../../../MDL';
 // import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
-import SelectTipoPagoVenta from '../../../caja2/components/SelectTipoPagoVenta';
+import SelectTipoPagoVenta from '../../../caja2/components/SelectTipoPagoCompra';
 // import PopupCarritoFlotante from './PopupCarritoFlotante';
 // import Carrito from '../Carrito';
 // import Main from '../../Main';

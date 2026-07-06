@@ -6,7 +6,7 @@ import Transferencia from '../Acciones/Transferencia';
 import SIconApp from '../../../Assets/SIconApp';
 import TotalTipoPagoTabla from './TotalTipoPagoTabla';
 import PdfCierreCaja from '../../../Components/PDF/venta/PdfCierreCaja';
-import SelectTipoPagoVenta from './SelectTipoPagoVenta';
+import SelectTipoPagoVenta from './SelectTipoPagoCompra';
 import SSocket from 'servisofts-socket';
 import { ColorCompraVenta } from '../../../Config/theme';
 

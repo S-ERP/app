@@ -5,7 +5,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 // import SelectTipoPago from './SelectTipoPagoVenta';
 import SSocket from 'servisofts-socket';
-import SelectTipoPagoVenta from './SelectTipoPagoVenta';
+import SelectTipoPagoVenta from './SelectTipoPagoCompra';
 
 const data = {
     configuracion: {
