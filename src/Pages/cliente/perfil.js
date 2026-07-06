@@ -102,8 +102,6 @@ export default class Perfil extends Component {
                 }
             });
             e.articulos = art;
-
-            //suscripciones
             await SSocket.sendPromise({
                 service: "inventario",
                 component: "suscripcion",
@@ -113,7 +111,6 @@ export default class Perfil extends Component {
             }).then(f => {
                 e.suscripcion = f.data;
             }).catch(console.error);
-
             this.setState({ data: e, allArticulos: allArticulos, loading: false });
             SNotification.send({
                 key: notificationKey,
@@ -588,45 +585,33 @@ const Articulos = ({ cliente, onReload, loading }) => {
         </>)}
     </SView>
 }
-
 const procesarData = (data) => {
     const hoy = new Date();
-
     return data
-        // ✅ 1. Filtrar solo estado = 0
         .filter(item => item.estado !== 0)
-
-        // ✅ 2. Agregar campo activo
         .map(item => {
             const inicio = new Date(item.fecha_inicio);
             const fin = new Date(item.fecha_fin);
-
             let activo = 0;
-
             if (hoy >= inicio && hoy <= fin) {
-                activo = 1; // activo
+                activo = 1;
             } else if (hoy > fin) {
-                activo = 0; // pasado
+                activo = 0;
             } else if (hoy < inicio) {
-                activo = 2; // futuro
+                activo = 2;
             }
-
             return {
                 ...item,
                 activo
             };
         })
-
-        // ✅ 3. Ordenar por fecha_on DESC
         .sort((a, b) => new Date(b.fecha_on) - new Date(a.fecha_on));
 };
-
 const Suscripcion = ({ cliente, loading }) => {
     let suscripciones = []
     if (cliente?.suscripcion) {
         suscripciones = procesarData(cliente?.suscripcion || []);
     }
-
     return <SView col={"xs-12"} card padding={15} height style={cardTintStyle(cliente)}>
         <SText bold fontSize={16}>Suscripción</SText>
         <SHr height={20} />
