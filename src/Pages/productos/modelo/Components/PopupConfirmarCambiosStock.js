@@ -20,6 +20,7 @@ export default class PopupConfirmarCambiosStock extends React.Component {
     }
     proveedor = null;
     preciosCompra = {};
+    _posibleDuplicado = false;
 
     static open(props) {
         return new Promise((resolve) => {
@@ -127,7 +128,20 @@ export default class PopupConfirmarCambiosStock extends React.Component {
         }
     }
 
+    confirmarSiPosibleDuplicado() {
+        if (!this._posibleDuplicado) return Promise.resolve(true);
+        return new Promise((resolve) => {
+            SPopup.confirm({
+                title: "¿Reintentar la compra?",
+                message: "El intento anterior demoró demasiado y es posible que la compra ya se haya registrado en el servidor. ¿Está seguro de que desea reintentar? Esto podría generar una compra duplicada.",
+                onPress: () => resolve(true),
+                onClose: () => resolve(false),
+            });
+        });
+    }
+
     async handleSubmitCompra(tipos_pago, compras, perdidas) {
+        if (!(await this.confirmarSiPosibleDuplicado())) return;
         const { key_almacen, key_moneda, descripcion } = this.state;
         this.setState({ guardando: true });
         try {
@@ -181,10 +195,21 @@ export default class PopupConfirmarCambiosStock extends React.Component {
 
             this.props.onSuccess?.();
         } catch (err) {
+            const esTimeout = err?.error === "timeOut";
+            this._posibleDuplicado = esTimeout;
             console.error(err);
             SelectTipoPagoCompra.closePopup();
-            const msg = err instanceof Error ? err.message : (err?.error || String(err));
-            SNotification.send({ title: msg, color: STheme.color.danger, time: 5000 });
+            if (esTimeout) {
+                SNotification.send({
+                    title: "La compra tardó demasiado en responder",
+                    body: "No se pudo confirmar si la compra se registró. Verifique el historial de compras antes de reintentar.",
+                    color: STheme.color.danger,
+                    time: 7000,
+                });
+            } else {
+                const msg = err instanceof Error ? err.message : (err?.error || String(err));
+                SNotification.send({ title: msg, color: STheme.color.danger, time: 5000 });
+            }
             this.setState({ guardando: false });
         }
     }

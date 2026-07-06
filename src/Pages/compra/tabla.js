@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SMath, SIcon, SNotification } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SInput, SNavigation, SDate, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
+import { Dimensions, Linking } from 'react-native';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import Model from '../../Model';
 import MDL from '../../MDL';
-import FloatMenu from '../../Components/FloatMenu';
 import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteCarta from '../../Components/PDF/compra/ComprobanteCarta';
+import PopupUploadFactura from '../venta/Components/PopupUploadFactura';
 import FechaFullFilter from '../../Components/FechaFullFilter';
 
 const TIPO_PRODUCTO_MAP = {
@@ -25,6 +26,7 @@ export default class tabla extends Component {
         const pad = n => String(n).padStart(2, '0');
         const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
         this.state = {
+            pdfFiles: {},
             fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
             fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
         };
@@ -101,6 +103,367 @@ export default class tabla extends Component {
             </SView>
         </SView>;
     }
+    generateRandomCode() { return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`; }
+    renderMenuCompras(row) {
+        const openRegistrarFacturaTypePopup = (compra, tipoFactura) => {
+            const tipoLabels = {
+                manual: "Factura Manual",
+                siat: "Factura SIAT",
+                paraguay: "Factura Paraguay (Quatiy)",
+                colombia: "Factura Colombia (Sasuki)",
+            };
+            const tipoLabel = tipoLabels[tipoFactura] || tipoFactura;
+            if (tipoFactura === "paraguay" || tipoFactura === "colombia") {
+                return SPopup.open({
+                    key: "registrar_factura_" + tipoFactura + "_" + compra.key, content: (<SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>{tipoLabel}</SText>
+                        <SHr height={12} />
+                        <SText fontSize={14} color={STheme.color.text + "99"}>Estamos trabajando en esta funcionalidad.</SText>
+                        <SHr height={16} />
+                        <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
+                            <SView onPress={() => SPopup.close("registrar_factura_" + tipoFactura + "_" + compra.key)}>
+                                <SText color={STheme.color.text}>Cerrar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                    ),
+                });
+            }
+            let nit = "";
+            let razon_social = "";
+            let nroFactura = "";
+            let correo_electronico = "";
+            let telefono = "";
+            const isManual = tipoFactura === "manual";
+            const _pdf = this.state.pdfFiles?.[compra.key];
+            return SPopup.open({
+                key: "registrar_factura_" + tipoFactura + "_" + compra.key,
+                content: (
+                    <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>{tipoLabel}</SText>
+                        <SHr height={12} />
+                        <SText fontSize={13} color={STheme.color.text + "99"}> {isManual ? "Ingrese el número de factura y adjunte el PDF de la factura." : "Ingrese el NIT y la razón social para generar la factura SIAT."} </SText>
+                        <SHr height={16} />
+                        {tipoLabel === "Factura Manual" && (
+                            <>
+                                <SInput label="Nro. factura" placeholder="Ingrese el número de factura"
+                                    onChangeText={val => nroFactura = val}
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
+                                <SHr height={10} />
+                                <SView row center
+                                    style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8, padding: 10, backgroundColor: STheme.color.card + "22", }}>
+                                    <SView flex>
+                                        <SText fontSize={13} bold> PDF de factura </SText>
+                                        <SHr h={4} />
+                                        <SText fontSize={11}> {_pdf?.name ? "se ha seleccionado: " + _pdf.name : "Ningún archivo seleccionado"} </SText>
+                                    </SView>
+                                    <SView style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6, backgroundColor: STheme.color.primary, }}
+                                        onPress={() => {
+                                            PopupUploadFactura.open({
+                                                key_empresa: compra?.empresa?.key,
+                                                key_compra_venta: compra?.key,
+                                                onSuccess: (fileData) => {
+                                                    this.setState({
+                                                        pdfFiles: {
+                                                            ...this.state.pdfFiles,
+                                                            [compra.key]: fileData
+                                                        }
+                                                    }, () => {
+                                                        console.log("PDF guardado:", this.state.pdfFiles[compra.key]);
+                                                    });
+                                                }
+                                            });
+                                        }}
+                                    >
+                                        <SText color={STheme.color.text} bold> Seleccionar PDF </SText>
+                                    </SView>
+                                </SView>
+                            </>
+                        )}
+                        {tipoLabel === "Factura SIAT" && (
+                            <>
+                                <SInput
+                                    label="NIT / CI"
+                                    placeholder="Ingrese NIT o CI"
+                                    onChangeText={val => nit = val}
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
+                                <SHr height={10} />
+                                <SInput
+                                    label="Razón social"
+                                    placeholder="Ingrese razón social"
+                                    onChangeText={val => razon_social = val}
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
+                                <SHr height={10} />
+                                <SInput
+                                    label="Correo electrónico"
+                                    placeholder="Ingrese correo electrónico"
+                                    onChangeText={val => correo_electronico = val}
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
+                                <SHr height={10} />
+                                <SInput
+                                    label="Telefono"
+                                    placeholder="Ingrese número de teléfono"
+                                    onChangeText={val => telefono = val}
+                                    style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
+                            </>
+                        )}
+                        <SHr height={16} />
+                        <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
+                            <SView style={{ marginRight: 8 }} onPress={() => SPopup.close("registrar_factura_" + tipoFactura + "_" + compra.key)}>
+                                <SText color={STheme.color.text}>Cancelar</SText>
+                            </SView>
+                            <SView
+                                onPress={async () => {
+                                    const notificationKey = `factura_registrar_${tipoFactura}_${compra.key}`;
+                                    if (isManual) {
+                                        if (!nroFactura.trim()) {
+                                            SNotification.send({ key: notificationKey, title: "Complete los datos", body: "Debe ingresar el número de factura.", color: STheme.color.danger, time: 4000, });
+                                            return;
+                                        }
+                                    } else {
+                                        if (!nit.trim() || !razon_social.trim()) {
+                                            SNotification.send({ key: notificationKey, title: "Complete los datos", body: "Debe ingresar NIT y razón social.", color: STheme.color.danger, time: 4000, });
+                                            return;
+                                        }
+                                    }
+                                    try {
+                                        SNotification.send({ key: notificationKey, title: "Registrando factura...", type: "loading", });
+                                        const facturaData = {
+                                            tipo: tipoFactura,
+                                            nro_factura: isManual ? nroFactura : this.generateRandomCode(), cuf: "212E5B3D5BBF8FB31CCF8BE464EE98640C7F9CB6615194573A17DAF74",
+                                            nit: isManual ? "" : nit,
+                                            razon_social: isManual ? "" : razon_social,
+                                            correo_electronico: isManual ? "" : correo_electronico,
+                                            telefono: isManual ? "" : telefono,
+                                            detalles: (compra.detalles ?? []).map((d) => d.descripcion).join(", "),
+                                            archivo_pdf: isManual ? { name: this.state.pdfFiles?.[compra.key]?.name, type: this.state.pdfFiles?.[compra.key]?.type, } : {},
+                                            link_factura: isManual ? this.state.pdfFiles?.[compra.key]?.link || null : "",
+                                            factura_seleccionada: tipoLabel,
+                                        };
+                                        const updatedCompra = {
+                                            ...compra,
+                                            facturar: true,
+                                            factura: facturaData,
+                                            nit: isManual ? compra.nit : nit,
+                                            razon_social: isManual ? compra.razon_social : razon_social,
+                                            correo_electronico: isManual ? compra.correo_electronico : correo_electronico,
+                                            telefono: isManual ? compra.telefono : telefono,
+                                        };
+
+                                        await Model.compra_venta.Action.editar({
+                                            data: updatedCompra,
+                                            key_usuario: Model.usuario.Action.getKey(),
+                                        });
+
+                                        this.DinamicTable?.loadData();
+                                        SNotification.send({ key: notificationKey, title: `${tipoLabel} registrada`, body: isManual ? "Factura manual agregada correctamente." : `NIT: ${nit}, Razón social: ${razon_social}`, color: STheme.color.success, time: 5000, });
+                                        SPopup.close(`registrar_factura_${tipoFactura}_${compra.key}`);
+                                    } catch (error) {
+                                        console.error("Error al editar la compra:", error);
+                                        SNotification.send({ key: notificationKey, title: "Error al registrar factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
+                                    }
+                                }}
+                            >
+                                <SText color={STheme.color.success}> Registrar </SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                )
+            });
+        };
+
+        const openRegistrarFacturaPopup = (compra) => {
+            const opcionesFactura = [
+                { label: "Factura manual", tipo: "manual" },
+                { label: "Factura SIAT", tipo: "siat" },
+                { label: "Factura Paraguay (Quatiy)", tipo: "paraguay" },
+                { label: "Factura Colombia (Sasuki)", tipo: "colombia" },
+            ];
+            return SPopup.open({
+                key: "registrar_factura_tipo_" + compra.key,
+                content: (
+                    <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
+                        <SText fontSize={18} bold>Registrar factura</SText>
+                        <SHr height={12} />
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Seleccione el tipo de factura a generar.</SText>
+                        <SHr height={16} />
+                        {opcionesFactura.map((item) => (
+                            <SView key={item.tipo} col={"xs-12"} style={{ marginBottom: 10 }}>
+                                <SView onPress={() => {
+                                    SPopup.close("registrar_factura_tipo_" + compra.key);
+                                    openRegistrarFacturaTypePopup(compra, item.tipo);
+                                }} style={{ borderRadius: 8, padding: 14, backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.border, }}>
+                                    <SText fontSize={15} bold>{item.label}</SText>
+                                </SView>
+                            </SView>
+                        ))}
+                        <SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
+                            <SView onPress={() => SPopup.close("registrar_factura_tipo_" + compra.key)}>
+                                <SText color={STheme.color.text}>Cerrar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                )
+            });
+        };
+
+        const RenderOption = ({ label, icon, iconProps, onPress }) => {
+            return (
+                <>
+                    <SView col={"xs-11"} row center onPress={() => { if (onPress) onPress(); SPopup.close("popup_menu_compras"); }}>
+                        <SView col={"xs-2"} center height={32}> {typeof icon === "string" ? <SIconApp name={icon} height={18} fill={iconProps?.fill || STheme.color.text} stroke={iconProps?.stroke} /> : icon} </SView>
+                        <SView width={8} />
+                        <SView flex> <SText fontSize={14}>{label}</SText> </SView>
+                    </SView>
+                    <SHr height={1} color={STheme.color.card} />
+                </>
+            );
+        };
+
+        const groups = [
+            {
+                title: "FACTURACIÓN",
+                items: row?.factura?.cuf
+                    ? [
+                        ...(row?.factura?.factura_seleccionada === "Factura Manual"
+                            ? [
+                                {
+                                    label: "Descargar Archivo (PDF)",
+                                    icon: "iconPdf",
+                                    iconProps: { fill: STheme.color.text },
+                                    onPress: async () => {
+                                        const notificationKey = `pdf_${row.key}`;
+                                        try {
+                                            if (!row?.factura?.link_factura) { SNotification.send({ key: notificationKey, title: "Archivo no disponible", body: "No existe un enlace para la factura.", color: STheme.color.danger, time: 4000, }); return; }
+                                            SNotification.send({ key: notificationKey, title: "Abriendo archivo...", type: "loading", });
+                                            await Linking.openURL(row.factura.link_factura);
+                                            SNotification.send({ key: notificationKey, title: "Archivo abierto", body: "La factura se abrió correctamente.", color: STheme.color.success, time: 3000, });
+                                        } catch (error) {
+                                            console.error("Error al abrir PDF:", error);
+                                            SNotification.send({
+                                                key: notificationKey,
+                                                title: "Error al abrir archivo",
+                                                body: error?.message || "No se pudo abrir la factura.",
+                                                color: STheme.color.danger,
+                                                time: 5000,
+                                            });
+                                        }
+                                    },
+                                },
+                            ]
+                            : [{ label: "Imprimir Factura (Carta)", icon: "imprimir", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "carta", }); }, },
+                            { label: "Imprimir Factura (Rollo)", icon: "iconLista", onPress: () => { MDL.factura.imprimir({ cuf: row?.factura?.cuf, tipo: "rollo", }); }, },
+                            ]),
+                    ]
+                    : [
+                        { label: "Registrar factura", iconProps: { fill: "#2563eb" }, icon: "imprimir", onPress: () => openRegistrarFacturaPopup(row), },
+                    ],
+            },
+            {
+                title: "COMPROBANTES",
+                items: [
+                    { label: "Imprimir Comprobante (Rollo)", icon: "imprimir", onPress: () => { ComprobanteRollo.imprimir(row?.key); } },
+                    { label: "Imprimir Comprobante (Carta)", icon: "iconLista", onPress: () => { ComprobanteCarta.imprimir(row?.key); } },
+                ]
+            },
+            {
+                title: "CONSULTA",
+                items: [
+                    { label: "Ver Detalle de compra", icon: "compraCarro", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
+                    row?.sucursal?.key && { label: "Ver sucursal", icon: "iconEdifcio", iconProps: { fill: STheme.color.text, stroke: 'rgb(97, 97, 97)' }, onPress: () => { SNavigation.navigate("/sucursal", { key: row?.sucursal?.key }); } },
+                    row?.usuario?.key && { label: "Ver usuario", icon: "cajero", iconProps: { fill: STheme.color.text, }, onPress: () => { SNavigation.navigate("/usuario", { key: row?.usuario?.key }); } },
+                    row?.proveedor?.key && { label: "Ver proveedor", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.proveedor?.key, tipo: "proveedor" }); } },
+
+
+                ].filter(Boolean)
+            },
+            {
+                title: "GESTIÓN",
+                items: [
+                    MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" }) ? {
+                        label: "Anular compra", icon: "cancelado", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
+                        onPress: () => {
+                            if (Number(row?.estado) === 0) {
+                                SNotification.send({
+                                    key: "anular_compra_ya",
+                                    title: "Compra ya anulada",
+                                    body: "Esta compra ya se encuentra anulada.",
+                                    color: STheme.color.warning,
+                                    time: 4000,
+                                });
+                                return;
+                            }
+                            SPopup.confirm({
+                                icon: "cancelado",
+                                title: "Anular compra",
+                                message: "¿Está seguro de que desea anular esta compra? Esta acción no se puede deshacer.",
+                                cancel: { label: "Cancelar", color: STheme.color.lightGray, },
+                                onPress: () => {
+                                    const notificationKey = `anular_c_${row.key}`;
+                                    SNotification.send({ key: notificationKey, title: "Anulando compra...", type: "loading", });
+                                    SSocket.sendPromise({
+                                        service: "caja",
+                                        component: "caja_detalle",
+                                        type: "anularCompra",
+                                        key_empresa: MDL.empresa.select?.key,
+                                        key_usuario: MDL.usuario.session?.key,
+                                        key_compra_venta: row.key,
+                                        key_caja: MDL.caja.activa?.key,
+                                    }).then(() => {
+                                        this.DinamicTable?.loadData();
+                                        SNotification.send({ key: notificationKey, title: "Compra anulada", body: "La compra se anuló correctamente.", color: STheme.color.success, time: 5000, });
+                                    }).catch((error) => {
+                                        SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger, time: 10000, });
+                                    });
+                                }
+                            });
+                        },
+                    } : null,
+                    row?.factura?.cuf ? {
+                        label: "Anular factura", icon: "removeNotes", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
+                        onPress: () => {
+                            SPopup.confirm({
+                                icon: (<SIconApp name="eliminar" height={24} fill="#db0606ff" />),
+                                style: { padding: 10, paddingBottom: 5, paddingTop: 5, },
+                                title: `Anular factura ${row?.factura?.nro_factura}`,
+                                message: "¿Está seguro de que desea anular la factura? Esta acción no se puede deshacer.",
+                                cancel: { label: "Cancelar", color: STheme.color.lightGray, },
+                                onPress: async () => {
+                                    const notificationKey = `anular_factura_${row.key}`;
+                                    try {
+                                        SNotification.send({ key: notificationKey, title: "Anulando factura...", type: "loading", });
+                                        const updatedCompra = { ...row, facturar: false, factura: {}, };
+                                        await Model.compra_venta.Action.editar({
+                                            data: updatedCompra,
+                                            key_usuario: Model.usuario.Action.getKey(),
+                                        });
+                                        this.DinamicTable?.loadData();
+                                        SNotification.send({ key: notificationKey, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
+                                    } catch (error) {
+                                        console.error("Error al anular factura:", error);
+                                        SNotification.send({ key: notificationKey, title: "Error al anular factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
+                                    }
+                                },
+                            });
+                        },
+                    } : null,
+                ].filter(Boolean),
+            }
+        ].filter(group => group && group.items.length > 0);
+        return (
+            <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
+                {groups.map((group, gi) => (
+                    <SView key={gi} col={"xs-12"}>
+                        <SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }}>
+                            <SText color={STheme.color.text + "99"}>{group.title}</SText>
+                        </SView>
+                        {group.items.map((opt, i) => (<RenderOption key={i} {...opt} />))}
+                        {gi !== groups.length - 1 && <SHr height={1} color={STheme.color.card} />}
+                    </SView>
+                ))}
+            </SView>
+        );
+    }
     mostrarTabla() {
         return (
             <DinamicTable
@@ -115,72 +478,17 @@ export default class tabla extends Component {
                 pageLimit={100}
                 listFooterComponent={() => <SHr height={100} />}
                 onSelect={(e) => {
-                    FloatMenu.open({
-                        e: e.evt,
-                        label: "Tabla de compras",
-                        options: [
-                            {
-                                label: "Ver compra",
-                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
-                                onPress: () => { SNavigation.navigate("/venta/profile2", { pk: e?.row?.key }); }
-                            },
-                            {
-                                label: "Anular compra",
-                                icon: <SIconApp name='Delete' fill="#e4e4e4ff" />,
-                                onPress: () => {
-                                    if (!MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" })) {
-                                        SNotification.send({
-                                            key: "anular_compra_permiso",
-                                            title: "Sin permisos para anular",
-                                            body: "Tu rol dentro del sistema no permite anular compras. Si crees que esto es un error, comunícate con el administrador del sistema.",
-                                            color: STheme.color.danger,
-                                            time: 6000,
-                                        });
-                                        return;
-                                    }
-                                    if (Number(e.row?.estado) === 0) {
-                                        SNotification.send({
-                                            key: "anular_compra_ya",
-                                            title: "Compra ya anulada",
-                                            body: "Esta compra ya se encuentra anulada.",
-                                            color: STheme.color.warning,
-                                            time: 4000,
-                                        });
-                                        return;
-                                    }
-                                    SPopup.confirm({
-                                        title: "¿Anular compra?",
-                                        message: "¿Estás seguro de que deseas anular esta compra? Esta acción no se puede deshacer.",
-                                        onPress: () => {
-                                            SSocket.sendPromise({
-                                                service: "caja",
-                                                component: "caja_detalle",
-                                                type: "anularCompra",
-                                                key_empresa: MDL.empresa.select?.key,
-                                                key_usuario: MDL.usuario.session?.key,
-                                                key_compra_venta: e.row?.key,
-                                                key_caja: MDL.caja.activa?.key,
-                                            }).then(() => {
-                                                this.DinamicTable.loadData();
-                                                SNotification.send({ key: "anular_", title: "Compra anulada", body: "La compra se anuló correctamente.", color: STheme.color.success, time: 5000 });
-                                            }).catch(e => {
-                                                SNotification.send({ key: "anular_error_", title: "Error al anular", body: e.error, color: STheme.color.danger, time: 10000 });
-                                            });
-                                        }
-                                    });
-                                }
-                            },
-                            {
-                                label: "Imprimir tamaño rollo",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => { ComprobanteRollo.imprimir(e.row?.key); }
-                            },
-                            {
-                                label: "Imprimir tamaño carta",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => { ComprobanteCarta.imprimir(e?.row?.key); }
-                            },
-                        ]
+                    let top = e.evt.nativeEvent.pageY;
+                    const h = Dimensions.get("window").height;
+                    if (h < top + 300) {
+                        top = h - 300;
+                    }
+                    SPopup.open({
+                        key: "popup_menu_compras",
+                        type: "2",
+                        content: <SView withoutFeedback style={[{ position: "absolute", top: top, left: e.evt.nativeEvent.pageX, width: 300, }]} center>
+                            {this.renderMenuCompras(e.row)}
+                        </SView>
                     });
                 }}
                 loadInitialState={async () => {

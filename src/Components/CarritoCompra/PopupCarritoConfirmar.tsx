@@ -212,8 +212,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         try {
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
             const descripcionBase = this.inputDescripcionVenta?.getValue?.() || "";
-            
-            
+
+
             if (keyPago === "credito" && !this.proveedor) {
                 this.setState({ esCredito: true });
                 //1
@@ -260,11 +260,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
             const descripcion = descripcionBase;
 
-           
-           
-           
-           
-           
+
+
+
+
+
             const data: any = {
                 descripcion: "",
                 observacion: descripcion,
@@ -310,7 +310,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             SPopup.close("PopupCarrito");
 
 
-            
+
             MDL.carrito.limpiarCarritoCompras();
             this.showCompraPopup(keyCompra);
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
