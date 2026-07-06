@@ -405,25 +405,15 @@ export default class tabla extends Component {
                     { label: "Ver Detalle de venta", icon: "ventaCarro", onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row?.key }); } },
                     row?.sucursal?.key && { label: "Ver sucursal", icon: "iconEdifcio", iconProps: { fill: STheme.color.text, stroke: 'rgb(97, 97, 97)' }, onPress: () => { SNavigation.navigate("/sucursal", { key: row?.sucursal?.key }); } },
                     row?.usuario?.key && { label: "Ver vendedor", icon: "cajero", iconProps: { fill: STheme.color.text, }, onPress: () => { SNavigation.navigate("/usuario", { key: row?.usuario?.key }); } },
-                    row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key }); } },
+                    row?.cliente?.key && { label: "Ver cliente", icon: "profile2", onPress: () => { SNavigation.navigate("/cliente/perfil", { key: row?.cliente?.key, tipo: "cliente" }); } },
                 ].filter(Boolean)
             },
             {
                 title: "GESTIÓN",
                 items: [
-                    {
+                    MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" }) ? {
                         label: "Anular venta", icon: "cancelado", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
                         onPress: () => {
-                            if (!MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })) {
-                                SNotification.send({
-                                    key: "anular_venta_permiso",
-                                    title: "Sin permisos para anular",
-                                    body: "Tu rol dentro del sistema no permite anular ventas. Si crees que esto es un error, comunícate con el administrador del sistema.",
-                                    color: STheme.color.danger,
-                                    time: 6000,
-                                });
-                                return;
-                            }
                             if (Number(row?.estado) === 0) {
                                 SNotification.send({
                                     key: "anular_venta_ya",
@@ -455,9 +445,9 @@ export default class tabla extends Component {
                                 },
                             });
                         },
-                    },
+                    } : null,
                     row?.factura?.cuf ? {
-                        label: "Anular factura", icon: "eliminar", iconProps: { fill: "#8007c5", stroke: STheme.color.text, },
+                        label: "Anular factura", icon: "removeNotes", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
                         onPress: () => {
                             SPopup.confirm({
                                 icon: (<SIconApp name="eliminar" height={24} fill="#db0606ff" />),
@@ -488,7 +478,7 @@ export default class tabla extends Component {
                         : null,
                 ].filter(Boolean),
             }
-        ].filter(Boolean);
+        ].filter(group => group && group.items.length > 0);
         return (
             <SView col={"xs-12"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: "#66666699", }}>
                 {groups.map((group, gi) => (
