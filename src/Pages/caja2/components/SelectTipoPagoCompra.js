@@ -14,7 +14,7 @@ type SelectTipoPagoCompraProps = {
     compra?: boolean,
     venta?: boolean,
     color?: string,
-    onSelect?: (item: any) => void
+    onSelect?: (item: any) => void | Promise<void>
 }
 // alvaro tengo que trabajar en que no permita 2 bveces registar porque eso es un bug
 export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompraProps> {
@@ -44,6 +44,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             loading: false,
         };
         this._mounted = false;
+        this._submitting = false;
         this.pvtp = [];
     }
     handleKeyDown = (e) => {
@@ -239,6 +240,20 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         return Object.values(grupos);
     }
     render() {
+
+        const a = this.props.key_punto_venta;
+        const b = this.props.montoMaximo;
+        const c = this.props.key_moneda;
+        const d = this.props.solo_para_caja;
+        const e = this.props.venta;
+
+        console.log("azuki")
+        console.log(a);
+        console.log(b);
+        console.log(c);
+        console.log(d);
+        console.log(e);
+
         const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio || 1);
         const obs = this.moneda?.observacion ?? "Bs";
         const montoInsertadoNum = this.calcularMontoInsertadoNum();
@@ -250,7 +265,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
         const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
-        const headerColor = this.props.color || "#a046e8";
+        const headerColor = this.props.compra ? "#a046e8" : "#198754";
         return (
             <SView col={"xs-12"} height>
                 <SView row style={{ backgroundColor: headerColor, paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
@@ -320,9 +335,14 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             }}>
                             <SText bold color={STheme.color.text}>{"Cancelar"}</SText>
                         </SView>
-                        <SView flex style={{ backgroundColor: headerColor, borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center", opacity: puedeConfirmar ? 1 : 0.45 }}
-                            onPress={async () => {
-                                if (this.state.loading || !puedeConfirmar) return;
+                        <SView flex style={{
+                            backgroundColor: headerColor, borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center",
+
+                            opacity: (puedeConfirmar && !this.state.loading) ? 1 : 0.45
+                        }}
+                            onPress={(this.state.loading || !puedeConfirmar) ? undefined : async () => {
+                                if (this._submitting) return;
+                                this._submitting = true;
                                 let montoTotal = 0;
                                 const elm = {};
                                 selecteds.forEach(item => {
@@ -335,16 +355,21 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     }
                                     montoTotal += parseFloat(item.monto)
                                 });
-                                this.setState({ loading: true });
-                                try {
-                                    if (this.props.onSelect) {
-                                        await this.props.onSelect(elm);
-                                    }
-                                } finally {
-                                    if (this._mounted) {
-                                        this.setState({ loading: false });
-                                    }
-                                }
+
+                               this.setState({ loading: true });
+
+await new Promise(resolve => requestAnimationFrame(resolve));
+
+try {
+    if (this.props.onSelect) {
+        await this.props.onSelect(elm);
+    }
+} finally {
+    this._submitting = false;
+    if (this._mounted) {
+        this.setState({ loading: false });
+    }
+}
                             }}>
                             {this.state.loading ? <SLoad /> : <SText bold color={STheme.color.text}>{"Aceptar"}</SText>}
                         </SView>
