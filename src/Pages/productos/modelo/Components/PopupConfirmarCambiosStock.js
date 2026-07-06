@@ -264,7 +264,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             </SView>
             <ScrollView style={{ maxHeight: 520 }}>
                 <SView padding={16}>
-                    { }
                     <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Almacén</SText>
                     {!almacenes.length
                         ? <SLoad size="small" />
@@ -276,7 +275,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                         />
                     }
                     <SHr h={16} />
-                    { }
                     {compras.length > 0 && <>
                         <SText fontSize={11} bold style={{ color: STheme.color.success, marginBottom: 8 }}>
                             COMPRAS ({compras.length})
@@ -295,7 +293,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                             </SText>
                         </SView>
                         <SHr h={16} />
-                        { }
                         <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Moneda</SText>
                         {!monedas.length
                             ? <SLoad size="small" />
@@ -307,7 +304,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                             />
                         }
                         <SHr h={12} />
-                        { }
                         <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Proveedor</SText>
                         <InputSelector
                             options={(clientes || [])
@@ -321,7 +317,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                             autoSelectOnBlur
                         />
                         <SHr h={12} />
-                        { }
                         <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Descripción</SText>
                         <SInput
                             type="textArea"
@@ -331,7 +326,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                         />
                         <SHr h={16} />
                     </>}
-                    { }
                     {perdidas.length > 0 && <>
                         <SText fontSize={11} bold style={{ color: STheme.color.danger, marginBottom: 8 }}>
                             PÉRDIDAS ({perdidas.length})
@@ -341,7 +335,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                     </>}
                 </SView>
             </ScrollView>
-            { }
             <SView row style={{ justifyContent: "flex-end", gap: 8, padding: 16, borderTopWidth: 1, borderColor: STheme.color.card }}>
                 <SView
                     onPress={guardando ? null : () => this.props.onCancel?.()}
