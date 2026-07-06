@@ -57,20 +57,10 @@ export default class index extends Component {
                     <SView style={{ backgroundColor: STheme.color.danger, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 }}>
                         <SText bold color={"#fff"} fontSize={12}>{esVenta ? "VENTA ANULADA" : "COMPRA ANULADA"}</SText>
                     </SView>
-                ) : (
+                ) : puedeAnularCompra ? (
                     <SView
                         onPress={() => {
                             if (this.state.anulando) return;
-                            if (!puedeAnularCompra) {
-                                SNotification.send({
-                                    key: "anular_compra_permiso",
-                                    title: "Sin permisos para anular alvaro",
-                                    body: `Tu rol dentro del sistema no permite anular ${esVenta ? "ventas" : "compras"}. Si crees que esto es un error, comunícate con el administrador del sistema.`,
-                                    color: STheme.color.danger,
-                                    time: 6000,
-                                });
-                                return;
-                            }
                             SPopup.confirm({
                                 title: esVenta ? "Anular venta" : "Anular compra",
                                 message: `¿Está seguro de que desea anular esta ${esVenta ? "venta" : "compra"}? Esta acción no se puede deshacer.`,
@@ -106,7 +96,7 @@ export default class index extends Component {
                     >
                         <SText bold color={STheme.color.danger} fontSize={12}>{esVenta ? "ANULAR VENTA" : "ANULAR COMPRA"}</SText>
                     </SView>
-                )}
+                ) : null}
             </SView>
             <SView col={"xs-12"} padding={10} row>
                 <SView style={{ paddingRight: 15 }} center>
