@@ -7,7 +7,6 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
 const HEADER_COLOR = "#198754";
 type PopupCarritoConfirmarProps = {};
-
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
         SPopup.open({
@@ -101,7 +100,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error cargando descuentos", e);
         }
     }
-
     handleOnPress = async () => {
         try {
             const { moneda, almacen, descuentoSeleccionado, factura } = this.state;
@@ -173,7 +171,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-    
     render() {
         return (
             <SView col={"xs-12"} height>

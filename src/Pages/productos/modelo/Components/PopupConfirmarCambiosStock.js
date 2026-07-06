@@ -6,7 +6,6 @@ import MDL from "../../../../MDL";
 import InputSelector from "../../../../Components/Selectores/InputSelector";
 import SInput2 from "../../../../Components/SForm2/SInput2";
 import SelectTipoPagoCompra from "../../../caja2/components/SelectTipoPagoCompra";
-
 export default class PopupConfirmarCambiosStock extends React.Component {
     state = {
         almacenes: [],
@@ -21,7 +20,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
     proveedor = null;
     preciosCompra = {};
     _posibleDuplicado = false;
-
     static open(props) {
         return new Promise((resolve) => {
             SPopup.open({
@@ -49,7 +47,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             });
         });
     }
-
     async componentDidMount() {
         const [almacenes, empresa, clientes] = await Promise.all([
             MDL.inventario.getAllAlmacen(),
@@ -59,13 +56,11 @@ export default class PopupConfirmarCambiosStock extends React.Component {
         const monedas = empresa?.monedas || [];
         const monedaBase = monedas.find(m => m.tipo === "base");
         const clientesArr = Array.isArray(clientes) ? clientes : Object.values(clientes || {});
-
         const initPrecios = {};
         this.compras.forEach(({ row }) => {
             initPrecios[row.key] = parseFloat(row.precio_compra ?? 0);
         });
         this.preciosCompra = initPrecios;
-
         this.setState({
             almacenes,
             key_almacen: almacenes[0]?.key ?? null,
@@ -74,19 +69,16 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             clientes: clientesArr.filter(Boolean),
         });
     }
-
     get compras() {
         return this.props.stockChanges.filter(({ row, orig }) =>
             parseFloat(row.stock ?? 0) > parseFloat(orig.stock ?? 0)
         );
     }
-
     get perdidas() {
         return this.props.stockChanges.filter(({ row, orig }) =>
             parseFloat(row.stock ?? 0) < parseFloat(orig.stock ?? 0)
         );
     }
-
     getSubtotal() {
         return this.compras.reduce((acc, { row, orig }) => {
             const cantidad = parseFloat(row.stock ?? 0) - parseFloat(orig.stock ?? 0);
@@ -94,7 +86,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             return acc + cantidad * precio;
         }, 0);
     }
-
     async handleConfirmar() {
         const { key_almacen, key_moneda } = this.state;
         if (!key_almacen) {
@@ -103,7 +94,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
         }
         const compras = this.compras;
         const perdidas = this.perdidas;
-
         if (compras.length > 0) {
             const total = this.getSubtotal();
             SelectTipoPagoCompra.openPopup({
@@ -127,7 +117,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             }
         }
     }
-
     confirmarSiPosibleDuplicado() {
         if (!this._posibleDuplicado) return Promise.resolve(true);
         return new Promise((resolve) => {
@@ -139,7 +128,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             });
         });
     }
-
     async handleSubmitCompra(tipos_pago, compras, perdidas) {
         if (!(await this.confirmarSiPosibleDuplicado())) return;
         const { key_almacen, key_moneda, descripcion } = this.state;
@@ -161,7 +149,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                     fecha_vencimiento: null,
                 };
             });
-
             const compraResp = await SSocket.sendPromise({
                 service: "caja",
                 component: "caja_detalle",
@@ -182,17 +169,14 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                     tipos_pago,
                 },
             });
-
             if (!compraResp?.data?.key_compra_venta) {
                 throw new Error("El servidor no devolvió la clave de la compra.");
             }
             SelectTipoPagoCompra.closePopup();
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-
             if (perdidas.length > 0) {
                 await this.savePerdidas(perdidas, key_almacen);
             }
-
             this.props.onSuccess?.();
         } catch (err) {
             const esTimeout = err?.error === "timeOut";
@@ -213,7 +197,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             this.setState({ guardando: false });
         }
     }
-
     async savePerdidas(perdidas, key_almacen) {
         const conteo = await MDL.inventario.saveConteoManualInventario({
             key_almacen,
@@ -232,7 +215,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
         });
         await MDL.inventario.aplicar_cardex(conteo.key);
     }
-
     renderCompraItem({ row, orig }) {
         const stockActual = parseFloat(orig.stock ?? 0);
         const stockNuevo = parseFloat(row.stock ?? 0);
@@ -259,7 +241,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             </SText>
         </SView>;
     }
-
     renderPerdidaItem({ row, orig }) {
         const stockActual = parseFloat(orig.stock ?? 0);
         const stockNuevo = parseFloat(row.stock ?? 0);
@@ -270,7 +251,6 @@ export default class PopupConfirmarCambiosStock extends React.Component {
             <SText fontSize={12} bold style={{ color: STheme.color.danger, minWidth: 40, textAlign: "right" }}>-{diff}</SText>
         </SView>;
     }
-
     render() {
         const { almacenes, key_almacen, monedas, key_moneda, clientes, guardando } = this.state;
         const compras = this.compras;
@@ -278,16 +258,13 @@ export default class PopupConfirmarCambiosStock extends React.Component {
         const subtotal = this.getSubtotal();
         const monedaSeleccionada = monedas.find(m => m.key === key_moneda);
         const simbolo = monedaSeleccionada?.observacion ?? "Bs";
-
         return <SView>
             <SView style={{ padding: 16, borderBottomWidth: 1, borderColor: STheme.color.card }}>
                 <SText fontSize={14} bold>Confirmar cambios de stock</SText>
             </SView>
-
             <ScrollView style={{ maxHeight: 520 }}>
                 <SView padding={16}>
-
-                    {/* Almacén */}
+                    { }
                     <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Almacén</SText>
                     {!almacenes.length
                         ? <SLoad size="small" />
@@ -299,8 +276,7 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                         />
                     }
                     <SHr h={16} />
-
-                    {/* ─── COMPRAS ─── */}
+                    { }
                     {compras.length > 0 && <>
                         <SText fontSize={11} bold style={{ color: STheme.color.success, marginBottom: 8 }}>
                             COMPRAS ({compras.length})
@@ -319,8 +295,7 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                             </SText>
                         </SView>
                         <SHr h={16} />
-
-                        {/* Moneda */}
+                        { }
                         <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Moneda</SText>
                         {!monedas.length
                             ? <SLoad size="small" />
@@ -332,8 +307,7 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                             />
                         }
                         <SHr h={12} />
-
-                        {/* Proveedor */}
+                        { }
                         <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Proveedor</SText>
                         <InputSelector
                             options={(clientes || [])
@@ -347,8 +321,7 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                             autoSelectOnBlur
                         />
                         <SHr h={12} />
-
-                        {/* Descripción */}
+                        { }
                         <SText fontSize={11} style={{ color: STheme.color.lightGray, marginBottom: 4 }}>Descripción</SText>
                         <SInput
                             type="textArea"
@@ -358,8 +331,7 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                         />
                         <SHr h={16} />
                     </>}
-
-                    {/* ─── PÉRDIDAS ─── */}
+                    { }
                     {perdidas.length > 0 && <>
                         <SText fontSize={11} bold style={{ color: STheme.color.danger, marginBottom: 8 }}>
                             PÉRDIDAS ({perdidas.length})
@@ -367,11 +339,9 @@ export default class PopupConfirmarCambiosStock extends React.Component {
                         {perdidas.map(item => this.renderPerdidaItem(item))}
                         <SHr h={16} />
                     </>}
-
                 </SView>
             </ScrollView>
-
-            {/* Footer */}
+            { }
             <SView row style={{ justifyContent: "flex-end", gap: 8, padding: 16, borderTopWidth: 1, borderColor: STheme.color.card }}>
                 <SView
                     onPress={guardando ? null : () => this.props.onCancel?.()}
