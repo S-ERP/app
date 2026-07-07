@@ -16,7 +16,7 @@ export default class ListaClientes extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { selectedEstadoPago: null, selectedTipoCliente: null };
+        this.state = { selectedEstadoPago: null, };
         this.DinamicTable = null;
     }
 
@@ -48,8 +48,7 @@ export default class ListaClientes extends Component {
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
             this.filtroEstadoRef?.reset();
-            this.filtroTipoRef?.reset();
-            this.setState({ selectedEstadoPago: null, selectedTipoCliente: null }, () => {
+            this.setState({ selectedEstadoPago: null }, () => {
                 this.DinamicTable?.loadData();
             });
         }
@@ -135,10 +134,6 @@ export default class ListaClientes extends Component {
                     if (r.monto_pendiente <= 0) return filtro === "Sin Deuda";
                     return filtro === "Deudor";
                 });
-            }
-            if (this.state.selectedTipoCliente?.key) {
-                const keyTipo = this.state.selectedTipoCliente.key;
-                data = data.filter(c => (c.tipo_cliente ?? []).some(tc => tc.key === keyTipo));
             }
             return data;
         } catch (error) {
@@ -391,7 +386,7 @@ export default class ListaClientes extends Component {
                 <DinamicTable.Col key="nombre_completo"
                     headerStyle={{ paddingLeft: 4 }}
                     label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
-                <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo).join(', '))} width={100} height={80}
+                <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={80}
                     headerStyle={{ paddingLeft: 4 }}
                     cellStyle={{
                         flexDirection: "row",
@@ -451,15 +446,7 @@ export default class ListaClientes extends Component {
 
 
 
-                <DinamicTable.Col key="cuota_432" wrap
-                    label={<SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                        <SIconApp name={"Pencil"} width={10} height={10} fill={STheme.color.text} />
-
-                        <SText style={{ fontSize: 12 }}>alvaro</SText>
-
-                    </SView>}
-
-                    width={60} height={60}
+                <DinamicTable.Col key="cuota_432" wrap label="# Cuotas" width={60} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''}
 
@@ -589,20 +576,6 @@ export default class ListaClientes extends Component {
                             mapOption={a => ({ key: a.key, nombre: a.nombre })}
                             onSelect={item => {
                                 this.setState({ selectedEstadoPago: item }, () => {
-                                    this.DinamicTable?.loadData();
-                                });
-                            }}
-                        />
-                    </SView>
-                    <SView width={8} />
-                    <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", }}>
-                        <FiltroSelector
-                            ref={ref => this.filtroTipoRef = ref}
-                            label="Tipo de Cliente"
-                            loadData={async () => await MDL.crm.tipoCliente.getAll()}
-                            mapOption={a => ({ key: a.key, nombre: a.titulo })}
-                            onSelect={item => {
-                                this.setState({ selectedTipoCliente: item }, () => {
                                     this.DinamicTable?.loadData();
                                 });
                             }}

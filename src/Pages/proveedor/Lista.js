@@ -195,6 +195,21 @@ export default class Lista extends Component {
         };
     }
 
+    footerCuotasYMonto(cuotaSelector, montoBaseSelector) {
+        return ({ dinamicTable }) => {
+            const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
+            const totalCuotas = rows.reduce((s, row) => s + (Number(cuotaSelector(row)) || 0), 0);
+            const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
+            const monedas = rows[0]?.empresa?.monedas || [];
+            return (
+                <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
+                    <SText style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
+                    <SText style={{ fontSize: 12, fontWeight: 'bold' }}>{this.formatBase(totalMonto, monedas)}</SText>
+                </SView>
+            );
+        };
+    }
+
     renderUsuario(usuario = {}) {
         const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         const inicial = (usuario?.Nombres || "?")[0].toUpperCase();
@@ -383,11 +398,10 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="nit" label="NIT" width={90} height={60} data={e => e.row?.nit} />
                 <DinamicTable.Col key="razon_social" label="Razón Social" width={150} height={60} data={e => e.row?.razon_social} />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} height={60} data={e => e.row?.telefono} />
-                <DinamicTable.Col key="cuota_pen" wrap label="# Cuotas" sumTotal={['', 0]} width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-                    footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_pendiente)} />
+                <DinamicTable.Col key="cuota_pen" wrap label="# Cuotas" sumTotal={['', 0]} width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="monto_pen" wrap label="Monto" sumTotal={rows => this.formatBase(rows.reduce((s, row) => s + Number(row.totales_base?.deuda || 0), 0), rows[0]?.empresa?.monedas)}
                     width={110} height={60}
-                    footerComponent={this.footerSumMap(row => row.deuda_por_moneda, row => row.totales_base?.deuda)}
+                    footerComponent={this.footerCuotasYMonto(row => row.resumen_cuota?.cantidad_pendiente, row => row.totales_base?.deuda)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -405,8 +419,7 @@ export default class Lista extends Component {
 
                     sumTotal={['', 0]}
 
-                    width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-                    footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_en_mora)} />
+                    width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
 
                 <DinamicTable.Col
@@ -416,6 +429,7 @@ export default class Lista extends Component {
                     label="Monto"
                     width={110}
                     height={60}
+                    footerComponent={this.footerCuotasYMonto(row => row.resumen_cuota?.cantidad_en_mora, row => row.totales_base?.mora)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
