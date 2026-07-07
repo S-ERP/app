@@ -237,7 +237,8 @@ export default class Lista extends Component {
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
-                headerStyle={{ paddingHorizontal: 4 }}
+
+                headerStyle={{ paddingHorizontal: 4, paddingVertical: 8 }}
                 loadInitialState={async () => ({
                     cols: {},
                     sorters: [
@@ -307,12 +308,14 @@ export default class Lista extends Component {
                 }}
                 loadData={() => this.loadInitialData()}
             >
-                <DinamicTable.Col key="index" label="#" width={40} height={60} data={e => e.index + 1} />
+                <DinamicTable.Col key="index" label="#" width={40} height={60}
+
+                    data={e => e.index + 1} />
                 <DinamicTable.Col key="nombre_completo"
                     label="Proveedor" width={200} height={60} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
 
                 <DinamicTable.Col key="tipo_cliente" label="Tipo proveedor"
-                    width={120}  
+                    width={120}
                     data={e => (e.row.tipo_cliente ?? []).map(a => a.titulo)}
                     format={e => (e.data ?? []).join(', ')}
 
@@ -336,7 +339,10 @@ export default class Lista extends Component {
                                         borderWidth: 1,
                                         backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "15",
                                         borderColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "50",
-                                        padding: 2, paddingHorizontal: 4, borderRadius: 4,
+
+
+
+                                        borderRadius: 4,
                                         justifyContent: "center", alignItems: "center", gap: 2,
                                     }} row>
                                         <SView style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: tc.color ?? STheme.colorFromText(tc.titulo) }} />
@@ -348,7 +354,9 @@ export default class Lista extends Component {
                                         borderWidth: 1,
                                         backgroundColor: STheme.color.text + "15",
                                         borderColor: STheme.color.text + "50",
-                                        padding: 2, paddingHorizontal: 4, borderRadius: 4,
+
+
+                                        borderRadius: 4,
                                         justifyContent: "center", alignItems: "center",
                                     }}>
                                         <SText fontSize={10}>{`+${restantes}`}</SText>
@@ -377,7 +385,8 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} height={60} data={e => e.row?.telefono} />
                 <DinamicTable.Col key="cuota_pen" wrap label="# Cuotas" sumTotal={['', 0]} width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
                     footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_pendiente)} />
-                <DinamicTable.Col key="monto_pen" wrap label="Monto" sumTotal={rows => this.formatBase(rows.reduce((s, row) => s + Number(row.totales_base?.deuda || 0), 0), rows[0]?.empresa?.monedas)} width={110} height={60}
+                <DinamicTable.Col key="monto_pen" wrap label="Monto" sumTotal={rows => this.formatBase(rows.reduce((s, row) => s + Number(row.totales_base?.deuda || 0), 0), rows[0]?.empresa?.monedas)}
+                    width={110} height={60}
                     footerComponent={this.footerSumMap(row => row.deuda_por_moneda, row => row.totales_base?.deuda)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
@@ -406,6 +415,7 @@ export default class Lista extends Component {
                     sumTotal={rows => this.formatBase(rows.reduce((s, row) => s + Number(row.totales_base?.mora || 0), 0), rows[0]?.empresa?.monedas)}
                     label="Monto"
                     width={110}
+                    height={60}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
