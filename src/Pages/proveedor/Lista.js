@@ -238,7 +238,7 @@ export default class Lista extends Component {
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
 
-                headerStyle={{ paddingHorizontal: 4, paddingVertical: 8 }}
+                //headerStyle={{ paddingHorizontal: 4, paddingVertical: 8 }}
                 loadInitialState={async () => ({
                     cols: {},
                     sorters: [
