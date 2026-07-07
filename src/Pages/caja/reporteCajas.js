@@ -5,6 +5,7 @@ import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
 import Config from '../../Config';
 import DateTimeBetween from '../../Components/DateTimeBetween';
+import FiltroCaja from '../productos/modelo/Components/FiltroCaja';
 
 export default class reporteCajas extends Component {
     constructor(props) {
@@ -14,6 +15,7 @@ export default class reporteCajas extends Component {
             // fecha_inicio: new SDate().addMonth(-10).setDay(1).toString("yyyy-MM-dd"),
             fecha_fin: new SDate().toString("yyyy-MM-dd"),
             data: [], // Estado para almacenar los datos de la tabla
+            estado_caja: null, // Filtro de estado de caja (abierta/cerrada)
         };
     }
 
@@ -55,13 +57,16 @@ export default class reporteCajas extends Component {
             const usuarioKeys = [...new Set(movimientos.map(m => m.key_usuario).filter(Boolean))];
             const usuarios = (await MDL.usuario.getByKeys(usuarioKeys)) ?? [];
             const usuarioMap = Object.fromEntries(usuarios.map(u => [u.key, u]));
-            const processedData = movimientos.map(mov => ({
+            let processedData = movimientos.map(mov => ({
                 ...mov,
                 usuario: usuarioMap[mov.key_usuario] ?? null,
                 puntos_venta: puntos_ventas.find(pv => pv.key === mov.key_punto_venta) ?? null,
                 sucursal: sucursales.find(s => s.key === mov.key_sucursal) ?? null,
                 moneda: base,
             }));
+            if (this.state.estado_caja) {
+                processedData = processedData.filter(mov => mov.estado_caja === this.state.estado_caja);
+            }
             // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
             return processedData;
         } catch (error) {
@@ -388,14 +393,29 @@ export default class reporteCajas extends Component {
     render() {
         return (
             <SPage title="Reporte de Cajas por Sucursal filtro de caja abierta" disableScroll>
-                <SView center>
-                    <DateTimeBetween
-                        fecha_inicio={this.state.fecha_inicio}
-                        fecha_fin={this.state.fecha_fin}
-                        onChange={({ fecha_inicio, fecha_fin }) => {
-                            // console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
-                            this.setState({ fecha_inicio, fecha_fin }, () => {
-                                // Recargar los datos de la tabla al cambiar fechas
+                <SHr></SHr>
+                <SView row col={"xs-12"} style={{ alignItems: 'center', flexWrap: 'wrap', paddingHorizontal: 8, gap: 8 }}>
+                    <SView width={260} center>
+                        <DateTimeBetween
+                            fecha_inicio={this.state.fecha_inicio}
+                            fecha_fin={this.state.fecha_fin}
+                            onChange={({ fecha_inicio, fecha_fin }) => {
+                                // console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
+                                this.setState({ fecha_inicio, fecha_fin }, () => {
+                                    // Recargar los datos de la tabla al cambiar fechas
+                                    this.loadInitialData().then(data => {
+                                        this.setState({ data });
+                                        if (this.DinamicTable) {
+                                            this.DinamicTable.loadData();
+                                        }
+                                    });
+                                });
+                            }}
+                        />
+                    </SView>
+                    <FiltroCaja
+                        onSelectEstado={item => {
+                            this.setState({ estado_caja: item?.key ?? null }, () => {
                                 this.loadInitialData().then(data => {
                                     this.setState({ data });
                                     if (this.DinamicTable) {
@@ -406,6 +426,10 @@ export default class reporteCajas extends Component {
                         }}
                     />
                 </SView>
+                <SHr></SHr>
+
+
+
                 {this.state.data.length === 0 ? (
                     <SView col="xs-12" center>
                         <SText>No hay datos disponibles</SText>
