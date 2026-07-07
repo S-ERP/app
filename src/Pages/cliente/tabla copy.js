@@ -442,10 +442,9 @@ export default class ListaClientes extends Component {
                         return <SView row center><SView backgroundColor={s.color} style={{ borderRadius: 4, padding: 5 }}><SText color={STheme.color.text} fontSize={10}>{s.label}</SText></SView></SView>;
                     }}
                 />
+      
                 <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" sumExcel width={60} height={60}
                     headerStyle={{ paddingLeft: 4 }}
-
-
                     data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''}
                     cellStyle={{
                         alignItems: 'flex-end',
@@ -453,10 +452,15 @@ export default class ListaClientes extends Component {
                     }}
                     format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
                     footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_en_mora)}
-
-
                 />
 
+                <DinamicTable.Col key="cuota_432" wrap label="# Cuotas" width={60} height={60}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''}
+                    
+                    cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} 
+                    
+                    format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
 
 
@@ -505,10 +509,16 @@ export default class ListaClientes extends Component {
                     }}
 
                 />
-                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" sumExcel width={60} height={60}
+                <DinamicTable.Col key="cuota_6554" wrap label="# Cuotas" sumExcel width={60} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
                     footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_pendiente)} />
+
+                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} height={60}
+                    headerStyle={{ paddingLeft: 4 }}
+                    data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+
+
                 <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" width={100} height={60}
                     headerStyle={{ paddingLeft: 4 }}
                     data={e => {
