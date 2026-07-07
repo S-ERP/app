@@ -177,6 +177,7 @@ export default class ListaClientes extends Component {
             </SView>
         );
     }
+    //sdddddddddddddd
 
     renderMoneyList(map, monedas, color) {
         const entries = Object.entries(map || {});
@@ -510,8 +511,9 @@ export default class ListaClientes extends Component {
                     data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
 
-                <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" width={100} height={60}
+                <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" sumExcel width={100} height={60}
                     headerStyle={{ paddingLeft: 4 }}
+                    footerComponent={this.footerSumMap(row => row.deuda_por_moneda, row => row.totales_base?.deuda)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -521,6 +523,7 @@ export default class ListaClientes extends Component {
                         return [this.formatMap(e.row?.deuda_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
                     }}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
+
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const color = STheme.color.text;

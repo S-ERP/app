@@ -130,6 +130,39 @@ export default class Lista extends Component {
         return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
     }
 
+    footerSum(selector, formatter) {
+        return ({ dinamicTable }) => {
+            const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
+            const total = rows.reduce((s, row) => s + (Number(selector(row)) || 0), 0);
+            return (
+                <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
+                    <SText style={{ fontSize: 12, fontWeight: 'bold' }}>{formatter ? formatter(total) : (total || '')}</SText>
+                </SView>
+            );
+        };
+    }
+
+    footerSumMap(selector, baseSelector) {
+        return ({ dinamicTable }) => {
+            const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
+            const monedas = rows[0]?.empresa?.monedas || [];
+            const totalMap = {};
+            let totalBase = 0;
+            rows.forEach(row => {
+                Object.entries(selector(row) || {}).forEach(([k, v]) => {
+                    totalMap[k] = (totalMap[k] || 0) + Number(v || 0);
+                });
+                totalBase += Number(baseSelector ? baseSelector(row) : 0) || 0;
+            });
+            return (
+                <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
+                    <SText style={{ fontSize: 11, fontWeight: 'bold' }}>{this.formatMap(totalMap, monedas)}</SText>
+                    {totalBase > 0 && <SText style={{ fontSize: 9, opacity: 0.8 }}>({this.formatBase(totalBase, monedas)})</SText>}
+                </SView>
+            );
+        };
+    }
+
     renderUsuario(usuario = {}) {
         const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         const inicial = (usuario?.Nombres || "?")[0].toUpperCase();
@@ -266,9 +299,11 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="nit" label="NIT" width={90} height={60} data={e => e.row?.nit} />
                 <DinamicTable.Col key="razon_social" label="Razón Social" width={150} height={60} data={e => e.row?.razon_social} />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} height={60} data={e => e.row?.telefono} />
-                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-                <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" width={100} height={60}
+                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" sumExcel width={60} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+                    footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_pendiente)} />
+                <DinamicTable.Col key="monto_deuda_col" wrap label="Monto Pendiente" sumExcel width={100} height={60}
                     headerStyle={{ paddingLeft: 4 }}
+                    footerComponent={this.footerSumMap(row => row.deuda_por_moneda, row => row.totales_base?.deuda)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -309,9 +344,11 @@ export default class Lista extends Component {
                             </SView>
                         );
                     }} />
-                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" width={60} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" width={95} height={60}
+                <DinamicTable.Col key="cuota_4" wrap label="# Cuotas" sumExcel width={60} height={60} headerStyle={{ paddingLeft: 4 }} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+                    footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_en_mora)} />
+                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" sumExcel width={95} height={60}
                     headerStyle={{ paddingLeft: 4 }}
+                    footerComponent={this.footerSumMap(row => row.mora_por_moneda, row => row.totales_base?.mora)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
