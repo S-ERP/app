@@ -201,93 +201,69 @@ export default class PdfCierreCaja {
 
     static VentasCaja(lista = []) {
         console.log("LISTA PDF", lista);
+        // if (!lista?.detalle) return null;
         return (
             <SPDF.View style={{ width: "100%" }}>
-
-                <SPDF.Text style={label}>
+                <SPDF.View style={{ height: 20 }} />
+                <SPDF.Text style={{ ...label, fontSize: 12 }}>
                     Ventas en Caja
                 </SPDF.Text>
 
                 {PdfCierreCaja.espacio(10)}
 
+                {lista
+                    .filter(item => item.detalle != null)
+                    .map((item, i) => (
+                        < SPDF.View
+                            key={i}
+                            style={{
+                                width: "100%",
+                                minHeight: 22,
+                                flexDirection: "row",
+                                paddingBottom: 15
+                            }}>
 
-                {lista.map((item, i) => (
-                    < SPDF.View
-                        key={i}
-                        style={{
-                            width: "100%",
-                            minHeight: 22,
-                            flexDirection: "row"
-                        }}>
-
-                        <SPDF.View style={{ flex: 1, justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {new SDate(item.fecha_on).toString("HH:mm")}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.cliente?.razon_social ?? "-"}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.observacion ?? "-"}
-                            </SPDF.Text>
-                        </SPDF.View>
-
-                        {/* <SPDF.View style={{ flex: 1, justifyContent: "center", paddingLeft: 3 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.cliente?.nombre ?? "-"}
-                            </SPDF.Text>
-                        </SPDF.View>
-
-                        <SPDF.View style={{ width: 110, justifyContent: "center", paddingLeft: 3 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                {item.detalle?.observacion ?? "-"}
-                            </SPDF.Text>
-                        </SPDF.View> */}
-                        <SPDF.View style={{ flex: 1, justifyContent: "center", paddingRight: 3 }}>
-                            {(item?.detalle?.detalles ?? []).map((d, index) => (
+                            <SPDF.View style={{ flex: 1, justifyContent: "center" }}>
                                 <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                    • {d.descripcion} {d.precio_unitario_base} {item?.moneda_base?.observacion} x{d.cantidad}
-                                </SPDF.Text>))}
-                        </SPDF.View>
+                                    {new SDate(item.fecha_on).toString("HH:mm")}
+                                </SPDF.Text>
+                                <SPDF.Text style={{ ...text, fontSize: 8 }}>
+                                    {item.detalle?.cliente?.razon_social ?? "-"}
+                                </SPDF.Text>
+                                <SPDF.Text style={{ ...text, fontSize: 8 }}>
+                                    {item.detalle?.observacion ?? "-"}
+                                </SPDF.Text>
+                            </SPDF.View>
 
-                        <SPDF.View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end", paddingRight: 3 }}>
-                            {(item?.items ?? []).map((d, index) => (
-                                <SPDF.View key={index} style={{ alignItems: "flex-end" }} >
+                            <SPDF.View style={{ flex: 1, justifyContent: "center", paddingRight: 3 }}>
+                                {(item?.detalle?.detalles ?? []).map((d, index) => (
                                     <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                        {d?.tipo}
-                                    </SPDF.Text>
-                                    <SPDF.View style={{ width: 8 }} />
-                                    <SPDF.Text style={{ ...text, fontSize: 11, fontWeight: "bold" }} >
-                                        {formatCurrency(d?.monto, d.moneda?.observacion)}
-                                        {/* {d?.monto} */}
+                                        • {d.descripcion} {d.precio_unitario_base} {item?.moneda_base?.observacion} x{d.cantidad}
+                                    </SPDF.Text>))}
+                            </SPDF.View>
+
+                            <SPDF.View style={{ flex: 1, alignItems: "flex-end", paddingRight: 3 }}>
+                                {(item?.items ?? []).map((d, index) => (
+                                    <SPDF.View key={index} style={{ alignItems: "flex-end" }} >
+                                        <SPDF.Text style={{ ...text, fontSize: 8, width: "100%" }} >
+                                            {d?.tipo}
+                                        </SPDF.Text>
+                                        <SPDF.View style={{ width: 8 }} />
+                                        <SPDF.Text style={{ ...text, fontSize: 9, width: "100%", fontWeight: "bold", textAlign: "right" }} >
+                                            {formatCurrency(d?.monto, d.moneda?.observacion)}
+                                        </SPDF.Text>
+                                    </SPDF.View>
+                                ))}
+                                <SPDF.View style={{ width: "100%", borderTopWidth: 1, marginBottom: 5, marginTop: 5, borderColor: "#cec9c9" }} />
+                                <SPDF.View style={{ width: "100%", alignItems: "end" }}>
+                                    <SPDF.Text style={{ ...text, fontSize: 11, width: "100%", fontWeight: "bold", textAlign: "right" }}>
+                                        {formatCurrency(item?.detalle?.cuotas?.total_base, item?.moneda_base?.observacion)}
                                     </SPDF.Text>
                                 </SPDF.View>
-                            ))}
-
-                            {/* <SPDF.View style={line} /> */}
-                            {/* <SPDF.Text style={{ ...text, fontSize: 13, fontWeight: "bold" }}>
-                                {item?.moneda_base?.observacion} {formatCurrency(
-                                    item.items.reduce((a, b) => a + Number(b.monto), 0)
-                                )}
-                            </SPDF.Text> */}
-                            {/* <SPDF.View
-                                style={{
-                                    width: 90,          // Ajusta el ancho según necesites
-                                    // flex: 1,
-                                    height: 1,
-                                    backgroundColor: STheme.color.text,
-                                    marginTop: 4,
-                                    marginBottom: 4,
-                                }}
-                            /> */}
-                            <SPDF.Text style={{ ...text, fontSize: 13, fontWeight: "bold" }}>
-                                {formatCurrency(item?.detalle?.cuotas?.total_base, item?.moneda_base?.observacion)}
-                            </SPDF.Text>
+                            </SPDF.View>
                         </SPDF.View>
 
-                    </SPDF.View>
-
-                ))
+                    ))
                 }
 
             </SPDF.View>
@@ -506,7 +482,9 @@ export default class PdfCierreCaja {
                 {PdfCierreCaja.espacio(20)}
                 {PdfCierreCaja.linea()}
                 {PdfCierreCaja.VentasCaja(listaVentas)}
-                {PdfCierreCaja.espacio(40)}
+                {PdfCierreCaja.espacio(20)}
+                {PdfCierreCaja.linea()}
+                {PdfCierreCaja.espacio(100)}
                 {/* {PdfCierreCaja.linea()} */}
                 {/* {PdfCierreCaja.espacio()} */}
                 {PdfCierreCaja.Firmas()}

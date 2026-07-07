@@ -373,6 +373,7 @@ export default class Abierta extends Component {
         };
 
         const agrupado = this.state.movimientos.reduce((acc, item) => {
+            console.log(item)
             const key = item.key_compra_venta;
             const fecha_on = item.fecha_on;
             if (!key) return acc;
@@ -382,9 +383,15 @@ export default class Abierta extends Component {
                 items: [],
                 detalle: (this.state.detalle ?? []).find(det => det.key === key),
             };
-            acc[key].items.push(item);
+
+
             const campo = tiposMap[item.tipo];
             if (campo) acc[key][campo] = 1;
+
+            // if (!item.items?.some(i => i.tipo === "venta")) {
+            //     return acc;
+            // }
+            acc[key].items.push(item);
             return acc;
         }, {});
 

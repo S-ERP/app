@@ -100,6 +100,7 @@ export default class DetalleItemVenta extends Component {
   render() {
     const { item, index, empresa } = this.props;
     if (!item) return null;
+    if(!item?.detalle) return null;
 
     const monto = item.detalle?.cuotas?.total_base ?? 0;
     const color = monto < 0 ? STheme.color.danger : STheme.color.success;
