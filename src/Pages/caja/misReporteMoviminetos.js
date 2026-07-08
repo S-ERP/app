@@ -9,7 +9,6 @@ import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
 import PopupUploadVoucher from '../caja2/components/PopupUploadVoucher';
-import { color } from 'three/examples/jsm/nodes/Nodes';
 import { Linking } from 'react-native';
 
 export default class misReporteMoviminetos extends Component {
@@ -17,7 +16,6 @@ export default class misReporteMoviminetos extends Component {
         super(props);
         this.state = {
             fecha_inicio: new SDate('2024-01-01', 'yyyy-MM-dd hh:mm').toString("yyyy-MM-dd"),
-            // fecha_inicio: new SDate().addMonth(-10).setDay(1).toString("yyyy-MM-dd"),
             fecha_fin: new SDate().toString("yyyy-MM-dd"),
             data: [], // Estado para almacenar los datos de la tabla
         };
@@ -28,8 +26,6 @@ export default class misReporteMoviminetos extends Component {
             this.setState({ data }); // Actualizar el estado con los datos iniciales
         });
     }
-
-
 
     colorTipoOperacion(estado) {
         switch (estado?.toUpperCase()) {
@@ -51,19 +47,6 @@ export default class misReporteMoviminetos extends Component {
             d.key_compra_venta === key_compra_venta &&
             ["anulacion_venta", "anulacion_compra"].includes((d.tipo || "").toLowerCase())
         );
-    }
-
-    colorTipoPago(estado) {
-        switch (estado?.toUpperCase()) {
-            case "CAJA":
-                return "#388E3C"; // Verde más profundo (confianza)
-            case "CREDITO":
-                return "#8E24AA"; // Violeta más saturado (moderno, llamativo)
-            case "BANCO":
-                return "#FB8C00"; // Naranja vivo (acceso rápido y claro)
-            default:
-                return "#B0BEC5"; // Gris azulado claro (neutro y elegante)
-        }
     }
 
     getTurno(caja_fecha_on, caja_fecha_cierre) {
@@ -91,78 +74,6 @@ export default class misReporteMoviminetos extends Component {
         return inicio || cierre || "";
     }
 
-    // iconotipoArchivo(documento_name = "", documento_type = "") {
-    //     if (!documento_type) return null;
-
-    //     const tipo = documento_type.toLowerCase().trim();
-
-    //     // Colores por tipo
-    //     let bgColor = "#B0B0B0"; // Default gray
-    //     let borderColor = "#3c3d3dff";
-    //     let icon = "crmpdarchivo";
-    //     let iconColor = "#3c3d3dff";
-
-    //     if (tipo.endsWith(".pdf") || tipo.includes("/pdf")) {
-    //         bgColor = "#ffcccc";
-    //         borderColor = "#f00";
-    //         icon = "crmpdf";
-    //         iconColor = "#f00";
-    //     }
-
-
-
-    //     else if (tipo.endsWith(".docx") || tipo.includes("/docx") || tipo.includes("/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-    //         bgColor = "#E8F0FF";
-    //         borderColor = "#2F6AC4";
-    //         icon = "crmword";
-    //         iconColor = "#2F6AC4";
-    //     }
-
-    //     else if (tipo.endsWith("/x-icon") || tipo.includes("x-icon")) {
-    //         bgColor = "#fcdfa5";
-    //         borderColor = "#fcd674";
-    //         icon = "crmpdarchivo";
-    //         iconColor = "#fcd674";
-    //     }
-    //     // else if (tipo.endsWith("/x-icon") || tipo.includes("x-icon")) {
-    //     //     bgColor = "#E8F0FF";
-    //     //     borderColor = "#2F6AC4";
-    //     //     icon = "crmpdarchivo";
-    //     //     iconColor = "#2F6AC4";
-    //     // }
-
-    //     else if (tipo.endsWith("/png") || tipo.includes("/jpg")) {
-    //         bgColor = "#e9e4ec";
-    //         borderColor = "#a1c8fc";
-    //         icon = "Galeria";
-    //         iconColor = "#a1c8fc";
-    //     }
-    //     // else if (tipo.endsWith("/png") || tipo.includes("/jpg")) {
-    //     //     bgColor = "#6567db";
-    //     //     borderColor = "#8775d0";
-    //     //     icon = "Galeria";
-    //     //     iconColor = "#8775d0";
-    //     // }
-
-    //     else if (tipo.endsWith("/xlsx") || tipo.includes("/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-    //         bgColor = "#E6F5EE";
-    //         borderColor = "#208D50";
-    //         icon = "crmexcel";
-    //         iconColor = "#208D50";
-    //     } else if (tipo.endsWith(".pptx") || tipo.includes("/vnd.openxmlformats-officedocument.presentationml.presentation")) {
-    //         bgColor = "#FFECE6";
-    //         borderColor = "#CA5131";
-    //         icon = "crmpresentacion";
-    //         iconColor = "#CA5131";
-    //     }
-
-    //     return (
-    //         <SView row center style={{ padding: 4, backgroundColor: bgColor, borderRadius: 6, marginRight: 4, marginBottom: 4, }} >
-    //             <SIconApp name={icon} fill={iconColor} width={14} height={14} /> <SText fontSize={10} color={iconColor} >Voucher.{tipo?.split(".").pop()} </SText> <SIconApp name={"downImgNube"} fill={iconColor} width={14} height={14} />
-    //         </SView>
-    //     );
-    // }
-
     iconotipoArchivo(documento_name = "", documento_type = "") {
         if (!documento_type) return null;
 
@@ -172,8 +83,6 @@ export default class misReporteMoviminetos extends Component {
             const parts = tipo.split(/[/\.]/);
             return parts[parts.length - 1] || "";
         })();
-
-
 
         let bgColor = "#B0B0B0";
         let borderColor = "#3c3d3dff";
@@ -237,7 +146,7 @@ export default class misReporteMoviminetos extends Component {
             const puntos_ventas = sucursales.flatMap(s => s.puntos_venta || []);
             const key_usuario_session = MDL.usuario.session?.key;
             const movimientosPropios = movimientos.filter(mov => mov.key_usuario === key_usuario_session);
-            const usuarioKeys = [...new Set(movimientosPropios.map(m => m.key_usuario).filter(Boolean))];
+            const usuarioKeys = [...new Set(movimientosPropios.flatMap(m => [m.key_usuario, m.key_cajero]).filter(Boolean))];
             const usuarios = (await MDL.usuario.getByKeys(usuarioKeys)) ?? [];
             const usuarioMap = Object.fromEntries(usuarios.map(u => [u.key, u]));
             const processedData = movimientosPropios.map(mov => ({
@@ -250,12 +159,9 @@ export default class misReporteMoviminetos extends Component {
                 moneda_base: base,
                 turno: this.getTurno(mov.caja_fecha_on, mov.caja_fecha_cierre),
             }));
-            // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
-            console.log("DATOS MOVIMIENTOS:", processedData);
             return processedData;
         } catch (error) {
             console.error("❌ Error al cargar movimientos:", error);
-            // SPopup.alert("Error al cargar los movimientos. Intenta nuevamente.");
             return [];
         }
     }
@@ -293,7 +199,19 @@ export default class misReporteMoviminetos extends Component {
                     );
 
                     const menuOptions = [
-
+                        // View Vouchers
+                        {
+                            label: 'Ver Vouchers',
+                            icon: <SIconApp name="Arrow" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                const vouchers = Array.isArray(e.row?.vouchers) ? e.row.vouchers : [];
+                                if (vouchers.length === 0) {
+                                    SPopup.alert('No hay vouchers disponibles para este movimiento.');
+                                    return;
+                                }
+                                PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, vouchers);
+                            },
+                        },
                         {
                             label: 'Subir Voucher',
                             icon: <SIconApp name="upImgNube" fill="#e4e4e4ff" width={16} />,
@@ -306,8 +224,46 @@ export default class misReporteMoviminetos extends Component {
                                 });
                             },
                         },
-
-
+                        ...(puedeAnular ? [{
+                            label: esVenta ? 'Anular venta' : 'Anular compra',
+                            icon: <SIconApp name="cancelado" fill="#db0606ff" width={16} />,
+                            onPress: () => {
+                                SPopup.confirm({
+                                    title: esVenta ? "Anular venta" : "Anular compra",
+                                    message: `¿Está seguro de que desea anular esta ${esVenta ? "venta" : "compra"}? Esta acción no se puede deshacer.`,
+                                    onPress: () => {
+                                        const notificationKey = `anular_${e.row?.key_compra_venta}`;
+                                        SNotification.send({ key: notificationKey, title: esVenta ? "Anulando venta..." : "Anulando compra...", type: "loading" });
+                                        const promesa = esVenta
+                                            ? MDL.caja.anular_venta({ key_compra_venta: e.row?.key_compra_venta })
+                                            : MDL.caja.anular_compra({ key_compra_venta: e.row?.key_compra_venta });
+                                        promesa
+                                            .then(() => {
+                                                SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
+                                                this.loadInitialData().then(data => {
+                                                    this.setState({ data });
+                                                    if (this.DinamicTable) this.DinamicTable.loadData();
+                                                });
+                                            })
+                                            .catch((error) => {
+                                                SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
+                                            });
+                                    }
+                                });
+                            },
+                        }] : []),
+                        // View Accounting Voucher (Conditional)
+                        ...(e.row?.key_comprobante ? [{
+                            label: 'Ver Comprobante Contable',
+                            icon: <SIconApp name="Ajustes" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                if (e.row?.codigo_comprobante === 0) {
+                                    SPopup.alert('No hay comprobantes.');
+                                    return;
+                                }
+                                SNavigation.navigate('/contabilidad/asiento_contable/profile', { pk: e.row.key_comprobante });
+                            },
+                        }] : []),
                     ];
                     FloatMenu.open({
                         e: e.evt,
@@ -322,7 +278,6 @@ export default class misReporteMoviminetos extends Component {
                 }}
 
                 loadInitialState={async () => ({
-                    // sorters: [{ key: "fecha_apertura", order: "desc", type: "date" }],
                     sorters: [{ key: "fecha_movimiento", order: "desc", type: "date" }],
                 })}
                 {...Config.table.applyTheme()}
@@ -422,7 +377,6 @@ export default class misReporteMoviminetos extends Component {
                     )}
                 />
 
-
                 <DinamicTable.Col
                     key="tipo"
                     wrap
@@ -446,8 +400,6 @@ export default class misReporteMoviminetos extends Component {
                         );
                     }}
                 />
-
-
 
                 <DinamicTable.Col
                     key="key_tipo_pagov2"
@@ -479,12 +431,11 @@ export default class misReporteMoviminetos extends Component {
                     customComponent={e => {
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row.moneda.observacion} {e.data}</SText>
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row?.moneda?.observacion} {e.data}</SText>
                             </SView>
                         );
                     }}
                 />
-
 
                 <DinamicTable.Col
                     key="descripcion"
@@ -504,29 +455,6 @@ export default class misReporteMoviminetos extends Component {
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 />
-
-
-                {/* <DinamicTable.Col
-                    key="fecha_apertura"
-                    label="APERTURA CAJA"
-                    width={130}
-                    center
-                    dataType="date"
-                    data={e => (e.row?.caja_fecha_on ? new SDate(e.row.caja_fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
-                    dateFormat="yyyy-MM-dd hh:mm:ss"
-                />
-                <DinamicTable.Col
-                    key="fecha_cierre"
-                    label="CIERRE CAJA"
-                    width={130}
-                    center
-                    dataType="date"
-                    data={e => (e.row?.caja_fecha_cierre ? new SDate(e.row.caja_fecha_cierre, "yyyy-MM-ddThh:mm:ss").date : null)}
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
-                    dateFormat="yyyy-MM-dd hh:mm:ss"
-                /> */}
-
 
                 <DinamicTable.Col
                     key="codigo_comprobante"
@@ -556,33 +484,6 @@ export default class misReporteMoviminetos extends Component {
                     }}
                 />
 
-
-
-                {/* <DinamicTable.Col
-                    key="key_tipo_pago"
-                    wrap
-                    label="MÉTODO DE PAGO"
-                    width={80}
-                    data={e => e.row?.key_tipo_pago ?? ""}
-                    customComponent={e => {
-                        return (
-                            <SView col={"xs-12"} center height={20}   >
-                                <SView col={"xs-12"} row center height={20}   >
-                                    <SView width={60} center style={{
-                                        ...e.textStyle,
-                                        backgroundColor: this.colorTipoPago(e.row?.key_tipo_pago) || STheme.color.card,
-                                        borderWidth: 1, borderColor: this.colorTipoPago(e.row?.key_tipo_pago) || STheme.color.card,
-                                        borderRadius: 4
-                                    }}> <SText fontSize={12}>{e.row?.key_tipo_pago}</SText>
-                                    </SView>
-                                </SView>
-                            </SView>
-                        );
-                    }}
-                /> */}
-
-
-
                 <DinamicTable.Col
                     key="empresa_tipo_pago"
                     wrap
@@ -590,10 +491,6 @@ export default class misReporteMoviminetos extends Component {
                     width={220}
                     data={e => e.row?.empresa_tipo_pago ?? 0}
                 />
-
-
-
-
 
                 <DinamicTable.Col
                     key="tag_transaccion_"
@@ -613,7 +510,6 @@ export default class misReporteMoviminetos extends Component {
                     }}
                 />
 
-
                 <DinamicTable.Col
                     key="moneda_info"
                     wrap label="MONEDA"
@@ -621,9 +517,6 @@ export default class misReporteMoviminetos extends Component {
                     color={STheme.color.danger}
                     data={e => e.row?.moneda?.descripcion ?? 0}
                 />
-
-
-
 
                 {/* <DinamicTable.Col
                     key="tipo_cambio"
@@ -648,57 +541,69 @@ export default class misReporteMoviminetos extends Component {
                     customComponent={e => {
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row.moneda_base.observacion} {e.data}</SText>
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row?.moneda_base?.observacion} {e.data}</SText>
                             </SView>
                         );
                     }}
                 />
-                {/* 
-                <DinamicTable.Col
-                    key="moneda_info2"
-                    wrap label="MONEDA BASE"
-                    width={90}
-                    color={STheme.color.danger}
-                    data={e => e.row?.moneda_base?.descripcion ?? 0}
-                /> */}
-
-
-
                 <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
                     if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
                         PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
                 }} />
 
-
-
-                <DinamicTable.Col key="voucherdsds" wrap center label="DOCUMENTOS" width={120}
+                <DinamicTable.Col key="voucherdsds" wrap center label="DOCUMENTOS" width={150}
                     data={(e) => (e.row.vouchers ?? []).map(p => p)}
                     customComponent={(e) => (
-                        <SView row>
+                        <SView row flexWrap style={{ paddingTop: 6, paddingRight: 8 }}>
                             {(e.row.vouchers ?? []).map((p, index) => (
-                                <SView key={index} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4, marginRight: 4, }}
-                                    onPress={() => {
-                                        console.log("📦 VOUCHER..." + JSON.stringify(p));
-
-
-
-                                        const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
-                                        Linking.openURL(url);
-                                    }}
-                                >
-                                    {/* <SText fontSize={10} numberOfLines={1}>Voucher {index + 1}</SText> */}
-                                    {/* {this.iconotipoArchivo(p.type)} */}
-                                    {this.iconotipoArchivo(p.name, p.type)}
-
-                                    {/* <SText fontSize={10} numberOfLines={1}>Voucher{index + 1}.{p.type?.split("/").pop()}</SText> */}
+                                <SView key={index} style={{ marginRight: 10, marginBottom: 6 }}>
+                                    <SView row style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
+                                        onPress={() => {
+                                            const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+                                            Linking.openURL(url);
+                                        }}
+                                    >
+                                        {this.iconotipoArchivo(p.name, p.type)}
+                                    </SView>
+                                    <SView
+                                        center
+                                        style={{
+                                            position: "absolute", top: -6, right: -6,
+                                            width: 18, height: 18, borderRadius: 9,
+                                            backgroundColor: "#dc3545", borderWidth: 1, borderColor: STheme.color.background,
+                                        }}
+                                        onPress={() => {
+                                            SPopup.confirm({
+                                                title: "Eliminar comprobante",
+                                                message: `¿Está seguro de que desea eliminar "${p.name}"? Esta acción no se puede deshacer.`,
+                                                onPress: () => {
+                                                    const vouchersRestantes = (e.row.vouchers ?? []).filter((_, i) => i !== index);
+                                                    const notificationKey = `eliminar_voucher_${e.row.key}_${index}`;
+                                                    SNotification.send({ key: notificationKey, title: "Eliminando comprobante...", type: "loading" });
+                                                    MDL.caja.editar_detalle({
+                                                        key_empresa: e.row.key_empresa,
+                                                        key: e.row.key,
+                                                        vouchers: vouchersRestantes,
+                                                    }).then(() => {
+                                                        SNotification.send({ key: notificationKey, title: "Comprobante eliminado", color: STheme.color.success, time: 2000 });
+                                                        this.loadInitialData().then(data => {
+                                                            this.setState({ data });
+                                                            if (this.DinamicTable) this.DinamicTable.loadData();
+                                                        });
+                                                    }).catch((error) => {
+                                                        SNotification.send({ key: notificationKey, title: "Error al eliminar", body: error?.error || error?.message || String(error), color: STheme.color.danger });
+                                                    });
+                                                }
+                                            });
+                                        }}
+                                    >
+                                        <SText color="#fff" fontSize={10} bold>✕</SText>
+                                    </SView>
                                 </SView>
                             ))}
                         </SView>
                     )}
                 />
-
-
-
 
                 <DinamicTable.Col
                     key="estado_caja"
@@ -721,8 +626,6 @@ export default class misReporteMoviminetos extends Component {
                         );
                     }}
                 />
-
-
 
             </DinamicTable >
         );
