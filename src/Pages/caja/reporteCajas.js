@@ -399,7 +399,7 @@ export default class reporteCajas extends Component {
 
     render() {
         return (
-            <SPage title="Reporte de Cajas por Sucursal filtro de caja abierta" disableScroll>
+            <SPage title="Reporte de Cajas por Sucursal" disableScroll>
                 <SHr></SHr>
                 <SView row col={"xs-12"} style={{ alignItems: 'center', flexWrap: 'wrap', paddingHorizontal: 8, gap: 8 }}>
                     <SView width={260} center>
@@ -420,11 +420,20 @@ export default class reporteCajas extends Component {
                             }}
                         />
                     </SView>
-
+                    {/* <FiltroCaja
+                        onSelectEstado={item => {
+                            this.setState({ estado_caja: item?.key ?? null }, () => {
+                                this.loadInitialData().then(data => {
+                                    this.setState({ data });
+                                    if (this.DinamicTable) {
+                                        this.DinamicTable.loadData();
+                                    }
+                                });
+                            });
+                        }}
+                    /> */}
                 </SView>
                 <SHr></SHr>
-
-
 
                 {this.state.data.length === 0 ? (
                     <SView col="xs-12" center>

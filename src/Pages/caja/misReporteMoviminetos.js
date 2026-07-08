@@ -74,6 +74,7 @@ export default class misReporteMoviminetos extends Component {
         return inicio || cierre || "";
     }
 
+
     iconotipoArchivo(documento_name = "", documento_type = "") {
         if (!documento_type) return null;
 
@@ -83,7 +84,6 @@ export default class misReporteMoviminetos extends Component {
             const parts = tipo.split(/[/\.]/);
             return parts[parts.length - 1] || "";
         })();
-
         let bgColor = "#B0B0B0";
         let borderColor = "#3c3d3dff";
         let icon = "crmpdarchivo";
@@ -510,7 +510,6 @@ export default class misReporteMoviminetos extends Component {
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73" }}
                     data={e => e.row?.moneda.tipo_cambio ?? 0}
                 /> */}
-
                 <DinamicTable.Col
                     key="monto_base"
                     wrap label="MONTO BASE"
@@ -540,7 +539,7 @@ export default class misReporteMoviminetos extends Component {
                         const vouchers = e.row.vouchers ?? [];
                         if (vouchers.length === 0) return null;
                         return (
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ flexDirection: "row", alignItems: "center" }}>
+                            <SView row flexWrap style={{ paddingTop: 6, paddingRight: 8 }}>
                                 {vouchers.map((p, index) => (
                                     <SView key={index} row center style={{ marginRight: 8 }}>
                                         <SView
@@ -556,8 +555,8 @@ export default class misReporteMoviminetos extends Component {
                                             style={{
                                                 position: "absolute", top: 0, right: -1,
                                                 width: 12, height: 12, borderRadius: 6,
-                                                backgroundColor: "#dc3545", 
-                                    
+                                                backgroundColor: "#dc3545",
+
                                             }}
                                             onPress={() => {
                                                 SPopup.confirm({
@@ -589,7 +588,7 @@ export default class misReporteMoviminetos extends Component {
                                         </SView>
                                     </SView>
                                 ))}
-                            </ScrollView>
+                            </SView>
                         );
                     }}
                 />
