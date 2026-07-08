@@ -65,30 +65,6 @@ export default class reporteMoviminetos extends Component {
         }
     }
 
-    getTurno(caja_fecha_on, caja_fecha_cierre) {
-        const parseMinutes = (value) => {
-            if (!value) return null;
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return null;
-            return date.getHours() * 60 + date.getMinutes();
-        };
-
-        const getPeriodo = (minutes) => {
-            if (minutes === null) return null;
-            if (minutes >= 360 && minutes <= 720) return "Mañana"; //06:00 - 12:00
-            if (minutes >= 721 && minutes <= 1080) return "Tarde"; //12:01 - 18:00
-            if (minutes >= 1081 && minutes <= 1320) return "Noche"; //18:01 - 22:00
-            return null;
-        };
-
-        const inicio = getPeriodo(parseMinutes(caja_fecha_on));
-        const cierre = getPeriodo(parseMinutes(caja_fecha_cierre));
-        if (!inicio && !cierre) return "";
-        if (inicio && cierre) {
-            return inicio === cierre ? inicio : `${inicio} - ${cierre}`;
-        }
-        return inicio || cierre || "";
-    }
 
     // iconotipoArchivo(documento_name = "", documento_type = "") {
     //     if (!documento_type) return null;
@@ -245,7 +221,6 @@ export default class reporteMoviminetos extends Component {
                 sucursal: sucursales.find(s => s.key === mov.key_sucursal) ?? null,
                 moneda: empresa.monedas.find(m => m.key === mov.key_moneda) ?? null,
                 moneda_base: base,
-                turno: this.getTurno(mov.caja_fecha_on, mov.caja_fecha_cierre),
             }));
             // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
             console.log("DATOS MOVIMIENTOS:", processedData);
@@ -445,22 +420,6 @@ export default class reporteMoviminetos extends Component {
                 />
 
                 <DinamicTable.Col
-                    key="turno"
-                    wrap
-                    label="TURNO"
-                    width={110}
-                    data={e => e.row?.turno ?? ""}
-                    customComponent={e => (
-                        <SView col="xs-12" center>
-                            <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: STheme.color.card }}>
-                                <SText fontSize={11} color={STheme.color.text}>{e.data}</SText>
-                            </SView>
-                        </SView>
-                    )}
-                />
-
-
-                <DinamicTable.Col
                     key="tipo"
                     wrap
                     label="TIPO DE OPERACIÓN"
@@ -649,6 +608,7 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
+
 
 
                 <DinamicTable.Col
