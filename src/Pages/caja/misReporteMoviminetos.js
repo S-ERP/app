@@ -137,7 +137,7 @@ export default class misReporteMoviminetos extends Component {
             const { fecha_inicio, fecha_fin } = this.state;
             const movimientos = await MDL.caja.getAllMovimientosCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
             if (!Array.isArray(movimientos)) {
-
+                console.error("getAllMovimientosCajasByEmpresa no devolvió un array:", movimientos);
                 return [];
             }
             const empresa = await MDL.empresa.getFull();
@@ -161,7 +161,7 @@ export default class misReporteMoviminetos extends Component {
             }));
             return processedData;
         } catch (error) {
-
+            console.error("Error al cargar movimientos de caja:", error);
             return [];
         }
     }
@@ -243,6 +243,7 @@ export default class misReporteMoviminetos extends Component {
                                                 });
                                             })
                                             .catch((error) => {
+                                                console.error("Error al anular venta/compra:", error);
                                                 SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
                                             });
                                     }
@@ -572,6 +573,7 @@ export default class misReporteMoviminetos extends Component {
                                                                 if (this.DinamicTable) this.DinamicTable.loadData();
                                                             });
                                                         }).catch((error) => {
+                                                            console.error("Error al eliminar comprobante:", error);
                                                             SNotification.send({ key: notificationKey, title: "Error al eliminar", body: error?.error || error?.message || String(error), color: STheme.color.danger });
                                                         });
                                                     }
@@ -615,7 +617,7 @@ export default class misReporteMoviminetos extends Component {
 
     render() {
         return (
-            <SPage title="Mis Historial de Movimientos / Transacciones" disableScroll>
+            <SPage title="Mi Historial de Transacciones" disableScroll>
                 <SHr height={8} />
                 <SView width={260} center>
                     <DateTimeBetween
