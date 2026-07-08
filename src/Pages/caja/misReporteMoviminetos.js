@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SPage, SHr, SScrollView2, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation, SNotification } from 'servisofts-component';
+import { SView, SPage, SHr, STheme, SDate, SText, SImage, SPopup, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
@@ -23,20 +23,20 @@ export default class misReporteMoviminetos extends Component {
 
     componentDidMount() {
         this.loadInitialData().then(data => {
-            this.setState({ data }); // Actualizar el estado con los datos iniciales
+            this.setState({ data });
         });
     }
 
     colorTipoOperacion(estado) {
         switch (estado?.toUpperCase()) {
             case "APERTURA":
-                return "#4dbe52ff"; // Verde intenso y confiable
+                return "#4dbe52ff";
             case "VENTA":
-                return "#3683dbff"; // Azul fuerte (profesional y moderno)
+                return "#3683dbff";
             case "COMPRA":
-                return "#e0883fff"; // Naranja intenso (enérgico pero amigable)
+                return "#e0883fff";
             default:
-                return "#979797ff"; // Gris claro por defecto (neutral)
+                return "#979797ff";
         }
     }
 
@@ -59,9 +59,9 @@ export default class misReporteMoviminetos extends Component {
 
         const getPeriodo = (minutes) => {
             if (minutes === null) return null;
-            if (minutes >= 360 && minutes <= 720) return "Mañana"; //06:00 - 12:00
-            if (minutes >= 721 && minutes <= 1080) return "Tarde"; //12:01 - 18:00
-            if (minutes >= 1081 && minutes <= 1320) return "Noche"; //18:01 - 22:00
+            if (minutes >= 360 && minutes <= 720) return "Mañana";
+            if (minutes >= 721 && minutes <= 1080) return "Tarde";
+            if (minutes >= 1081 && minutes <= 1320) return "Noche";
             return null;
         };
 
@@ -131,13 +131,13 @@ export default class misReporteMoviminetos extends Component {
     }
     async loadInitialData() {
         try {
-            console.log("📦 Cargando movimientos de caja...");
+
             const empresaKey = MDL.empresa.select?.key;
             if (!empresaKey) throw new Error("Empresa no seleccionada.");
             const { fecha_inicio, fecha_fin } = this.state;
             const movimientos = await MDL.caja.getAllMovimientosCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
             if (!Array.isArray(movimientos)) {
-                console.warn("No se recibieron movimientos válidos.");
+
                 return [];
             }
             const empresa = await MDL.empresa.getFull();
@@ -161,7 +161,7 @@ export default class misReporteMoviminetos extends Component {
             }));
             return processedData;
         } catch (error) {
-            console.error("❌ Error al cargar movimientos:", error);
+
             return [];
         }
     }
@@ -171,18 +171,18 @@ export default class misReporteMoviminetos extends Component {
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
                 loadData={() => this.loadInitialData()}
-                data={this.state.data} // Pasar los datos del estado
+                data={this.state.data}
                 key="id"
                 keyExtractor={e => e.key}
                 language="es"
 
                 center
                 selectType="single"
-                {...Config.table.applyTheme()}
+                {...Config.table.applyTheme({ cellStyle: { minHeight: 22 } })}
 
                 onSelect={(e) => {
                     if (!e.row) {
-                        console.warn('No row data provided for selection');
+
                         return;
                     }
 
@@ -201,7 +201,7 @@ export default class misReporteMoviminetos extends Component {
                     const vouchersDelRow = Array.isArray(e.row?.vouchers) ? e.row.vouchers : [];
 
                     const menuOptions = [
-                        // View Vouchers
+
                         ...(vouchersDelRow.length > 0 ? [{
                             label: 'Ver Vouchers',
                             icon: <SIconApp name="Arrow" fill="#e4e4e4ff" width={16} />,
@@ -265,7 +265,6 @@ export default class misReporteMoviminetos extends Component {
                 loadInitialState={async () => ({
                     sorters: [{ key: "fecha_movimiento", order: "desc", type: "date" }],
                 })}
-                {...Config.table.applyTheme()}
 
                 listFooterComponent={() => {
                     return <SHr height={100} />
