@@ -9,7 +9,7 @@ import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
 import PopupUploadVoucher from '../caja2/components/PopupUploadVoucher';
-import { Linking } from 'react-native';
+import { Linking, ScrollView } from 'react-native';
 
 export default class misReporteMoviminetos extends Component {
     constructor(props) {
@@ -551,58 +551,58 @@ export default class misReporteMoviminetos extends Component {
                         PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
                 }} />
 
-                <DinamicTable.Col key="voucherdsds" wrap center label="DOCUMENTOS" width={150}
+                <DinamicTable.Col key="voucherdsds" center label="DOCUMENTOS" width={160}
                     data={(e) => (e.row.vouchers ?? []).map(p => p)}
-                    customComponent={(e) => (
-                        <SView row flexWrap style={{ paddingTop: 6, paddingRight: 8 }}>
-                            {(e.row.vouchers ?? []).map((p, index) => (
-                                <SView key={index} style={{ marginRight: 10, marginBottom: 6 }}>
-                                    <SView row style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
-                                        onPress={() => {
-                                            const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
-                                            Linking.openURL(url);
-                                        }}
-                                    >
-                                        {this.iconotipoArchivo(p.name, p.type)}
-                                    </SView>
-                                    <SView
-                                        center
-                                        style={{
-                                            position: "absolute", top: -6, right: -6,
-                                            width: 18, height: 18, borderRadius: 9,
-                                            backgroundColor: "#dc3545", borderWidth: 1, borderColor: STheme.color.background,
-                                        }}
-                                        onPress={() => {
-                                            SPopup.confirm({
-                                                title: "Eliminar comprobante",
-                                                message: `¿Está seguro de que desea eliminar "${p.name}"? Esta acción no se puede deshacer.`,
-                                                onPress: () => {
-                                                    const vouchersRestantes = (e.row.vouchers ?? []).filter((_, i) => i !== index);
-                                                    const notificationKey = `eliminar_voucher_${e.row.key}_${index}`;
-                                                    SNotification.send({ key: notificationKey, title: "Eliminando comprobante...", type: "loading" });
-                                                    MDL.caja.editar_detalle({
-                                                        key_empresa: e.row.key_empresa,
-                                                        key: e.row.key,
-                                                        vouchers: vouchersRestantes,
-                                                    }).then(() => {
-                                                        SNotification.send({ key: notificationKey, title: "Comprobante eliminado", color: STheme.color.success, time: 2000 });
-                                                        this.loadInitialData().then(data => {
-                                                            this.setState({ data });
-                                                            if (this.DinamicTable) this.DinamicTable.loadData();
+                    customComponent={(e) => {
+                        const vouchers = e.row.vouchers ?? [];
+                        if (vouchers.length === 0) return null;
+                        return (
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
+                                {vouchers.map((p, index) => (
+                                    <SView key={index} row center style={{ marginRight: 8 }}>
+                                        <SView
+                                            onPress={() => {
+                                                const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+                                                Linking.openURL(url);
+                                            }}
+                                        >
+                                            {this.iconotipoArchivo(p.name, p.type)}
+                                        </SView>
+                                        <SView
+                                            center
+                                            style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: "#dc3545", marginLeft: 2 }}
+                                            onPress={() => {
+                                                SPopup.confirm({
+                                                    title: "Eliminar comprobante",
+                                                    message: `¿Está seguro de que desea eliminar "${p.name}"? Esta acción no se puede deshacer.`,
+                                                    onPress: () => {
+                                                        const vouchersRestantes = vouchers.filter((_, i) => i !== index);
+                                                        const notificationKey = `eliminar_voucher_${e.row.key}_${index}`;
+                                                        SNotification.send({ key: notificationKey, title: "Eliminando comprobante...", type: "loading" });
+                                                        MDL.caja.editar_detalle({
+                                                            key_empresa: e.row.key_empresa,
+                                                            key: e.row.key,
+                                                            vouchers: vouchersRestantes,
+                                                        }).then(() => {
+                                                            SNotification.send({ key: notificationKey, title: "Comprobante eliminado", color: STheme.color.success, time: 2000 });
+                                                            this.loadInitialData().then(data => {
+                                                                this.setState({ data });
+                                                                if (this.DinamicTable) this.DinamicTable.loadData();
+                                                            });
+                                                        }).catch((error) => {
+                                                            SNotification.send({ key: notificationKey, title: "Error al eliminar", body: error?.error || error?.message || String(error), color: STheme.color.danger });
                                                         });
-                                                    }).catch((error) => {
-                                                        SNotification.send({ key: notificationKey, title: "Error al eliminar", body: error?.error || error?.message || String(error), color: STheme.color.danger });
-                                                    });
-                                                }
-                                            });
-                                        }}
-                                    >
-                                        <SText color="#fff" fontSize={10} bold>✕</SText>
+                                                    }
+                                                });
+                                            }}
+                                        >
+                                            <SText color="#fff" fontSize={9} bold>✕</SText>
+                                        </SView>
                                     </SView>
-                                </SView>
-                            ))}
-                        </SView>
-                    )}
+                                ))}
+                            </ScrollView>
+                        );
+                    }}
                 />
 
                 <DinamicTable.Col
