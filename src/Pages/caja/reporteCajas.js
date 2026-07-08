@@ -88,7 +88,14 @@ export default class reporteCajas extends Component {
                 center
                 selectType="single"
                 loadInitialState={async () => ({
-                    sorters: [{ key: "fecha_on", order: "desc", type: "date" }],
+
+                    filters: [
+                        { col: "estado_caja", operator: "=", value: "abierta", type: "string" },
+                    ],
+
+                    sorters: [{ key: "fecha_on", order: "desc", type: "date" }
+
+                    ],
                 })}
                 {...Config.table.applyTheme()}
             >
@@ -413,18 +420,7 @@ export default class reporteCajas extends Component {
                             }}
                         />
                     </SView>
-                    <FiltroCaja
-                        onSelectEstado={item => {
-                            this.setState({ estado_caja: item?.key ?? null }, () => {
-                                this.loadInitialData().then(data => {
-                                    this.setState({ data });
-                                    if (this.DinamicTable) {
-                                        this.DinamicTable.loadData();
-                                    }
-                                });
-                            });
-                        }}
-                    />
+
                 </SView>
                 <SHr></SHr>
 
