@@ -198,20 +198,17 @@ export default class misReporteMoviminetos extends Component {
                                 : false
                     );
 
+                    const vouchersDelRow = Array.isArray(e.row?.vouchers) ? e.row.vouchers : [];
+
                     const menuOptions = [
                         // View Vouchers
-                        {
+                        ...(vouchersDelRow.length > 0 ? [{
                             label: 'Ver Vouchers',
                             icon: <SIconApp name="Arrow" fill="#e4e4e4ff" width={16} />,
                             onPress: () => {
-                                const vouchers = Array.isArray(e.row?.vouchers) ? e.row.vouchers : [];
-                                if (vouchers.length === 0) {
-                                    SPopup.alert('No hay vouchers disponibles para este movimiento.');
-                                    return;
-                                }
-                                PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, vouchers);
+                                PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, vouchersDelRow);
                             },
-                        },
+                        }] : []),
                         {
                             label: 'Subir Voucher',
                             icon: <SIconApp name="upImgNube" fill="#e4e4e4ff" width={16} />,
@@ -250,18 +247,6 @@ export default class misReporteMoviminetos extends Component {
                                             });
                                     }
                                 });
-                            },
-                        }] : []),
-                        // View Accounting Voucher (Conditional)
-                        ...(e.row?.key_comprobante ? [{
-                            label: 'Ver Comprobante Contable',
-                            icon: <SIconApp name="Ajustes" fill="#e4e4e4ff" width={16} />,
-                            onPress: () => {
-                                if (e.row?.codigo_comprobante === 0) {
-                                    SPopup.alert('No hay comprobantes.');
-                                    return;
-                                }
-                                SNavigation.navigate('/contabilidad/asiento_contable/profile', { pk: e.row.key_comprobante });
                             },
                         }] : []),
                     ];
@@ -473,9 +458,7 @@ export default class misReporteMoviminetos extends Component {
                                         borderRadius: 4,
                                         padding: 4,
                                     }}
-                                        onPress={() => {
-                                            SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: e.row?.key_comprobante })
-                                        }}
+
                                     > <SText color={STheme.color.link} fontSize={10}> {e.row?.codigo_comprobante} </SText>
                                     </SView>
                                 </SView>
