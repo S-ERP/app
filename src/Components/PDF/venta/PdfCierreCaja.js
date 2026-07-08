@@ -202,6 +202,7 @@ export default class PdfCierreCaja {
     static VentasCaja(lista = []) {
         console.log("LISTA PDF", lista);
         // if (!lista?.detalle) return null;
+        if (!Array.isArray(lista) || lista.length === 0) return null;
         return (
             <SPDF.View style={{ width: "100%" }}>
                 <SPDF.View style={{ height: 20 }} />
@@ -422,6 +423,7 @@ export default class PdfCierreCaja {
         }, {});
 
         const listaVentas = Object.values(ventasCaja);
+        console.log("LISTA VENTAS pdf", listaVentas);
         //fin detalle venta
 
         const resumen = [];
