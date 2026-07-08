@@ -14,7 +14,7 @@ const cardTintStyle = (cliente) => cliente?.esProveedor
     ? { backgroundColor: COLOR_PROVEEDOR_BG, borderWidth: 1, borderColor: COLOR_PROVEEDOR_BORDER }
     : cliente?.esVenta
         ? { borderWidth: 1, borderColor: COLOR_VENTA_BORDER }
-        : {};
+        : { borderWidth: 1, borderColor: STheme.color.card };
 const itemBorderColor = (cliente) => cliente?.esProveedor
     ? COLOR_PROVEEDOR_BORDER
     : cliente?.esVenta
@@ -133,9 +133,9 @@ export default class Perfil extends Component {
     render() {
         if (this.state.notFound) {
             return (
-                <SPage title="Cliente no encontrado">
+                <SPage title="contacto no encontrado">
                     <SView col={"xs-12"} center padding={30}>
-                        <SText fontSize={16} color={STheme.color.lightGray}>No se encontró el cliente solicitado.</SText>
+                        <SText fontSize={16} color={STheme.color.lightGray}>No se encontró el contacto solicitado.</SText>
                     </SView>
                 </SPage>
             );
