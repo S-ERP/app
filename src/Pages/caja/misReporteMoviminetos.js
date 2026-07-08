@@ -8,6 +8,7 @@ import DateTimeBetween from '../../Components/DateTimeBetween';
 import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
+import PopupUploadVoucher from '../caja2/components/PopupUploadVoucher';
 import { color } from 'three/examples/jsm/nodes/Nodes';
 import { Linking } from 'react-native';
 
@@ -292,61 +293,21 @@ export default class misReporteMoviminetos extends Component {
                     );
 
                     const menuOptions = [
-                        // View Vouchers
+
                         {
-                            label: 'Ver Vouchers',
-                            icon: <SIconApp name="Arrow" fill="#e4e4e4ff" width={16} />,
+                            label: 'Subir Voucher',
+                            icon: <SIconApp name="upImgNube" fill="#e4e4e4ff" width={16} />,
                             onPress: () => {
-                                const vouchers = Array.isArray(e.row?.vouchers) ? e.row.vouchers : [];
-                                if (vouchers.length === 0) {
-                                    SPopup.alert('No hay vouchers disponibles para este movimiento.');
-                                    return;
-                                }
-                                PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, vouchers);
-                            },
-                        },
-                        ...(puedeAnular ? [{
-                            label: esVenta ? 'Anular venta' : 'Anular compra',
-                            icon: <SIconApp name="cancelado" fill="#db0606ff" width={16} />,
-                            onPress: () => {
-                                SPopup.confirm({
-                                    title: esVenta ? "Anular venta" : "Anular compra",
-                                    message: `¿Está seguro de que desea anular esta ${esVenta ? "venta" : "compra"}? Esta acción no se puede deshacer.`,
-                                    onPress: () => {
-                                        const notificationKey = `anular_${e.row?.key_compra_venta}`;
-                                        SNotification.send({ key: notificationKey, title: esVenta ? "Anulando venta..." : "Anulando compra...", type: "loading" });
-                                        const promesa = esVenta
-                                            ? MDL.caja.anular_venta({ key_compra_venta: e.row?.key_compra_venta })
-                                            : MDL.caja.anular_compra({ key_compra_venta: e.row?.key_compra_venta });
-                                        promesa
-                                            .then(() => {
-                                                SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
-                                                this.loadInitialData().then(data => {
-                                                    this.setState({ data });
-                                                    if (this.DinamicTable) this.DinamicTable.loadData();
-                                                });
-                                            })
-                                            .catch((error) => {
-                                                SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
-                                            });
-                                    }
+                                PopupUploadVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers ?? [], () => {
+                                    this.loadInitialData().then(data => {
+                                        this.setState({ data });
+                                        if (this.DinamicTable) this.DinamicTable.loadData();
+                                    });
                                 });
                             },
-                        }] : []),
-                        // View Accounting Voucher (Conditional)
-                        ...(e.row?.key_comprobante ? [{
-                            label: 'Ver Comprobante Contable',
-                            icon: <SIconApp name="Ajustes" fill="#e4e4e4ff" width={16} />,
-                            onPress: () => {
+                        },
 
 
-                                if (e.row?.codigo_comprobante === 0) {
-                                    SPopup.alert('No hay comprobantes.');
-                                    return;
-                                }
-                                SNavigation.navigate('/contabilidad/asiento_contable/profile', { pk: e.row.key_comprobante });
-                            },
-                        }] : []),
                     ];
                     FloatMenu.open({
                         e: e.evt,

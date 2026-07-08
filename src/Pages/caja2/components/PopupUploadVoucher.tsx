@@ -23,12 +23,12 @@ type VoucherFile = {
 }
 
 export default class PopupUploadVoucher extends Component<Props> {
-    static open(key_empresa: string, key_caja_detalle: string, data_vouchers?: any[]) {
+    static open(key_empresa: string, key_caja_detalle: string, data_vouchers?: any[], onSuccess?: (resp: any) => void) {
         SPopup.open({
             key: "PopupUploadVoucher_",
             content: (
                 <SView style={{ width: "100%", maxHeight: "100%", maxWidth: 550, borderRadius: 12, borderColor: STheme.color.card, borderWidth: 1, backgroundColor: STheme.color.background, padding: 20, }} withoutFeedback>
-                    <PopupUploadVoucher key_empresa={key_empresa} key_caja_detalle={key_caja_detalle} data_vouchers={data_vouchers} />
+                    <PopupUploadVoucher key_empresa={key_empresa} key_caja_detalle={key_caja_detalle} data_vouchers={data_vouchers} onSuccess={onSuccess} />
                 </SView>
             ),
         })
@@ -119,18 +119,22 @@ export default class PopupUploadVoucher extends Component<Props> {
             const subidosOk: VoucherFile[] = []
             const fallidos: string[] = []
 
-            for (const v of nuevosArchivos) {
-                try {
-                    const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${encodeURIComponent(v.name)}`
-                    console.log(`[Voucher] Subiendo: ${v.name} → ${uploadUrl}`)
-                    await Upload.sendPromise({ file: v.file!, compress: false }, uploadUrl)
+            const resultados = await Promise.allSettled(nuevosArchivos.map((v) => {
+                const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${encodeURIComponent(v.name)}`
+                console.log(`[Voucher] Subiendo: ${v.name} → ${uploadUrl}`)
+                return Upload.sendPromise({ file: v.file!, compress: false }, uploadUrl)
+            }))
+
+            resultados.forEach((resultado, i) => {
+                const v = nuevosArchivos[i]
+                if (resultado.status === "fulfilled") {
                     console.log(`[Voucher] ✓ ${v.name}`)
                     subidosOk.push(v)
-                } catch (err) {
-                    console.error(`[Voucher] ✗ ${v.name}`, err)
+                } else {
+                    console.error(`[Voucher] ✗ ${v.name}`, resultado.reason)
                     fallidos.push(v.name)
                 }
-            }
+            })
 
             const vouchersFinales = [...archivosServidor, ...subidosOk].map((v) => ({
                 name: v.name,
