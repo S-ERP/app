@@ -224,8 +224,8 @@ export default class PdfCierreCaja {
                             }}>
 
                             <SPDF.View style={{ flex: 1, justifyContent: "center" }}>
-                                <SPDF.Text style={{ ...text, fontSize: 8 }}>
-                                    {new SDate(item.fecha_on).toString("HH:mm")}
+                                <SPDF.Text style={{ ...text, fontSize: 8, textTransform: "uppercase" }}>
+                                    {new SDate(item.fecha_on).toString("HH:mm")} | {item.detalle?.tipo_pago ?? "-"}
                                 </SPDF.Text>
                                 <SPDF.Text style={{ ...text, fontSize: 8 }}>
                                     {item.detalle?.cliente?.razon_social ?? "-"}
@@ -244,7 +244,7 @@ export default class PdfCierreCaja {
 
                             <SPDF.View style={{ flex: 1, alignItems: "flex-end", paddingRight: 3 }}>
                                 {(item?.items ?? []).map((d, index) => (
-                                    <SPDF.View key={index} style={{ alignItems: "flex-end" }} >
+                                    <SPDF.View key={index} style={{ alignItems: "flex-end", width: "100%" }} >
                                         <SPDF.Text style={{ ...text, fontSize: 8, width: "100%" }} >
                                             {d?.tipo}
                                         </SPDF.Text>
