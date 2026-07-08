@@ -593,7 +593,7 @@ export default class misReporteMoviminetos extends Component {
                     }}
                 />
 
-                <DinamicTable.Col
+                {/* <DinamicTable.Col
                     key="estado_caja"
                     label="ESTADO CAJA"
                     width={100}
@@ -613,7 +613,7 @@ export default class misReporteMoviminetos extends Component {
                             </SView>
                         );
                     }}
-                />
+                /> */}
 
             </DinamicTable >
         );
