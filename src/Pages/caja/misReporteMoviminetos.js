@@ -540,7 +540,7 @@ export default class misReporteMoviminetos extends Component {
                         const vouchers = e.row.vouchers ?? [];
                         if (vouchers.length === 0) return null;
                         return (
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ flexDirection: "row", alignItems: "center" }}>
                                 {vouchers.map((p, index) => (
                                     <SView key={index} row center style={{ marginRight: 8 }}>
                                         <SView
@@ -553,7 +553,12 @@ export default class misReporteMoviminetos extends Component {
                                         </SView>
                                         <SView
                                             center
-                                            style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: "#dc3545", marginLeft: 2 }}
+                                            style={{
+                                                position: "absolute", top: 0, right: -1,
+                                                width: 12, height: 12, borderRadius: 6,
+                                                backgroundColor: "#dc3545", 
+                                    
+                                            }}
                                             onPress={() => {
                                                 SPopup.confirm({
                                                     title: "Eliminar comprobante",
