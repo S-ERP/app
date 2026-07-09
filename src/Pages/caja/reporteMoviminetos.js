@@ -237,6 +237,15 @@ export default class reporteMoviminetos extends Component {
             const usuarioKeys = [...new Set(movimientos.map(m => m.key_usuario).filter(Boolean))];
             const usuarios = (await MDL.usuario.getByKeys(usuarioKeys)) ?? [];
             const usuarioMap = Object.fromEntries(usuarios.map(u => [u.key, u]));
+
+            // Cliente: las ventas traen key_cliente, los movimientos de caja solo traen key_compra_venta
+            const ventas = (await MDL.compra_venta.getTransaccion("venta", fecha_inicio, fecha_fin)) ?? [];
+            const clientes = (await MDL.crm.cliente.getAll()) ?? [];
+            const clientesMap = Object.fromEntries((Array.isArray(clientes) ? clientes : Object.values(clientes)).map(c => [c.key, c]));
+            const ventaClienteMap = Object.fromEntries(
+                (Array.isArray(ventas) ? ventas : Object.values(ventas)).map(v => [v.key, clientesMap[v.key_cliente] ?? null])
+            );
+
             const processedData = movimientos.map(mov => ({
                 ...mov,
                 usuario: usuarioMap[mov.key_usuario] ?? null,
@@ -246,6 +255,7 @@ export default class reporteMoviminetos extends Component {
                 moneda: empresa.monedas.find(m => m.key === mov.key_moneda) ?? null,
                 moneda_base: base,
                 turno: this.getTurno(mov.caja_fecha_on, mov.caja_fecha_cierre),
+                cliente: mov.key_compra_venta ? (ventaClienteMap[mov.key_compra_venta] ?? null) : null,
             }));
             // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
             console.log("DATOS MOVIMIENTOS:", processedData);
@@ -479,6 +489,27 @@ export default class reporteMoviminetos extends Component {
                                     }}> <SText fontSize={10} style={{ textTransform: "capitalize" }} >{e.data}</SText>
                                     </SView>
                                 </SView>
+                            </SView>
+                        );
+                    }}
+                />
+
+
+
+                <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 4 }} width={100} height={60} data={(e) => (e.row?.tipo || "").toLowerCase() === "venta" ? (e.row?.cliente?.nombres ?? "") : ""}
+                    customComponent={e => {
+                        const esVenta = (e.row?.tipo || "").toLowerCase() === "venta";
+                        const nombre = esVenta ? (e.row?.cliente?.nombres || "") : "";
+                        return (
+                            <SView col={"xs-12"} center row>
+                                {nombre ? (
+                                    <SView style={{ width: 24, height: 24, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                                        <SText style={{ fontSize: 11, color: STheme.color.text, opacity: 0.7 }}>{nombre[0].toUpperCase()}</SText>
+                                        {e.row?.cliente?.key ? <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ width: 24, height: 24, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
+                                    </SView>
+                                ) : null}
+                                {nombre ? <SView width={5} /> : null}
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{nombre}</SText>
                             </SView>
                         );
                     }}
