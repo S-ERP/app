@@ -621,7 +621,7 @@ export default class misReporteMoviminetos extends Component {
 
     render() {
         return (
-            <SPage title="Mi Historial de Transacciones" disableScroll>
+            <SPage title="Mis Movimientos de Cajas" disableScroll>
                 <SHr height={8} />
                 <SView width={260} center>
                     <DateTimeBetween
