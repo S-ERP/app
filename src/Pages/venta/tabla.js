@@ -34,6 +34,10 @@ export default class tabla extends Component {
         };
     }
 
+    // _get_suscripciones
+
+// _get_suscripciones_bycliente
+
     async loadInitialData() {
         try {
             SNotification.send({

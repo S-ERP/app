@@ -207,16 +207,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
 
-  async getsuscripciones(_key_compra_venta_detalle: String) {
-    const resp: any = await SSocket.sendPromise({
-      service: "inventario",
-      component: "reporte",
-      type: "execute_function",
-      func: "_reporte_suscritos",
-      params: ["'" + _key_compra_venta_detalle + "'"],
-    });
-    return resp.data || [];
-  }
+ 
 
   async getsuscripciones_full() {
     const key_empresa = MDL.empresa?.select?.key || {};
@@ -225,7 +216,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       service: "inventario",
       component: "reporte",
       type: "execute_function",
-      func: "_reporte_suscritos_alvaro",
+      func: "_reporte_suscritos",
       params: ["'" + key_empresa + "'"],
     });
     return resp.data || [];
