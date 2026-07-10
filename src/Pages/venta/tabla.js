@@ -350,7 +350,7 @@ export default class tabla extends Component {
             return (
                 <>
                     <SView col={"xs-11"} row center onPress={() => { if (onPress) onPress(); SPopup.close("popup_menu_ventas"); }}>
-                        <SView col={"xs-2"} center height={32}> {typeof icon === "string" ? <SIconApp name={icon} height={18} fill={iconProps?.fill || STheme.color.text} stroke={iconProps?.stroke} /> : icon} </SView>
+                        <SView col={"xs-2"} center height={32}>{typeof icon === "string" ? <SIconApp name={icon} height={18} fill={iconProps?.fill || STheme.color.text} stroke={iconProps?.stroke} /> : icon}</SView>
                         <SView width={8} />
                         <SView flex> <SText fontSize={14}>{label}</SText> </SView>
                     </SView>
@@ -552,7 +552,7 @@ export default class tabla extends Component {
                     }}
                 />
                 <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col>{(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))}</SView>)} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 4 }} width={120} height={60} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 4 }} width={120} height={60} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => {
@@ -814,7 +814,7 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-                <DinamicTable.Col key="detallesw_" label="Concepto" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="detallesw_" label="Concepto" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col>{(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))}</SView>)} />
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
                 < DinamicTable.Col key="total_suscriptos" label="Registrados" width={80} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_suscriptos ?? ""} />
                 < DinamicTable.Col key="total_disponibles" label="Pendientes" width={80} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_disponibles ?? ""}
@@ -832,7 +832,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={80} height={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
                         const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
-                        return (<SView col> {suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))} </SView>);
+                        return (<SView col>{suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}</SView>);
                     }}
                 />
                 <DinamicTable.Col
