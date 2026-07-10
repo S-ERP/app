@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { SHr, SPage, SView, SText, STheme } from "servisofts-component";
+import { SPage, SView, SText, STheme } from "servisofts-component";
 import { DinamicTable } from "servisofts-table";
 import Config from "../Config";
 

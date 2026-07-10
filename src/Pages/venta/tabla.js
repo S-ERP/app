@@ -596,16 +596,19 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 4 }} width={100} height={60} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => {
                         const nombre = e.row?.cliente?.nombres || "";
+                        // The filter popup's checklist rows are shorter/narrower than a
+                        // real table cell, so shrink the avatar there instead of clipping it.
+                        const avatarSize = e.filterList ? 16 : 24;
                         return (
                             <SView col={"xs-12"} center row>
                                 {nombre ? (
-                                    <SView style={{ width: 24, height: 24, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-                                        <SText style={{ fontSize: 11, color: STheme.color.text, opacity: 0.7 }}>{nombre[0].toUpperCase()}</SText>
-                                        {e.row?.cliente?.key ? <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ width: 24, height: 24, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
+                                    <SView style={{ width: avatarSize, height: avatarSize, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                                        <SText style={{ fontSize: avatarSize / 2, color: STheme.color.text, opacity: 0.7 }}>{nombre[0].toUpperCase()}</SText>
+                                        {e.row?.cliente?.key ? <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ width: avatarSize, height: avatarSize, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
                                     </SView>
                                 ) : null}
                                 {nombre ? <SView width={5} /> : null}
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{nombre}</SText>
+                                <SText flex capitalize numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{nombre}</SText>
                             </SView>
                         );
                     }}
