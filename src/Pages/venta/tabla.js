@@ -57,22 +57,30 @@ export default class tabla extends Component {
             if (!clientes) console.warn("No se pudieron obtener clientes.");
             // 🔥 MAPA CLIENTES
             const clientesMap = Array.isArray(clientes) ? Object.fromEntries(clientes.map(c => [c.key, c])) : clientes || {};
-            const keysCompraDetalles = [...new Set(ventas.flatMap(cv => cv.detalles?.map(d => d.key).filter(Boolean) || []))];
-            const suscripcionesArray = await Promise.all(
-                keysCompraDetalles.map(async key => {
-                    try {
-                        const data = await MDL.compra_venta.getsuscripciones(key);
-                        return { key, data };
-                    } catch (e) {
-                        return { key, data: null };
-                    }
-                })
-            );
-            const suscripcionesMap = Object.fromEntries(suscripcionesArray.map(s => [s.key, s.data]));
+            // Antes: una llamada por key_compra_venta_detalle (97+ sockets en paralelo, tumbaba el sistema).
+            // Ahora: una sola llamada que trae todas las suscripciones de la empresa, agrupadas acá.
+            const suscripcionesFull = await MDL.compra_venta.getsuscripciones_full();
+            const suscripcionesMap = {};
+            (suscripcionesFull || []).forEach(row => {
+                const key = row.key_compra_venta_detalle;
+                if (!key) return;
+                if (!suscripcionesMap[key]) {
+                    const cupos = Number(row.modelo?.cantidad_suscriptores) || 0;
+                    suscripcionesMap[key] = [{ cupos, suscriptos: 0, disponibles: cupos, suscriptores: [] }];
+                }
+                const entry = suscripcionesMap[key][0];
+                entry.suscriptores.push(row);
+                entry.suscriptos += 1;
+                entry.disponibles = Math.max(0, entry.cupos - entry.suscriptos);
+            });
             const totalesMap = {};
             ventas.forEach(cv => {
                 try {
-                    totalesMap[cv.key] = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: cv.key }) || {};
+                    // Cálculo local: Model.compra_venta_detalle.Action.getTotales() usa un cache de un
+                    // solo slot por key_compra_venta, así que llamarlo en este loop (una key distinta
+                    // por venta) invalidaba el cache en cada iteración y disparaba un socket nuevo por
+                    // venta. cv.detalles ya trae todo lo necesario, así que se calcula sin red.
+                    totalesMap[cv.key] = MDL.compra_venta.getTotales({ ...cv, detalle: cv.detalles }) || {};
                 } catch (e) {
                     totalesMap[cv.key] = {};
                 }
@@ -117,7 +125,6 @@ export default class tabla extends Component {
                 color: STheme.color.success,
                 time: 2000,
             });
-            console.clear();
             console.log("Ventas enriquecidas:", ventasEnriquecidas);
             return ventasEnriquecidas;
         } catch (error) {
@@ -892,7 +899,7 @@ export default class tabla extends Component {
 
     render() {
         return (
-            <SPage title="Tabla de Ventas" disableScroll>
+            <SPage title="Tabla de Vendddtas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter

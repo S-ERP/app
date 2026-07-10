@@ -206,12 +206,8 @@ export default class Suscriptores extends Component {
 
       const empresaKey = MDL.empresa.select?.key;
 
-      const res = await MDL.inventario.execute_function(
-        "_get_suscripciones",
-        [empresaKey]
-      ) || [];
 
-      if (!Array.isArray(res)) return [];
+      const res = await MDL.compra_venta.getsuscripciones_full();
 
       console.log("✅ Suscripciones obtenidas:", JSON.stringify(res, null, 2));
 
@@ -434,35 +430,35 @@ export default class Suscriptores extends Component {
            customComponent={e => <SImage src={SSocket.api.inventario + "tipo_producto/" + e.row?.key_producto} />} /> */}
 
         {/* <DinamicTable.Col key={"modelo_"} label='modelo' width={200} data={(e) => e.row.producto?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SImage src={SSocket.api.inventario + "modelo/" + e.row?.producto?.modelo?.key} />} /> */}
-        <DinamicTable.Col key={"modelo_"} label='modelo' width={120} data={(e) => e.row.producto?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
+        <DinamicTable.Col key={"modelo_"} label='modelo' width={120} data={(e) => e.row?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
           <SView style={{ width: 25, height: 25, borderRadius: 4, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", backgroundColor: STheme.color.card + "66", }}>
-            <SImage src={SSocket.api.inventario + "modelo/.128_" + e.row?.producto?.modelo?.key} enablePreview srcPreview={SSocket.api.inventario + "modelo/" + e.row?.producto?.modelo?.key} style={{ resizeMode: "cover", }} /> </SView> <SView width={8} />
-          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.producto?.modelo?.descripcion}</SText>
+            <SImage src={SSocket.api.inventario + "modelo/.128_" + e.row?.modelo?.key} enablePreview srcPreview={SSocket.api.inventario + "modelo/" + e.row?.modelo?.key} style={{ resizeMode: "cover", }} /> </SView> <SView width={8} />
+          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.modelo?.descripcion}</SText>
         </SView>} />
 
-        <DinamicTable.Col key={"duracion_"} label='duracion' width={120} data={(e) => e.row.producto?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
-          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.producto?.modelo?.duracion} {e.row?.producto?.modelo?.duracion_medida}</SText>
+        <DinamicTable.Col key={"duracion_"} label='duracion' width={120} data={(e) => e.row?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
+          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.modelo?.duracion} {e.row?.modelo?.duracion_medida}</SText>
         </SView>} />
 
-        <DinamicTable.Col key={"cant_suscriptores_"} label='suscriptores' width={120} data={(e) => e.row.producto?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
-          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.producto?.modelo?.cantidad_suscriptores}</SText>
+        <DinamicTable.Col key={"cant_suscriptores_"} label='suscriptores' width={120} data={(e) => e.row?.modelo?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
+          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.modelo?.cantidad_suscriptores}</SText>
         </SView>} />
 
-        <DinamicTable.Col key={"marca_"} label='marca' width={120} data={(e) => e.row.producto?.marca?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
+        <DinamicTable.Col key={"marca_"} label='marca' width={120} data={(e) => e.row?.marca?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
           <SView style={{ width: 25, height: 25, borderRadius: 4, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", backgroundColor: STheme.color.card + "66", }}>
-            <SImage src={SSocket.api.inventario + "marca/.128_" + e.row?.producto?.marca?.key} enablePreview srcPreview={SSocket.api.inventario + "marca/" + e.row?.producto?.marca?.key} style={{ resizeMode: "cover", }} /> </SView> <SView width={8} />
-          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.producto?.marca?.descripcion}</SText>
+            <SImage src={SSocket.api.inventario + "marca/.128_" + e.row?.marca?.key} enablePreview srcPreview={SSocket.api.inventario + "marca/" + e.row?.marca?.key} style={{ resizeMode: "cover", }} /> </SView> <SView width={8} />
+          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.marca?.descripcion}</SText>
         </SView>} />
-        <DinamicTable.Col key={"tipo_producto_"} label='tipo_producto' width={120} data={(e) => e.row.producto?.tipo_producto?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
+        <DinamicTable.Col key={"tipo_producto_"} label='tipo_producto' width={120} data={(e) => e.row?.tipo_producto?.key} wrap textStyle={{ fontWeight: "bold" }} customComponent={e => <SView row style={{ alignItems: "center", }}>
           <SView style={{ width: 25, height: 25, borderRadius: 4, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", backgroundColor: STheme.color.card + "66", }}>
-            <SImage src={SSocket.api.inventario + "tipo_producto/.128_" + e.row?.producto?.tipo_producto?.key} enablePreview srcPreview={SSocket.api.inventario + "tipo_producto/" + e.row?.producto?.tipo_producto?.key} style={{ resizeMode: "cover", }} /> </SView> <SView width={8} />
-          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.producto?.tipo_producto?.descripcion}</SText>
+            <SImage src={SSocket.api.inventario + "tipo_producto/.128_" + e.row?.tipo_producto?.key} enablePreview srcPreview={SSocket.api.inventario + "tipo_producto/" + e.row?.tipo_producto?.key} style={{ resizeMode: "cover", }} /> </SView> <SView width={8} />
+          <SText flex style={{ fontSize: 10 }} numberOfLines={0} >{e.row?.tipo_producto?.descripcion}</SText>
         </SView>} />
 
 
         {/* luego traer la marca y el tipo producto */}
         <DinamicTable.Col key={"var1_"} label='Precio' width={70} data={(e) => e.row?.producto?.precio && SMath.formatMoney(e.row?.producto?.precio)} />
-        <DinamicTable.Col key="var2_" label="Modelo" width={120} data={e => e.row?.producto?.modelo?.descripcion} />
+        <DinamicTable.Col key="var2_" label="Modelo" width={120} data={e => e.row?.modelo?.descripcion} />
 
         <DinamicTable.Col key="estado_fecha_" label="Estado" width={100} data={(e) => e.row?.fecha_fin ?? ""} customComponent={e => this.renderValidofecha(e.row)} />
 
@@ -485,7 +481,7 @@ export default class Suscriptores extends Component {
   }
   render() {
     return (
-      <SPage title="Suscriptores" disableScroll>
+      <SPage title="Suscripdddddtores" disableScroll>
         {this.mostrarTabla()}
         <SHr height={20} />
       </SPage>
