@@ -537,6 +537,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             )}
             <TextInput
                 {...this.props}
+                defaultValue={undefined}
                 value={(this.state.displayValue ?? "").replace("\n", " - ")}
                 onChangeText={this.handleChangeText}
                 onFocus={this.handleFocus.bind(this)}
