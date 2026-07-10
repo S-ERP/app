@@ -45,7 +45,7 @@ export default class tabla extends Component {
             if (!registros) console.warn("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
             if (!empresa) console.warn("No se pudo obtener la empresa.");
-            const sucursales = empresa.sucursales || [];
+            const sucursales = empresa?.sucursales || [];
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
             if (ventas.length === 0) console.warn("No se encontraron ventas.");
             const keysUsuarios = [...new Set(ventas.map(v => v.key_usuario).filter(Boolean))];
@@ -108,11 +108,11 @@ export default class tabla extends Component {
                     total_suscriptos,
                     total_cupos,
                     detalles: detallesEnriquecidos,
-                    moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
+                    moneda: empresa?.monedas?.find(m => m.key === cv.key_moneda) || {},
                     sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
                     usuario: usuariosMap[cv?.key_usuario] || {},
                     empresa,
-                    proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
+                    proveedor: (proveedores || []).find(p => p.key === cv.key_proveedor) || {},
                     cliente: clientesMap[cv.key_cliente] || {},
                     subtotal: totalesMap[cv.key]?.subtotal || "0",
                     cuotas: { ...cuotas, cantidad_pagada, cantidad_pendiente },

@@ -195,9 +195,8 @@ export default class Suscriptores extends Component {
 
 
   async loadInitialData() {
+    const notificationKey = "suscriptores_load";
     try {
-      const notificationKey = "suscriptores_load";
-
       SNotification.send({
         key: notificationKey,
         title: "Cargando suscripciones...",
@@ -208,8 +207,7 @@ export default class Suscriptores extends Component {
 
 
       const res = await MDL.compra_venta.getsuscripciones_full();
-
-      console.log("✅ Suscripciones obtenidas:", JSON.stringify(res, null, 2));
+      if (!Array.isArray(res)) return [];
 
       const empresa = await MDL.empresa.getFull();
       const sucursales = Object.values(empresa?.sucursales || {});
@@ -221,16 +219,18 @@ export default class Suscriptores extends Component {
         )
       ];
 
-      const usuariosArr = await MDL.usuario.getByKeys(keysUsuarios) || [];
+      const usuariosArrRaw = await MDL.usuario.getByKeys(keysUsuarios);
+      const usuariosArr = Array.isArray(usuariosArrRaw) ? usuariosArrRaw : [];
       const usuariosMap = Object.fromEntries(
         usuariosArr.map(u => [u.key, u])
       );
 
       // clientes
-      const clientesArr = await MDL.crm.cliente.getAll();
-      if (!Array.isArray(clientesArr)) {
+      const clientesArrRaw = await MDL.crm.cliente.getAll();
+      if (!Array.isArray(clientesArrRaw)) {
         console.error("No se pudieron obtener clientes.");
       }
+      const clientesArr = Array.isArray(clientesArrRaw) ? clientesArrRaw : [];
 
       const clientesMap = Object.fromEntries(
         clientesArr.map(c => [c.key, c])
@@ -252,7 +252,6 @@ export default class Suscriptores extends Component {
         time: 2000,
       });
 
-      console.log("✅ Data final:", data_mejorada);
       return data_mejorada;
 
     } catch (error) {
