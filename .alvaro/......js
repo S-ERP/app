@@ -1,3 +1,16 @@
+https://mui.com/x/react-date-pickers/?utm_source=chatgpt.com
+
+
+https://www.rsuitejs.com/components/date-range-picker/
+https://ant.design/components/date-picker
+
+https://react-icons.github.io/react-icons/
+
+https://mui.com/x/react-data-grid/
+
+https://mui.com/x/react-data-grid/
+
+
 Ahora ./limpiar.js va a funcionar directo.
 
 ./test.json — los archivos JSON no se pueden ejecutar, son datos. Para verlo usá:
