@@ -34,10 +34,6 @@ export default class tabla extends Component {
         };
     }
 
-    // _get_suscripciones
-
-// _get_suscripciones_bycliente
-
     async loadInitialData() {
         try {
             SNotification.send({
@@ -46,9 +42,18 @@ export default class tabla extends Component {
                 type: "loading",
             });
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-            if (!registros) console.warn("No se encontraron registros.");
             const empresa = await MDL.empresa.getFull();
-            if (!empresa) console.warn("No se pudo obtener la empresa.");
+            if (!registros || !empresa) {
+                console.warn("No se encontraron registros o no se pudo obtener la empresa.");
+                SNotification.send({
+                    key: "load_ventas",
+                    title: "Sin datos",
+                    body: "No se encontraron ventas en el rango de fechas seleccionado.",
+                    color: STheme.color.warning,
+                    time: 3000,
+                });
+                return [];
+            }
             const sucursales = empresa?.sucursales || [];
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
             if (ventas.length === 0) console.warn("No se encontraron ventas.");
@@ -59,7 +64,6 @@ export default class tabla extends Component {
             const clientes = await MDL.crm.cliente.getAll();
             if (!proveedores) console.warn("No se pudieron obtener proveedores.");
             if (!clientes) console.warn("No se pudieron obtener clientes.");
-            // 🔥 MAPA CLIENTES
             const clientesMap = Array.isArray(clientes) ? Object.fromEntries(clientes.map(c => [c.key, c])) : clientes || {};
             // Antes: una llamada por key_compra_venta_detalle (97+ sockets en paralelo, tumbaba el sistema).
             // Ahora: una sola llamada que trae todas las suscripciones de la empresa, agrupadas acá.
@@ -129,7 +133,6 @@ export default class tabla extends Component {
                 color: STheme.color.success,
                 time: 2000,
             });
-            console.log("Ventas enriquecidas:", ventasEnriquecidas);
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -211,8 +214,6 @@ export default class tabla extends Component {
                                                             ...this.state.pdfFiles,
                                                             [venta.key]: fileData
                                                         }
-                                                    }, () => {
-                                                        console.log("PDF guardado:", this.state.pdfFiles[venta.key]);
                                                     });
                                                 }
                                             });
@@ -753,7 +754,7 @@ export default class tabla extends Component {
                         );
                     }} />
 
-                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas?.cantidad_pendiente ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
 
 
@@ -818,7 +819,6 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }} />
-                <DinamicTable.Col key="detallesw_" label="Concepto" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col>{(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))}</SView>)} />
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_cupos ?? ""} />
                 < DinamicTable.Col key="total_suscriptos" label="Registrados" width={80} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_suscriptos ?? ""} />
                 < DinamicTable.Col key="total_disponibles" label="Pendientes" width={80} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.total_disponibles ?? ""}
@@ -903,7 +903,7 @@ export default class tabla extends Component {
 
     render() {
         return (
-            <SPage title="Tabla de Vendddtas" disableScroll>
+            <SPage title="Tabla de Ventas" disableScroll>
                 <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
@@ -911,6 +911,7 @@ export default class tabla extends Component {
                                 fecha_inicio: e.fecha_inicio,
                                 fecha_fin: e.fecha_fin
                             }, () => {
+                                this.DinamicTable?.loadData();
                             })}
                         />
                     </SView>
