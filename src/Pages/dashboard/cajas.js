@@ -59,9 +59,9 @@ export default class cajas extends React.Component {
         };
         const getPeriodo = (minutes) => {
             if (minutes === null) return null;
-            if (minutes >= 360 && minutes <= 720) return "Mañana";
-            if (minutes >= 721 && minutes <= 1080) return "Tarde";
-            if (minutes >= 1081 && minutes <= 1320) return "Noche";
+            if (minutes >= 360 && minutes <= 720) return "Mañana"; //de 6:00 a 12:00
+            if (minutes >= 721 && minutes <= 1080) return "Tarde"; //de 12:01 a 18:00
+            if (minutes >= 1081 && minutes <= 1439) return "Noche"; //de 18:01 a 22:00
             return "Otros";
         };
         const inicio = getPeriodo(parseMinutes(fechaOn));
@@ -102,6 +102,7 @@ export default class cajas extends React.Component {
         const empresaKey = MDL.empresa.select?.key;
         if (!empresaKey) return;
         this.setState({ loading: true, fecha_inicio, fecha_fin });
+        console.log("FECHA INICIO:", fecha_inicio, "FECHA FIN:", fecha_fin);
         try {
             const movimientos = await MDL.caja.getAllMovimientosCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
             const data = Array.isArray(movimientos) ? movimientos : [];
@@ -181,22 +182,25 @@ export default class cajas extends React.Component {
         const totals = {
             total_efectivo: 0,
             total_transferencias: 0,
+            total_credito: 0,
             total_recaudado: 0,
             total_egresos: 0,
             neto: 0,
             shifts: { Mañana: 0, Tarde: 0, Noche: 0, Otros: 0 },
-            payments: { Efectivo: 0, "Transferencias / QR": 0, Otros: 0 },
+            payments: { Efectivo: 0, "Transferencias / QR": 0, "Crédito": 0, Otros: 0 },
             daily: {},
         };
+        console.log("DATAAA:", data);
 
         data.forEach((mov) => {
-            console.log("movimientos:", mov);
+            // console.log("movimientos:", mov);
 
             const monto = Number(mov.monto ?? mov.monto_total ?? mov.monto_base ?? 0) || 0;
             const valor = Math.abs(monto);
 
             const tagMovimiento = (mov.tag_movimiento || "").trim().toLowerCase();
             const tagTipoPago = (mov.tag_tipo_pago || "").trim().toLowerCase();
+            const tipo = (mov.tipo || "").trim().toLowerCase();
 
             const turno = this.getTurno(
                 mov.caja_fecha_on || mov.fecha_on || mov.fecha,
@@ -210,7 +214,7 @@ export default class cajas extends React.Component {
             // ============================
             // INGRESOS
             // ============================
-            if (tagMovimiento === "ingreso") {
+            if (tagMovimiento === "ingreso" && tipo === "venta" || tipo === "traspaso") {
 
                 totals.total_recaudado += valor;
 
@@ -222,7 +226,13 @@ export default class cajas extends React.Component {
                     totals.total_transferencias += valor;
                     totals.payments["Transferencias / QR"] += valor;
 
+                } else if (tagTipoPago === "crédito") {
+                    console.log("CREDITO:", mov);
+                    totals.total_credito += valor;
+                    totals.payments["Crédito"] += valor;
+
                 } else {
+                    console.log("OTRO TIPO DE PAGO:", mov);
                     totals.payments.Otros += valor;
                 }
             }
@@ -267,6 +277,7 @@ export default class cajas extends React.Component {
         return {
             total_efectivo: totals.total_efectivo,
             total_transferencias: totals.total_transferencias,
+            total_credito: totals.total_credito,
             total_recaudado: totals.total_recaudado,
             total_egresos: totals.total_egresos,
             neto: totals.neto,
@@ -348,7 +359,7 @@ export default class cajas extends React.Component {
     renderTotalCard = (title, amount, subtitle, color) => {
         return (
             <SView
-                col="xs-12 sm-6 md-3"
+                col="xs-12 sm-6 md-2.4"
                 style={{ padding: 7 }}
             >
                 <SView
@@ -405,6 +416,7 @@ export default class cajas extends React.Component {
                         <SView row>
                             {this.renderTotalCard("Total Efectivo", resumen.total_efectivo, "", STheme.color.success)}
                             {this.renderTotalCard("Total Transferencias / QR", resumen.total_transferencias, "", STheme.color.text)}
+                            {this.renderTotalCard("Total Crédito", resumen.total_credito, "", "#ffe600")} {/* Color naranja para crédito */}
                             {this.renderTotalCard("Total Recaudado", resumen.total_recaudado, "", STheme.color.warning)}
                             {this.renderTotalCard("Total Egresos", resumen.total_egresos, "", STheme.color.danger)}
                         </SView>
