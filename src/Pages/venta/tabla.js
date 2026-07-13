@@ -17,8 +17,6 @@ const TIPO_PRODUCTO_MAP = {
     servicio: { color: "#2563eb", label: "Servicio" },
     inventario: { color: "#f59e0b", label: "Inventario" },
 };
-const getTiposProducto = (detalles = []) =>
-    [...new Set(detalles.map(d => d.data?.tipo_producto ?? "").filter(Boolean))];
 
 export default class tabla extends Component {
 
@@ -185,8 +183,6 @@ export default class tabla extends Component {
                 time: 2000,
             });
 
-            console.clear();
-            console.log(JSON.stringify(ventasEnriquecidas));
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -276,9 +272,6 @@ export default class tabla extends Component {
             );
         };
     }
-
-
-
 
     renderMenuVentas(row) {
         const openRegistrarFacturaTypePopup = (venta, tipoFactura) => {
@@ -695,10 +688,6 @@ export default class tabla extends Component {
                     })}
                 />
 
-
-
-
-
                 <DinamicTable.Col key="descripcion" label="Concepto" width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
 
                 <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={60} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
@@ -715,7 +704,6 @@ export default class tabla extends Component {
                             </SView>
                         );
                     }}
-
 
                 />
 
@@ -739,9 +727,6 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-
-
-
 
                 <DinamicTable.Col key="vendedor" label="Vendedor" width={100} height={60} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => {
@@ -846,7 +831,6 @@ export default class tabla extends Component {
                         );
                     }} />
 
-
                 <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} height={60} data={(e) => e.row?.factura?.nro_factura}
                     customComponent={e => <>
                         {(e.row?.factura?.nro_factura) ?
@@ -855,7 +839,6 @@ export default class tabla extends Component {
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
                             </SView> : null}
                     </>}
-
 
                 />
                 <DinamicTable.Col key="nit" label="NIT / CI" width={100} height={60} data={(e) => e.row?.factura?.nit ?? ""} />
@@ -871,12 +854,7 @@ export default class tabla extends Component {
                     </>}
                 />
 
-
-
-
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} height={60} data={(e) => e.row?.moneda?.descripcion ?? ""} />
-
-
 
                 <DinamicTable.Col key="cuotas_cantidad_pagadas" label="# Pago" sumTotal={['', 0]} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.success + "33" }} data={(e) => e.row?.cuotas?.cantidad_pagada ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={130} height={60}
@@ -953,7 +931,6 @@ export default class tabla extends Component {
                         );
                     }} />
 
-
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" sumTotal={['', 0]} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col wrap key="en_mora" label="Mora" width={130} height={60}
@@ -992,7 +969,7 @@ export default class tabla extends Component {
                         );
                     }} />
 
-                < DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} data={(e) => e.row?.total_cupos ?? ""} />
+                <DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} data={(e) => e.row?.total_cupos ?? ""} />
                 <DinamicTable.Col
                     key="ocupacion_"
                     label="Suscriptos"
@@ -1048,7 +1025,6 @@ export default class tabla extends Component {
     }
 
     async confirmarBorradoFacturas() {
-        console.count()
         const notificationKey = "borrar_facturas";
         SPopup.confirm({
             icon: "eliminar",
