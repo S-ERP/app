@@ -577,12 +577,12 @@ export default class tabla extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
-                    data={e => (e.row?.detalles ?? []).map(h => h.data.tipo_producto)} wrap
+                    data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
                     cellStyle={{ padding: 4, gap: 4 }}
-                    customComponent={e => (e.row?.detalles ?? []).map(h => {
-                        const estilo = TIPO_PRODUCTO_MAP[h.data.tipo_producto?.toLowerCase()] || { color: STheme.color.lightGray, label: h.data.tipo_producto };
+                    customComponent={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))].map(tipo => {
+                        const estilo = TIPO_PRODUCTO_MAP[tipo?.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
                         return (
-                            <SView key={h.key} style={{ backgroundColor: estilo.color, borderRadius: 4, padding: 5 }}>
+                            <SView key={tipo} style={{ backgroundColor: estilo.color, borderRadius: 4, padding: 5 }}>
                                 <SText style={{ fontSize: 12, color: STheme.color.text }}>{estilo.label}</SText>
                             </SView>
                         );
