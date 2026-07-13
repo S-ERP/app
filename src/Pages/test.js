@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { SPage, SView, SText, STheme } from "servisofts-component";
+import { SPage, SView, SText, STheme, SNavigation } from "servisofts-component";
 import { DinamicTable } from "servisofts-table";
 import Config from "../Config";
 
@@ -55,12 +55,62 @@ const DATA_QUEMADA = [
 ].map((item, index) => ({ ...item, tipo: TIPO_COMBOS[index % TIPO_COMBOS.length] }));
 
 export default class FacturaFormSimple extends Component {
+  constructor(props) {
+    super(props);
+    this.pk = SNavigation.getParam("pk");
+  }
+
+  async loadData() {
+    try {
+      if (!this.pk) {
+        console.error("Error: no se encontró la key....");
+      }
+
+      const data = await Promise.resolve(DATA_QUEMADA);
+      if (!data || !data.length) {
+        console.warn("No se encontraron datos.");
+        return [];
+      }
+
+      // Ejemplo: condiciones múltiples (if / else if / else)
+      if (data.length === 0) {
+        console.log("Cantidad: sin registros");
+      } else if (data.length < 10) {
+        console.log("Cantidad: pocos registros ->", data.length);
+      } else if (data.length < 50) {
+        console.log("Cantidad: cantidad normal de registros ->", data.length);
+      } else {
+        console.log("Cantidad: muchos registros ->", data.length);
+      }
+
+      // Ejemplo: switch según la ciudad del primer registro
+      switch (data[0]?.ciudad) {
+        case "La Paz":
+          console.log("Switch ciudad: el primer registro es de La Paz");
+          break;
+        case "Santa Cruz":
+          console.log("Switch ciudad: el primer registro es de Santa Cruz");
+          break;
+        case "Cochabamba":
+          console.log("Switch ciudad: el primer registro es de Cochabamba");
+          break;
+        default:
+          console.log("Switch ciudad: el primer registro es de otra ciudad ->", data[0]?.ciudad);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+      return [];
+    }
+  }
+
   mostrarTabla() {
     return (
       <DinamicTable
         key="tabla"
         {...Config.table.applyTheme()}
-        loadData={() => Promise.resolve(DATA_QUEMADA)}
+        loadData={() => this.loadData()}
         keyExtractor={(item) => item.id + ""}
       >
         <DinamicTable.Col key="id" label="#" width={50} height={40} data={(e) => e.row.id} />
