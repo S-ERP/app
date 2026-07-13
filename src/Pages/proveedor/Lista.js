@@ -115,10 +115,6 @@ export default class Lista extends Component {
         }
     }
 
-    sumMap(map) {
-        return Object.values(map || {}).reduce((s, v) => s + v, 0) || '';
-    }
-
     formatMap(map, monedas) {
         return Object.entries(map || {}).map(([k, monto]) => {
             const mon = (monedas || []).find(m => m.key === k);
@@ -446,7 +442,7 @@ export default class Lista extends Component {
                 />
 
 
-                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} height={60} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} h  eight={60} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Responsable" width={100} height={60} data={e => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
         );

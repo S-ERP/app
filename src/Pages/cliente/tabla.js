@@ -177,31 +177,31 @@ export default class ListaClientes extends Component {
             </SView>
         );
     }
-    //sdddddddddddddd
-
-    renderMoneyList(map, monedas, color) {
+    renderMontoCell(map, baseMonto, monedas) {
         const entries = Object.entries(map || {});
-        if (!entries.length) return null;
+        if (!entries.length && !baseMonto) return null;
+        const color = STheme.color.text;
+        const baseText = this.formatBase(baseMonto, monedas);
         return (
             <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                {entries.map(([key_moneda, monto]) => {
-                    const mon = (monedas || []).find(m => m.key === key_moneda);
-                    const sim = mon?.observacion || 'Bs';
-                    const fmt = SMath.formatMoney(monto);
-                    const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
-                    return (
-                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
-                            <SText style={{ fontSize: 8, color, opacity: 0.6 }}>{sim}</SText>
-                            <SText style={{ fontSize: 11, color }}>{num}</SText>
-                        </SView>
-                    );
-                })}
+                {baseText ? <SText style={{ fontSize: 13, fontWeight: 'bold', color }}>{baseText}</SText> : null}
+                {entries.length > 0 && (
+                    <SView row style={{ flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: baseText ? 2 : 0 }}>
+                        {entries.map(([key_moneda, monto], i) => {
+                            const mon = (monedas || []).find(m => m.key === key_moneda);
+                            const sim = mon?.observacion || 'Bs';
+                            const fmt = SMath.formatMoney(monto);
+                            const text = fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
+                            return (
+                                <SText key={key_moneda} style={{ fontSize: 9, opacity: 0.7, color, marginLeft: i > 0 ? 6 : 0 }}>
+                                    {text}
+                                </SText>
+                            );
+                        })}
+                    </SView>
+                )}
             </SView>
         );
-    }
-
-    sumMap(map) {
-        return Object.values(map || {}).reduce((s, v) => s + v, 0) || '';
     }
 
     formatMap(map, monedas) {
@@ -220,34 +220,16 @@ export default class ListaClientes extends Component {
         return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
     }
 
-    footerSum(selector, formatter) {
+    footerCuotasYMonto(cuotaSelector, montoBaseSelector) {
         return ({ dinamicTable }) => {
             const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
-            const total = rows.reduce((s, row) => s + (Number(selector(row)) || 0), 0);
-            return (
-                <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
-                    <SText style={{ fontSize: 12, fontWeight: 'bold' }}>{formatter ? formatter(total) : (total || '')}</SText>
-                </SView>
-            );
-        };
-    }
-
-    footerSumMap(selector, baseSelector) {
-        return ({ dinamicTable }) => {
-            const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
+            const totalCuotas = rows.reduce((s, row) => s + (Number(cuotaSelector(row)) || 0), 0);
+            const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
             const monedas = rows[0]?.empresa?.monedas || [];
-            const totalMap = {};
-            let totalBase = 0;
-            rows.forEach(row => {
-                Object.entries(selector(row) || {}).forEach(([k, v]) => {
-                    totalMap[k] = (totalMap[k] || 0) + Number(v || 0);
-                });
-                totalBase += Number(baseSelector ? baseSelector(row) : 0) || 0;
-            });
             return (
                 <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
-                    <SText style={{ fontSize: 11, fontWeight: 'bold' }}>{this.formatMap(totalMap, monedas)}</SText>
-                    {totalBase > 0 && <SText style={{ fontSize: 9, opacity: 0.8 }}>({this.formatBase(totalBase, monedas)})</SText>}
+                    <SText style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
+                    <SText style={{ fontSize: 12, fontWeight: 'bold' }}>{this.formatBase(totalMonto, monedas)}</SText>
                 </SView>
             );
         };
@@ -267,12 +249,22 @@ export default class ListaClientes extends Component {
                 textStyle={Config.table.textStyle()}
                 loadData={() => this.loadInitialData()}
                 loadInitialState={async () => ({
-                    cols: { "total_base_col": { hidden: true }, "pagado_base_col": { hidden: true }, "deuda_base_col": { hidden: true }, },
+                    cols: {},
                     sorters: [
                         { key: "estado_pago", order: "asc", type: "string" },
                         { key: "nombre_completo", order: "asc", type: "string" },
                     ]
                 })}
+                headerGroups={[
+                    {
+                        label: "Cuotas Pendientes", cols: ["cuota_pen", "monto_pen"],
+                        style: { backgroundColor: STheme.color.warning + '55', borderWidth: 1, borderColor: STheme.color.warning },
+                    },
+                    {
+                        label: "Cuotas en Mora", cols: ["cuota_mor", "monto_mor"],
+                        style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
+                    },
+                ]}
                 onSelect={e => {
                     const { row, evt } = e;
                     const nombreCliente = `CLIENTE: ${row?.nombres ?? 'Sin nombre'}`;
@@ -389,35 +381,47 @@ export default class ListaClientes extends Component {
                     label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
                 <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={80}
                     headerStyle={{ paddingLeft: 4 }}
+                    format={e => (e.data ?? []).join(', ')}
                     cellStyle={{
                         flexDirection: "row",
                         justifyContent: "flex-start",
                         flexWrap: "wrap",
                         alignItems: "flex-start",
                         gap: 4,
+                        overflow: "hidden",
                     }}
                     customComponent={e => {
-                        return (e.row.tipo_cliente ?? []).map((tc) => {
-                            return <SView style={{
-                                borderWidth: 1,
-                                backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "15",
-                                borderColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "50",
-                                padding: 2,
-                                paddingHorizontal: 4,
-                                borderRadius: 4,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                gap: 2,
-                            }} row>
-                                <SView style={{
-                                    width: 12,
-                                    height: 12, borderRadius: 100,
-                                    backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)),
-
-                                }}></SView>
-                                <SText key={tc.key} fontSize={10}>{tc.titulo}</SText>
-                            </SView>
-                        })
+                        const tipos = e.row.tipo_cliente ?? [];
+                        const MAX_TAGS = 4;
+                        const visibles = tipos.slice(0, MAX_TAGS);
+                        const restantes = tipos.length - visibles.length;
+                        return (
+                            <>
+                                {visibles.map(tc => (
+                                    <SView key={tc.key} style={{
+                                        borderWidth: 1,
+                                        backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "15",
+                                        borderColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "50",
+                                        borderRadius: 4,
+                                        justifyContent: "center", alignItems: "center", gap: 2,
+                                    }} row>
+                                        <SView style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: tc.color ?? STheme.colorFromText(tc.titulo) }} />
+                                        <SText fontSize={10}>{tc.titulo}</SText>
+                                    </SView>
+                                ))}
+                                {restantes > 0 && (
+                                    <SView style={{
+                                        borderWidth: 1,
+                                        backgroundColor: STheme.color.text + "15",
+                                        borderColor: STheme.color.text + "50",
+                                        borderRadius: 4,
+                                        justifyContent: "center", alignItems: "center",
+                                    }}>
+                                        <SText fontSize={10}>{`+${restantes}`}</SText>
+                                    </SView>
+                                )}
+                            </>
+                        );
                     }}
                 />
                 <DinamicTable.Col key='key-habilidades' label='Habilidades'
@@ -447,74 +451,10 @@ export default class ListaClientes extends Component {
 
 
 
-                <DinamicTable.Col key="cuota_432" wrap label="# Cuotas" width={60} height={60}
-                    headerStyle={{ paddingLeft: 4 }}
-                    data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''}
-
-                    cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }}
-
-                    format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
-
-
-                <DinamicTable.Col key="en_mora_col" wrap label="Monto Mora" sumExcel width={95} height={60}
-                    headerStyle={{ paddingLeft: 4 }}
-                    footerComponent={this.footerSumMap(row => row.mora_por_moneda, row => row.totales_base?.mora)}
-                    data={e => {
-                        const monedas = e.row?.empresa?.monedas || [];
-                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
-                        const entries = Object.entries(e.row?.mora_por_moneda || {});
-                        const baseMonto = e.row?.totales_base?.mora || 0;
-                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
-                        return [this.formatMap(e.row?.mora_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
-                    }}
-                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
-                    customComponent={e => {
-                        const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.text;
-                        const entries = Object.entries(e.row?.mora_por_moneda || {});
-                        const baseMonto = e.row?.totales_base?.mora || 0;
-                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
-                        const baseFmt = SMath.formatMoney(baseMonto);
-                        const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
-                        const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
-                        if (!entries.length && !baseMonto) return null;
-                        return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                                {entries.map(([key_moneda, monto]) => {
-                                    const mon = monedas.find(m => m.key === key_moneda);
-                                    const sim = mon?.observacion || 'Bs';
-                                    const fmt = SMath.formatMoney(monto);
-                                    const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
-                                    return (
-                                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
-                                            <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
-                                        </SView>
-                                    );
-                                })}
-                                {showBase && (
-                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
-                                    </SView>
-                                )}
-                            </SView>
-                        );
-                    }}
-
-                />
-                <DinamicTable.Col key="cuota_6554" wrap label="# Cuotas" sumExcel width={60} height={60}
-                    headerStyle={{ paddingLeft: 4 }}
-                    data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-                    footerComponent={this.footerSum(row => row.resumen_cuota?.cantidad_pendiente)} />
-
-                <DinamicTable.Col key="cuota_6" wrap label="# Cuotas" width={60} height={60}
-                    headerStyle={{ paddingLeft: 4 }}
-                    data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
-
-                <DinamicTable.Col key="monto_deuda_col_" wrap label="Monto Pendiente" sumExcel width={100} height={60}
-                    headerStyle={{ paddingLeft: 4 }}
-                    footerComponent={this.footerSumMap(row => row.deuda_por_moneda, row => row.totales_base?.deuda)}
+                <DinamicTable.Col key="cuota_pen" wrap label="# Cuotas" sumTotal={['', 0]} width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.warning}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="monto_pen" wrap label="Monto" sumTotal={rows => this.formatBase(rows.reduce((s, row) => s + Number(row.totales_base?.deuda || 0), 0), rows[0]?.empresa?.monedas)}
+                    width={110} height={60}
+                    footerComponent={this.footerCuotasYMonto(row => row.resumen_cuota?.cantidad_pendiente, row => row.totales_base?.deuda)}
                     data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -524,38 +464,23 @@ export default class ListaClientes extends Component {
                         return [this.formatMap(e.row?.deuda_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
                     }}
                     cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.warning + '33' }}
+                    customComponent={e => this.renderMontoCell(e.row?.deuda_por_moneda, e.row?.totales_base?.deuda, e.row?.empresa?.monedas)} />
 
-                    customComponent={e => {
+                <DinamicTable.Col key="cuota_mor" wrap label="# Cuotas" sumTotal={['', 0]} width={70} height={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'center', backgroundColor: `${STheme.color.danger}33` }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="monto_mor" wrap label="Monto" sumTotal={rows => this.formatBase(rows.reduce((s, row) => s + Number(row.totales_base?.mora || 0), 0), rows[0]?.empresa?.monedas)}
+                    width={110} height={60}
+                    footerComponent={this.footerCuotasYMonto(row => row.resumen_cuota?.cantidad_en_mora, row => row.totales_base?.mora)}
+                    data={e => {
                         const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.text;
-                        const entries = Object.entries(e.row?.deuda_por_moneda || {});
-                        const baseMonto = e.row?.totales_base?.deuda || 0;
                         const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
-                        const baseFmt = SMath.formatMoney(baseMonto);
-                        const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
+                        const entries = Object.entries(e.row?.mora_por_moneda || {});
+                        const baseMonto = e.row?.totales_base?.mora || 0;
                         const showBase = baseMonto > 0 && entries.some(([key_moneda]) => (monedas.find(m => m.key === key_moneda)?.observacion || 'Bs') !== baseSim);
-                        if (!entries.length && !baseMonto) return null;
-                        return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                                {entries.map(([key_moneda, monto]) => {
-                                    const mon = monedas.find(m => m.key === key_moneda);
-                                    const sim = mon?.observacion || 'Bs';
-                                    const fmt = SMath.formatMoney(monto);
-                                    const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
-                                    return (
-                                        <SView key={key_moneda} style={{ alignItems: 'flex-end' }}>
-                                            <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
-                                        </SView>
-                                    );
-                                })}
-                                {showBase && (
-                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
-                                    </SView>
-                                )}
-                            </SView>
-                        );
-                    }} />
+                        return [this.formatMap(e.row?.mora_por_moneda, monedas), showBase ? this.formatBase(baseMonto, monedas) : null].filter(Boolean).join(' => ');
+                    }}
+                    cellStyle={{ alignItems: 'flex-end', backgroundColor: STheme.color.danger + '33' }}
+                    customComponent={e => this.renderMontoCell(e.row?.mora_por_moneda, e.row?.totales_base?.mora, e.row?.empresa?.monedas)} />
+
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} height={60} headerStyle={{ paddingLeft: 4 }} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Responsable" width={100} height={60} headerStyle={{ paddingLeft: 4 }} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
