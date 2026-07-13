@@ -990,7 +990,8 @@ export default class tabla extends Component {
 
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} data={(e) => e.row?.total_cupos ?? ""} />
 
-                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={60} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
+                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={60}
+                    data={(e) => (e.row?.detalles ?? []).flatMap(detalle => detalle.suscriptores ?? []).map(s => s.cliente.nombres)}
                     customComponent={(e) => {
                         const MAX_LINEAS = 3;
                         const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
@@ -1006,7 +1007,7 @@ export default class tabla extends Component {
                 />
                 <DinamicTable.Col
                     key="ocupacion_"
-                    label="Suscriptores"
+                    label="Suscriptoresddddddd"
                     width={100}
                     height={60}
                     data={(e) => e.row?.total_cupos ?? ""}
