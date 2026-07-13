@@ -4,5 +4,7 @@
         "**/node_modules":true,
         // "search.useIgnoreFiles": false,
         "src/Pages/punto_venta": false // excepto esta carpeta
-    }
+    },
+    "java.import.gradle.enabled": false,
+    "java.configuration.updateBuildConfiguration": "disabled"
 }

@@ -379,6 +379,17 @@ export default class ListaClientes extends Component {
                 <DinamicTable.Col key="nombre_completo"
                     headerStyle={{ paddingLeft: 4 }}
                     label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+
+                <DinamicTable.Col key="nombre_complesdfto"
+                    headerStyle={{ paddingLeft: 4 }}
+                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+
+                <DinamicTable.Col key="nombre_compledto"
+                    headerStyle={{ paddingLeft: 4 }}
+                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+
+
+
                 <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={80}
                     headerStyle={{ paddingLeft: 4 }}
                     format={e => (e.data ?? []).join(', ')}
