@@ -269,13 +269,16 @@ export default class tabla extends Component {
             const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
             const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
             return (
-                <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
+                <SView height={90} style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
                     <SText numberOfLines={1} style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
                     <SText numberOfLines={1} style={{ fontSize: 12, fontWeight: 'bold', textAlign: 'right', flexShrink: 1, minWidth: 0 }}>{baseSim} {SMath.formatMoney(totalMonto)}</SText>
                 </SView>
             );
         };
     }
+
+
+
 
     renderMenuVentas(row) {
         const openRegistrarFacturaTypePopup = (venta, tipoFactura) => {
@@ -908,6 +911,45 @@ export default class tabla extends Component {
                         );
                     }} />
 
+                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+
+                <DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={130} height={60}
+                    sumTotal={rows => {
+                        const total = rows.reduce((s, row) => s + ((Number(row.cuotas?.total_base) || 0) - (Number(row.monto_amortizado_base) || 0)), 0);
+                        const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+                        return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
+                    }}
+                    footerComponent={this.footerCuotasYMonto(row => row.cuotas?.cantidad_pendiente, row => (row.cuotas?.total_base ?? 0) - (row.monto_amortizado_base ?? 0))}
+                    data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.warning + "33" }}
+                    customComponent={e => {
+                        const monedas = e.row?.empresa?.monedas || [];
+                        const color = STheme.color.text;
+                        const sim = e.row?.moneda?.observacion || 'Bs';
+                        const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0);
+                        const fmt = SMath.formatMoney(monto);
+                        const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
+                        const baseMonto = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0);
+                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+                        const baseFmt = SMath.formatMoney(baseMonto);
+                        const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
+                        const showBase = baseMonto > 0 && sim !== baseSim;
+                        if (!monto) return null;
+
+                        return (
+                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
+                                <SView style={{ alignItems: 'flex-end' }}> <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
+                                </SView>
+                                {showBase && (
+                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
+                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
+                                    </SView>
+                                )}
+                            </SView>
+                        );
+                    }} />
+
+
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" sumTotal={['', 0]} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col wrap key="en_mora" label="Mora" width={130} height={60}
@@ -946,6 +988,55 @@ export default class tabla extends Component {
                         );
                     }} />
 
+                < DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} data={(e) => e.row?.total_cupos ?? ""} />
+
+                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={60} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
+                    customComponent={(e) => {
+                        const MAX_LINEAS = 3;
+                        const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
+                        const visibles = suscriptores.slice(0, MAX_LINEAS);
+                        const restantes = suscriptores.length - visibles.length;
+                        return (
+                            <SView col>
+                                {visibles.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}
+                                {restantes > 0 && <SText flex fontSize={11} color={STheme.color.lightGray}> +{restantes} más </SText>}
+                            </SView>
+                        );
+                    }}
+                />
+                <DinamicTable.Col
+                    key="ocupacion_"
+                    label="Suscriptores"
+                    width={100}
+                    height={60}
+                    data={(e) => e.row?.total_cupos ?? ""}
+                    customComponent={(e) => {
+                        const totalCupos = Number(e.row?.total_cupos || 0);
+                        const totalSuscriptores = Number(e.row?.total_suscriptos || 0);
+                        if (totalCupos <= 0) { return (<SView center row> <SText color={STheme.color.lightGray}> Sin cupos </SText> </SView>); }
+                        const porcentaje = Math.min((totalSuscriptores / totalCupos) * 100, 100);
+                        let color = "#ea580c";
+                        let icono = "🔴";
+                        if (porcentaje >= 100) {
+                            color = "#16a34a";
+                            icono = "🟢";
+                        } else if (porcentaje >= 50) {
+                            color = "#eab308";
+                            icono = "🟡";
+                        } else if (porcentaje > 0) {
+                            color = "#f97316";
+                            icono = "🟠";
+                        }
+                        return (
+                            <SView col={"xs-12"} center>
+                                <SText style={{ color, fontWeight: "bold", fontSize: 12, }}> {icono} {totalSuscriptores}/{totalCupos} </SText>
+                                <SView width={60} height={6} backgroundColor="#e5e7eb" style={{ borderRadius: 3, overflow: "hidden", marginTop: 3, }}>
+                                    <SView width={`${porcentaje}%`} height={6} backgroundColor={color} />
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
 
             </DinamicTable>
         );
