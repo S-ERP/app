@@ -385,7 +385,7 @@ export default class reporteMoviminetos extends Component {
                 <DinamicTable.Col
                     key="sucursal_"
                     label="SUCURSAL"
-                    width={100}
+                    width={140}
                     data={e => e.row?.sucursal?.descripcion ?? "Sin sucursal"}
                     customComponent={e => {
                         const key = e.row?.key_sucursal;
@@ -413,7 +413,7 @@ export default class reporteMoviminetos extends Component {
                 <DinamicTable.Col
                     key="punto"
                     label="P.VENTA"
-                    width={60}
+                    width={180}
                     color={STheme}
                     data={e => e.row?.puntos_venta?.descripcion ? "PV-" + e.row?.puntos_venta?.descripcion : "Sin punto de venta"}
                 />
@@ -494,7 +494,41 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
+                <DinamicTable.Col
+                    key="key_usuario8556"
+                    label="ADM"
+                    width={120}
+                    data={e => e.row?.usuario?.Nombres ?? "Sin usuario"}
+                    customComponent={e => {
+                        const key = e.row?.key_usuario;
+                        const nombre = e.row?.usuario?.Nombres ?? "Sin usuario";
 
+                        return key ? (
+                            <SView col="xs-12" row center>
+                                <SView
+                                    width={20}
+                                    height={20}
+                                    style={{
+                                        borderRadius: 100,
+                                        overflow: "hidden",
+                                        backgroundColor: STheme.color.card + "66",
+                                        marginRight: 6,
+                                    }}
+                                >
+                                    <SImage
+                                        src={`${SSocket.api.root}usuario/${key}`}
+                                        style={{ resizeMode: "cover", width: "100%", height: "100%" }}
+                                    />
+                                </SView>
+                                <SText flex numberOfLines={1} style={e.textStyle}>
+                                    {nombre}
+                                </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin usuario</SText>
+                        );
+                    }}
+                />
 
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 4 }} width={100} height={60} data={(e) => (e.row?.tipo || "").toLowerCase() === "venta" ? (e.row?.cliente?.nombres ?? "") : ""}
                     customComponent={e => {

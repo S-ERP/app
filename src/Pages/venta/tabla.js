@@ -836,7 +836,8 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={80} height={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
+                {/* width={"100%"} */}
+                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
                         const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
                         return (<SView col>{suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}</SView>);
@@ -846,7 +847,7 @@ export default class tabla extends Component {
                     key="ocupacion_"
                     label="Suscriptores"
                     headerStyle={{ paddingLeft: 4 }}
-                    width={120}
+                    width={100}
                     height={60}
                     data={(e) => e.row?.total_cupos ?? ""}
                     customComponent={(e) => {
