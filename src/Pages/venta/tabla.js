@@ -708,8 +708,50 @@ export default class tabla extends Component {
                     }}
                 />
 
+
+
+                <DinamicTable.Col key="descripcion" label="Descripción" width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
+
+                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={60} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
+                    customComponent={(e) => {
+                        const MAX_LINEAS = 3;
+                        const detalles = e.row?.detalles ?? [];
+                        const visibles = detalles.slice(0, MAX_LINEAS);
+                        const restantes = detalles.length - visibles.length;
+                        return (
+                            <SView col>
+                                {/* {visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} */}
+                                {visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} </SText>))}
+
+
+                                {restantes > 0 && <SText fontSize={11} color={STheme.color.lightGray}>+{restantes} más</SText>}
+                            </SView>
+                        );
+                    }}
+
+
+                />
+
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} height={60} dataType="datetime" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={100} height={60} data={(e) => e.row?.sucursal?.descripcion ?? ""}
+                    customComponent={e => {
+                        const nombre = e.row?.sucursal?.descripcion || "";
+                        const avatarSize = e.filterList ? 16 : 21;
+                        return (
+                            <SView col={"xs-12"} center row>
+                                {nombre ? (
+                                    <SView style={{ width: avatarSize, height: avatarSize, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                                        <SText style={{ fontSize: avatarSize / 2, color: STheme.color.text, opacity: 0.7 }}>{nombre[0].toUpperCase()}</SText>
+                                        {e.row?.key_sucursal ? <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ width: avatarSize, height: avatarSize, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
+                                    </SView>
+                                ) : null}
+                                {nombre ? <SView width={5} /> : null}
+                                <SText flex capitalize numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{nombre}</SText>
+                            </SView>
+                        );
+                    }}
+                />
 
                 <DinamicTable.Col key="cliente" label="Cliente" width={100} height={60} data={(e) => e.row?.cliente?.nombres ?? ""}
                     customComponent={e => {
