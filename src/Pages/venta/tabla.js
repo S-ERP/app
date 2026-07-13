@@ -200,64 +200,6 @@ export default class tabla extends Component {
 
     generateRandomCode() { return `F-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`; }
 
-    formatMap(map, monedas) {
-        return Object.entries(map || {}).map(([k, monto]) => {
-            const mon = (monedas || []).find(m => m.key === k);
-            const sim = mon?.observacion || 'Bs';
-            const fmt = SMath.formatMoney(monto);
-            return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
-        }).join('\n') || '';
-    }
-
-    formatBase(monto, monedas) {
-        if (!monto) return '';
-        const sim = (monedas || []).find(m => m.tipo === 'base')?.observacion || 'Bs';
-        const fmt = SMath.formatMoney(monto);
-        return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
-    }
-
-    renderMontoCell(map, baseMonto, monedas) {
-        const entries = Object.entries(map || {});
-        if (!entries.length && !baseMonto) return null;
-        const color = STheme.color.text;
-        const baseText = this.formatBase(baseMonto, monedas);
-        return (
-            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                {baseText ? <SText style={{ fontSize: 13, fontWeight: 'bold', color }}>{baseText}</SText> : null}
-                {entries.length > 0 && (
-                    <SView row style={{ flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: baseText ? 2 : 0 }}>
-                        {entries.map(([key_moneda, monto], i) => {
-                            const mon = (monedas || []).find(m => m.key === key_moneda);
-                            const sim = mon?.observacion || 'Bs';
-                            const fmt = SMath.formatMoney(monto);
-                            const text = fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
-                            return (
-                                <SText key={key_moneda} style={{ fontSize: 9, opacity: 0.7, color, marginLeft: i > 0 ? 6 : 0 }}>
-                                    {text}
-                                </SText>
-                            );
-                        })}
-                    </SView>
-                )}
-            </SView>
-        );
-    }
-
-    footerCuotasClienteYMonto(cuotaSelector, montoBaseSelector) {
-        return ({ dinamicTable }) => {
-            const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
-            const totalCuotas = rows.reduce((s, row) => s + (Number(cuotaSelector(row)) || 0), 0);
-            const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
-            const monedas = rows[0]?.empresa?.monedas || [];
-            return (
-                <SView style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
-                    <SText style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
-                    <SText style={{ fontSize: 12, fontWeight: 'bold' }}>{this.formatBase(totalMonto, monedas)}</SText>
-                </SView>
-            );
-        };
-    }
-
     footerCuotasYMonto(cuotaSelector, montoBaseSelector) {
         return ({ dinamicTable }) => {
             const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
@@ -642,8 +584,6 @@ export default class tabla extends Component {
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 pageLimit={100}
-                colors={Config.table.colors()}
-                cellStyle={Config.table.cellStyle()}
                 headerGroups={[
                     {
                         label: "Cuotas Pagadas", cols: ["cuotas_cantidad_pagadas", "monto_amortizado"],
@@ -676,10 +616,10 @@ export default class tabla extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
-                    data={e => (e.row?.detalles ?? []).map(h => h.data.tipo_producto)} wrap
+                    data={e => (e.row?.detalles ?? []).map(h => h?.data?.tipo_producto)} wrap
                     cellStyle={{ padding: 4, gap: 4 }}
                     customComponent={e => (e.row?.detalles ?? []).map(h => {
-                        const estilo = TIPO_PRODUCTO_MAP[h.data.tipo_producto?.toLowerCase()] || { color: STheme.color.lightGray, label: h.data.tipo_producto };
+                        const estilo = TIPO_PRODUCTO_MAP[h?.data?.tipo_producto?.toLowerCase()] || { color: STheme.color.lightGray, label: h?.data?.tipo_producto };
                         return (
                             <SView key={h.key} style={{ backgroundColor: estilo.color, borderRadius: 4, padding: 5 }}>
                                 <SText style={{ fontSize: 12, color: STheme.color.text }}>{estilo.label}</SText>
@@ -778,7 +718,7 @@ export default class tabla extends Component {
                         return (
                             <>
                                 {(e.row?.tipo_pago) ?
-                                    <SView col={"xs-12"} center row>
+                                    <SView center row>
                                         <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5 }}>
                                             <SText color={STheme.color.text} fontSize={12}>{estilo.label}</SText>
                                         </SView>
@@ -789,11 +729,14 @@ export default class tabla extends Component {
                 />
 
                 <DinamicTable.Col key="estado_pago" wrap label="Estado" width={80} height={60}
+
                     data={(e) => {
                         if ((e.row?.cuotas_en_mora?.monto || 0) > 0) return "En Mora";
                         if ((e.row?.cuotas?.total || 0) <= (e.row?.monto_amortizado || 0)) return "Pagado";
                         return "Al Día";
                     }}
+
+
                     customComponent={(e) => {
                         const statesTipo = {
                             "Al Día": { color: "#f59e0b", label: "Al Día" },
@@ -856,7 +799,39 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} height={60} data={(e) => e.row?.moneda?.descripcion ?? ""} />
 
-                <DinamicTable.Col key="cuotas_cantidad_pagadas" label="# Pago" sumTotal={['', 0]} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.success + "33" }} data={(e) => e.row?.cuotas?.cantidad_pagada ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuotas_cantidad_pagadas"
+                    label="# Pago"
+                    sumTotal={['', 0]} width={60} height={60}
+                    cellStyle={{ backgroundColor: STheme.color.success + "33" }}
+                    data={(e) => e.row?.cuotas?.cantidad_pagada ?? ""}
+                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+                    customComponent={e => {
+                        return (
+                            <>
+                                {(e.data) ?
+                                    <SView center row style={{ justifyContent: "flex-end" }}>
+                                        <SView style={{ borderRadius: 4, padding: 5, }}>
+                                            <SText color={STheme.color.text} fontSize={12}>{e.data}</SText>
+                                        </SView>
+                                    </SView> : null}
+                            </>
+                        );
+                    }}
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+
+
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={130} height={60}
                     sumTotal={rows => {
                         const total = rows.reduce((s, row) => s + (Number(row.monto_amortizado_base) || 0), 0);
