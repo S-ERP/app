@@ -587,7 +587,19 @@ export default class tabla extends Component {
                     }}
                 />
                 <DinamicTable.Col key="descripcion" label="Descripción" headerStyle={{ paddingLeft: 8 }} width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col>{(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))}</SView>)} />
+                <DinamicTable.Col key="detalles_" label="Detalle" width={210} height={100} headerStyle={{ paddingLeft: 8 }} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
+                    customComponent={(e) => {
+                        const MAX_LINEAS = 3;
+                        const detalles = e.row?.detalles ?? [];
+                        const visibles = detalles.slice(0, MAX_LINEAS);
+                        const restantes = detalles.length - visibles.length;
+                        return (
+                            <SView col>
+                                {visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))}
+                                {restantes > 0 && <SText fontSize={11} color={STheme.color.lightGray}>+{restantes} más</SText>}
+                            </SView>
+                        );
+                    }} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" headerStyle={{ paddingLeft: 4 }} width={120} height={60} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="sucursal" label="Sucursal" headerStyle={{ paddingLeft: 4 }} width={120} height={60} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => {
@@ -796,7 +808,7 @@ export default class tabla extends Component {
                         );
                     }} />
 
-                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]} headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas?.cantidad_pendiente ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]} headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
                 <DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={130} height={60}
                     sumTotal={rows => {
@@ -887,8 +899,16 @@ export default class tabla extends Component {
                 />
                 <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
+                        const MAX_LINEAS = 3;
                         const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
-                        return (<SView col>{suscriptores.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}</SView>);
+                        const visibles = suscriptores.slice(0, MAX_LINEAS);
+                        const restantes = suscriptores.length - visibles.length;
+                        return (
+                            <SView col>
+                                {visibles.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}
+                                {restantes > 0 && <SText flex fontSize={11} color={STheme.color.lightGray}> +{restantes} más </SText>}
+                            </SView>
+                        );
                     }}
                 />
                 <DinamicTable.Col
