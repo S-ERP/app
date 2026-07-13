@@ -841,7 +841,7 @@ export default class tabla extends Component {
                     }} />
 
 
-                < DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} height={60} data={(e) => e.row?.factura?.nro_factura}
+                <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} height={60} data={(e) => e.row?.factura?.nro_factura}
                     customComponent={e => <>
                         {(e.row?.factura?.nro_factura) ?
                             <SView col={"xs-12"} center row>
@@ -849,9 +849,21 @@ export default class tabla extends Component {
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
                             </SView> : null}
                     </>}
+
+
                 />
+                <DinamicTable.Col key="nit" label="NIT / CI" width={100} height={60} data={(e) => e.row?.factura?.nit ?? ""} />
+                <DinamicTable.Col key="razon_social" label="Razón social" width={100} height={60} data={(e) => e.row?.factura?.razon_social ?? ""} />
 
-
+                <DinamicTable.Col key="cuf" label="CUF" width={100} height={60} data={(e) => e.row?.factura?.cuf ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.facturar) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
+                />
 
 
             </DinamicTable>

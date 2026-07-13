@@ -620,7 +620,7 @@ export default class tabla extends Component {
                 />
 
 
-                
+
                 <DinamicTable.Col key="admin" label="Vendedor" width={120} height={60} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => {
                         const nombre = e.row?.usuario?.Nombres || "";
