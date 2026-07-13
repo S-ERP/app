@@ -775,6 +775,83 @@ export default class tabla extends Component {
                     }}
                 />
 
+                <DinamicTable.Col key="tipo_pago" wrap label="Tipo Pago" width={80} height={60}
+                    data={(e) => e.row?.tipo_pago ?? ""}
+                    customComponent={e => {
+                        const tipoPagoMap = {
+                            "contado": { color: "#2563eb", label: "Contado" },
+                            "credito": { color: "#f59e0b", label: "Crédito" },
+                            "transferencia": { color: "#6b7280", label: "Transferencia" },
+                        };
+                        const estilo = tipoPagoMap[e.data?.toLowerCase()] || { color: STheme.color.lightGray, label: e.data };
+                        return (
+                            <>
+                                {(e.row?.tipo_pago) ?
+                                    <SView col={"xs-12"} center row>
+                                        <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5 }}>
+                                            <SText color={STheme.color.text} fontSize={12}>{estilo.label}</SText>
+                                        </SView>
+                                    </SView> : null}
+                            </>
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col key="estado_pago" wrap label="Estado Pago" width={80} height={60}
+                    data={(e) => {
+                        if ((e.row?.cuotas_en_mora?.monto || 0) > 0) return "En Mora";
+                        if ((e.row?.cuotas?.total || 0) <= (e.row?.monto_amortizado || 0)) return "Pagado";
+                        return "Al Día";
+                    }}
+                    customComponent={(e) => {
+                        const statesTipo = {
+                            "Al Día": { color: "#f59e0b", label: "Al Día" },
+                            "En Mora": { color: "#dc2626", label: "En Mora" },
+                            "Pagado": { color: "#16a34a", label: "Pagado" },
+                        }[e.data] || {};
+                        return <SView row center>
+                            <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 4 }} center>
+                                <SText color={STheme.color.text} fontSize={12}>{statesTipo?.label}</SText>
+                            </SView>
+                        </SView>
+                    }}
+                />
+
+                <DinamicTable.Col
+                    key="factura_seleccionada"
+                    label="Factura"
+                    width={120}
+                    height={60}
+                    data={(e) => e.row?.factura?.factura_seleccionada ?? ""}
+                    customComponent={(e) => {
+                        const tipo = e.row?.factura?.factura_seleccionada;
+                        const statesTipo = {
+                            "Factura Manual": { color: "white", label: "Factura Manual" },
+                            "Factura SIAT": { color: "orange", label: "Factura SIAT" },
+                            "Factura Paraguay (Quatiy)": { color: "#16a34a", label: "F. Paraguay" },
+                            "Factura Colombia (Sasuki)": { color: "#3b82f6", label: "F. Colombia" },
+                        };
+                        const config = statesTipo[tipo];
+                        if (!config) return null;
+                        return (
+                            <SView col={"xs-12"} center row>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, textTransform: "uppercase", color: config.color }}>{config.label}</SText>
+                            </SView>
+                        );
+                    }} />
+
+
+                < DinamicTable.Col key="nrofactura" label="Nro. Factura" width={100} height={60} data={(e) => e.row?.factura?.nro_factura}
+                    customComponent={e => <>
+                        {(e.row?.factura?.nro_factura) ?
+                            <SView col={"xs-12"} center row>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+
 
 
             </DinamicTable>
