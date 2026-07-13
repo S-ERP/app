@@ -646,20 +646,18 @@ export default class tabla extends Component {
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 pageLimit={100}
-                // headerGroups={[
-                //     {
-                //         label: "Cuotas Pagadas", cols: ["cuotas_cantidad_pagadas", "monto_amortizado"],
-                //         style: { backgroundColor: STheme.color.success + '55', borderWidth: 1, borderColor: STheme.color.success },
-                //     },
-                //     {
-                //         label: "Cuotas Pendientes", cols: ["cuotas_cantidad_pendiente_", "monto_deuda"],
-                //         style: { backgroundColor: STheme.color.warning + '55', borderWidth: 1, borderColor: STheme.color.warning },
-                //     },
-                //     {
-                //         label: "Cuotas en Mora", cols: ["cuotas_cantidad_mora", "en_mora"],
-                //         style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
-                //     },
-                // ]}
+                colors={Config.table.colors()}
+                cellStyle={Config.table.cellStyle()}
+                headerGroups={[
+                    {
+                        label: "Cuotas Pagadas", cols: ["cuotas_cantidad_pagadas", "monto_amortizado"],
+                        style: { backgroundColor: STheme.color.success + '55', borderWidth: 1, borderColor: STheme.color.success },
+                    },
+                    {
+                        label: "Cuotas en Mora", cols: ["cuotas_cantidad_mora", "en_mora"],
+                        style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
+                    },
+                ]}
                 onSelect={(e) => {
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height;
@@ -900,44 +898,6 @@ export default class tabla extends Component {
                             <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
                                 <SView style={{ alignItems: 'flex-end' }}>
                                     <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
-                                </SView>
-                                {showBase && (
-                                    <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
-                                        <SText style={{ fontSize: 9, color, opacity: 0.8 }}>({baseSim} {baseNum})</SText>
-                                    </SView>
-                                )}
-                            </SView>
-                        );
-                    }} />
-
-                <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-
-                <DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={130} height={60}
-                    sumTotal={rows => {
-                        const total = rows.reduce((s, row) => s + ((Number(row.cuotas?.total_base) || 0) - (Number(row.monto_amortizado_base) || 0)), 0);
-                        const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
-                        return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
-                    }}
-                    footerComponent={this.footerCuotasYMonto(row => row.cuotas?.cantidad_pendiente, row => (row.cuotas?.total_base ?? 0) - (row.monto_amortizado_base ?? 0))}
-                    data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: STheme.color.warning + "33" }}
-                    customComponent={e => {
-                        const monedas = e.row?.empresa?.monedas || [];
-                        const color = STheme.color.text;
-                        const sim = e.row?.moneda?.observacion || 'Bs';
-                        const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0);
-                        const fmt = SMath.formatMoney(monto);
-                        const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
-                        const baseMonto = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0);
-                        const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
-                        const baseFmt = SMath.formatMoney(baseMonto);
-                        const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
-                        const showBase = baseMonto > 0 && sim !== baseSim;
-                        if (!monto) return null;
-
-                        return (
-                            <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                                <SView style={{ alignItems: 'flex-end' }}> <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                 </SView>
                                 {showBase && (
                                     <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
