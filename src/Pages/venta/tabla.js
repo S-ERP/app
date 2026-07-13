@@ -674,39 +674,22 @@ export default class tabla extends Component {
                         </SView>
                     })
                 }}
-            // loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
+            loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
             >
                 <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={90} height={60}
                     data={e => (e.row?.detalles ?? []).map(h => h.data.tipo_producto)} wrap
-                    customComponent={e => (e.row?.detalles ?? []).map(h => (
-                        <SView key={h.key} style={{ borderWidth: 1, borderColor: h.data.tipo_producto == "inventario" ? "yellow" : "red", backgroundColor: STheme.colorFromText(h.data.tipo_producto) + '15', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
-                            <SText style={{ fontSize: 10 }}>{h.data.tipo_producto}</SText>
-                        </SView>
-                    ))}
-                />
-
-
-                <DinamicTable.Col key="tipo_prsoducto_" label="Tipos" width={90} height={60}
-                    data={(e) => getTiposProducto(e.row?.detalles).join(", ")}
-                    customComponent={e => {
-                        const tipos = getTiposProducto(e.row?.detalles);
+                    customComponent={e => (e.row?.detalles ?? []).map(h => {
+                        const estilo = TIPO_PRODUCTO_MAP[h.data.tipo_producto?.toLowerCase()] || { color: STheme.color.lightGray, label: h.data.tipo_producto };
                         return (
-                            <>
-                                {tipos.map((tipo, index) => {
-                                    const estilo = TIPO_PRODUCTO_MAP[tipo.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
-                                    return (
-                                        <SView key={index} col={"xs-12"} center row>
-                                            <SView backgroundColor={estilo.color} style={{ borderRadius: 4, padding: 5, marginBottom: 4 }}>
-                                                <SText color={STheme.color.text} fontSize={12}>{estilo.label}</SText>
-                                            </SView>
-                                        </SView>
-                                    );
-                                })}
-                            </>
+                            <SView key={h.key} style={{ backgroundColor: estilo.color, borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
+                                <SText style={{ fontSize: 10, color: STheme.color.text }}>{estilo.label}</SText>
+                            </SView>
                         );
-                    }}
+                    })}
                 />
+
+
 
 
 
