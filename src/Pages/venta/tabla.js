@@ -519,6 +519,12 @@ export default class tabla extends Component {
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 pageLimit={100}
+                headerGroups={[
+                    {
+                        label: "Cuotas en Mora", cols: ["cuotas_cantidad_mora", "en_mora"],
+                        style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
+                    },
+                ]}
                 onSelect={(e) => {
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height;
