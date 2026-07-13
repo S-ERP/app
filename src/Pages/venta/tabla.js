@@ -674,7 +674,7 @@ export default class tabla extends Component {
                         </SView>
                     })
                 }}
-            loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
+                loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
             >
                 <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={90} height={60}
@@ -682,7 +682,7 @@ export default class tabla extends Component {
                     customComponent={e => (e.row?.detalles ?? []).map(h => {
                         const estilo = TIPO_PRODUCTO_MAP[h.data.tipo_producto?.toLowerCase()] || { color: STheme.color.lightGray, label: h.data.tipo_producto };
                         return (
-                            <SView key={h.key} style={{ backgroundColor: estilo.color, borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6 }}>
+                            <SView key={h.key} style={{ backgroundColor: estilo.color, borderRadius: 4, paddingVertical: 2, paddingHorizontal: 6, marginBottom: 4 }}>
                                 <SText style={{ fontSize: 10, color: STheme.color.text }}>{estilo.label}</SText>
                             </SView>
                         );
@@ -703,9 +703,7 @@ export default class tabla extends Component {
                         const restantes = detalles.length - visibles.length;
                         return (
                             <SView col>
-                                {/* {visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>))} */}
                                 {visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} </SText>))}
-
 
                                 {restantes > 0 && <SText fontSize={11} color={STheme.color.lightGray}>+{restantes} más</SText>}
                             </SView>
@@ -727,6 +725,28 @@ export default class tabla extends Component {
                                     <SView style={{ width: avatarSize, height: avatarSize, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
                                         <SText style={{ fontSize: avatarSize / 2, color: STheme.color.text, opacity: 0.7 }}>{nombre[0].toUpperCase()}</SText>
                                         {e.row?.key_sucursal ? <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ width: avatarSize, height: avatarSize, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
+                                    </SView>
+                                ) : null}
+                                {nombre ? <SView width={5} /> : null}
+                                <SText flex capitalize numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{nombre}</SText>
+                            </SView>
+                        );
+                    }}
+                />
+
+
+
+
+                <DinamicTable.Col key="vendedor" label="Vendedor" width={100} height={60} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                    customComponent={e => {
+                        const nombre = e.row?.usuario?.Nombres || "";
+                        const avatarSize = e.filterList ? 16 : 21;
+                        return (
+                            <SView col={"xs-12"} center row>
+                                {nombre ? (
+                                    <SView style={{ width: avatarSize, height: avatarSize, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                                        <SText style={{ fontSize: avatarSize / 2, color: STheme.color.text, opacity: 0.7 }}>{nombre[0].toUpperCase()}</SText>
+                                        {e.row?.usuario?.key ? <SImage src={`${SSocket.api.root}usuario/${e.row?.usuario?.key}`} style={{ width: avatarSize, height: avatarSize, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
                                     </SView>
                                 ) : null}
                                 {nombre ? <SView width={5} /> : null}
