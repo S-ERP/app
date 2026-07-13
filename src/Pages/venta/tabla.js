@@ -133,6 +133,7 @@ export default class tabla extends Component {
                 color: STheme.color.success,
                 time: 2000,
             });
+
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -536,6 +537,14 @@ export default class tabla extends Component {
                 pageLimit={100}
                 headerGroups={[
                     {
+                        label: "Cuotas Pagadas", cols: ["cuotas_cantidad_pagadas", "monto_amortizado"],
+                        style: { backgroundColor: STheme.color.success + '55', borderWidth: 1, borderColor: STheme.color.success },
+                    },
+                    {
+                        label: "Cuotas Pendientes", cols: ["cuotas_cantidad_pendiente_", "monto_deuda"],
+                        style: { backgroundColor: STheme.color.warning + '55', borderWidth: 1, borderColor: STheme.color.warning },
+                    },
+                    {
                         label: "Cuotas en Mora", cols: ["cuotas_cantidad_mora", "en_mora"],
                         style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
                     },
@@ -556,7 +565,7 @@ export default class tabla extends Component {
                 }}
                 loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
             >
-                <DinamicTable.Col key="index" label="N°" headerStyle={{ paddingLeft: 4 }} width={40} height={60} data={(e) => e.index + 1} />
+                <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" headerStyle={{ paddingLeft: 4 }} width={90} height={80}
                     data={(e) => getTiposProducto(e.row?.detalles).join(", ")}
                     customComponent={e => {
@@ -747,8 +756,11 @@ export default class tabla extends Component {
                     }} />
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center" }} data={(e) => e.row?.cuotas?.cantidad ?? ""} />
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60} height={60} headerStyle={{ paddingLeft: 8 }} data={(e) => e.row?.moneda?.descripcion ?? ""} />
+
+
+
                 <DinamicTable.Col key="cuotas_cantidad_pagadas" label="# Pago" sumTotal={['', 0]} headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.success + "33" }} data={(e) => e.row?.cuotas?.cantidad_pagada ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-                <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={130} height={60}
+                <DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={130} height={60}
                     sumTotal={rows => {
                         const total = rows.reduce((s, row) => s + (Number(row.monto_amortizado_base) || 0), 0);
                         const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -786,8 +798,6 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]} headerStyle={{ paddingLeft: 8 }} width={60} height={60} cellStyle={{ alignItems: "center", backgroundColor: STheme.color.warning + "33" }} data={(e) => e.row?.cuotas?.cantidad_pendiente ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
 
-
-
                 <DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={130} height={60}
                     sumTotal={rows => {
                         const total = rows.reduce((s, row) => s + ((Number(row.cuotas?.total_base) || 0) - (Number(row.monto_amortizado_base) || 0)), 0);
@@ -810,10 +820,10 @@ export default class tabla extends Component {
                         const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
                         const showBase = baseMonto > 0 && sim !== baseSim;
                         if (!monto) return null;
+
                         return (
                             <SView col style={{ padding: 4, alignItems: 'flex-end' }}>
-                                <SView style={{ alignItems: 'flex-end' }}>
-                                    <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
+                                <SView style={{ alignItems: 'flex-end' }}> <SText style={{ fontSize: 12, color }}>{sim} {num}</SText>
                                 </SView>
                                 {showBase && (
                                     <SView style={{ marginTop: 2, alignItems: 'flex-end', width: '100%' }}>
@@ -875,7 +885,6 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-                {/* width={"100%"} */}
                 <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={80} headerStyle={{ paddingLeft: 4 }} data={(e) => (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []).map(s => s.key_cliente).join(", ")}
                     customComponent={(e) => {
                         const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
@@ -921,6 +930,7 @@ export default class tabla extends Component {
     }
 
     async confirmarBorradoFacturas() {
+        console.count()
         const notificationKey = "borrar_facturas";
         SPopup.confirm({
             icon: "eliminar",
@@ -947,7 +957,7 @@ export default class tabla extends Component {
     render() {
         return (
             <SPage title="Tabla de Ventas" disableScroll>
-                <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
+                <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
                             onChange={e => this.setState({
