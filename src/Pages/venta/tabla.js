@@ -269,7 +269,7 @@ export default class tabla extends Component {
             const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
             const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
             return (
-                <SView height={90} style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
+                <SView height={40} style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
                     <SText numberOfLines={1} style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
                     <SText numberOfLines={1} style={{ fontSize: 12, fontWeight: 'bold', textAlign: 'right', flexShrink: 1, minWidth: 0 }}>{baseSim} {SMath.formatMoney(totalMonto)}</SText>
                 </SView>
@@ -657,6 +657,10 @@ export default class tabla extends Component {
                         style: { backgroundColor: STheme.color.success + '55', borderWidth: 1, borderColor: STheme.color.success },
                     },
                     {
+                        label: "Cuotas Pendientes", cols: ["cuotas_cantidad_pendiente_", "monto_deuda"],
+                        style: { backgroundColor: STheme.color.warning + '55', borderWidth: 1, borderColor: STheme.color.warning },
+                    },
+                    {
                         label: "Cuotas en Mora", cols: ["cuotas_cantidad_mora", "en_mora"],
                         style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
                     },
@@ -989,25 +993,9 @@ export default class tabla extends Component {
                     }} />
 
                 < DinamicTable.Col key="total_cupos" label="Cupos" width={60} height={60} data={(e) => e.row?.total_cupos ?? ""} />
-
-                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={60}
-                    data={(e) => (e.row?.detalles ?? []).flatMap(detalle => detalle.suscriptores ?? []).map(s => s.cliente.nombres)}
-                    customComponent={(e) => {
-                        const MAX_LINEAS = 3;
-                        const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
-                        const visibles = suscriptores.slice(0, MAX_LINEAS);
-                        const restantes = suscriptores.length - visibles.length;
-                        return (
-                            <SView col>
-                                {visibles.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}
-                                {restantes > 0 && <SText flex fontSize={11} color={STheme.color.lightGray}> +{restantes} más </SText>}
-                            </SView>
-                        );
-                    }}
-                />
                 <DinamicTable.Col
                     key="ocupacion_"
-                    label="Suscriptoresddddddd"
+                    label="Suscriptos"
                     width={100}
                     height={60}
                     data={(e) => e.row?.total_cupos ?? ""}
@@ -1034,6 +1022,22 @@ export default class tabla extends Component {
                                 <SView width={60} height={6} backgroundColor="#e5e7eb" style={{ borderRadius: 3, overflow: "hidden", marginTop: 3, }}>
                                     <SView width={`${porcentaje}%`} height={6} backgroundColor={color} />
                                 </SView>
+                            </SView>
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col key="detalles__lista" label="Suscriptores" width={220} height={60}
+                    data={(e) => (e.row?.detalles ?? []).flatMap(detalle => detalle.suscriptores ?? []).map(s => s.cliente.nombres)}
+                    customComponent={(e) => {
+                        const MAX_LINEAS = 3;
+                        const suscriptores = (e.row?.detalles || []).flatMap(detalle => detalle.suscriptores || []);
+                        const visibles = suscriptores.slice(0, MAX_LINEAS);
+                        const restantes = suscriptores.length - visibles.length;
+                        return (
+                            <SView col>
+                                {visibles.map((s, index) => (<SText key={index} flex fontSize={11} style={e.textStyle}> • {s?.cliente?.nombres} </SText>))}
+                                {restantes > 0 && <SText flex fontSize={11} color={STheme.color.lightGray}> +{restantes} más </SText>}
                             </SView>
                         );
                     }}
