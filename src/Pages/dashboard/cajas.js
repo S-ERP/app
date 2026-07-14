@@ -239,7 +239,8 @@ export default class cajas extends React.Component {
 
             if (tipo === "anulacion_venta" && tagTipoPago === "crédito") {
                 totals.total_credito -= valor;
-                 totals.total_recaudado -= valor;
+                totals.total_recaudado -= valor;
+                totals.payments["Crédito"] -= valor;
             }
 
             // ============================
