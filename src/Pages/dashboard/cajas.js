@@ -397,7 +397,7 @@ export default class cajas extends React.Component {
     };
 
     render() {
-        let permiso = MDL.rolesPermisos.getPermiso({ url: "/dashboard", permiso: 'ver' })
+        let permiso = MDL.rolesPermisos.getPermiso({ url: "/dashboard/cajas", permiso: 'ver' })
         if (!permiso) {
             return (
                 <SPage title="Dashboard Caja" center>
