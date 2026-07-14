@@ -218,31 +218,6 @@ export default class tabla extends Component {
         };
     }
 
-    renderPaginador({ dinamicTable }) {
-        const totalPages = dinamicTable.getTotalPages();
-        if (totalPages <= 1) return null;
-        const currentPage = dinamicTable.state.currentPage;
-        const BtnPagina = ({ label, disabled, onPress }) => (
-            <SView
-                onPress={disabled ? undefined : onPress}
-                style={{
-                    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 4,
-                    backgroundColor: STheme.color.card,
-                    opacity: disabled ? 0.4 : 1,
-                }}
-            >
-                <SText fontSize={12}>{label}</SText>
-            </SView>
-        );
-        return (
-            <SView row center style={{ gap: 6 }}>
-                <BtnPagina label="‹ Anterior" disabled={currentPage <= 1} onPress={() => dinamicTable.changePage(currentPage - 1)} />
-                <SText fontSize={12} color={STheme.color.text}>{`Página ${currentPage} de ${totalPages}`}</SText>
-                <BtnPagina label="Siguiente ›" disabled={currentPage >= totalPages} onPress={() => dinamicTable.changePage(currentPage + 1)} />
-            </SView>
-        );
-    }
-
     renderMenuVentas(row) {
         const openRegistrarFacturaTypePopup = (venta, tipoFactura) => {
             const tipoLabels = {
@@ -613,7 +588,7 @@ export default class tabla extends Component {
                 selectType="single" // al hacer click en una fila se selecciona solo esa y dispara onSelect
                 keyExtractor={(e) => e.key} // obtiene el key único de cada fila (usa e.key de la venta)
                 indexar // agrega automáticamente la columna "N°" con el correlativo (respeta la página actual)
-                // pageLimit={30} // límite de filas por página interna (junto con renderHeaderActions se arma el paginador)
+                pageLimit={30} // límite de filas por página; la librería ya arma solita el paginador (‹ Anterior / Página X de Y / Siguiente ›)
                 // --- props de nivel DinamicTable no usados antes, agregados para analizar ---
                 textTitleStyle={{ fontWeight: "bold" }} // estilo extra solo para el texto del título de cada columna
                 style={{ flex: 1 }} // estilo del contenedor raíz de toda la tabla
@@ -626,7 +601,7 @@ export default class tabla extends Component {
                 listFooterComponent={() => <SHr height={60} />} // espacio extra al final del listado
                 onEvent={(e) => { if (e.evt === "render") { /* se dispara en cada render de la tabla */ } }}
                 onSelectionChange={(rows) => { /* rows = filas actualmente seleccionadas (útil con selectType multiple/check) */ }}
-                renderHeaderActions={({ dinamicTable }) => this.renderPaginador({ dinamicTable })} // slot en la barra superior; acá se usa para el paginador (‹ Anterior / Página X de Y / Siguiente ›)
+                renderHeaderActions={() => null} // slot para agregar botones extra en la barra superior (el paginador ya lo agrega la librería sola vía pageLimit)
                 renderLoading={() => (
                     <SView col={"xs-12"} center padding={24}>
                         <SText fontSize={13} color={STheme.color.text + "99"}>Cargando ventas...</SText>
