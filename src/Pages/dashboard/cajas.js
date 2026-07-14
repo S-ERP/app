@@ -237,12 +237,25 @@ export default class cajas extends React.Component {
                 }
             }
 
+            if (tipo === "anulacion_venta" && tagTipoPago === "crédito") {
+                totals.total_credito -= valor;
+                totals.total_recaudado -= valor;
+                totals.payments["Crédito"] -= valor;
+            }
+
             // ============================
             // EGRESOS
             // ============================
-            if (tagMovimiento === "egreso") {
-                totals.total_egresos += valor;
+
+            // if(tipo !== "anulacion_venta" && tipo !== "anulacion_compra" && (tagMovimiento === "egreso" || tipo === "compra" || tipo === "retiro")) {
+            //     totals.total_egresos += valor;
+            // }
+            if (tipo !== "anulacion_venta") {
+                if (tagMovimiento === "egreso") {
+                    totals.total_egresos += valor;
+                }
             }
+
 
             // ============================
             // GRÁFICOS
@@ -385,7 +398,7 @@ export default class cajas extends React.Component {
     };
 
     render() {
-        let permiso = MDL.rolesPermisos.getPermiso({ url: "/dashboard", permiso: 'ver' })
+        let permiso = MDL.rolesPermisos.getPermiso({ url: "/dashboard/cajas", permiso: 'ver' })
         if (!permiso) {
             return (
                 <SPage title="Dashboard Caja" center>

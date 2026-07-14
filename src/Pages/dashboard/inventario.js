@@ -246,7 +246,7 @@ export default class inventario extends React.Component {
             console.log(almacenes)
         } else {
             console.log("ninguno")
-            almacenes= almacenesAll
+            almacenes = almacenesAll
         }
 
         this.setState({
@@ -903,6 +903,16 @@ export default class inventario extends React.Component {
 
     render() {
 
+        let permiso = MDL.rolesPermisos.getPermiso({ url: "/dashboard/inventario", permiso: 'ver' })
+        if (!permiso) {
+            return (
+                <SPage title="Dashboard Inventario" center>
+                    <SView col="xs-12" center>
+                        <SText fontSize={16} color={STheme.color.danger}>No tienes permiso para ver este contenido.</SText>
+                    </SView>
+                </SPage>
+            );
+        }
         const {
             periodo,
             fecha_inicio,
