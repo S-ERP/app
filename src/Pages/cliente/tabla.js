@@ -148,14 +148,16 @@ export default class ListaClientes extends Component {
         }
     }
 
-    renderUsuario(usuario = {}) {
+    renderUsuario(e) {
+        const usuario = e.row?.usuario || {};
         const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         const inicial = (usuario?.Nombres || "?")[0].toUpperCase();
+        const avatarSize = e.filterList ? 16 : 21;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-                    <SText style={{ fontSize: 11, color: STheme.color.text, opacity: 0.7 }}>{inicial}</SText>
-                    {usuario?.key ? <SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ width: 24, height: 24, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
+                <SView style={{ width: avatarSize, height: avatarSize, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                    <SText style={{ fontSize: avatarSize / 2, color: STheme.color.text, opacity: 0.7 }}>{inicial}</SText>
+                    {usuario?.key ? <SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ width: avatarSize, height: avatarSize, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
                 </SView>
                 <SView width={5} />
                 <SText flex numberOfLines={1} style={{ fontSize: 13 }} color={STheme.color.lightGray}>{nombre}</SText>
@@ -163,14 +165,16 @@ export default class ListaClientes extends Component {
         );
     }
 
-    renderCliente(cliente = {}) {
+    renderCliente(e) {
+        const cliente = e.row || {};
         const nombre = `${cliente?.nombres || "Sin Nombre"} ${cliente?.apellidos || ""}`;
         const inicial = (cliente?.nombres || "?")[0].toUpperCase();
+        const avatarSize = e.filterList ? 16 : 21;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-                    <SText style={{ fontSize: 11, color: STheme.color.text, opacity: 0.7 }}>{inicial}</SText>
-                    {cliente?.key ? <SImage src={`${SSocket.api.root}usuario/${cliente.key}`} style={{ width: 24, height: 24, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
+                <SView style={{ width: avatarSize, height: avatarSize, borderRadius: 100, backgroundColor: STheme.color.text + "20", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                    <SText style={{ fontSize: avatarSize / 2, color: STheme.color.text, opacity: 0.7 }}>{inicial}</SText>
+                    {cliente?.key ? <SImage src={`${SSocket.api.root}usuario/${cliente.key}`} style={{ width: avatarSize, height: avatarSize, resizeMode: "cover", position: "absolute", top: 0, left: 0 }} /> : null}
                 </SView>
                 <SView width={8} />
                 <SText flex numberOfLines={1} style={{ fontSize: 12 }}>{nombre}</SText>
@@ -238,10 +242,11 @@ export default class ListaClientes extends Component {
     mostrarTabla() {
         return (
             <DinamicTable
+                indexar
                 key="tabla"
                 {...Config.table.applyTheme()}
                 ref={ref => (this.DinamicTable = ref)}
-                center
+                // center // no existe en DinamicTablePropsType; React la ignora, no hace nada
                 language="es"
                 selectType="single"
                 colors={Config.table.colors()}
@@ -255,6 +260,35 @@ export default class ListaClientes extends Component {
                         { key: "nombre_completo", order: "asc", type: "string" },
                     ]
                 })}
+                // --- props de nivel DinamicTable no usados antes, agregados para analizar ---
+                textTitleStyle={{ fontWeight: "bold" }} // estilo extra solo para el texto del título de cada columna
+                style={{ flex: 1 }} // estilo del contenedor raíz de toda la tabla
+                iconSize={22} // tamaño de los íconos de la barra superior (buscar, ordenar, filtrar, agrupar)
+                padding={8} // padding general alrededor de la tabla
+                adjustColumnWidth // las columnas se estiran para ocupar todo el ancho disponible
+                hiddenMenu={false} // si es true oculta la barra superior (buscador, ordenar, filtrar, agrupar)
+                hoverStyle={{ backgroundColor: STheme.color.card + "30" }} // estilo al pasar el mouse sobre una fila (web)
+                buildRowStyle={({ item }) => Number(item?.__original?.estado) === 0 ? { opacity: 0.45 } : {}} // atenúa clientes inactivos/eliminados
+                listFooterComponent={() => <SHr height={60} />} // espacio extra al final del listado
+                onEvent={(e) => { if (e.evt === "render") { /* se dispara en cada render de la tabla */ } }}
+                onSelectionChange={(rows) => { /* rows = filas actualmente seleccionadas (útil con selectType multiple/check) */ }}
+                renderHeaderActions={() => null} // slot para agregar botones extra en la barra superior (el paginador ya lo agrega la librería sola vía pageLimit)
+                renderLoading={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Cargando clientes...</SText>
+                    </SView>
+                )}
+                renderNoResults={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron clientes en el rango seleccionado.</SText>
+                    </SView>
+                )}
+                renderError={({ error }) => (
+                    <SView col={"xs-12"} padding={16}>
+                        <SText fontSize={13} color={STheme.color.danger}>Error: {error?.message || String(error)}</SText>
+                    </SView>
+                )}
+                // --- fin props agregados para analizar ---
                 headerGroups={[
                     {
                         label: "Cuotas Pendientes", cols: ["cuota_pen", "monto_pen"],
@@ -374,19 +408,19 @@ export default class ListaClientes extends Component {
                     });
                 }}
             >
-                <DinamicTable.Col key="index" label="#" headerStyle={{ paddingLeft: 4 }}
-                    width={40} height={60} data={e => e.index + 1} />
+                {/* <DinamicTable.Col key="index" label="#" headerStyle={{ paddingLeft: 4 }}
+                    width={40} height={60} data={e => e.index + 1} /> */}
                 <DinamicTable.Col key="nombre_completo"
                     headerStyle={{ paddingLeft: 4 }}
-                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
 
                 <DinamicTable.Col key="nombre_complesdfto"
                     headerStyle={{ paddingLeft: 4 }}
-                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
 
                 <DinamicTable.Col key="nombre_compledto"
                     headerStyle={{ paddingLeft: 4 }}
-                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e.row)} />
+                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
 
 
 
@@ -493,7 +527,7 @@ export default class ListaClientes extends Component {
                     customComponent={e => this.renderMontoCell(e.row?.mora_por_moneda, e.row?.totales_base?.mora, e.row?.empresa?.monedas)} />
 
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} height={60} headerStyle={{ paddingLeft: 4 }} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="key_usuario" label="Responsable" width={100} height={60} headerStyle={{ paddingLeft: 4 }} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
+                <DinamicTable.Col key="key_usuario" label="Responsable" width={100} height={60} headerStyle={{ paddingLeft: 4 }} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e)} />
             </DinamicTable>
         );
     }

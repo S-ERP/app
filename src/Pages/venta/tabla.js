@@ -576,7 +576,7 @@ export default class tabla extends Component {
     mostrarTabla() {
         return (
             <DinamicTable
-                indexar
+                indexar // antepone una columna "N°" con el correlativo de fila (respeta la página actual); no hace falta declararla como DinamicTable.Col
                 ref={ref => (this.DinamicTable = ref)} // guarda la instancia para llamar this.DinamicTable.loadData()/getData()/changePage() desde afuera
                 loadData={async () => {
                     return this.loadInitialData();
@@ -648,6 +648,40 @@ export default class tabla extends Component {
                 }}
                 loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }} // estado inicial de la tabla (acá: orden por fecha descendente al cargar)
             >
+                {/*
+                  Props disponibles en DinamicTable.Col (no todos se usan en cada columna de abajo):
+                  - label: texto (o elemento) del encabezado de la columna.
+                  - labelIcon: ícono junto al label en el encabezado.
+                  - dataType: "string" (default) | "number" | "date" | "time" | "datetime" | "boolean";
+                    define cómo se coacciona lo que devuelve `data` y cómo ordena/filtra/agrupa/exporta.
+                  - dateFormat: formato de fecha ("yyyy-MM-dd hh:mm") para dataType date/time/datetime,
+                    tanto en pantalla como en el Excel exportado.
+                  - width: ancho inicial en px (el usuario puede arrastrar el borde para cambiarlo).
+                  - data: función que calcula el valor "crudo" de la fila; alimenta orden, filtro,
+                    agrupación y la exportación a Excel (no es lo que se ve si hay customComponent).
+                  - format: transforma `data` en el texto a mostrar SOLO cuando no hay customComponent.
+                  - customComponent: renderiza la celda a mano (reemplaza el texto plano); también
+                    se usa para pintar cada valor dentro del popup de filtro (recibe filterList=true).
+                  - onPress: handler al hacer click en la celda (la envuelve en un TouchableOpacity).
+                  - cellStyle: estilo del contenedor de cada celda de esta columna.
+                  - textStyle / textTitleStyle: estilo del texto de la celda / del título del header.
+                  - wrap: si es true, el texto de la celda puede ocupar varias líneas en vez de truncarse.
+                  - id: identificador de columna; si no se pasa toma el `key` de React.
+                  - disableFilter / disableSorter / disableFilterGroup / disableGrouper: ocultan esas
+                    opciones en el menú de la columna (filtrar / ordenar / agrupar).
+                  - disableExport: excluye la columna del archivo Excel exportado.
+                  - excelFormat: formato numérico/fecha de Excel (ej "#,##0.00") para las celdas exportadas.
+                  - sumExcel: si es true, agrega una fila de totales al final del Excel con la fórmula
+                    =SUM() de esa columna (requiere que `data` devuelva un número, no texto formateado).
+                  - sumTotal: total mostrado en el encabezado EN PANTALLA; true, [prefijo, decimales] o
+                    una función personalizada (rows) => string. Es independiente de sumExcel.
+                  - usePermission: decide si se muestra el contenido de la celda (false = la oculta).
+                  - footerComponent / listFooterComponent: contenido al pie de la tabla, bajo esta columna.
+                  - headerStyle: estilo del contenedor del encabezado de la columna.
+                  - customHeaderComponent: reemplaza el render completo del encabezado (label + sumTotal).
+                  - height: NO es un prop real de Col (no existe en ColPropsType); se ignora igual que
+                    el `key` de React, se deja solo por costumbre visual al alinear las columnas.
+                */}
                 {/* <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} /> */}
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
                     data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
@@ -835,7 +869,9 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col key="cuotas_cantidad_pagadas"
                     label="# Pago"
-                    sumTotal={['', 0]} width={74} height={60}
+                    sumTotal={['', 0]} width={74} height={60} // sumTotal: total en pantalla (header de la columna)
+                    dataType="number" // el valor es numérico: ordena/filtra/exporta como número, no como texto
+                    sumExcel // agrega fila de totales (=SUM) para esta columna en el Excel exportado
                     cellStyle={{ backgroundColor: STheme.color.success + "33" }}
                     data={(e) => e.row?.cuotas?.cantidad_pagada ?? ""}
                     format={e => (e.data ? SMath.formatMoney(e.data) : '')}
@@ -867,8 +903,11 @@ export default class tabla extends Component {
                         const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
                         return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
                     }}
+                    dataType="number" // exporta/ordena el monto en la moneda base (número), no el texto "Bs 1,234.56"
+                    sumExcel // agrega fila de totales (=SUM) para esta columna en el Excel exportado
+                    excelFormat="#,##0.00" // formato numérico de la celda al exportar a Excel
                     footerComponent={this.footerCuotasYMonto(row => row.cuotas?.cantidad_pagada, row => row.monto_amortizado_base)}
-                    data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.monto_amortizado || 0; const base = e.row?.monto_amortizado_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+                    data={(e) => e.row?.monto_amortizado_base || 0} // valor "crudo" (moneda base) usado para ordenar/filtrar/exportar; el texto en pantalla lo arma customComponent
                     cellStyle={{ backgroundColor: STheme.color.success + "33" }}
 
                     customComponent={e => {
@@ -900,7 +939,8 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]}
 
-
+                    dataType="number" // valor numérico: ordena/filtra/exporta como número
+                    sumExcel // agrega fila de totales (=SUM) para esta columna en el Excel exportado
                     width={60} height={60}
 
 
@@ -928,8 +968,11 @@ export default class tabla extends Component {
                         const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
                         return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
                     }}
+                    dataType="number" // exporta/ordena la deuda en moneda base (número)
+                    sumExcel // agrega fila de totales (=SUM) para esta columna en el Excel exportado
+                    excelFormat="#,##0.00" // formato numérico de la celda al exportar a Excel
                     footerComponent={this.footerCuotasYMonto(row => row.cuotas?.cantidad_pendiente, row => (row.cuotas?.total_base ?? 0) - (row.monto_amortizado_base ?? 0))}
-                    data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+                    data={(e) => (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0)} // valor "crudo" (moneda base) para ordenar/filtrar/exportar; el texto en pantalla lo arma customComponent
                     cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];
@@ -962,7 +1005,8 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" sumTotal={['', 0]} width={60} height={60}
 
-
+                    dataType="number" // valor numérico: ordena/filtra/exporta como número
+                    sumExcel // agrega fila de totales (=SUM) para esta columna en el Excel exportado
                     cellStyle={{ backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 
                     customComponent={e => {
@@ -983,8 +1027,11 @@ export default class tabla extends Component {
                         const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
                         return totalBase ? `${baseSim} ${SMath.formatMoney(totalBase)}` : '';
                     }}
+                    dataType="number" // exporta/ordena el monto en mora en moneda base (número)
+                    sumExcel // agrega fila de totales (=SUM) para esta columna en el Excel exportado
+                    excelFormat="#,##0.00" // formato numérico de la celda al exportar a Excel
                     footerComponent={this.footerCuotasYMonto(row => row.cuotas_en_mora?.cantidad, row => row.cuotas_en_mora?.monto_base)}
-                    data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.cuotas_en_mora?.monto || 0; const base = e.row?.cuotas_en_mora?.monto_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+                    data={(e) => e.row?.cuotas_en_mora?.monto_base || 0} // valor "crudo" (moneda base) para ordenar/filtrar/exportar; el texto en pantalla lo arma customComponent
                     cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
                     customComponent={e => {
                         const monedas = e.row?.empresa?.monedas || [];

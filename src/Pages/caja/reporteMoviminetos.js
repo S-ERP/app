@@ -581,7 +581,7 @@ export default class reporteMoviminetos extends Component {
                     customComponent={e => {
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row.moneda.observacion} {e.data}</SText>
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row?.moneda?.observacion ?? ''} {e.data}</SText>
                             </SView>
                         );
                     }}
@@ -750,7 +750,7 @@ export default class reporteMoviminetos extends Component {
                     customComponent={e => {
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row.moneda_base.observacion} {e.data}</SText>
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row?.moneda_base?.observacion ?? ''} {e.data}</SText>
                             </SView>
                         );
                     }}
@@ -823,7 +823,6 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
-
 
 
             </DinamicTable >

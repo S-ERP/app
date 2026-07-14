@@ -534,17 +534,19 @@ export default class tabla extends Component {
     mostrarTabla() {
         return (
             <DinamicTable
+                indexar
                 ref={ref => (this.DinamicTable = ref)}
                 loadData={async () => {
                     return this.loadInitialData();
                 }}
                 key="id"
                 language="es"
-                center
+                // center // no existe en DinamicTablePropsType; React la ignora, no hace nada
                 {...Config.table.applyTheme()}
                 selectType="single"
                 keyExtractor={(e) => e.key}
-                pageLimit={100}
+                // pageLimit={100} // límite de filas por página; la librería ya arma solita el paginador (‹ Anterior / Página X de Y / Siguiente ›)
+                renderHeaderActions={() => null}
                 headerGroups={[
                     {
                         label: "Cuotas Pagadas", cols: ["cuotas_cantidad_pagadas", "monto_amortizado"],
@@ -575,7 +577,7 @@ export default class tabla extends Component {
                 }}
                 loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
             >
-                <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
+                {/* <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} /> */}
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
                     data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
                     cellStyle={{ padding: 4, gap: 4 }}
