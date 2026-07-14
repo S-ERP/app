@@ -237,12 +237,24 @@ export default class cajas extends React.Component {
                 }
             }
 
+            if (tipo === "anulacion_venta" && tagTipoPago === "crédito") {
+                totals.total_credito -= valor;
+                 totals.total_recaudado -= valor;
+            }
+
             // ============================
             // EGRESOS
             // ============================
-            if (tagMovimiento === "egreso") {
-                totals.total_egresos += valor;
+
+            // if(tipo !== "anulacion_venta" && tipo !== "anulacion_compra" && (tagMovimiento === "egreso" || tipo === "compra" || tipo === "retiro")) {
+            //     totals.total_egresos += valor;
+            // }
+            if (tipo !== "anulacion_venta") {
+                if (tagMovimiento === "egreso") {
+                    totals.total_egresos += valor;
+                }
             }
+
 
             // ============================
             // GRÁFICOS
