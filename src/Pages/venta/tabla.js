@@ -576,19 +576,18 @@ export default class tabla extends Component {
     mostrarTabla() {
         return (
             <DinamicTable
-            indexar
+                indexar
                 ref={ref => (this.DinamicTable = ref)} // guarda la instancia para llamar this.DinamicTable.loadData()/getData()/changePage() desde afuera
                 loadData={async () => {
                     return this.loadInitialData();
                 }} // función que la tabla llama para obtener los datos (debe devolver un array)
                 key="id" // prop estándar de React (no de DinamicTable); sin efecto porque no está dentro de un .map()
                 language="es" // traduce los textos internos de la tabla (loading, sin resultados, etc.) a español
-                center // no existe en DinamicTablePropsType; React la ignora, no hace nada
+                // center // no existe en DinamicTablePropsType; React la ignora, no hace nada
                 {...Config.table.applyTheme()} // inyecta colors, cellStyle, textStyle, headerStyle y headerTextStyle según el tema actual
                 selectType="single" // al hacer click en una fila se selecciona solo esa y dispara onSelect
                 keyExtractor={(e) => e.key} // obtiene el key único de cada fila (usa e.key de la venta)
-                indexar // agrega automáticamente la columna "N°" con el correlativo (respeta la página actual)
-                pageLimit={30} // límite de filas por página; la librería ya arma solita el paginador (‹ Anterior / Página X de Y / Siguiente ›)
+                // pageLimit={10} // límite de filas por página; la librería ya arma solita el paginador (‹ Anterior / Página X de Y / Siguiente ›)
                 // --- props de nivel DinamicTable no usados antes, agregados para analizar ---
                 textTitleStyle={{ fontWeight: "bold" }} // estilo extra solo para el texto del título de cada columna
                 style={{ flex: 1 }} // estilo del contenedor raíz de toda la tabla
@@ -649,6 +648,7 @@ export default class tabla extends Component {
                 }}
                 loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }} // estado inicial de la tabla (acá: orden por fecha descendente al cargar)
             >
+                {/* <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} /> */}
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
                     data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
                     cellStyle={{ padding: 4, gap: 4 }}
