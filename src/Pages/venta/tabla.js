@@ -183,6 +183,9 @@ export default class tabla extends Component {
                 time: 2000,
             });
 
+            console.clear();
+            console.dir(ventasEnriquecidas)
+
             return ventasEnriquecidas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error?.message || error, error);
@@ -213,6 +216,31 @@ export default class tabla extends Component {
                 </SView>
             );
         };
+    }
+
+    renderPaginador({ dinamicTable }) {
+        const totalPages = dinamicTable.getTotalPages();
+        if (totalPages <= 1) return null;
+        const currentPage = dinamicTable.state.currentPage;
+        const BtnPagina = ({ label, disabled, onPress }) => (
+            <SView
+                onPress={disabled ? undefined : onPress}
+                style={{
+                    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 4,
+                    backgroundColor: STheme.color.card,
+                    opacity: disabled ? 0.4 : 1,
+                }}
+            >
+                <SText fontSize={12}>{label}</SText>
+            </SView>
+        );
+        return (
+            <SView row center style={{ gap: 6 }}>
+                <BtnPagina label="‹ Anterior" disabled={currentPage <= 1} onPress={() => dinamicTable.changePage(currentPage - 1)} />
+                <SText fontSize={12} color={STheme.color.text}>{`Página ${currentPage} de ${totalPages}`}</SText>
+                <BtnPagina label="Siguiente ›" disabled={currentPage >= totalPages} onPress={() => dinamicTable.changePage(currentPage + 1)} />
+            </SView>
+        );
     }
 
     renderMenuVentas(row) {
@@ -573,18 +601,50 @@ export default class tabla extends Component {
     mostrarTabla() {
         return (
             <DinamicTable
-                ref={ref => (this.DinamicTable = ref)}
+            indexar
+                ref={ref => (this.DinamicTable = ref)} // guarda la instancia para llamar this.DinamicTable.loadData()/getData()/changePage() desde afuera
                 loadData={async () => {
                     return this.loadInitialData();
-                }}
-                key="id"
-                language="es"
-                center
-                {...Config.table.applyTheme()}
-                selectType="single"
-                keyExtractor={(e) => e.key}
-                pageLimit={100}
-                headerGroups={[
+                }} // función que la tabla llama para obtener los datos (debe devolver un array)
+                key="id" // prop estándar de React (no de DinamicTable); sin efecto porque no está dentro de un .map()
+                language="es" // traduce los textos internos de la tabla (loading, sin resultados, etc.) a español
+                center // no existe en DinamicTablePropsType; React la ignora, no hace nada
+                {...Config.table.applyTheme()} // inyecta colors, cellStyle, textStyle, headerStyle y headerTextStyle según el tema actual
+                selectType="single" // al hacer click en una fila se selecciona solo esa y dispara onSelect
+                keyExtractor={(e) => e.key} // obtiene el key único de cada fila (usa e.key de la venta)
+                indexar // agrega automáticamente la columna "N°" con el correlativo (respeta la página actual)
+                // pageLimit={30} // límite de filas por página interna (junto con renderHeaderActions se arma el paginador)
+                // --- props de nivel DinamicTable no usados antes, agregados para analizar ---
+                textTitleStyle={{ fontWeight: "bold" }} // estilo extra solo para el texto del título de cada columna
+                style={{ flex: 1 }} // estilo del contenedor raíz de toda la tabla
+                iconSize={22} // tamaño de los íconos de la barra superior (buscar, ordenar, filtrar, agrupar)
+                padding={8} // padding general alrededor de la tabla
+                adjustColumnWidth // las columnas se estiran para ocupar todo el ancho disponible
+                hiddenMenu={false} // si es true oculta la barra superior (buscador, ordenar, filtrar, agrupar)
+                hoverStyle={{ backgroundColor: STheme.color.card + "30" }} // estilo al pasar el mouse sobre una fila (web)
+                buildRowStyle={({ item }) => Number(item?.__original?.estado) === 0 ? { opacity: 0.45 } : {}} // atenúa ventas anuladas
+                listFooterComponent={() => <SHr height={60} />} // espacio extra al final del listado
+                onEvent={(e) => { if (e.evt === "render") { /* se dispara en cada render de la tabla */ } }}
+                onSelectionChange={(rows) => { /* rows = filas actualmente seleccionadas (útil con selectType multiple/check) */ }}
+                renderHeaderActions={({ dinamicTable }) => this.renderPaginador({ dinamicTable })} // slot en la barra superior; acá se usa para el paginador (‹ Anterior / Página X de Y / Siguiente ›)
+                renderLoading={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Cargando ventas...</SText>
+                    </SView>
+                )}
+                renderNoResults={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron ventas en el rango seleccionado.</SText>
+                    </SView>
+                )}
+                renderError={({ error }) => (
+                    <SView col={"xs-12"} padding={16}>
+                        <SText fontSize={13} color={STheme.color.danger}>Error: {error?.message || String(error)}</SText>
+                    </SView>
+                )}
+                // --- fin props agregados para analizar ---
+
+                headerGroups={[ // agrupa columnas bajo un mismo encabezado visual (une varias Col en un rótulo superior con su propio estilo)
                     {
                         label: "Cuotas Pagadas", cols: ["cuotas_cantidad_pagadas", "monto_amortizado"],
                         style: { backgroundColor: STheme.color.success + '55', borderWidth: 1, borderColor: STheme.color.success },
@@ -598,7 +658,7 @@ export default class tabla extends Component {
                         style: { backgroundColor: STheme.color.danger + '55', borderWidth: 1, borderColor: STheme.color.danger },
                     },
                 ]}
-                onSelect={(e) => {
+                onSelect={(e) => { // se dispara al hacer click en una fila (por selectType="single"); abre el menú contextual de la venta
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height;
                     if (h < top + 300) {
@@ -612,9 +672,8 @@ export default class tabla extends Component {
                         </SView>
                     })
                 }}
-                loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
+                loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }} // estado inicial de la tabla (acá: orden por fecha descendente al cargar)
             >
-                <DinamicTable.Col key="index" label="N°" width={40} height={60} data={(e) => e.index + 1} />
                 <DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
                     data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
                     cellStyle={{ padding: 4, gap: 4 }}

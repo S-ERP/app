@@ -31,7 +31,6 @@
     "@shopify/flash-list": "^1.4.3",
     "@svgr/webpack": "^8.1.0",
     "@zxing/browser": "^0.1.5",
-    "alvaro-table": "file:../alvaro-table/dist",
     "ammojs-typed": "^1.0.6",
     "ammojs3": "^0.0.11",
     "base64-js": "^1.5.1",
