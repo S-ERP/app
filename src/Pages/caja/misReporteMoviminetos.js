@@ -406,7 +406,7 @@ export default class misReporteMoviminetos extends Component {
                 <DinamicTable.Col
                     key="monto_total"
                     wrap label="MONTO"
-                    width={90}
+                    width={100}
                     color={STheme.color.danger}
                     data={e => {
                         const monto = e.row?.monto ?? 0;
@@ -513,7 +513,7 @@ export default class misReporteMoviminetos extends Component {
                 <DinamicTable.Col
                     key="monto_base"
                     wrap label="MONTO BASE"
-                    width={90}
+                    width={100}
                     data={e => {
                         const monto = e.row?.monto ?? 0;
                         const tipoCambio = e.row?.moneda?.tipo_cambio ?? 1;

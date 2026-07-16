@@ -303,7 +303,6 @@ export default class reporteMoviminetos extends Component {
                         console.warn('No row data provided for selection');
                         return;
                     }
-
                     const tipoLower = (e.row?.tipo || "").toLowerCase();
                     const esVenta = tipoLower === "venta";
                     const esCompra = tipoLower === "compra";
@@ -520,17 +519,6 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
-
-                {/* <DinamicTable.Col
-                    key="puntosds"
-                    label="P.VENTA/Compra"
-                    width={180}
-                    color={STheme}
-                    data={e => {
-                        const v = e.row?.estado_venta;
-                        return v === null || v === undefined ? "" : String(v);
-                    }}
-                /> */}
 
                 <DinamicTable.Col
                     key="key_usuario8556"
