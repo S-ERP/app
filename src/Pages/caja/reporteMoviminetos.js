@@ -274,7 +274,7 @@ export default class reporteMoviminetos extends Component {
             }));
             // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
 
-            console.clear();
+            
             console.log("DATOS MOVIMIENTOS:", processedData);
             return processedData;
         } catch (error) {

@@ -110,7 +110,7 @@ export default class tabla_productos_dia extends React.Component {
                 return totalB - totalA;
             });
 
-            console.clear();
+            
             console.log(
                 "%c" + JSON.stringify(dataVentasPorDia, null, 2),
                 "color: #2ECC40; font-weight: bold;"

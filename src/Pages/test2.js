@@ -187,7 +187,7 @@ export default class index extends React.Component {
     detalle() {
 
         const { movimientos } = this.state;
-        console.clear();
+        
         console.log("%c" + JSON.stringify(movimientos, null, 2), "color: #2ECC40; font-weight: bold;");
 
 

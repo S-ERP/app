@@ -87,7 +87,7 @@ export default class ReciboCarta extends Component {
                 tipo_pago_: tipoPago || {},
             };
 
-            console.clear();
+            
             console.log("ReciboCarta: Generating PDF for compraVentaData:", compraVentaData);
 
             SPDF.create(

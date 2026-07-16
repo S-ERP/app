@@ -36,7 +36,7 @@ export default class conta extends React.Component {
     async loadData() {
         try {
             const todasCuentas = await MDL.contabilidad.reporte_balance_general();
-            console.clear();
+            
             console.log("%c" + JSON.stringify(todasCuentas, null, 2), "color: #2ECC40; font-weight: bold;");
             const cuentas = this.nivelTipoComprobante === "Todos" ? todasCuentas : await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
             const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"

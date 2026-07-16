@@ -53,7 +53,7 @@ export default class tabla extends Component {
                 });
                 return [];
             }
-            console.clear();
+            
             console.log(JSON.stringify(registros));
             const sucursales = empresa?.sucursales || [];
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
@@ -187,7 +187,7 @@ export default class tabla extends Component {
                 time: 2000,
             });
 
-            console.clear();
+            
             console.dir(ventasEnriquecidas)
 
             return ventasEnriquecidas;

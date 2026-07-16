@@ -45,7 +45,7 @@ export default class quizas extends Component {
 
             const sssssssss = await MDL.compra_venta.tipooooooooooo(key);
 
-            console.clear();
+            
             console.log("ReciboCarta: sssssssss:", sssssssss);
 
             const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
