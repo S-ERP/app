@@ -38,9 +38,18 @@ export default class reporteMoviminetos extends Component {
                 return "#3683dbff"; // Azul fuerte (profesional y moderno)
             case "COMPRA":
                 return "#e0883fff"; // Naranja intenso (enérgico pero amigable)
+            case "ANULACION_VENTA":
+            case "ANULACION_COMPRA":
+                return "#8426f0"; // Violeta (anulación)
             default:
                 return "#979797ff"; // Gris claro por defecto (neutral)
         }
+    }
+
+    esRegistroAnulado(row, dataset) {
+        const tipoLower = (row?.tipo || "").toLowerCase();
+        const ventaOCompraAnulada = (tipoLower === "venta" || tipoLower === "compra") && Number(row?.estado_venta) === 0;
+        return this.estaAnulado(row, dataset) || ventaOCompraAnulada;
     }
 
     estaAnulado(row, dataset) {
@@ -380,9 +389,11 @@ export default class reporteMoviminetos extends Component {
                     });
                 }}
 
-                buildRowStyle={({ item, dinamicTable }) => {
-                    const anulado = this.estaAnulado(item, dinamicTable?.data);
-                    return anulado ? { opacity: 0.45 } : {};
+                buildRowStyle={({ item }) => {
+                    const original = item?.__original ?? item;
+                    const tipoLower = (original?.tipo || "").toLowerCase();
+                    const esVentaOCompraAnulada = (tipoLower === "venta" || tipoLower === "compra") && Number(original?.estado_venta) === 0;
+                    return esVentaOCompraAnulada ? { opacity: 0.45 } : {};
                 }}
 
                 loadInitialState={async () => ({
@@ -530,15 +541,14 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
-
-                {/* <DinamicTable.Col
+                <DinamicTable.Col
                     key="key_usuario8556"
-                    label="ADM"
+                    label="USUARIO"
                     width={120}
-                    data={e => e.row?.usuario?.Nombres ?? "Sin usuario"}
+                    data={e => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => {
                         const key = e.row?.key_usuario;
-                        const nombre = e.row?.usuario?.Nombres ?? "Sin usuario";
+                        const nombre = e.row?.usuario?.Nombres ?? "";
 
                         return key ? (
                             <SView col="xs-12" row center>
@@ -561,12 +571,9 @@ export default class reporteMoviminetos extends Component {
                                     {nombre}
                                 </SText>
                             </SView>
-                        ) : (
-                            <SText>Sin usuario</SText>
-                        );
+                        ) : null;
                     }}
-                /> */}
-
+                />
 
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 4 }} width={100} height={60} data={(e) => (e.row?.tipo || "").toLowerCase() === "venta" ? (e.row?.cliente?.nombres ?? "") : ""}
                     customComponent={e => {
@@ -617,9 +624,10 @@ export default class reporteMoviminetos extends Component {
                     }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73", color: "blue" }}
                     customComponent={e => {
+                        const anulado = this.esRegistroAnulado(e.row, e.dinamicTable?.data);
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row?.moneda?.observacion ?? ''} {e.data}</SText>
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} style={{ textDecorationLine: anulado ? 'line-through' : 'none', opacity: anulado ? 0.6 : 1 }}>{e.row?.moneda?.observacion ?? ''} {e.data}</SText>
                             </SView>
                         );
                     }}
@@ -786,9 +794,10 @@ export default class reporteMoviminetos extends Component {
                     }}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73" }}
                     customComponent={e => {
+                        const anulado = this.esRegistroAnulado(e.row, e.dinamicTable?.data);
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row?.moneda_base?.observacion ?? ''} {e.data}</SText>
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} style={{ textDecorationLine: anulado ? 'line-through' : 'none', opacity: anulado ? 0.6 : 1 }}>{e.row?.moneda_base?.observacion ?? ''} {e.data}</SText>
                             </SView>
                         );
                     }}
