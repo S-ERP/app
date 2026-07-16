@@ -8,7 +8,6 @@ import DateTimeBetween from '../../Components/DateTimeBetween';
 import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
-import { color } from 'three/examples/jsm/nodes/Nodes';
 import { Linking } from 'react-native';
 
 export default class reporteMoviminetos extends Component {
@@ -409,15 +408,7 @@ export default class reporteMoviminetos extends Component {
 
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
-                <DinamicTable.Col
-                    key="esatdosss"
-                    label="estado"
-                    width={180}
-                    color={STheme}
-                    dataType='number'
-                    data={e => e.row?.estado}
-                />
-
+     
                 <DinamicTable.Col
                     key="sucursal_"
                     label="SUCURSAL"
@@ -530,7 +521,7 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
-                <DinamicTable.Col
+                {/* <DinamicTable.Col
                     key="puntosds"
                     label="P.VENTA/Compra"
                     width={180}
@@ -539,7 +530,7 @@ export default class reporteMoviminetos extends Component {
                         const v = e.row?.estado_venta;
                         return v === null || v === undefined ? "" : String(v);
                     }}
-                />
+                /> */}
 
                 <DinamicTable.Col
                     key="key_usuario8556"
