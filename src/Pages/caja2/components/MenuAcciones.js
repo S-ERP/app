@@ -124,9 +124,11 @@ export default class MenuAcciones extends Component {
                                             PdfCierreCaja.imprimirPDF(caja.key)
                                                 .then(() => {
                                                     SNotification.remove("pdf_cierre");
+                                                    SNavigation.navigate("/caja");
                                                 })
                                                 .catch(e => {
                                                     SNotification.send({ key: "pdf_cierre", title: "Error al generar PDF", body: e?.error ?? JSON.stringify(e), color: STheme.color.danger, time: 5000 });
+                                                    SNavigation.navigate("/caja");
                                                 });
                                         }).catch(e => {
                                             SNotification.send({
