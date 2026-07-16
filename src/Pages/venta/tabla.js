@@ -645,8 +645,6 @@ export default class tabla extends Component {
                     return {
                         filters: [
                             { col: "estado_pago", type: "string", value: "Anulada", operator: "!=" } // oculta ventas anuladas por defecto; se puede quitar desde el filtro de la columna "estado"
-
-                            // { col: "estado", type: "number", value: 0, operator: "!=" } // oculta ventas anuladas por defecto; se puede quitar desde el filtro de la columna "estado"
                         ],
                         sorters: [{ key: "fecha_on", order: "desc", type: "date" }]
                     }
@@ -699,32 +697,6 @@ export default class tabla extends Component {
                         );
                     })}
                 />
-
-
-
-
-                <DinamicTable.Col
-                    key="estado"
-                    label="estado "
-                    width={180}
-                    height={60}
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
-                    dataType='number'
-                    data={e => e.row?.estado ?? ""}
-                    customComponent={e => {
-                        if (e.data === "" || e.data === null || e.data === undefined) return null;
-                        const anulada = Number(e.data) === 0;
-                        return (
-                            <SView center row>
-                                <SView backgroundColor={anulada ? STheme.color.danger : STheme.color.success} style={{ borderRadius: 4, padding: 5 }}>
-                                    <SText color={STheme.color.text} fontSize={12}>{anulada ? "Anulada" : "Activa"}</SText>
-                                </SView>
-                            </SView>
-                        );
-                    }}
-                />
-
-
 
                 <DinamicTable.Col key="descripcion" label="Concepto" width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
 
@@ -841,7 +813,7 @@ export default class tabla extends Component {
                             "Al Día": { color: "#f59e0b", label: "Al Día" },
                             "En Mora": { color: "#dc2626", label: "En Mora" },
                             "Pagado": { color: "#16a34a", label: "Pagado" },
-                            "Anulada": { color: STheme.color.lightGray, label: "Anulada" },
+                            "Anulada": { color: "#8426f0", label: "Anulada" },
                         }[e.data] || {};
                         return <SView row center>
                             <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 4 }} center>
@@ -918,16 +890,6 @@ export default class tabla extends Component {
                         );
                     }}
                 />
-
-
-
-
-
-
-
-
-
-
 
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={110} height={60}
                     sumTotal={rows => {
@@ -1148,30 +1110,6 @@ export default class tabla extends Component {
 
             </DinamicTable>
         );
-    }
-
-    async confirmarBorradoFacturas() {
-        const notificationKey = "borrar_facturas";
-        SPopup.confirm({
-            icon: "eliminar",
-            title: "Borrar todas las facturas",
-            message: "Esta acción eliminará las facturas de TODAS las ventas cargadas. ¿Desea continuar?",
-            onPress: async () => {
-                try {
-                    SNotification.send({ key: notificationKey, title: "Eliminando facturas...", type: "loading", });
-                    const data = (await this.DinamicTable?.getData?.()) || [];
-                    if (!Array.isArray(data)) { console.error("La tabla no devolvió un array:", data); }
-                    const updates = data.map((v) => Model.compra_venta.Action.editar({ data: { ...v, facturar: false, factura: {}, }, key_usuario: Model.usuario.Action.getKey(), })
-                    );
-                    await Promise.all(updates);
-                    this.DinamicTable?.loadData?.();
-                    SNotification.send({ key: notificationKey, title: "Facturas eliminadas", body: "Se eliminaron todas las facturas correctamente.", color: STheme.color.success, });
-                } catch (error) {
-                    console.error("Error al borrar facturas:", error);
-                    SNotification.send({ key: notificationKey, title: "Error al eliminar facturas", body: error?.message || "No se pudieron borrar todas las facturas.", color: STheme.color.danger, time: 5000, });
-                }
-            },
-        });
     }
 
     render() {

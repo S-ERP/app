@@ -240,10 +240,16 @@ export default class reporteMoviminetos extends Component {
 
             // Cliente: las ventas traen key_cliente, los movimientos de caja solo traen key_compra_venta
             const ventas = (await MDL.compra_venta.getTransaccion("venta", fecha_inicio, fecha_fin)) ?? [];
+            const compras = (await MDL.compra_venta.getTransaccion("compra", fecha_inicio, fecha_fin)) ?? [];
             const clientes = (await MDL.crm.cliente.getAll()) ?? [];
             const clientesMap = Object.fromEntries((Array.isArray(clientes) ? clientes : Object.values(clientes)).map(c => [c.key, c]));
             const ventaClienteMap = Object.fromEntries(
                 (Array.isArray(ventas) ? ventas : Object.values(ventas)).map(v => [v.key, clientesMap[v.key_cliente] ?? null])
+            );
+            // Mapa combinado venta+compra por key: cubre movimientos de ambos tipos (la columna "P.VENTA/Compra" los necesita a ambos)
+            const compraVentaMap = Object.fromEntries(
+                [...(Array.isArray(ventas) ? ventas : Object.values(ventas)), ...(Array.isArray(compras) ? compras : Object.values(compras))]
+                    .map(v => [v.key, v])
             );
 
             const processedData = movimientos.map(mov => ({
@@ -256,8 +262,11 @@ export default class reporteMoviminetos extends Component {
                 moneda_base: base,
                 turno: this.getTurno(mov.caja_fecha_on, mov.caja_fecha_cierre),
                 cliente: mov.key_compra_venta ? (ventaClienteMap[mov.key_compra_venta] ?? null) : null,
+                estado_venta: mov.key_compra_venta ? (compraVentaMap[mov.key_compra_venta]?.estado ?? null) : null,
             }));
             // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
+
+            console.clear();
             console.log("DATOS MOVIMIENTOS:", processedData);
             return processedData;
         } catch (error) {
@@ -300,6 +309,14 @@ export default class reporteMoviminetos extends Component {
                     );
 
                     const menuOptions = [
+                        // View Sale Detail (Conditional)
+                        ...(esVenta && e.row?.key_compra_venta ? [{
+                            label: 'Ver detalle de venta',
+                            icon: <SIconApp name="ventaCarro" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                SNavigation.navigate('/venta/profile2', { pk: e.row.key_compra_venta });
+                            },
+                        }] : []),
                         // View Vouchers
                         {
                             label: 'Ver Vouchers',
@@ -381,6 +398,14 @@ export default class reporteMoviminetos extends Component {
 
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
+                <DinamicTable.Col
+                    key="esatdosss"
+                    label="estado"
+                    width={180}
+                    color={STheme}
+                    dataType='number'
+                    data={e => e.row?.estado}
+                />
 
                 <DinamicTable.Col
                     key="sucursal_"
@@ -495,6 +520,18 @@ export default class reporteMoviminetos extends Component {
                 />
 
                 <DinamicTable.Col
+                    key="puntosds"
+                    label="P.VENTA/Compra"
+                    width={180}
+                    color={STheme}
+                    data={e => {
+                        const v = e.row?.estado_venta;
+                        return v === null || v === undefined ? "" : String(v);
+                    }}
+                />
+
+
+                {/* <DinamicTable.Col
                     key="key_usuario8556"
                     label="ADM"
                     width={120}
@@ -528,7 +565,8 @@ export default class reporteMoviminetos extends Component {
                             <SText>Sin usuario</SText>
                         );
                     }}
-                />
+                /> */}
+
 
                 <DinamicTable.Col key="cliente" label="Cliente" headerStyle={{ paddingLeft: 4 }} width={100} height={60} data={(e) => (e.row?.tipo || "").toLowerCase() === "venta" ? (e.row?.cliente?.nombres ?? "") : ""}
                     customComponent={e => {
