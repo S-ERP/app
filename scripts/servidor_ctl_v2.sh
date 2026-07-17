@@ -19,10 +19,12 @@ base_dir="${4:-v2}"
 modo="${5:-simple}"
 HOST="servisofts@$host_ip"
 
-if [ -z "$carpeta" ] || { [ "$accion" != "up" ] && [ "$accion" != "down" ]; }; then
-  echo "Uso: $0 <carpeta> [up|down] [host_ip] [base_dir] [simple|entorno]"
-  echo "  up   -> docker-compose up -d   (encender)"
-  echo "  down -> docker-compose down    (apagar, default)"
+if [ -z "$carpeta" ] || { [ "$accion" != "up" ] && [ "$accion" != "down" ] && [ "$accion" != "kill" ]; }; then
+  echo "Uso: $0 <carpeta> [up|down|kill] [host_ip] [base_dir] [simple|entorno]"
+  echo "  up   -> docker-compose up -d       (encender)"
+  echo "  down -> docker-compose down        (apagar, default)"
+  echo "  kill -> docker-compose kill + rm -f (forzado, para cuando 'down'"
+  echo "          no libera el puerto/IP porque el contenedor quedo colgado)"
   echo "  host_ip por default: 192.168.2.3"
   echo "  base_dir por default: v2 (usar '.' para la raiz del home)"
   echo "  modo por default: simple (usar 'entorno' si el compose usa \${NAME}/\${IP})"
@@ -43,6 +45,8 @@ fi
 if [ "$modo" = "entorno" ]; then
   if [ "$accion" = "up" ]; then
     accion_cmd="up -d"
+  elif [ "$accion" = "kill" ]; then
+    accion_cmd="kill && sudo NAME=$carpeta docker-compose -f docker-compose.yaml --env-file ./config/.env.$carpeta -p $carpeta rm -f"
   else
     accion_cmd="down"
   fi
@@ -55,6 +59,8 @@ EOF
 else
   if [ "$accion" = "up" ]; then
     comando="docker-compose up -d"
+  elif [ "$accion" = "kill" ]; then
+    comando="docker-compose kill && docker-compose rm -f"
   else
     comando="docker-compose down"
   fi
