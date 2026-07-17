@@ -484,7 +484,7 @@ export default class Lista extends Component {
 
     render() {
         return (
-            <SPage title="Gestión de Proveedores" disableScroll>
+            <SPage title="Gestión ddde Proveedores" disableScroll>
                 <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12 }}>
                     <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap" }}>
                         <FiltroSelector
@@ -496,7 +496,15 @@ export default class Lista extends Component {
                                 { key: "En Mora", nombre: "En Mora" },
                             ]}
                             mapOption={a => ({ key: a.key, nombre: a.nombre })}
-                            onSelect={item => this.setState({ selectedEstadoPago: item }, () => this.DinamicTable?.loadData())}
+                            onSelect={item => {
+                                // FiltroSelector llama a onSelect también en su propio montaje (con el
+                                // valor por defecto), al mismo tiempo que DinamicTable ya está cargando
+                                // sola. Si el filtro no cambió realmente, evitamos duplicar la carga.
+                                const sinCambio = (item?.key ?? null) === (this.state.selectedEstadoPago?.key ?? null);
+                                this.setState({ selectedEstadoPago: item }, () => {
+                                    if (!sinCambio) this.DinamicTable?.loadData();
+                                });
+                            }}
                         />
                     </SView>
                     <SView width={8} />
@@ -506,7 +514,12 @@ export default class Lista extends Component {
                             label="Tipo de Proveedor"
                             loadData={async () => await MDL.crm.tipoCliente.getAll()}
                             mapOption={a => ({ key: a.key, nombre: a.titulo })}
-                            onSelect={item => this.setState({ selectedTipoCliente: item }, () => this.DinamicTable?.loadData())}
+                            onSelect={item => {
+                                const sinCambio = (item?.key ?? null) === (this.state.selectedTipoCliente?.key ?? null);
+                                this.setState({ selectedTipoCliente: item }, () => {
+                                    if (!sinCambio) this.DinamicTable?.loadData();
+                                });
+                            }}
                         />
                     </SView>
                     <SHr height={8} />
