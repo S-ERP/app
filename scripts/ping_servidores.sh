@@ -13,21 +13,27 @@ declare -A servidores=(
   ["crm"]="192.168.5.45"
   ["facturacion"]="192.168.5.45"
   ["inventario"]="192.168.5.45"
+  ["spdf"]="192.168.5.46"
+  ["notification"]="192.168.5.33"
+  ["drive"]="192.168.5.17"
+  ["chat"]="192.168.5.9"
+  ["proyecto"]="192.168.5.14"
+  ["geolocation"]="192.168.5.5"
 )
 
 orden=(
   servicios empresa usuario roles
-  "========"
-  calistenia
-  "========"
-  serp
-  "========"
-  caja "compra venta" contabilidad crm facturacion inventario
+  "-------------------"
+  drive notification spdf facturacion calistenia
+  "-------------------"
+  geolocation proyecto serp
+  "-------------------"
+  crm caja "compra venta" contabilidad inventario chat
 )
 
 for nombre in "${orden[@]}"; do
-  if [ "$nombre" = "========" ]; then
-    echo "========"
+  if [ "$nombre" = "-------------------" ]; then
+    echo "-------------------"
     continue
   fi
   ip="${servidores[$nombre]}"
@@ -38,10 +44,3 @@ for nombre in "${orden[@]}"; do
   fi
   printf "servidor %-12s %-15s -> %b\n" "$nombre" "$ip" "$estado"
 done
-
-
-# SERVICIO           IP              ESTADO
-# -----------------------------------------
-# servicios          192.168.5.1     ✅ OK
-# empresa            192.168.5.29    ✅ OK
-# roles              192.168.5.16    ❌ CAIDO
