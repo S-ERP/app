@@ -74,11 +74,19 @@ declare -A ctl_script=(
   ["roles"]="servidor_ctl_v2.sh"
   ["usuario"]="servidor_ctl_v2.sh"
   ["stats"]="servidor_ctl_v2.sh"
+  ["facturacion"]="servidor_ctl_v2.sh"
+  ["calistenia"]="servidor_ctl_v2.sh"
+  ["serp"]="servidor_ctl_v2.sh"
+  ["zkteco"]="servidor_ctl_v2.sh"
 )
 
 # Carpeta base remota para servidor_ctl_v2.sh (default "v2"; "." = raiz del home).
 declare -A base_dirs=(
   ["stats"]="."
+  ["facturacion"]="servicios"
+  ["calistenia"]="servicios"
+  ["serp"]="servicios"
+  ["zkteco"]="servicios"
 )
 
 grupos_nombres=("CORE SERVICES" "PLATAFORMA SERVICES" "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
