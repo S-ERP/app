@@ -476,7 +476,7 @@ export default class Lista extends Component {
                 />
 
 
-                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} h  eight={60} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} height={60} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Responsable" width={100} height={60} data={e => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e)} />
             </DinamicTable>
         );
@@ -484,7 +484,7 @@ export default class Lista extends Component {
 
     render() {
         return (
-            <SPage title="Gestión ddde Proveedores" disableScroll>
+            <SPage title="Gestión de Proveedores" disableScroll>
                 <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12 }}>
                     <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap" }}>
                         <FiltroSelector
