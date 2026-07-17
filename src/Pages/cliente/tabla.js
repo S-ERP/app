@@ -414,14 +414,6 @@ export default class ListaClientes extends Component {
                     headerStyle={{ paddingLeft: 4 }}
                     label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
 
-                <DinamicTable.Col key="nombre_complesdfto"
-                    headerStyle={{ paddingLeft: 4 }}
-                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
-
-                <DinamicTable.Col key="nombre_compledto"
-                    headerStyle={{ paddingLeft: 4 }}
-                    label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
-
 
 
                 <DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={80}
@@ -546,8 +538,12 @@ export default class ListaClientes extends Component {
                             ]}
                             mapOption={a => ({ key: a.key, nombre: a.nombre })}
                             onSelect={item => {
+                                // FiltroSelector llama a onSelect con la opción por defecto también en su
+                                // primer montaje (al mismo tiempo que DinamicTable ya está cargando solo).
+                                // Si el filtro no cambió realmente, evitamos duplicar la carga.
+                                const sinCambio = (item?.key ?? null) === (this.state.selectedEstadoPago?.key ?? null);
                                 this.setState({ selectedEstadoPago: item }, () => {
-                                    this.DinamicTable?.loadData();
+                                    if (!sinCambio) this.DinamicTable?.loadData();
                                 });
                             }}
                         />
