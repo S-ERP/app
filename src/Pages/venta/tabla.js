@@ -30,6 +30,10 @@ export default class tabla extends Component {
             fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
             fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
         };
+        // FechaFullFilter llama a onChange también en su propio montaje (con su fecha por
+        // defecto), justo cuando DinamicTable ya está cargando sola. Esta bandera evita que
+        // ese primer llamado dispare una segunda carga redundante.
+        this._fechaFilterListo = false;
     }
 
     async loadInitialData() {
@@ -1118,12 +1122,17 @@ export default class tabla extends Component {
                 <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
                     <SView col={"xs-12 sm-8.2 lg-3.3"} row center>
                         <FechaFullFilter
-                            onChange={e => this.setState({
-                                fecha_inicio: e.fecha_inicio,
-                                fecha_fin: e.fecha_fin
-                            }, () => {
-                                this.DinamicTable?.loadData();
-                            })}
+                            onChange={e => {
+                                const esPrimerLlamado = !this._fechaFilterListo;
+                                this._fechaFilterListo = true;
+                                this.setState({
+                                    fecha_inicio: e.fecha_inicio,
+                                    fecha_fin: e.fecha_fin
+                                }, () => {
+                                    // El primer llamado (al montarse) ya lo cubre la carga inicial de DinamicTable.
+                                    if (!esPrimerLlamado) this.DinamicTable?.loadData();
+                                });
+                            }}
                         />
                     </SView>
                     <SView width={8} height={"100%"} />
