@@ -93,11 +93,21 @@ declare -A base_dirs=(
   ["wireguard"]="servicios"
 )
 
-grupos_nombres=("CORE SERVICES" "PLATAFORMA SERVICES" "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
+grupos_nombres=("INFRAESTRUCTURA" "CORE SERVICES"  "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
 grupos_servidores=(
   "nginx wireguard stats"
-  "empresa servicios roles usuario"
-  "facturacion spdf drive notification chat"
+  "servicios roles usuario empresa 
+  drive notification chat
+  spdf
+  facturacion  
+  "
   "calistenia geolocation proyecto sqr zkteco"
-  "serp caja compra-venta crm inventario contabilidad"
+  "serp 
+  inventario 
+  contabilidad
+  crm 
+  compra-venta 
+  caja 
+  "
+
 )
