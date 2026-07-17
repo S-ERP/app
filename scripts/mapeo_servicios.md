@@ -46,8 +46,10 @@ Toda la configuración vive en un solo lugar: **`servidores_config.sh`** (se car
 | calistenia | `servicios/calistenia` |
 | serp | `servicios/serp` |
 | zkteco | `servicios/zkteco` |
+| kolping | `servicios/kolping` |
+| staffprousa | `servicios/staffprousa` |
 
-Los 23 servicios monitoreados tienen carpeta remota mapeada (ninguno queda sin auto-encendido/apagado).
+Los 25 servicios monitoreados tienen carpeta remota mapeada (ninguno queda sin auto-encendido/apagado).
 
 ---
 
@@ -56,6 +58,6 @@ Los 23 servicios monitoreados tienen carpeta remota mapeada (ninguno queda sin a
 - **`servidores_config.sh`** — config compartida: `servidores` (IP a pingear), `carpetas` (carpeta remota), `hosts` (host SSH si no es el default), `ctl_script` (qué script de control usar), `base_dirs` (carpeta base para `servidor_ctl_v2.sh`), y `grupos_nombres`/`grupos_servidores` (agrupación del dashboard). Se edita acá, no en los otros scripts.
 - **`servidor_ctl.sh <carpeta> <up|down> [host_ip]`** — SSH + `cd servicios/<carpeta>` + `./servisofts.sh up -d` / `down`, respondiendo el menú de entorno (`1`) y la contraseña de `sudo` por stdin. Host default: `192.168.2.2`.
 - **`servidor_ctl_v2.sh <carpeta> <up|down> [host_ip] [base_dir]`** — SSH + `cd <base_dir>/<carpeta>` + `docker-compose up -d` / `down`, sin menú interactivo. Host default: `192.168.2.3`. `base_dir` default: `v2` (usar `.` para la raíz del home, `servicios` para ese subdirectorio).
-- **`restart_servidores.sh`** — dashboard de monitoreo (pinguea los 23 servicios, agrupados). Si detecta uno OFFLINE con carpeta mapeada, pregunta `¿Querés encenderlo? (s/n)` y si decís que sí lo prende con el script de control correspondiente.
+- **`restart_servidores.sh`** — dashboard de monitoreo (pinguea los 25 servicios, agrupados). Si detecta uno OFFLINE con carpeta mapeada, pregunta `¿Querés encenderlo? (s/n)` y si decís que sí lo prende con el script de control correspondiente.
 - **`off_servidor.sh`** / **`on_servidor.sh`** — piden el nombre del servicio por input (`Nombre del servidor a apagar/encender:`) y lo apagan/prenden directamente, sin pasar por el dashboard. Si el nombre no está mapeado, listan los servicios disponibles.
 - **`ping_servidores.sh`** — versión anterior, solo monitoreo sin acciones (no usa `servidores_config.sh`, queda como referencia/uso en cron sin interacción).

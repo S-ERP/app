@@ -23,6 +23,8 @@ declare -A servidores=(
   ["contabilidad"]="192.168.5.11"
   ["sqr"]="192.168.5.34"
   ["zkteco"]="192.168.5.32"
+  ["kolping"]="192.168.5.19"
+  ["staffprousa"]="192.168.5.53"
   ["nginx"]="192.168.2.3"
   ["wireguard"]="192.168.2.4"
   ["stats"]="192.168.2.2"
@@ -48,6 +50,8 @@ declare -A carpetas=(
   ["calistenia"]="calistenia"
   ["serp"]="serp"
   ["zkteco"]="zkteco"
+  ["kolping"]="kolping"
+  ["staffprousa"]="staffprousa"
   ["servicios"]="servicio"
   ["roles"]="roles_permisos"
   ["usuario"]="usuario"
@@ -62,6 +66,8 @@ declare -A hosts=(
   ["calistenia"]="192.168.2.5"
   ["serp"]="192.168.2.5"
   ["zkteco"]="192.168.2.5"
+  ["kolping"]="192.168.2.5"
+  ["staffprousa"]="192.168.2.5"
   ["servicios"]="192.168.2.3"
   ["roles"]="192.168.2.3"
   ["usuario"]="192.168.2.3"
@@ -78,6 +84,8 @@ declare -A ctl_script=(
   ["calistenia"]="servidor_ctl_v2.sh"
   ["serp"]="servidor_ctl_v2.sh"
   ["zkteco"]="servidor_ctl_v2.sh"
+  ["kolping"]="servidor_ctl_v2.sh"
+  ["staffprousa"]="servidor_ctl_v2.sh"
   ["nginx"]="servidor_ctl_v2.sh"
   ["wireguard"]="servidor_ctl_v2.sh"
 )
@@ -89,6 +97,8 @@ declare -A base_dirs=(
   ["calistenia"]="servicios"
   ["serp"]="servicios"
   ["zkteco"]="servicios"
+  ["kolping"]="servicios"
+  ["staffprousa"]="servicios"
   ["nginx"]="servicios"
   ["wireguard"]="servicios"
 )
@@ -96,10 +106,11 @@ declare -A base_dirs=(
 grupos_nombres=("INFRAESTRUCTURA" "CORE SERVICES"  "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
 grupos_servidores=(
   "nginx wireguard stats"
-  "servicios roles usuario empresa 
+  "servicios roles usuario empresa
   drive notification chat
   spdf
-  facturacion  
+  facturacion
+  kolping staffprousa
   "
   "calistenia geolocation proyecto sqr zkteco"
   "serp 
