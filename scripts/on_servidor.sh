@@ -13,4 +13,4 @@ if [ -z "${carpetas[$nombre]}" ]; then
 fi
 
 echo "Encendiendo $nombre..."
-"$DIR/${ctl_script[$nombre]:-servidor_ctl.sh}" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}" "${base_dirs[$nombre]:-v2}"
+"$DIR/${ctl_script[$nombre]:-servidor_ctl.sh}" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}" "${base_dirs[$nombre]:-v2}" "${modos[$nombre]:-simple}"

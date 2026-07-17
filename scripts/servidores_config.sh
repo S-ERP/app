@@ -23,7 +23,6 @@ declare -A servidores=(
   ["contabilidad"]="192.168.5.11"
   ["sqr"]="192.168.5.34"
   ["zkteco"]="192.168.5.32"
-  ["kolping"]="192.168.5.19"
   ["staffprousa"]="192.168.5.53"
   ["nginx"]="192.168.2.3"
   ["wireguard"]="192.168.2.4"
@@ -50,7 +49,6 @@ declare -A carpetas=(
   ["calistenia"]="calistenia"
   ["serp"]="serp"
   ["zkteco"]="zkteco"
-  ["kolping"]="kolping"
   ["staffprousa"]="staffprousa"
   ["servicios"]="servicio"
   ["roles"]="roles_permisos"
@@ -66,7 +64,6 @@ declare -A hosts=(
   ["calistenia"]="192.168.2.5"
   ["serp"]="192.168.2.5"
   ["zkteco"]="192.168.2.5"
-  ["kolping"]="192.168.2.5"
   ["staffprousa"]="192.168.2.5"
   ["servicios"]="192.168.2.3"
   ["roles"]="192.168.2.3"
@@ -84,7 +81,6 @@ declare -A ctl_script=(
   ["calistenia"]="servidor_ctl_v2.sh"
   ["serp"]="servidor_ctl_v2.sh"
   ["zkteco"]="servidor_ctl_v2.sh"
-  ["kolping"]="servidor_ctl_v2.sh"
   ["staffprousa"]="servidor_ctl_v2.sh"
   ["nginx"]="servidor_ctl_v2.sh"
   ["wireguard"]="servidor_ctl_v2.sh"
@@ -97,10 +93,21 @@ declare -A base_dirs=(
   ["calistenia"]="servicios"
   ["serp"]="servicios"
   ["zkteco"]="servicios"
-  ["kolping"]="servicios"
   ["staffprousa"]="servicios"
   ["nginx"]="servicios"
   ["wireguard"]="servicios"
+)
+
+# modo "entorno" para servidor_ctl_v2.sh: el docker-compose.yaml de estos usa
+# ${NAME}/${IP} (container_name, ipv4_address fija) que vienen de
+# config/.env.<carpeta>. Sin esto los contenedores quedan mal nombrados y sin
+# la IP fija esperada. El resto usa "simple" (default) sin necesitar esto.
+declare -A modos=(
+  ["facturacion"]="entorno"
+  ["calistenia"]="entorno"
+  ["serp"]="entorno"
+  ["zkteco"]="entorno"
+  ["staffprousa"]="entorno"
 )
 
 grupos_nombres=("INFRAESTRUCTURA" "CORE SERVICES"  "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
@@ -110,7 +117,7 @@ grupos_servidores=(
   drive notification chat
   spdf
   facturacion
-  kolping staffprousa
+  staffprousa
   "
   "calistenia geolocation proyecto sqr zkteco"
   "serp 

@@ -47,7 +47,7 @@ for i in "${!grupos_nombres[@]}"; do
     if [ "$estado" = "🔴 OFFLINE" ] && [ -n "${carpetas[$nombre]}" ]; then
       read -r -p "    ⚠️  $nombre está apagado. ¿Querés encenderlo? (s/n): " respuesta
       if [ "$respuesta" = "s" ] || [ "$respuesta" = "S" ]; then
-        "$DIR/${ctl_script[$nombre]:-servidor_ctl.sh}" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}" "${base_dirs[$nombre]:-v2}"
+        "$DIR/${ctl_script[$nombre]:-servidor_ctl.sh}" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}" "${base_dirs[$nombre]:-v2}" "${modos[$nombre]:-simple}"
       fi
     fi
   done
