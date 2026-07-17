@@ -38,7 +38,7 @@ Toda la configuración vive en un solo lugar: **`servidores_config.sh`** (se car
 | roles | `v2/roles_permisos` |
 | usuario | `v2/usuario` |
 
-## Host `192.168.2.5` — flujo `docker-compose` directo (`servidor_ctl_v2.sh`), bajo `servicios/`
+## Host `192.168.2.5` — flujo `docker-compose` directo, bajo `servicios/`
 
 | Servicio | Carpeta remota |
 |---|---|
