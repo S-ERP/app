@@ -1,3 +1,6 @@
+~/.config/Code/User/settings.json
+~/.config/Code/User/snipe
+~/.config/Code/User/keybing
 # Pasos realizados
 
 ## 1. Proyecto `library`
