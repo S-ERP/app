@@ -1,4 +1,4 @@
 #!/bin/bash
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-"$DIR/apagar_caja.sh" up
+"$DIR/off_caja.sh" up
