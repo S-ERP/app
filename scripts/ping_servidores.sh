@@ -21,13 +21,18 @@ declare -A servidores=(
   ["crm"]="192.168.5.51"
   ["inventario"]="192.168.5.39"
   ["contabilidad"]="192.168.5.11"
+  
+  ["sqr"]="192.168.5.34"
+  ["zkteco"]="192.168.5.32"
+
+
 )
 
 grupos_nombres=("CORE SERVICES" "PLATAFORMA SERVICES" "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
 grupos_servidores=(
   "empresa servicios roles usuario"
   "facturacion spdf drive notification chat"
-  "calistenia geolocation proyecto"
+  "calistenia geolocation proyecto sqr zkteco"
   "serp caja compra-venta crm inventario contabilidad"
 )
 
