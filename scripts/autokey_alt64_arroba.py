@@ -1,3 +1,6 @@
+# Script de AutoKey (no se ejecuta solo, se pega dentro de la app AutoKey).
+# Detecta Alt+6 seguido de Alt+4 en menos de 1s y escribe "@".
+
 from time import time
 
 last = []

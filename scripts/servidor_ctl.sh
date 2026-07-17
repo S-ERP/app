@@ -1,4 +1,7 @@
 #!/bin/bash
+# Control remoto generico via flujo servisofts.sh (con menu interactivo).
+# SSH a <host>, cd servicios/<carpeta>, corre ./servisofts.sh up -d / down.
+# No se llama directo: lo usan restart_servidores.sh, off_servidor.sh y on_servidor.sh.
 
 PASS="servisofts"
 

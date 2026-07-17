@@ -1,4 +1,7 @@
 #!/bin/bash
+# Version anterior del dashboard: solo monitoreo (ping + estado/latencia),
+# sin logica de encendido y sin source de servidores_config.sh. Sirve de
+# referencia o para un cron que solo necesite chequear estado sin interaccion.
 
 export LC_NUMERIC=C
 

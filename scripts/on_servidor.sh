@@ -1,4 +1,5 @@
 #!/bin/bash
+# Pide el nombre de un servicio y lo enciende (sin pasar por el dashboard).
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DIR/servidores_config.sh"

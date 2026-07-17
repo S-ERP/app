@@ -1,4 +1,7 @@
 #!/bin/bash
+# Control remoto generico via docker-compose directo (sin menu interactivo).
+# SSH a <host>, cd <base_dir>/<carpeta>, corre docker-compose up -d / down.
+# No se llama directo: lo usan restart_servidores.sh, off_servidor.sh y on_servidor.sh.
 
 PASS="servisofts"
 

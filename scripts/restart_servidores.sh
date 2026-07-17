@@ -1,4 +1,7 @@
 #!/bin/bash
+# Dashboard de monitoreo: pinguea los servicios de servidores_config.sh,
+# agrupados, y si detecta uno OFFLINE con carpeta mapeada pregunta si
+# queres encenderlo (usa servidor_ctl.sh / servidor_ctl_v2.sh segun corresponda).
 
 export LC_NUMERIC=C
 
