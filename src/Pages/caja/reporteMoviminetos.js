@@ -13,19 +13,23 @@ import { Linking } from 'react-native';
 export default class reporteMoviminetos extends Component {
     constructor(props) {
         super(props);
+        // Debe coincidir con el default de DateTimeBetween (modo "mes"), ya que ese componente
+        // dispara su propio onChange al montarse con ese rango. Si no coinciden, la carga inicial
+        // de DinamicTable (con este estado) queda desincronizada del período que termina mostrando la UI.
+        const hoy = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
         this.state = {
-            fecha_inicio: new SDate('2024-01-01', 'yyyy-MM-dd hh:mm').toString("yyyy-MM-dd"),
-            // fecha_inicio: new SDate().addMonth(-10).setDay(1).toString("yyyy-MM-dd"),
-            fecha_fin: new SDate().toString("yyyy-MM-dd"),
+            fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+            fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
             data: [], // Estado para almacenar los datos de la tabla
         };
+        // DateTimeBetween llama a onChange también en su propio montaje (con su rango por
+        // defecto), justo cuando DinamicTable ya está cargando sola. Esta bandera evita que
+        // ese primer llamado dispare una segunda carga redundante.
+        this._periodoListo = false;
     }
 
-    componentDidMount() {
-        this.loadInitialData().then(data => {
-            this.setState({ data }); // Actualizar el estado con los datos iniciales
-        });
-    }
 
 
 
@@ -288,8 +292,10 @@ export default class reporteMoviminetos extends Component {
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
-                loadData={() => this.loadInitialData()}
-                data={this.state.data} // Pasar los datos del estado
+                loadData={() => this.loadInitialData().then(data => {
+                    this.setState({ data }); // mantiene state.data en sync como efecto del único fetch (usado como fallback en onSelect)
+                    return data;
+                })}
                 key="id"
                 keyExtractor={e => e.key}
                 language="es"
@@ -297,6 +303,22 @@ export default class reporteMoviminetos extends Component {
                 center
                 selectType="single"
                 {...Config.table.applyTheme()}
+
+                renderLoading={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Cargando movimientos...</SText>
+                    </SView>
+                )}
+                renderNoResults={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron movimientos en el rango seleccionado.</SText>
+                    </SView>
+                )}
+                renderError={({ error }) => (
+                    <SView col={"xs-12"} padding={16}>
+                        <SText fontSize={13} color={STheme.color.danger}>Error: {error?.message || String(error)}</SText>
+                    </SView>
+                )}
 
                 onSelect={(e) => {
                     if (!e.row) {
@@ -353,10 +375,7 @@ export default class reporteMoviminetos extends Component {
                                         promesa
                                             .then(() => {
                                                 SNotification.send({ key: notificationKey, title: esVenta ? "Venta anulada" : "Compra anulada", body: `La ${esVenta ? "venta" : "compra"} se anuló correctamente.`, color: STheme.color.success });
-                                                this.loadInitialData().then(data => {
-                                                    this.setState({ data });
-                                                    if (this.DinamicTable) this.DinamicTable.loadData();
-                                                });
+                                                if (this.DinamicTable) this.DinamicTable.loadData();
                                             })
                                             .catch((error) => {
                                                 SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
@@ -864,26 +883,18 @@ export default class reporteMoviminetos extends Component {
                         fecha_inicio={this.state.fecha_inicio}
                         fecha_fin={this.state.fecha_fin}
                         onChange={({ fecha_inicio, fecha_fin }) => {
+                            const esPrimerLlamado = !this._periodoListo;
+                            this._periodoListo = true;
                             this.setState({ fecha_inicio, fecha_fin }, () => {
-                                this.loadInitialData().then(data => {
-                                    this.setState({ data });
-                                    if (this.DinamicTable) {
-                                        this.DinamicTable.loadData();
-                                    }
-                                });
+                                // El primer llamado (al montarse) ya lo cubre la carga inicial de DinamicTable.
+                                if (!esPrimerLlamado && this.DinamicTable) this.DinamicTable.loadData();
                             });
                         }}
                     />
                 </SView>
                 <SHr height={8} />
 
-                {this.state.data.length === 0 ? (
-                    <SView col="xs-12" center>
-                        <SText>No hay datos disponibles</SText>
-                    </SView>
-                ) : (
-                    this.renderTabla()
-                )}
+                {this.renderTabla()}
                 <SHr h={16} />
             </SPage>
         );
