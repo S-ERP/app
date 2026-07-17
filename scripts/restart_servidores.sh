@@ -2,6 +2,8 @@
 
 export LC_NUMERIC=C
 
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 declare -A servidores=(
   ["empresa"]="192.168.5.29"
   ["servicios"]="192.168.5.1"
@@ -21,16 +23,40 @@ declare -A servidores=(
   ["crm"]="192.168.5.51"
   ["inventario"]="192.168.5.39"
   ["contabilidad"]="192.168.5.11"
-  
   ["sqr"]="192.168.5.34"
   ["zkteco"]="192.168.5.32"
-
-
-  
   ["nginx"]="192.168.2.3"
   ["wireguard"]="192.168.2.4"
+)
 
+# Mapea el nombre usado arriba a la carpeta remota real en servicios/
+# (servidor_ctl.sh <carpeta> up). Solo estos tienen encendido remoto.
+declare -A carpetas=(
+  ["caja"]="caja"
+  ["chat"]="chat"
+  ["compra-venta"]="compra_venta"
+  ["contabilidad"]="contabilidad"
+  ["crm"]="crm"
+  ["drive"]="drive"
+  ["empresa"]="empresa"
+  ["geolocation"]="geolocation"
+  ["inventario"]="inventario"
+  ["notification"]="notification"
+  ["proyecto"]="proyecto"
+  ["spdf"]="spdf"
+  ["sqr"]="sqr"
+  ["facturacion"]="facturacion"
+  ["calistenia"]="calistenia"
+  ["serp"]="serp"
+  ["zkteco"]="zkteco"
+)
 
+# Host donde vive cada carpeta (default 192.168.2.2 si no aparece aca).
+declare -A hosts=(
+  ["facturacion"]="192.168.2.5"
+  ["calistenia"]="192.168.2.5"
+  ["serp"]="192.168.2.5"
+  ["zkteco"]="192.168.2.5"
 )
 
 grupos_nombres=("CORE SERVICES" "PLATAFORMA SERVICES" "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
@@ -77,6 +103,13 @@ for i in "${!grupos_nombres[@]}"; do
     fi
 
     printf " %-22s %-15s %-14s %8s\n" "$nombre" "$ip" "$estado" "$latencia"
+
+    if [ "$estado" = "🔴 OFFLINE" ] && [ -n "${carpetas[$nombre]}" ]; then
+      read -r -p "    ⚠️  $nombre está apagado. ¿Querés encenderlo? (s/n): " respuesta
+      if [ "$respuesta" = "s" ] || [ "$respuesta" = "S" ]; then
+        "$DIR/servidor_ctl.sh" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}"
+      fi
+    fi
   done
 done
 
