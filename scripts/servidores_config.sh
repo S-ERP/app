@@ -52,6 +52,8 @@ declare -A carpetas=(
   ["roles"]="roles_permisos"
   ["usuario"]="usuario"
   ["stats"]="stats"
+  ["nginx"]="nginx"
+  ["wireguard"]="wireguard"
 )
 
 # Host donde vive cada carpeta (default 192.168.2.2 si no aparece aca).
@@ -76,6 +78,8 @@ declare -A ctl_script=(
   ["calistenia"]="servidor_ctl_v2.sh"
   ["serp"]="servidor_ctl_v2.sh"
   ["zkteco"]="servidor_ctl_v2.sh"
+  ["nginx"]="servidor_ctl_v2.sh"
+  ["wireguard"]="servidor_ctl_v2.sh"
 )
 
 # Carpeta base remota para servidor_ctl_v2.sh (default "v2"; "." = raiz del home).
@@ -85,6 +89,8 @@ declare -A base_dirs=(
   ["calistenia"]="servicios"
   ["serp"]="servicios"
   ["zkteco"]="servicios"
+  ["nginx"]="servicios"
+  ["wireguard"]="servicios"
 )
 
 grupos_nombres=("CORE SERVICES" "PLATAFORMA SERVICES" "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
