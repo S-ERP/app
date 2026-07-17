@@ -10,19 +10,22 @@ import FiltroCaja from '../productos/modelo/Components/FiltroCaja';
 export default class reporteCajas extends Component {
     constructor(props) {
         super(props);
+        // Debe coincidir con el default de DateTimeBetween (modo "mes"), ya que ese componente
+        // dispara su propio onChange al montarse con ese rango. Si no coinciden, la carga inicial
+        // de DinamicTable (con este estado) queda desincronizada del período que termina mostrando la UI.
+        const hoy = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
         this.state = {
-            fecha_inicio: new SDate('2024-01-01', 'yyyy-MM-dd hh:mm').toString("yyyy-MM-dd"),
-            // fecha_inicio: new SDate().addMonth(-10).setDay(1).toString("yyyy-MM-dd"),
-            fecha_fin: new SDate().toString("yyyy-MM-dd"),
+            fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+            fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
             data: [], // Estado para almacenar los datos de la tabla
             estado_caja: null, // Filtro de estado de caja (abierta/cerrada)
         };
-    }
-
-    componentDidMount() {
-        this.loadInitialData().then(data => {
-            this.setState({ data }); // Actualizar el estado con los datos iniciales
-        });
+        // DateTimeBetween llama a onChange también en su propio montaje (con su rango por
+        // defecto), justo cuando DinamicTable ya está cargando sola. Esta bandera evita que
+        // ese primer llamado dispare una segunda carga redundante.
+        this._periodoListo = false;
     }
 
     async loadInitialData() {
@@ -80,8 +83,10 @@ export default class reporteCajas extends Component {
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
-                loadData={() => this.loadInitialData()}
-                data={this.state.data} // Pasar los datos del estado
+                loadData={() => this.loadInitialData().then(data => {
+                    this.setState({ data }); // mantiene state.data en sync como efecto del único fetch
+                    return data;
+                })}
                 key="id"
                 keyExtractor={e => e.key}
                 language="es"
@@ -98,6 +103,21 @@ export default class reporteCajas extends Component {
                     ],
                 })}
                 {...Config.table.applyTheme()}
+                renderLoading={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>Cargando cajas...</SText>
+                    </SView>
+                )}
+                renderNoResults={() => (
+                    <SView col={"xs-12"} center padding={24}>
+                        <SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron cajas en el rango seleccionado.</SText>
+                    </SView>
+                )}
+                renderError={({ error }) => (
+                    <SView col={"xs-12"} padding={16}>
+                        <SText fontSize={13} color={STheme.color.danger}>Error: {error?.message || String(error)}</SText>
+                    </SView>
+                )}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
                 <DinamicTable.Col
@@ -396,7 +416,6 @@ export default class reporteCajas extends Component {
             </DinamicTable>
         );
     }
-
     render() {
         return (
             <SPage title="Reporte de Cajas por Sucursal" disableScroll>
@@ -407,15 +426,11 @@ export default class reporteCajas extends Component {
                             fecha_inicio={this.state.fecha_inicio}
                             fecha_fin={this.state.fecha_fin}
                             onChange={({ fecha_inicio, fecha_fin }) => {
-                                // console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
+                                const esPrimerLlamado = !this._periodoListo;
+                                this._periodoListo = true;
                                 this.setState({ fecha_inicio, fecha_fin }, () => {
-                                    // Recargar los datos de la tabla al cambiar fechas
-                                    this.loadInitialData().then(data => {
-                                        this.setState({ data });
-                                        if (this.DinamicTable) {
-                                            this.DinamicTable.loadData();
-                                        }
-                                    });
+                                    // El primer llamado (al montarse) ya lo cubre la carga inicial de DinamicTable.
+                                    if (!esPrimerLlamado && this.DinamicTable) this.DinamicTable.loadData();
                                 });
                             }}
                         />
@@ -435,13 +450,7 @@ export default class reporteCajas extends Component {
                 </SView>
                 <SHr></SHr>
 
-                {this.state.data.length === 0 ? (
-                    <SView col="xs-12" center>
-                        <SText>No hay datos disponibles</SText>
-                    </SView>
-                ) : (
-                    this.renderTabla()
-                )}
+                {this.renderTabla()}
                 <SHr h={16} />
             </SPage>
         );
