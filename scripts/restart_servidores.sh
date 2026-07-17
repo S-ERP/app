@@ -27,6 +27,7 @@ declare -A servidores=(
   ["zkteco"]="192.168.5.32"
   ["nginx"]="192.168.2.3"
   ["wireguard"]="192.168.2.4"
+  ["stats"]="192.168.2.2"
 )
 
 # Mapea el nombre usado arriba a la carpeta remota real en servicios/
@@ -49,6 +50,10 @@ declare -A carpetas=(
   ["calistenia"]="calistenia"
   ["serp"]="serp"
   ["zkteco"]="zkteco"
+  ["servicios"]="servicio"
+  ["roles"]="roles_permisos"
+  ["usuario"]="usuario"
+  ["stats"]="stats"
 )
 
 # Host donde vive cada carpeta (default 192.168.2.2 si no aparece aca).
@@ -57,11 +62,28 @@ declare -A hosts=(
   ["calistenia"]="192.168.2.5"
   ["serp"]="192.168.2.5"
   ["zkteco"]="192.168.2.5"
+  ["servicios"]="192.168.2.3"
+  ["roles"]="192.168.2.3"
+  ["usuario"]="192.168.2.3"
+)
+
+# Que script de control usar por servicio (servidor_ctl.sh = servisofts.sh
+# con menu interactivo; servidor_ctl_v2.sh = docker-compose directo).
+declare -A ctl_script=(
+  ["servicios"]="servidor_ctl_v2.sh"
+  ["roles"]="servidor_ctl_v2.sh"
+  ["usuario"]="servidor_ctl_v2.sh"
+  ["stats"]="servidor_ctl_v2.sh"
+)
+
+# Carpeta base remota para servidor_ctl_v2.sh (default "v2"; "." = raiz del home).
+declare -A base_dirs=(
+  ["stats"]="."
 )
 
 grupos_nombres=("CORE SERVICES" "PLATAFORMA SERVICES" "CALISTENIA BOLIVIA" "SISTEMA EMPRESARIAL")
 grupos_servidores=(
-  "nginx wireguard"
+  "nginx wireguard stats"
   "empresa servicios roles usuario"
   "facturacion spdf drive notification chat"
   "calistenia geolocation proyecto sqr zkteco"
@@ -107,7 +129,7 @@ for i in "${!grupos_nombres[@]}"; do
     if [ "$estado" = "🔴 OFFLINE" ] && [ -n "${carpetas[$nombre]}" ]; then
       read -r -p "    ⚠️  $nombre está apagado. ¿Querés encenderlo? (s/n): " respuesta
       if [ "$respuesta" = "s" ] || [ "$respuesta" = "S" ]; then
-        "$DIR/servidor_ctl.sh" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}"
+        "$DIR/${ctl_script[$nombre]:-servidor_ctl.sh}" "${carpetas[$nombre]}" up "${hosts[$nombre]:-192.168.2.2}" "${base_dirs[$nombre]:-v2}"
       fi
     fi
   done
