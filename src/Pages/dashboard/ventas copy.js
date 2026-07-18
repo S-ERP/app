@@ -10,7 +10,6 @@ import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
 import DetalleTabla from "./Components/DetalleTabla";
 import Model from "../../Model";
 import InputSelector from '../../Components/Selectores/InputSelector';
-import SSocket from "servisofts-socket";
 
 export default class ventas extends React.Component {
     state = {
@@ -27,7 +26,6 @@ export default class ventas extends React.Component {
         dataBranchShareBarras: [],
         dataMetodoPago: [],
         tipoProductoLista: [],
-        dataSucursalesCards: [],
         loading: true,
         empresaSeleccionada: null,
     };
@@ -250,8 +248,7 @@ export default class ventas extends React.Component {
     getTimeSeriesFunctionName = (periodo) => {
         if (periodo === "semana") return "ventas_por_dia_por_tipo_all";
         if (periodo === "este_mes") return "ventas_por_dia_mes_por_tipo_all";
-        // if (periodo === "año") return "ventas_por_mes_por_tipo_all";
-        if (periodo === "año") return "ventas_por_mes_por_tipo_all2";
+        if (periodo === "año") return "ventas_por_mes_por_tipo_all";
         if (periodo === "entre") return "ventas_entre_fecha_por_tipo";
         return "ventas_por_hora_por_tipo";
     };
@@ -280,8 +277,6 @@ export default class ventas extends React.Component {
         const monedaBase = empresa.monedas.find(
             moneda => moneda.tipo === "base"
         );
-        console.log("MONEDA BASE:", monedaBase);
-        console.log("MONEDA EMPRESA:", empresa.monedas);
         const sucursales = await MDL.empresa.getAllSucursales();
 
         const tipoProducto = await MDL.inventario.getAllTipoProducto();
@@ -329,38 +324,6 @@ export default class ventas extends React.Component {
             // console.log("rescompleto:", rescompleto);
             // const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
 
-
-
-
-            //CLIENTES activos
-            // const rSuscriptores = res.map((item) => {
-            //     const sucursal = sucursales.find(
-            //         (s) => s.key === item.key_sucursal
-            //     );
-
-            // });
-
-            // const resClientes = await MDL.compra_venta.execute_function("ventas_por_dia_clientes", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            // const resSuscriptores = await SSocket.sendPromise({
-            //     service: "inventario",
-            //     component: "suscripcion",
-            //     estado: "cargando",
-            //     type: "getByKeyCliente",
-            //     key_cliente: data.key
-            // }).then(e => {
-            //     const hoy = new Date();
-            //     const vigente = e.data.filter(item => {
-            //         const inicio = new Date(item.fecha_inicio);
-            //         const fin = new Date(item.fecha_fin);
-            //         return hoy >= inicio && hoy <= fin;
-            //     });
-            //     console.log("paquete actual ", vigente)
-            //     this.setState({ paquete: vigente[0] });
-            // }).catch(console.error);
-
-
-
-
             const rescompleto = res.map((item) => {
                 const sucursal = sucursales.find(
                     (s) => s.key === item.key_sucursal
@@ -379,17 +342,14 @@ export default class ventas extends React.Component {
             const data = this.transformTimeSeries(raw, sucursales, selectedSucursal?.key, selectedTipoProducto);
             const branchShare = this.transformBranchShare(raw, selectedTipoProducto);
             const branchShareBarras = this.transformBranchShareBarras(raw, selectedTipoProducto);
-            const branchCards = this.transformBranchCards(raw, selectedTipoProducto, selectedSucursal?.key, sucursales);
             const tipoProductoLista = this.extractTipoProductoLista(raw);
             console.log("Datos transformados para participación por sucursal:", branchShare);
             console.log("Datos transformados para participación por sucursal (barras):", branchShareBarras);
-            console.log("Datos de tarjetas por sucursal:", branchCards);
             if (this._mounted) {
                 this.setState({
                     dataTimeSeries: data,
                     dataBranchShare: branchShare,
                     dataBranchShareBarras: branchShareBarras,
-                    dataSucursalesCards: branchCards,
                     tipoProductoLista: tipoProductoLista.length ? tipoProductoLista : this.state.tipoProductoLista,
                 });
             }
@@ -576,58 +536,6 @@ export default class ventas extends React.Component {
             .slice(0, 6);
     };
 
-    transformBranchCards = (raw, selectedTipoProducto, selectedSucursalKey, sucursales = []) => {
-        if (!Array.isArray(raw)) raw = [];
-        console.log("DATA COMPLETA:", raw);
-        const branchCards = {};
-        raw.forEach((row) => {
-            const key = row.key_sucursal || row.key || "all";
-            if (selectedSucursalKey && key !== selectedSucursalKey) return;
-            const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
-            const dias = Array.isArray(row.dias) ? row.dias : [row];
-            const total = dias.reduce((sum, item) => {
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                return sum + detalles.reduce((sub, tipo) => {
-                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
-                    return sub + Number(tipo.monto_total ?? tipo.total_bs ?? tipo.total ?? 0);
-                }, 0);
-            }, 0);
-            const cantidadVentas = dias.reduce((sum, item) => {
-                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                return sum + detalles.reduce((sub, tipo) => {
-                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
-                    return sub + Number(tipo.cantidad_ventas ?? tipo.total_ventas ?? tipo.cantidad ?? 0);
-                }, 0);
-            }, 0);
-            const clients = Number(row.clientes ?? row.cantidad_clientes ?? row.total_clientes ?? row.clientes_totales ?? row.cantidad_de_clientes ?? 0);
-            const becados = Number(row.becados ?? row.cantidad_becados ?? row.total_becados ?? 0);
-            if (!branchCards[key]) {
-                branchCards[key] = { key, name, total, cantidadVentas, clients, becados };
-            } else {
-                branchCards[key].total += total;
-                branchCards[key].cantidadVentas += cantidadVentas;
-                branchCards[key].clients += clients;
-                branchCards[key].becados += becados;
-            }
-        });
-        if (!selectedSucursalKey) {
-            sucursales.forEach((sucursal) => {
-                if (!branchCards[sucursal.key]) {
-                    branchCards[sucursal.key] = {
-                        key: sucursal.key,
-                        name: sucursal.descripcion || "Sucursal",
-                        total: 0,
-                        cantidadVentas: 0,
-                        clients: 0,
-                        becados: 0,
-                    };
-                }
-            });
-        }
-        return Object.values(branchCards)
-            .sort((a, b) => b.total - a.total || b.clients - a.clients || a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
-    };
-
     handleChangePeriodo = (periodo) => {
         const range = this.getRangeForPeriodo(periodo);
         this.setState({ periodo, ...range }, this.loadDashboardData);
@@ -639,8 +547,6 @@ export default class ventas extends React.Component {
     handleTipoProductoSelect = (tipoProducto) => {
         this.setState({ selectedTipoProducto: tipoProducto }, () => this.loadDashboardData());
     };
-
-
 
     render() {
         // let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
@@ -655,51 +561,6 @@ export default class ventas extends React.Component {
             );
         }
 
-        const setColor = (monto, max, min) => {
-            // if (monto > 60000) {
-            //     console.log("> 60.000");
-            //     return "green";
-            // }
-            // if (monto > 45000) {
-            //     console.log("> 45.000");
-            //     return "yellow";
-            // }
-            // if (monto > 30000) {
-            //     console.log("> 30.000");
-            //     return "red";
-            // }
-            // if (monto < 30000) {
-            //     console.log("< 30.000");
-            //     return STheme.color.card;
-            // }
-
-            // if (monto > 600) {
-            //     console.log("> 600");
-            //     return STheme.color.success;
-            // }
-            // if (monto > 450) {
-            //     console.log("> 450");
-            //     return STheme.color.warning;
-            // }
-            // if (monto > 300) {
-            //     console.log("> 300");
-            //     return STheme.color.danger;
-            // }
-            // if (monto < 300) {
-            //     console.log("< 300");
-            //     return STheme.color.card;
-            // }
-
-            const p = (monto - min) / (max - min);
-
-            if (p >= 0.75) return STheme.color.success;
-            if (p >= 0.5) return STheme.color.warning;
-            if (p >= 0.25) return STheme.color.danger;
-
-            return STheme.color.card;
-
-        }
-
         const {
             periodo,
             fecha_inicio,
@@ -711,7 +572,6 @@ export default class ventas extends React.Component {
             dataBranchShare,
             dataBranchShareBarras,
             dataMetodoPago,
-            dataSucursalesCards,
             loading,
             tipoProducto,
             tipoProductoLista,
@@ -825,69 +685,6 @@ export default class ventas extends React.Component {
                 //         </SView>
                 //     ))}
                 // </SView>
-            );
-        };
-
-        const renderSucursalesCards = () => {
-            if (selectedSucursal) return null;
-            if (!dataSucursalesCards?.length) return null;
-            let maxMonto = Math.max(...dataSucursalesCards.map(branch => branch.total));
-            let minMonto = Math.min(...dataSucursalesCards.map(branch => branch.total));
-            // let montos = dataSucursalesCards.map(branch => branch.total);
-
-            return (
-                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }}>
-                    <SView col="xs-12" padding={5}>
-                        <SView card style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44" }}>
-                            <SText fontSize={16} bold>Resumen por sucursal</SText>
-                            <SText fontSize={12} color={STheme.color.lightGray}>Mostrando todas las sucursales en el período seleccionado.</SText>
-                        </SView>
-                    </SView>
-                    {dataSucursalesCards.map((branch) => (
-                        <SView key={branch.key} col="xs-12 md-6 lg-3" padding={5}>
-                            <SView
-                                card
-                                style={{
-                                    padding: 15,
-                                    minHeight: 140,
-                                    borderRadius: 10,
-                                    borderTopWidth: 3,
-                                    // borderColor: STheme.color.gray + "44",
-                                    borderTopColor: setColor(branch.total, maxMonto, minMonto),
-                                    borderWidth: 0.5,
-                                    borderColor: setColor(branch.total, maxMonto, minMonto),
-                                    backgroundColor: STheme.color.card,
-                                }}
-                            >
-                                <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <SText fontSize={14} bold>{branch.name}</SText>
-                                    <SView style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: STheme.color.primary, alignItems: 'center', justifyContent: 'center' }}>
-                                        <SText fontSize={12} color={STheme.color.white}>{branch.key?.substring(0, 3) || "#"}</SText>
-                                    </SView>
-                                </SView>
-                                <SHr />
-                                <SView>
-                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                        <SText fontSize={12} color={STheme.color.lightGray}>Clientes</SText>
-                                        <SText fontSize={12} bold>{Number(branch.clients || 0).toLocaleString('es-ES')}</SText>
-                                    </SView>
-                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                        <SText fontSize={12} color={STheme.color.lightGray}>Becados</SText>
-                                        <SText fontSize={12} bold>{Number(branch.becados || 0).toLocaleString('es-ES')}</SText>
-                                    </SView>
-                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                        <SText fontSize={12} color={STheme.color.lightGray}>Cantidad de Ventas</SText>
-                                        <SText fontSize={12} bold>{Number(branch.cantidadVentas || 0).toLocaleString('es-ES')}</SText>
-                                    </SView>
-                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <SText fontSize={12} color={STheme.color.lightGray}>Ingresos/{`${monedaBase?.observacion ?? ''}`}</SText>
-                                        <SText fontSize={12} bold>{`${monedaBase?.observacion ?? ''} ${Number(branch.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
-                                    </SView>
-                                </SView>
-                            </SView>
-                        </SView>
-                    ))}
-                </SView>
             );
         };
         // console.log("dataBranchShare", dataBranchShare);
@@ -1019,9 +816,8 @@ export default class ventas extends React.Component {
                         </SView> */}
 
                         {renderResumenTarjetas()}
-                        <SHr height={10} />
-                        {renderSucursalesCards()}
-                        <SHr height={10} />
+
+                        {/* <SHr style={{ marginVertical: 10 }} /> */}
 
                         <SView col="xs-12" row style={{ flexWrap: 'wrap' }} >
                             <SView col="xs-12 lg-8" row padding={5} >
