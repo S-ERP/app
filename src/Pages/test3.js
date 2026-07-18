@@ -46,7 +46,7 @@ export default class index extends React.Component {
             MDL.empresa.getFull()
         ]);
 
-        // console.clear();
+        // 
         // console.log("%c" + JSON.stringify(empresa, null, 2), "color: #ff9102; font-weight: bold;");
 
         const sucursal = empresa?.sucursales.find(s => s.key === cajaRaw.key_sucursal);
@@ -317,7 +317,7 @@ export default class index extends React.Component {
     //     for (let i = 0; i < movimientos.length; i += movimientosPorPagina) {
     //         const chunk = movimientos.slice(i, i + movimientosPorPagina);
 
-    //         console.clear();
+    //         
     //         console.log("%c" + i,`color: #2ECC40; font-weight: bold;`);
     //         //  console.log("%c" + "contidad de hojas" + JSON.stringify(chunk, null, 2), "color: #2ECC40; font-weight: bold;");
     //         // paginas.push(

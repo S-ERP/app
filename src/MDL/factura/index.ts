@@ -411,7 +411,7 @@ export default class factura extends MDLAbstract<EventListener> {
             }
         };
 
-        console.clear();
+        
         console.log("%c" + JSON.stringify(payload), `color: #2ECC40; font-weight: bold;`);
         // return;
         try {

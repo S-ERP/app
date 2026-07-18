@@ -99,7 +99,7 @@ export default class pizarra extends React.Component {
     }
 
     renderCarrito() {
-        console.clear();
+        
         console.log("%c" + "ingresar_texto", `color: #2ECC40; font-weight: bold;`);
         console.log("entranndi")
         return (
@@ -910,7 +910,7 @@ const NodoModelo = (props) => {
                     precio: productoAjustado.precio_compra
                 })
 
-                console.clear();
+                
                 console.log("%c" + JSON.stringify(productoAjustado, null, 2), "color: #2ECC40; font-weight: bold;");
                 // this.forceUpdate();
 

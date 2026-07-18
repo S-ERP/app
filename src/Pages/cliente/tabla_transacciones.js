@@ -44,7 +44,7 @@ export default class TablaTransacciones extends Component {
             this.cuotasDetalle = cuotas || [];
             this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
 
-            // console.clear();
+            // 
             // console.log("%cCUOTAS:", "color: #2ECC40; font-weight: bold;");
             // console.log(this.cuotasDetalle);
 

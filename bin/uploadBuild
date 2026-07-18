@@ -1,2 +1,2 @@
  #!/bin/bash
- scp -r build 2.5:/home/servisofts/servicios/serp/entornos/serp/
+ scp -r build servisofts@192.168.2.5:/home/servisofts/servicios/serp/entornos/serp/

@@ -909,7 +909,7 @@ const NodoModelo = (props) => {
                 })
 
 
-                console.clear();
+                
                 console.log("%c" + "ventaaaa", `color: #2ECC40; font-weight: bold;`);
                 console.log("%c" + JSON.stringify(productoAjustado, null, 2), "color: #2ECC40; font-weight: bold;");
 

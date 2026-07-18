@@ -41,7 +41,7 @@ export default class PopupDesglose extends Component {
             language='es'
             loadData={async () => {
                 const produc = await MDL.inventario.getAllProductos(this.props.key_modelo);
-                console.clear();
+                
                 console.log("%c" + JSON.stringify(produc, null, 2), "color: #2ECC40; font-weight: bold;");
                 return produc;
             }}

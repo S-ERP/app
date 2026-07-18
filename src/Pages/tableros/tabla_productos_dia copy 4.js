@@ -46,7 +46,7 @@ export default class tabla_productos_dia extends React.Component {
     // Si quieres sumar un día para iniciar desde el día siguiente:
     // fechaActual.setDate(fechaActual.getDate() + 1);
 
-    console.clear();
+    
     console.log("%cDddddddddddddddddddd", "color: #2ECC40; font-weight: bold;");
     console.log("%c" + fechaActual, "color: #2ECC40; font-weight: bold;");
     console.log("%c" + fechaFin, "color: #2ECC40; font-weight: bold;");
@@ -139,7 +139,7 @@ export default class tabla_productos_dia extends React.Component {
                 return totalB - totalA;
             });
 
-            // console.clear();
+            // 
             // console.log(
             //     "%c" + JSON.stringify(dataVentasPorDia, null, 2),
             //     "color: #2ECC40; font-weight: bold;"
@@ -159,7 +159,7 @@ export default class tabla_productos_dia extends React.Component {
     render() {
         const { dataVentasPorDia, loadingVentasPorDia, fecha_inicio, fecha_fin, dias } = this.state;
 
-        // console.clear();
+        // 
         console.log("%c" + fecha_inicio,`color: #2ECC40; font-weight: bold;`);
         return (
             <SPage title={"Reporte de Totales de Ventas y Compras por Producto"}>

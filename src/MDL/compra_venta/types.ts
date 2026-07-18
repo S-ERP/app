@@ -1,8 +1,6 @@
-
 export type compra_venta = {
   estado: "exito" | "error";
 };
-
 
 export type Sucursal = {
   key: string;
@@ -18,7 +16,6 @@ export type Sucursal = {
   correo?: string;
   lat?: number;
   lng?: number;
-  //   punto_venta?: PuntoVenta[];
 };
 
 export type Descuento = {
