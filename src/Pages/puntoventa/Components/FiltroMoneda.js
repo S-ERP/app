@@ -23,24 +23,39 @@ export default class FiltroMoneda extends Component {
         MDL.compra_venta.addEventListener("moneda_seleccionada", this.evento);
         if (!this.state.options.length) {
             this.cargar();
+        } else {
+            this.validarMonedaSeleccionada(this.state.options);
         }
     }
     componentWillUnmount() {
         MDL.compra_venta.removeEventListener("moneda_seleccionada", this.evento);
         this.mounted = false;
     }
+    // La moneda seleccionada es un singleton global (MDL.compra_venta) que puede quedar
+    // desactualizada respecto a las monedas de la empresa actual (ej. al cambiar de empresa).
+    // Si ya no existe en la lista, se cae al valor base para no mostrar su key cruda en el input.
+    resolverMonedaSeleccionada(monedas) {
+        let monedaSeleccionada = MDL.compra_venta.getMonedaSeleccionada();
+        const existeEnLista = monedaSeleccionada && monedas.some(m => m.key === monedaSeleccionada.key);
+        if (!existeEnLista) {
+            monedaSeleccionada = monedas.find(m => m.tipo === "base") || monedas[0];
+            MDL.compra_venta.setMonedaSeleccionada(monedaSeleccionada);
+            MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" });
+        }
+        return monedaSeleccionada;
+    }
+    validarMonedaSeleccionada(monedas) {
+        const monedaSeleccionada = this.resolverMonedaSeleccionada(monedas);
+        this.setState({ selectedMoneda: monedaSeleccionada });
+        this.props.onSelect?.(monedaSeleccionada);
+    }
     async cargar() {
         try {
             const monedas = await MDL.empresa.getMonedas();
             if (!Array.isArray(monedas)) return;
             MDL.empresa.monedas = monedas;
-            let monedaSeleccionada = MDL.compra_venta.getMonedaSeleccionada();
-            if (!monedaSeleccionada) {
-                monedaSeleccionada = monedas.find(m => m.tipo === "base") || monedas[0];
-                MDL.compra_venta.setMonedaSeleccionada(monedaSeleccionada);
-                MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" });
-            }
             if (!this.mounted) return;
+            const monedaSeleccionada = this.resolverMonedaSeleccionada(monedas);
             this.setState({ options: monedas, selectedMoneda: monedaSeleccionada });
             this.props.onSelect?.(monedaSeleccionada);
         } catch (error) {

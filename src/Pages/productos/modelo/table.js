@@ -1,4 +1,4 @@
-import React, { Component,createRef } from 'react';
+import React, { Component, createRef } from 'react';
 import { SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
@@ -373,6 +373,14 @@ export default class table extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
+
+                <DinamicTable.Col key={"activo"} label='activo' width={150}
+                    textStyle={{
+                        fontSize: 12,
+                        color: STheme.color.lightGray,
+                    }}
+                    data={(e) => e.row.activo} />
+
                 <DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={300} data={(e) => e.row.descripcion} wrap textStyle={{ fontWeight: "bold", fontSize: 14 }}
                     customComponent={e => <ImageLabel {...e}
@@ -387,7 +395,7 @@ export default class table extends Component {
                             <SView col={"xs-12"} center row onPress={() => {
                                 // const marcaa = { ...e.row?.marca, quitar: true, key_modelo: e.row?.key };
                                 PopupAgregarMarca.open({
-                                    editObject: { ...e.row?.marca, quitar: true, key_modelo: e.row?.key  },
+                                    editObject: { ...e.row?.marca, quitar: true, key_modelo: e.row?.key },
                                     // TODO
                                     // tiene que ir todo el e.row
                                     // para que edirte el
