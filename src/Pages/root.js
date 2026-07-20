@@ -1,4 +1,4 @@
-//import liraries
+//import liraries8
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
@@ -63,7 +63,6 @@ class index extends Component {
                             message: "Se agregará un acceso directo de la empresa en la ventana de inicio.",
                             onPress: () => {
                                 if (!this.arr) return null;
-                                console.log(this.arr)
                                 let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
                                 if (obj) {
                                     // SPopup.alert("Ya participas en esta empresa.")
@@ -93,7 +92,6 @@ class index extends Component {
                             message: "Se agregará un acceso directo de la empresa en la ventana de inicio.",
                             onPress: () => {
                                 if (!this.arr) return null;
-                                console.log(this.arr)
                                 let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
                                 if (obj) {
                                     // SPopup.alert("Ya participas en esta empresa.")
@@ -119,9 +117,6 @@ class index extends Component {
     renderEmpresa = (usuario) => {
         this.arr = Model.empresa_usuario.Action.getAllByKeyUsuario(usuario.key);
         if (!this.arr) return <SLoad />
-
-        console.log(this.arr)
-
         return <SView col={"xs-12"} center >
             <SHr height={10} />
             <SView col={"xs-12"}>

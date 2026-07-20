@@ -30,10 +30,9 @@ export default class caja extends MDLAbstract<EventListener> {
   async getActiva() {
     const key_usuario = MDL.usuario.session?.key;
     const key_empresa = MDL.empresa.select?.key
-    // if (!key_usuario || !key_empresa) {
-    //   // throw "Se requiere key_usuario y key_empresa"
-    //   throw "Debe abrir caja";
-    // }
+    if (!key_usuario || !key_empresa) {
+      return null;
+    }
     const resp: any = await SSocket.sendPromise({
       service: "caja",
       component: "caja",

@@ -32,7 +32,7 @@ export default class STextPlay extends Component<STextProps & STextPlayProps> {
     }
     onEnd() {
         if (this.props.onEnd) this.props.onEnd();
-        console.log("entro al onEnd");
+        // console.log("entro al onEnd");   
     }
     async play() {
 
