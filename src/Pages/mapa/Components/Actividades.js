@@ -1,19 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SDate, SHr, SIcon, SList, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
-import PButtom3 from '../../../Components/PButtom3';
-import { ScrollView, ScrollView as ScrollViewGesture } from 'react-native-gesture-handler';
 import PHr from '../../../Components/PHr';
-
 
 export default class Actividades extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
-
+        this.state = {};
     }
     componentDidMount() {
         let semana = new SDate().getFirstDayOfWeek();
@@ -26,14 +20,11 @@ export default class Actividades extends Component {
             fecha_inicio: semana.toString("yyyy-MM-dd"),
             fecha_fin: semana.addDay(6).toString("yyyy-MM-dd")
         }).then(e => {
-            console.log(e);
             this.setState({ data: e.data })
         }).catch(e => {
             console.error(e);
         })
 
-        console.log("hoyyyyyyyyyyyy")
-        console.log(hoy.toString("yyyy-MM-dd"));
         SSocket.sendPromise({
             component: "tarea",
             type: "getAll",
@@ -42,7 +33,6 @@ export default class Actividades extends Component {
             fecha_inicio: hoy.toString("yyyy-MM-dd"),
             fecha_fin: hoy.toString("yyyy-MM-dd")
         }).then(e => {
-            console.log(e);
             this.setState({ dataTareasMiasHoy: e.data })
         }).catch(e => {
             console.error(e);
@@ -61,25 +51,14 @@ export default class Actividades extends Component {
 
     addFirtsActis = () => {
         if (!this.state.dataTareasMiasHoy) return <SLoad />;
-        let day = new SDate();
-        let a = this.state.dataTareasMiasHoy;
-        console.log("aaaaaaa");
-        console.log(a);
-        var user;
         return Object.values(this.state.dataTareasMiasHoy).map((dato, i) => {
-            user = Model.usuario.Action.getByKey(dato.key_usuario)
-            //  user = this.state?.usuarios[dato.key_usuario]?.usuario;
-            console.log("usuario", dato.key_usuario);
-            console.log(user);
-            console.log("iiiiiiiiiiiiiii")
-            console.log(i)
             if (i > 4) return null;
             return <>
                 <SView col={"xs-12 "} style={{ padding: 5, }} row>
                     <SView col={"xs-12 "} style={{ padding: 5, backgroundColor: STheme.color.card }} onPress={() => SNavigation.navigate("/tarea/profile", { pk: dato.key })} row>
 
                         <SView col={"xs-2 "} row center>
-                            <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: a?.estado == 2 ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
+                            <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: dato?.estado == 2 ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
                                 <SIcon name='tareaclose' fill={STheme.color.text} />
                             </SView>
                         </SView>
@@ -87,24 +66,18 @@ export default class Actividades extends Component {
                             <SView col={"xs-12 sm-9 md-9 lg-9 xl-9 xxl-9"} >
                                 <SText bold fontSize={10} color={STheme.color.text}>{dato.descripcion}</SText>
                             </SView>
-                            {/* <SText fontSize={12} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} por ${user?.Nombres ?? ""} ${user?.Apellidos ?? ""}`}</SText> */}
-                            {/* <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText> */}
                             <SView col={"xs-12 sm-3 md-3 lg-3 xl-3 xxl-3"} style={{ alignItems: "flex-end" }} >
                                 <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText>
-                                {/* <SView flex /> */}
                             </SView>
                         </SView>
                     </SView >
                 </SView >
-                {/* {(i < 4) ? <SHr h={2} color={STheme.color.card} /> : null} */}
             </>
         }
         )
     }
 
-
-    Item = (obj, i, day) => {
-
+    Item = (i, day) => {
         let dia = day.clone();
         dia.addDay(i);
 
@@ -144,11 +117,6 @@ export default class Actividades extends Component {
                     </SView>
                 }
             </SView>
-            {/* {!dia.isCurDate() ? null :
-                <SView center width={15} height={15} style={{ position: "absolute", bottom: 0, right: 0, borderRadius: 45 }} backgroundColor={STheme.color.danger}>
-                    <SText fontSize={8} color={STheme.color.white} >5</SText>
-                </SView>
-            } */}
         </SView>
     }
     render() {
@@ -156,7 +124,6 @@ export default class Actividades extends Component {
         let now = new SDate();
         let ultimasActis = 0;
         if (this.state.dataTareasMiasHoy && Object.keys(this.state.dataTareasMiasHoy).length !== 0) {
-            // El objeto no está vacío
             ultimasActis = 1;
         }
 
@@ -168,7 +135,7 @@ export default class Actividades extends Component {
             </SView>
             <SHr />
             <SView col={"xs-12"} row>
-                {new Array(7).fill(0).map((a, i) => this.Item(a, i, semana))}
+                {new Array(7).fill(0).map((_, i) => this.Item(i, semana))}
             </SView>
             <SHr height={10} />
             {(ultimasActis == 0) ? <SText fontSize={15} center>No se han registrado actividades el día de hoy</SText> :
@@ -177,17 +144,16 @@ export default class Actividades extends Component {
                         <SText bold fontSize={13} center> Últimas Actividades</SText>
                         <SHr height={10} />
                         <SView backgroundColor={STheme.color.card} center style={{ padding: 8, }} row>
-                            <SText style={{textTransform:"uppercase"}}  fontSize={18}> {now.getMonthJson().text}</SText>
+                            <SText style={{ textTransform: "uppercase" }} fontSize={18}> {now.getMonthJson().text}</SText>
                             <PHr />
                             <SText bold fontSize={28}> {now.toString("dd")}</SText>
                             <SHr />
-                            <SText  fontSize={12}> {now.getDayOfWeekJson().text}</SText>
+                            <SText fontSize={12}> {now.getDayOfWeekJson().text}</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-12 sm-9 md-9 lg-9 xl-9 xxl-9"} row>
                         {this.addFirtsActis()}
                     </SView>
-                    
                 </SView>
             }
             <SHr height={15} />

@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { SButtom, SDate, SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SScrollView2, SText, STheme, SView } from 'servisofts-component';
-import { BottomNavigator, TopBar, Publicacion } from './Components';
+import { SDate, SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { Publicacion } from './Components';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket'
 
 import { FlatList, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import ScrollViewHandle from '../../Components/ScrollViewHandle';
 
 
@@ -25,7 +24,6 @@ class index extends Component {
     ref = {}
     onViewableItemsChanged = ({ viewableItems, changed }) => {
         // Aquí puedes detectar los ítems que salieron de la vista y pausar su reproducción
-        let makeVisible = false;
         changed.forEach(item => {
             if (!this.ref[item.key]) return;
             if (!item.isViewable) {
@@ -54,7 +52,6 @@ class index extends Component {
             key_usuario: Model.usuario.Action.getKey(),
             key_empresa: Model.empresa.Action.getKey(),
         }).then((e) => {
-            // this.state.loading = false;
             this.setState({ loading: false })
             if (!e.data) {
                 return;
@@ -67,12 +64,10 @@ class index extends Component {
                 ...Model.publicacion.Action._getReducer()?.data ?? {},
                 ...e.data
             }
-            // e.type = "getAll"
             Model.publicacion.Action._dispatch(e);
             this.state.page += 1;
 
             const arr = Object.values(e.data)
-            // this.setState({ data: arr })
             let userKeys = arr.map(val => val.key_usuario);
             const uniqueArr = [...new Set(userKeys)];
             SSocket.sendPromise({
@@ -87,43 +82,19 @@ class index extends Component {
                 console.error(e)
             })
         }).catch(e => {
-            this.state.loading = false;
+            this.setState({ loading: false });
+            console.error(e);
         })
-        // Model.usuario.Action.getAll({ force: true })
-
     }
     clearData(resolv) {
-        // Model.sucursal.Action.CLEAR();
         this.ref = {}
         this.state.page = 0;
         this.state.end = false;
 
         this.componentDidMount();
         Model.publicacion.Action.CLEAR();
-        // Model.usuario.Action.getAll({ force: true, fecha_edit: "1989-01-01T00:00:01" });
         Model.usuario.Action.CLEAR();
-
     }
-
-
-
-
-    // renderPublicidad() {
-    //     return <>
-    //         <SView col={"xs-12"} card height={60} center
-    //             style={{ borderWidth: 2, borderColor: STheme.color.secondary, borderRadius: 20, overflow: "hidden" }}
-    //             onPress={() => {
-    //                 SNavigation.navigate("/servicio")
-    //             }}
-    //         >
-    //             <SImage src={require('../Assets/img/fpublicidad.png')} style={{ resizeMode: 'cover', position: 'absolute' }} />
-    //             <SHr height={5} />
-    //             <SIcon name='Btnpaquete' fill={STheme.color.text} height={25} />
-    //             <SHr height={5} />
-    //             <SText font="Oswald-Regular" fontSize={11}> &lt; PAGA SIMPLE Y RÁPIDO CON QR &gt; </SText>
-    //         </SView>
-    //     </>
-    // }
 
     butomSubir() {
         return <SView center style={{
@@ -143,25 +114,10 @@ class index extends Component {
         </SView>
     }
     renderPublicaciones() {
-        // let publicaciones = Model.publicacion.Action.getAll({
-        //     key_usuario: Model.usuario.Action.getKey()
-        // // });
-        // const arr = Object.values(publicaciones).sort((a, b) => new SDate(a.fecha_on).isBefore(new SDate(b.fecha_on)) ? 1 : -1)
-
-
-
         const handleRefresh = async () => {
             this.clearData();
         };
         let data = Model.publicacion.Action._getReducer()?.data ?? {};
-        // if (!this.state.data) return <SLoad />
-        // if (Object.values(data).length <= 0) return <SPage  onRefresh={(e) => {
-        //     this.clearData();
-        //     if (e) e();
-        // }}>
-        //     <SText>No hay publicaciones</SText>
-        //     {this.butomSubir()}
-        // </SPage>
         if (Object.values(data).length <= 0) return <View style={{}}>
             <SText>No hay publicaciones</SText>
         </View>
@@ -182,8 +138,6 @@ class index extends Component {
                     itemVisiblePercentThreshold: 75
                 }}
                 onEndReachedThreshold={0.3}
-
-                // onViewableItemsChanged={onViewableItemsChanged}
                 onEndReached={() => {
                     this.componentDidMount();
                 }}
@@ -195,45 +149,25 @@ class index extends Component {
                     data={itm.item} usuario={this.state?.usuarios[itm?.item?.key_usuario]?.usuario} />}
             />
             <SHr height={20} />
-
-            {/* <SButtom onPress={() => {
-                SNavigation.navigate("/publicacion/add")
-            }}>Nueva publicación</SButtom> */}
         </>
     }
 
     render() {
         return (
             <SPage
-                // navBar={<TopBar type={"home"} />}
-                // footer={this.footer()}
-                // preventBack
                 disableScroll
                 center
             >
-                {/* <SButtom onPress={() => {
-                    SNavigation.navigate("/test")
-                }}>TEST</SButtom> */}
-                {/* <Container>
-                    {this.renderPublicidad()}
-                </Container> */}
                 <SView col={"xs-11 sm-11 md-8 lg-6 xl-4"} flex>
                     <SHr height={10} />
                     <ScrollViewHandle>
                         {this.renderPublicaciones()}
                     </ScrollViewHandle>
-                    {/* <SHr height={40} /> */}
                     {this.butomSubir()}
                 </SView>
             </SPage>
         );
     }
-
-    // footer() {
-    //     return <BottomNavigator url={"/inicio"} />
-    // }
-
-
 }
 const initStates = (state) => {
     return { state }

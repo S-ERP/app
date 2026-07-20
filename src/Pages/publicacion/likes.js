@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { SButtom, SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SScrollView2, SText, STheme, SView } from 'servisofts-component';
-import { BottomNavigator, Container, Publicacion } from './Components';
+import { SHr, SIcon, SList, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { Container, Publicacion } from './Components';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket'
 class likes extends Component {
@@ -36,6 +36,7 @@ class likes extends Component {
             })
         }).catch(e => {
             this.setState({ loading: false, error: e });
+            console.error(e);
         })
     }
     render_with_data() {
@@ -59,7 +60,6 @@ class likes extends Component {
     render() {
         return (
             <SPage
-                // footer={this.footer()}
                 onRefresh={(resolve) => {
                     this.componentDidMount();
                     resolve()
@@ -87,10 +87,6 @@ class likes extends Component {
             </SPage>
         );
     }
-
-    // footer() {
-    //     return <BottomNavigator url={"/sucursal"} />
-    // }
 }
 const initStates = (state) => {
     return { state }
