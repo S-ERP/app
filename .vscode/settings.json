@@ -1,10 +1,16 @@
 {
     "search.exclude": {
         // "**": true, // excluye TODO
-        "**/node_modules":true,
+        "**/node_modules": true,
         // "search.useIgnoreFiles": false,
-        "src/Pages/punto_venta": false // excepto esta carpeta
+        // "src/Pages/punto_venta": false // excepto esta carpeta
     },
     "java.import.gradle.enabled": false,
-    "java.configuration.updateBuildConfiguration": "disabled"
+    "java.configuration.updateBuildConfiguration": "disabled",
+    "java.autobuild.enabled": false
 }
+// {
+//     "java.import.gradle.enabled": false,
+//     "java.autobuild.enabled": false,
+//     "java.project.importOnFirstTimeStartup": "disabled"
+// }
