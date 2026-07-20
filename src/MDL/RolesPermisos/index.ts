@@ -1,10 +1,9 @@
-import { SNavigation, SStorage } from "servisofts-component";
+import { SNavigation } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
-import { EventListener, Rol } from "./types";
+import { EventListener } from "./types";
 import Model from "../../Model";
 import MDL from "..";
-
 
 export default class RolesPermisos extends MDLAbstract<EventListener> {
 
@@ -15,18 +14,15 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
             throw "No hay usuario logueado";
         }
         if (!key_empresa) {
-            // throw "No hay empresa seleccionada";
-            console.log("%c" + "No hay empresa seleccionada", `color: #fa0fb3; font-weight: bold;`);
+            console.warn("No hay empresa seleccionada");
             SNavigation.navigate("/");
-
+            return;
         }
         const state = Model.usuarioPage.Action._getState();
-        // console.log("RolesPermisos", state.usuarioPageReducer)
 
         if (state.usuarioPageReducer.data) {
             return state.usuarioPageReducer.data;
         }
-        // Cargar permisos del usuario
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
             "service": "roles_permisos",
@@ -37,7 +33,6 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
             "key_empresa": key_empresa
         })
 
-        // console.log("Permisos cargados", resp);
         if (!resp.data) {
             throw "No se pudieron cargar los permisos";
         }
@@ -46,7 +41,6 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         this.dispatchEvent({ type: "change", session: state.usuarioPageReducer })
         return resp.data;
     }
-
 
     getPermiso({ url, permiso }: { url: string, permiso: string }) {
         const key_empresa = Model.empresa.Action.getKey();
@@ -75,8 +69,6 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         return resp.data;
     }
 
-
-
     async getAllUserRolesByKeyUser(keys: string[]) {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -88,6 +80,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
     async registro(key_usuario: string, key_rol: string) {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -104,13 +97,9 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         return resp.data;
     }
 
-
     async registrarRol(data: any) {
         const key_empresa = Model.empresa.Action.getKey();
         const key_usuario = MDL.usuario.session?.key;
-        // console.log("registro ..............................  " + JSON.stringify(data))
-        // console.log("registro descripcion " + descripcion)
-        // return;
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
             "service": "roles_permisos",
@@ -126,12 +115,9 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         return resp.data;
     }
 
-
     async editarRol(data: any) {
         const key_empresa = Model.empresa.Action.getKey();
         const key_usuario = MDL.usuario.session?.key;
-
-        // return;
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
             "service": "roles_permisos",
@@ -168,6 +154,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
     async getAllPermiso() {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -179,6 +166,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
     async getAllRolPermiso(key_rol: string) {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -191,6 +179,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
     async getAllPermisoInfo() {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -203,6 +192,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
     async editarRolPermiso(obj: any) {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -215,6 +205,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
     async registrarRolPermiso(obj: any) {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",

@@ -1,7 +1,7 @@
 import SSocket from "servisofts-socket";
 import Model from "../../Model";
 import { Empresa, EventListener, Sucursal, TurnoHorarioAtencion } from "./type";
-import { SStorage, STheme, SThread } from "servisofts-component";
+import { SPopup, SStorage, STheme } from "servisofts-component";
 import { Platform } from "react-native";
 import packageInfo from "../../../package.json";
 import MDLAbstract from "../MDLAbstract";
@@ -9,6 +9,7 @@ import MDL from "..";
 
 export default class empresa extends MDLAbstract<EventListener> {
   select: Empresa | undefined;
+  monedas?: any[];
 
   constructor() {
     super();
@@ -35,6 +36,7 @@ export default class empresa extends MDLAbstract<EventListener> {
       STheme.repaint();
     }
   }
+
   async init() {
     this.loadTheme();
     if (this.select) {
@@ -42,7 +44,9 @@ export default class empresa extends MDLAbstract<EventListener> {
       this.setEmpresa(this.select);
     }
   }
+
   setEmpresa(empresa: Empresa) {
+    const cambioDeEmpresa = !!empresa && !!this.select?.key && this.select.key !== empresa.key;
     this.select = empresa;
     SStorage.setItem("empresa_select", JSON.stringify(empresa));
     if (empresa.theme) {
@@ -50,15 +54,17 @@ export default class empresa extends MDLAbstract<EventListener> {
         ...STheme.defaultColors,
         ...empresa.theme,
       };
-      // STheme.repaint();
     }
-    // if (MDL?.caja) {
-    //   try {
-    //     MDL.caja.getActiva();
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // }
+    if (cambioDeEmpresa) {
+      this.monedas = undefined;
+      MDL.compra_venta.setMonedaSeleccionada(null);
+      MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" });
+      MDL.carrito.limpiarCarritoCompras();
+      MDL.carrito.limpiarCarritoVentas();
+      SPopup.close("PopupCarrito");
+      SPopup.close("PopupCarritoConfirmar");
+      SPopup.close("PopupCarritoConfirmarResumen");
+    }
     this.dispatchEvent({ type: "onChangeEmpresaSelect", data: empresa });
   }
 
@@ -104,33 +110,11 @@ export default class empresa extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-  // async punto_venta_tipo_pago_asignado_registro(data: any): Promise<any[]> {
-  //   const resp: any = await SSocket.sendPromise({
-  //     service: "empresa",
-  //     component: "punto_venta_tipo_pago_asignado",
-  //     type: "registro",
-  //     data: data,
-  //     key_empresa: MDL.empresa.select?.key,
-  //   });
-  //   return resp.data;
-  // }
-
-  // async punto_venta_tipo_pago_asignado_eliminar(data: { key_punto_venta: string, key_punto_venta_tipo_pago: string }): Promise<any[]> {
-  //   const resp: any = await SSocket.sendPromise({
-  //     service: "empresa",
-  //     component: "punto_venta_tipo_pago_asignado",
-  //     type: "eliminar",
-  //     data: data,
-  //     key_empresa: MDL.empresa.select?.key,
-  //   });
-  //   return resp.data;
-  // }
 
   async execute_function(func: string, params: any[]) {
     let newParams: any = [];
     if (params) {
       params.map(p => {
-        
         if (typeof p == "string") {
           p = "'" + p + "'"
         } else if (typeof p == "object" && p !== null) {
@@ -148,6 +132,7 @@ export default class empresa extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
+
   async getByKeyFull(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
@@ -163,7 +148,6 @@ export default class empresa extends MDLAbstract<EventListener> {
     key_empresa: "",
     promise: null
   }
-  _full: any = null;
   async getFull(): Promise<any> {
     if (this._getFullCache.key_empresa != this.select?.key) {
       this._getFullCache.data = null;
@@ -172,25 +156,22 @@ export default class empresa extends MDLAbstract<EventListener> {
     }
     if (this._getFullCache.data) return this._getFullCache.data;
     if (this._getFullCache.promise) return this._getFullCache.promise;
-    // if (this._full) {
-    //   if (this._full.key === this.select?.key) return this._full;
-    // }
     this._getFullCache.promise = SSocket.sendPromise({
       service: "empresa",
       component: "empresa",
       type: "getByKeyFull",
       key: this.select?.key,
     }).then(e => {
-      this._getFullCache.data = e.data;  // Guardamos en caché
-      this._getFullCache.promise = null;     // Limpiamos la promesa en curso
+      this._getFullCache.data = e.data;
+      this._getFullCache.promise = null;
       return this._getFullCache.data;
     }).catch(e => {
-      this._getFullCache.promise = null;     // Limpiar para futuros intentos
+      this._getFullCache.promise = null;
       throw e;
     })
     return this._getFullCache.promise;
-
   }
+
   setUsuarioLog(data: {
     url: string;
     platform?: string;
@@ -210,12 +191,12 @@ export default class empresa extends MDLAbstract<EventListener> {
       data: data,
     })
       .then((e) => {
-        // this.setState({ dataLog: e.data })
       })
       .catch((e) => {
         console.error(e);
       });
   }
+
   async ordenarPaginas(urls: string[], order: "vicita" | "fecha" = "vicita") {
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
@@ -272,9 +253,6 @@ export default class empresa extends MDLAbstract<EventListener> {
   async editarTurnosHorariosAtencion(data: TurnoHorarioAtencion) {
     data.key_usuario = Model.usuario.Action.getKey();
     data.key_empresa = Model.empresa.Action.getKey();
-
-    // data.horarios.forEach((h) => (h.dia = "8"));
-
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
       component: "horario_atencion",
@@ -291,29 +269,8 @@ export default class empresa extends MDLAbstract<EventListener> {
       type: "_getByKeyTurnosHorariosAtencion",
       key_turno: parametro,
     });
-    console.log("jajaj ", resp.data);
     return resp.data;
   }
-
-
-  // const moneda_ = {
-  //                                           ...e.row,
-  //                                           estado: 0,
-  //                                       }
-  //                                       SSocket.sendPromise({
-  //                                           service: "empresa",
-  //                                           component: "empresa_moneda", // 🔥 corregido
-  //                                           type: "editar",
-  //                                           data: moneda_,
-  //                                           key_usuario: MDL.usuario.session?.key,
-  //                                       }).then(() => {
-  //                                           this.table.loadData();
-  //                                           this.forceUpdate();
-  //                                       }).catch(err => {
-  //                                           console.error("response", err);
-  //                                       })
-
-
 
   async getMonedas(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
@@ -328,7 +285,6 @@ export default class empresa extends MDLAbstract<EventListener> {
   async registrarMoneda(data: any) {
     data.key_usuario = MDL.usuario.session?.key;
     data.key_empresa = MDL.empresa.select?.key;
-
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
       component: "empresa_moneda",
@@ -336,14 +292,12 @@ export default class empresa extends MDLAbstract<EventListener> {
       key_turno: MDL.usuario.session?.key,
       data: data,
     });
-    console.log("jajajsssssss ", resp.data);
     return resp;
   }
 
   async editarMoneda(data: any) {
     data.key_usuario = MDL.usuario.session?.key;
     data.key_empresa = MDL.empresa.select?.key;
-
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
       component: "empresa_moneda",
@@ -351,7 +305,6 @@ export default class empresa extends MDLAbstract<EventListener> {
       key_turno: MDL.usuario.session?.key,
       data: data,
     });
-    console.log("jajajsssssss ", resp.data);
     return resp.data;
   }
 
@@ -361,61 +314,27 @@ export default class empresa extends MDLAbstract<EventListener> {
       component: "empresa_moneda",
       type: "getByKeyHistorialMoneda",
       key: key,
-
     });
-    console.log("jajajsssssss ", resp.data);
     return resp.data;
   }
-
-
-  // async getEmpresa(key: string) {
-  //   const resp: any = await SSocket.sendPromise({
-  //     service: "empresa",
-  //     component: "empresa",
-  //     type: "getByKey",
-  //     key: key,
-  //   });
-  //   return resp.data as Empresa;
-  // }
-
-
-
-
-
 
   async tipo_pagoGetFullCaja(key_punto_venta: any) {
     const tipo_pago = await MDL.caja.tipo_pago_getAll()
     const data = await MDL.empresa.getFull()
     const cuentas = await MDL.contabilidad.getCuentasCache();
-    // const suc = data.sucursales.find((suc: any) => suc.puntos_venta.find(pv => pv.key == key_punto_venta));
-    // const pv = suc.puntos_venta.find((pv: any) => pv.key == key_punto_venta);
-    // this.moneda = data.monedas.find(a => a.key == this.props.key_moneda);
     const moneda_base = data.monedas.find(a => a.tipo == "base");
     let pvtp = await MDL.caja.empresa_tipo_pago_getAll({ key_punto_venta: key_punto_venta })
     pvtp = Object.values(pvtp);
-    // if (this.pvtp.length <= 0) {
-    //si no tiene tipos de pago asignados, asignar todos los tipos de pago
     pvtp = pvtp.map(item => {
       item.cuenta = cuentas[item.key_cuenta_contable]
       const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
       item.moneda = moneda ?? moneda_base;
-      // item.moneda = data.monedas.find(a => a.key == item.key_moneda)
       item.tipo_pago = tipo_pago[item.key_tipo_pago];
-      // item.monto = this.props.montoMaximo ?? 0;
-      // if (this.props.montoMaximoPorTipo && this.props.montoMaximoPorTipo[item.key_tipo_pago]) {
-      // item.monto = this.props.montoMaximoPorTipo[item.key_tipo_pago];
-      // }
       return { ...item };
     });
-    // }
-    // if (this.props.solo_para_caja) {
-    // this.pvtp = this.pvtp.filter(a => a.tipo_pago?.pasa_por_caja);
-    // }
     pvtp.sort((a, b) => {
       return a.tipo_pago?.orden - b.tipo_pago?.orden
     })
     return pvtp;
   }
-
-
 }
