@@ -159,7 +159,7 @@ export default class Modelo extends Component {
 												</SView>
 											</SView>
 										</SView>
-										{producto?.tipo_producto?.tipo !== "servicio" && (
+										{producto?.activo == 0 && (
 											<SView style={{ position: "absolute", top: 4, right: 4, }}>
 												<SView style={{ padding: 2, borderRadius: 4, backgroundColor: "#f1aaaa", borderWidth: 1, borderColor: STheme.color.danger }}>
 													<SText clean fontSize={10} bold color={STheme.color.danger} >{producto?.activo == 0 ? "Inactivo" : "activo"} </SText>
