@@ -3,7 +3,6 @@ import { SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-co
 import MDL from '../../../MDL';
 import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
-
 export default class Modelo extends Component {
 	constructor(props) {
 		super(props);
@@ -31,9 +30,12 @@ export default class Modelo extends Component {
 		}
 		const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
 
+		console.clear();
+		console.log(JSON.stringify(modelos));
 		let monedas = MDL.empresa.monedas?.length ? MDL.empresa.monedas : await MDL.empresa.getMonedas();
 
 		const puedeVerModelosInactivos = MDL.rolesPermisos.getPermiso({ url: "/productos/modelo", permiso: "ver_modelos_inactivos" });
+
 
 		this.modelos = (puedeVerModelosInactivos ? modelos : modelos.filter(e => e.activo != 0)).map(e => ({
 			...e,
@@ -51,6 +53,7 @@ export default class Modelo extends Component {
 			return 0;
 		});
 
+
 		this.forceUpdate();
 	}
 	modificarStock = (key, delta) => {
@@ -63,6 +66,10 @@ export default class Modelo extends Component {
 			return true;
 		}
 		return false;
+	};
+	buildRowStyle = ({ item }) => {
+		return item?.activo == 0 ? { opacity: 0.45 } : {};
+		// return item?.activo == 0 ? { opacity: 1 } : {};
 	};
 	renderModelos() {
 		const modelos = this.modelos || [];
@@ -94,23 +101,29 @@ export default class Modelo extends Component {
 		}
 		const monedaSymbol = selectedMoneda?.observacion || "Bs";
 		return (<>
-			<SView col={"xs-12"} flex center >
+			<SView col={"xs-12"} flex center>
 				<SScrollView2 disableHorizontal>
 					<SView col={"xs-12"} style={{ padding: 2 }}>
+
+						{/* ddddddddddddd */}
+
+
 						<SView col={"xs-12"} row padding={5}>
 							{productosFiltrados.map((producto) => {
 								const tipoCambioProducto = producto.venta_moneda?.tipo_cambio || 1;
 								const tipoCambioSeleccionada = selectedMoneda?.tipo_cambio || 1;
 								const precioConvertido = producto.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
 								const precioFormateado = Number.isInteger(precioConvertido) ? precioConvertido.toString() : precioConvertido.toFixed(2);
-								return (
+								return (<>
+
+
+
+
 									<SView
 										key={producto.key}
 										col={`xs-6 md-4 lg-3 xl-3 xxl-2`}
 										margin={4}
-										style={{
-											overflow: "hidden",
-										}}
+										style={{ overflow: "hidden", position: "relative" }}
 										onPress={() => {
 											if (this.props.conStock && producto.stock <= 0) {
 												SNotification.send({
@@ -129,35 +142,46 @@ export default class Modelo extends Component {
 											this.props.onPressProducto?.(productoAjustado);
 										}}
 									>
-										<SView center style={{ marginBottom: 4, height: 180, overflow: "hidden", backgroundColor: STheme.color.card, borderRadius: 4, }} >
-											<FotoModelo data={producto} prefix={".512_"} />
-										</SView>
-										<SView col={"xs-12"} padding={4}>
-											<SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-												<SView row>
-													<SView style={{ paddingRight: 10 }}>
-														<SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado} </SText>
-													</SView>
-													<SView style={{ top: 2 }}>
-														{producto?.venta_moneda?.observacion != monedaSymbol ? <SText fontSize={10} bold color={STheme.color.lightGray} numberOfLines={1}>( {producto?.venta_moneda?.observacion} {producto?.precio_venta} )</SText> : null}
-													</SView>
-												</SView>
-												<SView>
-													{producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)}
-												</SView>
+										<SView style={{ ...this.buildRowStyle({ item: producto }) }}>
+											<SView center style={{ marginBottom: 4, height: 180, overflow: "hidden", backgroundColor: STheme.color.card, borderRadius: 4, position: "relative" }} >
+												<FotoModelo data={producto} prefix={".512_"} />
 											</SView>
+											<SView col={"xs-12"} padding={4}>
+												<SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+													<SView row>
+														<SView style={{ paddingRight: 10 }}>
+															<SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado} </SText>
+														</SView>
+														<SView style={{ top: 2 }}>
+															{producto?.venta_moneda?.observacion != monedaSymbol ? <SText fontSize={10} bold color={STheme.color.lightGray} numberOfLines={1}>( {producto?.venta_moneda?.observacion} {producto?.precio_venta} )</SText> : null}
+														</SView>
+													</SView>
+													<SView>
+														{producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)}
+													</SView>
+												</SView>
 
-											<SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-												<SView style={{ flex: 1, paddingRight: 8 }}>
-													<SText fontSize={14} color={STheme.color.text} numberOfLines={2} >{producto?.descripcion} </SText>
-													<SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion} </SText>
+												<SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+													<SView style={{ flex: 1, paddingRight: 8 }}>
+														<SText fontSize={14} color={STheme.color.text} numberOfLines={2} >{producto?.descripcion} </SText>
+														<SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion} </SText>
+													</SView>
+													{producto?.tipo_producto && (<SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(producto?.tipo_producto?.tipo) + "44", borderWidth: 1, borderColor: STheme.colorFromText(producto?.tipo_producto?.tipo) }}>
+														<SText fontSize={10} style={{ textTransform: "uppercase" }} >{producto?.tipo_producto?.tipo}</SText>
+													</SView>)}
 												</SView>
-												{producto?.tipo_producto && (<SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(producto?.tipo_producto?.tipo) + "44", borderWidth: 1, borderColor: STheme.colorFromText(producto?.tipo_producto?.tipo) }}>
-													<SText fontSize={10} style={{ textTransform: "uppercase" }} >{producto?.tipo_producto?.tipo}</SText>
-												</SView>)}
 											</SView>
 										</SView>
+										{producto?.tipo_producto?.tipo !== "servicio" && (
+											<SView style={{ position: "absolute", top: 4, right: 4, }}>
+												<SView style={{ padding: 2, borderRadius: 4, backgroundColor: "#FBBF24", borderWidth: 1, borderColor: "#FBBF24" }}>
+													<SText clean fontSize={10} bold color={STheme.color.danger} >{producto?.activo == 0 ? "inactivo" : "activo"} </SText>
+												</SView>
+											</SView>
+										)}
 									</SView>
+								</>
+
 								);
 							})}
 						</SView>
