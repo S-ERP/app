@@ -398,10 +398,10 @@ export default class tableta111 extends Component {
 
                 <DinamicTable.Col key={"activo"} label='Activo' width={150}
                     cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
-                    data={(e) => e.row.activo == null ? "" : (e.row.activo ? "Activo" : "Inactivo")}
+                    data={(e) => e.row.activo == null ? "" : (Number(e.row.activo) === 1 ? "Activo" : "Inactivo")}
                     customComponent={e => {
                         if (e.row.activo == null) return;
-                        const color = e.row.activo ? STheme.color.blue : STheme.color.danger;
+                        const color = Number(e.row.activo) === 1 ? STheme.color.blue : STheme.color.danger;
                         return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: color + "44", borderWidth: 1, borderColor: color }}>
                             <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
                         </SView>
