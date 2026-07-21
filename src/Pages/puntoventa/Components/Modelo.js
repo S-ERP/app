@@ -30,12 +30,9 @@ export default class Modelo extends Component {
 		}
 		const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
 
-		console.clear();
-		console.log(JSON.stringify(modelos));
 		let monedas = MDL.empresa.monedas?.length ? MDL.empresa.monedas : await MDL.empresa.getMonedas();
 
 		const puedeVerModelosInactivos = MDL.rolesPermisos.getPermiso({ url: "/productos/modelo", permiso: "ver_modelos_inactivos" });
-
 
 		this.modelos = (puedeVerModelosInactivos ? modelos : modelos.filter(e => e.activo != 0)).map(e => ({
 			...e,
@@ -53,7 +50,6 @@ export default class Modelo extends Component {
 			return 0;
 		});
 
-
 		this.forceUpdate();
 	}
 	modificarStock = (key, delta) => {
@@ -69,7 +65,6 @@ export default class Modelo extends Component {
 	};
 	buildRowStyle = ({ item }) => {
 		return item?.activo == 0 ? { opacity: 0.45 } : {};
-		// return item?.activo == 0 ? { opacity: 1 } : {};
 	};
 	renderModelos() {
 		const modelos = this.modelos || [];
@@ -104,21 +99,13 @@ export default class Modelo extends Component {
 			<SView col={"xs-12"} flex center>
 				<SScrollView2 disableHorizontal>
 					<SView col={"xs-12"} style={{ padding: 2 }}>
-
-						{/* ddddddddddddd */}
-
-
 						<SView col={"xs-12"} row padding={5}>
 							{productosFiltrados.map((producto) => {
 								const tipoCambioProducto = producto.venta_moneda?.tipo_cambio || 1;
 								const tipoCambioSeleccionada = selectedMoneda?.tipo_cambio || 1;
 								const precioConvertido = producto.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
 								const precioFormateado = Number.isInteger(precioConvertido) ? precioConvertido.toString() : precioConvertido.toFixed(2);
-								return (<>
-
-
-
-
+								return (
 									<SView
 										key={producto.key}
 										col={`xs-6 md-4 lg-3 xl-3 xxl-2`}
@@ -174,14 +161,12 @@ export default class Modelo extends Component {
 										</SView>
 										{producto?.tipo_producto?.tipo !== "servicio" && (
 											<SView style={{ position: "absolute", top: 4, right: 4, }}>
-												<SView style={{ padding: 2, borderRadius: 4, backgroundColor: "#FBBF24", borderWidth: 1, borderColor: "#FBBF24" }}>
-													<SText clean fontSize={10} bold color={STheme.color.danger} >{producto?.activo == 0 ? "inactivo" : "activo"} </SText>
+												<SView style={{ padding: 2, borderRadius: 4, backgroundColor: "#f1aaaa", borderWidth: 1, borderColor: STheme.color.danger }}>
+													<SText clean fontSize={10} bold color={STheme.color.danger} >{producto?.activo == 0 ? "Inactivo" : "activo"} </SText>
 												</SView>
 											</SView>
 										)}
 									</SView>
-								</>
-
 								);
 							})}
 						</SView>

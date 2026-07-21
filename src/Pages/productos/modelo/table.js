@@ -202,13 +202,13 @@ export default class table extends Component {
 				</SView>
 			</SView>
 			<SHr height={8} />
-			<SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
+			{/* <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
 				<SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
 				<SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock?.nombre || "Todos"} </SText> </SText>
 				<SText fontSize={13} color={STheme.color.lightGray}> Tipo cuenta: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoCuenta?.nombre || "Todos"} </SText> </SText>
 				<SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
 			</SView>
-			<SHr height={8} />
+			<SHr height={8} /> */}
 			<DinamicTable key={"tabla_modelo"}
 				ref={ref => this.table = ref}
 				{...Config.table.applyTheme()}
@@ -492,7 +492,7 @@ export default class table extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col key="tags" label="Tags" width={120} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
+				<DinamicTable.Col key="tags" label="Tags" width={100} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
 					customComponent={e => (
 						<SView row>
 							{(e.row?.tags ?? []).map(item => (
@@ -511,7 +511,7 @@ export default class table extends Component {
 					)}
 				/>
 
-				<DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Producto' width={150}
+				<DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Producto' width={85}
 					data={(e) => e.row?.tipo_producto?.tipo}
 					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
 					customComponent={e => {
@@ -524,7 +524,7 @@ export default class table extends Component {
 
 				<DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
 
-				<DinamicTable.Col key={"activo"} label='Activo' width={80}
+				<DinamicTable.Col key={"activo"} label='Estado' width={70}
 					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
 					data={(e) => e.row.activo == null ? "" : (e.row.activo ? "Activo" : "Inactivo")}
 					customComponent={e => {
@@ -536,7 +536,7 @@ export default class table extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col
+				{/* <DinamicTable.Col
 					key={"contactos_"}
 					label='Contactos'
 					width={300}
@@ -553,9 +553,9 @@ export default class table extends Component {
 							})}
 						</SView>
 					)}
-				/>
+				/> */}
 
-				<DinamicTable.Col
+				{/* <DinamicTable.Col
 					key={"contactos2_"}
 					label='Contactos'
 					width={350}
@@ -572,7 +572,7 @@ export default class table extends Component {
 							})}
 						</SView>
 					)}
-				/>
+				/> */}
 			</DinamicTable>
 			<FloatButtom onPress={() => {
 				PopupDetalleModelo.open({
