@@ -55,7 +55,6 @@ export default class tabla extends Component {
 				return [];
 			}
 
-			console.log(JSON.stringify(registros));
 			const sucursales = empresa?.sucursales || [];
 			const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
 			if (ventas.length === 0) console.warn("No se encontraron ventas.");
@@ -180,8 +179,6 @@ export default class tabla extends Component {
 				color: STheme.color.success,
 				time: 2000,
 			});
-
-			console.dir(ventasEnriquecidas)
 
 			return ventasEnriquecidas;
 		} catch (error) {
@@ -581,7 +578,6 @@ export default class tabla extends Component {
 				hoverStyle={{ backgroundColor: STheme.color.card + "30" }}
 				buildRowStyle={({ item }) => Number(item?.__original?.estado) === 0 ? { opacity: 0.45 } : {}}
 				listFooterComponent={() => <SHr height={60} />}
-				onEvent={(e) => { if (e.evt === "render") { } }}
 				onSelectionChange={() => { }}
 				renderHeaderActions={() => null}
 				renderLoading={() => (
@@ -638,8 +634,6 @@ export default class tabla extends Component {
 					}
 				}}
 			>
-				{ }
-				{ }
 				<DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
 					data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
 					cellStyle={{ padding: 4, gap: 4 }}
@@ -669,7 +663,6 @@ export default class tabla extends Component {
 							</SView>
 						);
 					}}
-
 				/>
 
 				<DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} height={60} dataType="datetime" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
@@ -754,14 +747,12 @@ export default class tabla extends Component {
 				/>
 
 				<DinamicTable.Col key="estado_pago" wrap label="Estado" width={80} height={60}
-
 					data={(e) => {
 						if (Number(e.row?.estado) === 0) return "Anulada";
 						if ((e.row?.cuotas_en_mora?.monto || 0) > 0) return "En Mora";
 						if ((e.row?.cuotas?.total || 0) <= (e.row?.monto_amortizado || 0)) return "Pagado";
 						return "Al Día";
 					}}
-
 					customComponent={(e) => {
 						const statesTipo = {
 							"Al Día": { color: "#f59e0b", label: "Al Día" },
@@ -808,7 +799,6 @@ export default class tabla extends Component {
 								<SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.data}</SText>
 							</SView> : null}
 					</>}
-
 				/>
 				<DinamicTable.Col key="nit" label="NIT / CI" width={100} height={60} data={(e) => e.row?.factura?.nit ?? ""} />
 				<DinamicTable.Col key="razon_social" label="Razón social" width={100} height={60} data={(e) => e.row?.factura?.razon_social ?? ""} />
@@ -887,17 +877,12 @@ export default class tabla extends Component {
 					}} />
 
 				<DinamicTable.Col key="cuotas_cantidad_pendiente_" label="# Pend." sumTotal={['', 0]}
-
 					dataType="number"
 					sumExcel
 					width={70} height={60}
-
 					cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
-
 					data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""}
-
 					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-
 					customComponent={e => {
 						return (
 							<>
@@ -952,11 +937,9 @@ export default class tabla extends Component {
 					}} />
 
 				<DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" sumTotal={['', 0]} width={70} height={60}
-
 					dataType="number"
 					sumExcel
 					cellStyle={{ backgroundColor: STheme.color.danger + "33" }} data={(e) => e.row?.cuotas_en_mora?.cantidad ?? ""} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-
 					customComponent={e => {
 						return (
 							<>
@@ -1066,7 +1049,7 @@ export default class tabla extends Component {
 
 	render() {
 		return (
-			<SPage title="Tabla de Veddntas" disableScroll>
+			<SPage title="Tabla de Ventas alvaro" disableScroll>
 				<SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
 					<SView col={"xs-12 sm-8.2 lg-3.3"} row center>
 						<FechaFullFilter
