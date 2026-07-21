@@ -385,7 +385,7 @@ export default class tableta111 extends Component {
                 buildRowStyle={({ item }) => {
                     const original = item;
                     const esVentaOCompraAnulada = Number(original?.activo) === 0;
-                    return esVentaOCompraAnulada ? { opacity: 0.35 } : {};
+                    return esVentaOCompraAnulada ? { opacity: 0.1 } : {};
                 }}
 
             // loadInitialState={async () => {
@@ -681,7 +681,9 @@ export default class tableta111 extends Component {
                     }}
                 />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
-                <DinamicTable.Col
+               
+               
+                {/* <DinamicTable.Col
                     key={"contactos_"}
                     label='Contactos'
                     width={120}
@@ -698,8 +700,10 @@ export default class tableta111 extends Component {
                             })}
                         </SView>
                     )}
-                />
-                <DinamicTable.Col
+                /> */}
+
+
+                {/* <DinamicTable.Col
                     key={"contactos2_"}
                     label='Contactos'
                     width={300}
@@ -716,7 +720,7 @@ export default class tableta111 extends Component {
                             })}
                         </SView>
                     )}
-                />
+                /> */}
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
