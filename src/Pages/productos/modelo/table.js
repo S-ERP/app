@@ -554,15 +554,18 @@ export default class table extends Component {
                             <SText flex style={{ color: STheme.color.danger, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_compra ? SMath.formatMoney(e.row?.precio_compra) : ""}{e.row?.compra_moneda?.observacion ? e.row?.compra_moneda?.observacion : ""}</SText>
                         </SView>}
                 />
+
                 <DinamicTable.Col key={"precio_venta_"} label='P. Venta' width={100}
                     textStyle={{ color: STheme.color.success }}
                     data={(e) => e.row?.precio_venta} wrap
                     customComponent={e => <SText style={{ color: STheme.color.success, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_venta ? SMath.formatMoney(e.row?.precio_venta) : ""}{e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""}</SText>
                     }
                 />
+
                 <DinamicTable.Col key={"stock"} label='Stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
+
                 <DinamicTable.Col
                     key="proveedores"
                     label="Proveedores"
@@ -654,7 +657,7 @@ export default class table extends Component {
                     }}
                 />
 
-                {/* <DinamicTable.Col
+                <DinamicTable.Col
                     key={"contactos_"}
                     label='Contactos'
                     width={120}
@@ -671,7 +674,7 @@ export default class table extends Component {
                             })}
                         </SView>
                     )}
-                /> */}
+                />
 
 
                 {/* <DinamicTable.Col
