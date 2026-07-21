@@ -322,8 +322,20 @@ export default class FormularioModelo extends Component<Props> {
                     "activo": {
                         col: "xs-12",
                         defaultValue: this.props.editObject ? !!this.props.editObject?.activo : true,
-                        label: "Activo", type: "checkBox",
+                        label: <SView col={"xs-12"} padding={1} backgroundColor='red'>
+                            <SText fontSize={16}>Activo </SText>
+                            <SIconApp name='toolinfo' fill={STheme.color.warning} width={10} height={10} />
+                            <SText fontSize={16}>Si desactivas esta opción, el producto no aparecerá al     │
+                                │ momento de realizar una venta. El registro seguirá         │
+                                │ guardado en el sistema y podrás volver a activarlo cuando  │
+                                │ lo necesites. </SText>
+                        </SView>,
+                        type: "checkBox",
+                        SText: "ddds"
                     },
+
+
+
                     "codigo_ref": {
                         col: "xs-5.5",
                         icon: <SView />,
