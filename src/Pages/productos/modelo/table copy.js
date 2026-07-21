@@ -20,7 +20,7 @@ import PopupCrearProveedor from '../../proveedor/Components/PopupCrearProveedor'
 import PopupAgregarMarca from '../marca/Components/PopupAgregarMarca';
 import Model from '../../../Model';
 import FormularioModelo2 from '../Components/FormularioModelo2';
-export default class tableta111 extends Component {
+export default class table extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -211,176 +211,29 @@ export default class tableta111 extends Component {
                 </SView>
             </SView>
             <SHr height={8} />
-            {/* <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
-<SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
-<SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock?.nombre || "Todos"} </SText> </SText>
-<SText fontSize={13} color={STheme.color.lightGray}> Tipo cuenta: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoCuenta?.nombre || "Todos"} </SText> </SText>
-<SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
-</SView>
-<SHr height={8} /> */}
-            <DinamicTable
-                key={"tabla_modelo"}
+
+            <DinamicTable key={"tabla_modelo"}
                 ref={ref => this.table = ref}
-                {...Config.table.applyTheme()}
-                selectType='single'
-                language='es'
                 listFooterComponent={() => {
                     return <SHr height={100} />
                 }}
                 cellStyle={{ ...Config.table.cellStyle(), padding: 2, borderWidth: 0 }}
                 loadData={this.loadData.bind(this)}
+                language='es'
 
-                onSelect={e => {
-                    FloatMenu.open({
-                        e: e.evt,
-                        height: 330,
-                        style: { width: 400 },
-                        numColumns: 2,
-                        label: e.row.descripcion,
-                        options: [
-                            {
-                                label: "Editar",
-                                icon: <SIconApp name='Pencil' fill={STheme.color.text} />,
-                                // icon: <SIconApp name='Edit' />,
-                                onPress: () => {
-                                    // FormularioModelo2.open({
-                                    //     editObject: e.row,
-                                    //     onSuccess: () => {
-                                    //         if (this.table) {
-                                    //             this.table.loadData();
-                                    //         }
-                                    //     }
-                                    // })
-                                    FormularioModelo.open({
-                                        editObject: e.row,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    })
-                                }
-                            },
-                            {
-                                label: "Eliminar",
-                                icon: <SIconApp name='crmeliminar' fill={STheme.color.danger} />,
-                                // icon: <SIconApp name='Delete' />,
-                                onPress: () => {
-                                    SPopup.confirm({
-                                        title: "Eliminar Modelo",
-                                        message: "¿Está seguro de eliminar el modelo " + e.row.descripcion + "?",
-                                        onPress: () => {
-                                            MDL.inventario.saveModelo({
-                                                key: e.row.key,
-                                                estado: 0,
-                                            }).then(() => {
-                                                if (this.table) {
-                                                    this.table.loadData();
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            },
-                            {
-                                label: "Agregar Proveedor",
-                                icon: <SIconApp name="addFoto" fill={STheme.color.card} />,
-                                onPress: () => {
-                                    SNavigation.navigate("/proveedor", {
-                                        onSelect: (prov) => {
-                                            if (!prov?.key) return;
-                                            const key_modelo = e.row.key;
-                                            const key_proveedor = prov.key;
-                                            console.log("%cModelo:", "color: #2ECC40; font-weight: bold;", key_modelo);
-                                            console.log("%cProveedor:", "color: #2ECC40; font-weight: bold;", key_proveedor);
-                                            MDL.inventario
-                                                .saveModeloProveedor({ key_modelo, key_proveedor, })
-                                                .then(() => {
-                                                    this.table?.loadData();
-                                                })
-                                                .catch((err: any) => {
-                                                    console.error("Error al guardar proveedor:", err);
-                                                });
-                                        },
-                                    });
-                                },
-                            },
-                            {
-                                label: "Ver Desglose Tipo Costos",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.card} />,
-                                onPress: () => {
-                                    PopupDesgloseTipoCosto.open({
-                                        key_modelo: e.row.key,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    })
-                                }
-                            },
-                            {
-                                label: "Agregar Tag",
-                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
-                                onPress: () => {
-                                    const currentTags = (e.row.tags || [])
-                                        .map(t => t?.tags || t)
-                                        .filter(t => t?.key);
-                                    console.log("gamboa " + JSON.stringify(currentTags))
-                                    PopupAgregarTags.open({
-                                        selectedTags: currentTags,
-                                        key_modelo: e.row.key,
-                                        onSuccess: async (selected) => {
-                                            this.table?.loadData();
-                                        },
-                                        onCancel: () => { }
-                                    });
-                                },
-                            },
-                            {
-                                label: "Ver Desglose Lotes",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.card} />,
-                                onPress: () => {
-                                    PopupDesglose.open({
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
-
-                            {
-                                label: "Ingredientes",
-                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
-                                onPress: () => {
-                                    SNavigation.navigate("/productos/modelo/ingrediente", {
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
-                            {
-                                label: "Ver Desglose Cardex",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.card} />,
-                                onPress: () => {
-                                    PopupModeloCardex.open({
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
-                        ]
-                    });
-                }}
-
-                renderLoading={() => (
-                    <SView col={"xs-12"} padding={24}>
-                        <SText fontSize={13} color={STheme.color.text + "99"}>Cargando movimientos...</SText>
-                    </SView>
-                )}
+                selectType='single'
+                {...Config.table.applyTheme()}
+                // renderLoading={() => (
+                //     <SView col={"xs-12"} center padding={24}>
+                //         <SText fontSize={13} color={STheme.color.text + "99"}>Cargando movimientos...</SText>
+                //     </SView>
+                // )}
 
                 renderNoResults={() => (
                     <SView col={"xs-12"} center padding={24}>
                         <SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron movimientos en el rango seleccionado.</SText>
                     </SView>
                 )}
-
 
                 buildRowStyle={({ item }) => {
                     const original = item;
@@ -393,23 +246,20 @@ export default class tableta111 extends Component {
             //         sorters: [{ key: "tipo_producto_tipo", order: "asc", type: "string" }, { key: "nombre", order: "asc", type: "string" }],
             //     }
             // }}
+
+
+
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
 
-                <DinamicTable.Col key={"activo"} label='Activo' width={150}
-                    cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
-                    data={(e) => e.row.activo == null ? "" : (e.row.activo ? "Activo" : "Inactivo")}
-                    customComponent={e => {
-                        if (e.row.activo == null) return;
-                        const color = e.row.activo ? STheme.color.blue : STheme.color.danger;
-                        return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: color + "44", borderWidth: 1, borderColor: color }}>
-                            <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
-                        </SView>
+                <DinamicTable.Col key={"activo"} label='activo' width={150}
+                    textStyle={{
+                        fontSize: 12,
+                        color: STheme.color.lightGray,
                     }}
-                />
+                    data={(e) => e.row.activo} />
 
                 <DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
-
 
                 <DinamicTable.Col key="nombre" label="Nombre" headerStyle={{ paddingLeft: 4 }} width={150} height={60}
                     data={(e) => e.row.descripcion ?? ""}
@@ -507,76 +357,6 @@ export default class tableta111 extends Component {
                                     ) : null}
                                     {nombreTipo ? <SView width={5} /> : null}
                                     <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{nombreTipo}</SText>
-                                </SView> : null}
-                        </>
-                    }
-                    }
-                />
-
-
-                <DinamicTable.Col key={"nombre"} label='Nombre' width={300} data={(e) => e.row.descripcion} wrap textStyle={{ fontWeight: "bold", fontSize: 14 }}
-                    customComponent={e => <ImageLabel {...e}
-                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
-                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
-                    />}
-                />
-
-                <DinamicTable.Col key={"marca"} label='Marca' width={130} data={(e) => e.row?.marca?.descripcion} wrap textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
-                    customComponent={e => <>
-                        {(e.row.key_marca) ?
-                            <SView col={"xs-12"} center row onPress={() => {
-                                // const marcaa = { ...e.row?.marca, quitar: true, key_modelo: e.row?.key };
-                                PopupAgregarMarca.open({
-                                    editObject: { ...e.row?.marca, quitar: true, key_modelo: e.row?.key },
-                                    // TODO
-                                    // tiene que ir todo el e.row
-                                    // para que edirte el
-                                    // MDL.inventario.saveModelo(modelo).then(async (resp: any) => {
-                                    onSuccess: () => {
-                                        if (this.table) {
-                                            this.table.loadData();
-                                            this.state.time = new Date().getTime();
-                                        }
-                                    }
-                                })
-                            }}>
-                                <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                    <ImageLabel
-                                        {...e}
-                                        src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time}
-                                        style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={8} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.marca?.descripcion ? e.row?.marca?.descripcion : ""}</SText>
-                            </SView> : null}
-                    </>}
-                />
-
-
-
-                <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={130}
-                    data={(e) => e.row?.tipo_producto?.descripcion}
-                    textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
-                    customComponent={e => {
-                        if (!e.data) return;
-                        return <>
-                            {(e.row.key_tipo_producto) ?
-                                <SView col={"xs-12"} center row onPress={() => {
-                                    FormularioTipoProducto.open({
-                                        editObject: e.row.tipo_producto,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                                this.state.time = new Date().getTime();
-                                            }
-                                        }
-                                    })
-                                }}>
-                                    <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                        <ImageLabel {...e} src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
-                                    </SView>
-                                    <SView width={8} />
-                                    <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.tipo_producto?.descripcion}</SText>
                                 </SView> : null}
                         </>
                     }
@@ -681,25 +461,8 @@ export default class tableta111 extends Component {
                     }}
                 />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
-                <DinamicTable.Col
-                    key={"contactos_"}
-                    label='Contactos'
-                    width={120}
-                    data={(e) => (e.row.contactos ?? []).map(p => p?.key_cliente)}
-                    customComponent={e => (
-                        <SView row>
-                            {(e.row.contactos ?? []).map((p, index) => {
-                                return <SView center row>
-                                    <SView style={{ width: 24, height: 24, borderRadius: 24, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.card }} center row >
-                                        {p?.key_cliente ? (<SImage src={`${SSocket.api.root}usuario/${p?.key_cliente}`} style={{ resizeMode: "cover" }} />) : null}
-                                    </SView>
-                                    <SView width={5} />
-                                </SView>
-                            })}
-                        </SView>
-                    )}
-                />
-                <DinamicTable.Col
+
+                {/* <DinamicTable.Col
                     key={"contactos2_"}
                     label='Contactos'
                     width={300}
@@ -716,7 +479,7 @@ export default class tableta111 extends Component {
                             })}
                         </SView>
                     )}
-                />
+                /> */}
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
@@ -732,12 +495,4 @@ export default class tableta111 extends Component {
             }} />
         </SPage >
     }
-}
-const ImageLabel = (props) => {
-    return <SView row style={{ alignItems: "center", }}>
-        <SView style={{ width: 25, height: 25, borderRadius: 4, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", backgroundColor: STheme.color.card + "66", }}>
-            <SImage src={props.src} enablePreview srcPreview={props.srcPreview} style={{ resizeMode: "cover", }} /> </SView>
-        <SView width={8} />
-        <SText flex style={props.textStyle} numberOfLines={props.colData.wrap ? 0 : 1} >{props.data}</SText>
-    </SView>
 }
