@@ -362,6 +362,8 @@ export default class table extends Component {
                     }
                     }
                 />
+
+                
                 <DinamicTable.Col key={"observacion"} label='Observación' width={150}
                     textStyle={{
                         fontSize: 12,
