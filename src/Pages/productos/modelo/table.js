@@ -454,6 +454,20 @@ export default class table extends Component {
 					}}
 					data={(e) => e.row.observacion} />
 
+				<DinamicTable.Col key="stock" label="Stock" width={70}
+					dataType="number"
+					sumExcel
+					cellStyle={{ alignItems: "center", justifyContent: "center" }}
+					data={(e) => e.row?.stock ?? 0}
+					customComponent={e => {
+						const stock = e.row?.stock ?? 0;
+						const color = stock > 0 ? STheme.color.success : STheme.color.danger;
+						return (
+							<SText color={color} fontSize={13} bold numberOfLines={1}>{stock}</SText>
+						);
+					}}
+				/>
+
 				<DinamicTable.Col wrap key="precio_c"
 					label="P. Compra"
 					width={110} height={60}
@@ -485,7 +499,7 @@ export default class table extends Component {
 							<>
 								{(e.data) ?
 									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
-										<SText color={STheme.color.success} fontSize={13} numberOfLines={0}>  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data)}	 </SText>
+										<SText color={STheme.color.success} fontSize={13} numberOfLines={0}>  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data)}  </SText>
 									</SView> : null}
 							</>
 						);
