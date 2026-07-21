@@ -221,11 +221,14 @@ export default class reporteMoviminetos extends Component {
 						<SText fontSize={13} color={STheme.color.text + "99"}>Cargando movimientos...</SText>
 					</SView>
 				)}
+				
 				renderNoResults={() => (
 					<SView col={"xs-12"} center padding={24}>
 						<SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron movimientos en el rango seleccionado.</SText>
 					</SView>
 				)}
+
+
 				renderError={({ error }) => (
 					<SView col={"xs-12"} padding={16}>
 						<SText fontSize={13} color={STheme.color.danger}>Error: {error?.message || String(error)}</SText>
@@ -554,7 +557,7 @@ export default class reporteMoviminetos extends Component {
 					dateFormat="yyyy-MM-dd hh:mm:ss"
 				/>
 
-				{}
+				{ }
 
 				<DinamicTable.Col
 					key="codigo_comprobante"
@@ -584,7 +587,7 @@ export default class reporteMoviminetos extends Component {
 					}}
 				/>
 
-				{}
+				{ }
 
 				<DinamicTable.Col
 					key="empresa_tipo_pago"
@@ -620,7 +623,7 @@ export default class reporteMoviminetos extends Component {
 					data={e => e.row?.moneda?.descripcion ?? 0}
 				/>
 
-				{}
+				{ }
 
 				<DinamicTable.Col
 					key="monto_base"
@@ -641,7 +644,7 @@ export default class reporteMoviminetos extends Component {
 						);
 					}}
 				/>
-				{}
+				{ }
 
 				<DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
 					if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
@@ -661,11 +664,11 @@ export default class reporteMoviminetos extends Component {
 										Linking.openURL(url);
 									}}
 								>
-									{}
-									{}
+									{ }
+									{ }
 									{this.iconotipoArchivo(p.name, p.type)}
 
-									{}
+									{ }
 								</SView>
 							))}
 						</SView>

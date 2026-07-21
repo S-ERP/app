@@ -319,6 +319,11 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("barcode");
                         }
                     },
+                    "activo": {
+                        col: "xs-12",
+                        defaultValue: this.props.editObject ? !!this.props.editObject?.activo : true,
+                        label: "Activo", type: "checkBox",
+                    },
                     "codigo_ref": {
                         col: "xs-5.5",
                         icon: <SView />,
@@ -513,6 +518,7 @@ export default class FormularioModelo extends Component<Props> {
                         precio_compra_moneda: data?.precio_compra_moneda,
                         key_tipo_producto: this.state.key_tipo_producto,
                         descripcion: data.descripcion,
+                        activo: data.activo ? 1 : 0,
                         observacion: data.observacion,
                         barcode: data.barcode,
                         precio_compra: parseFloat(data.precio_compra ?? 0),
