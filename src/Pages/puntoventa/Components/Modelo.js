@@ -3,7 +3,7 @@ import { SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-co
 import MDL from '../../../MDL';
 import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
-export default class Modelo extends Component {
+export default class Modelo222222 extends Component {
     constructor(props) {
         super(props);
         this.modelos = [];
@@ -29,8 +29,15 @@ export default class Modelo extends Component {
             return;
         }
         const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
+
+        console.clear();
+        console.log(JSON.stringify(modelos));
         let monedas = MDL.empresa.monedas?.length ? MDL.empresa.monedas : await MDL.empresa.getMonedas();
-        this.modelos = modelos.map(e => ({
+
+        const puedeVerModelosInactivos = MDL.rolesPermisos.getPermiso({ url: "/productos/modelo", permiso: "ver_modelos_inactivos" });
+
+
+        this.modelos = (puedeVerModelosInactivos ? modelos : modelos.filter(e => e.activo != 0)).map(e => ({
             ...e,
             compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
             venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
@@ -45,6 +52,8 @@ export default class Modelo extends Component {
             if (nombreA > nombreB) return 1;
             return 0;
         });
+
+
         this.forceUpdate();
     }
     modificarStock = (key, delta) => {
@@ -58,6 +67,9 @@ export default class Modelo extends Component {
         }
         return false;
     };
+    // buildRowStyle = ({ item }) => {
+    //     return item?.activo == 0 ? { opacity: 0.45 } : {};
+    // };
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
@@ -104,6 +116,7 @@ export default class Modelo extends Component {
                                         margin={4}
                                         style={{
                                             overflow: "hidden",
+                                            // ...this.buildRowStyle({ item: producto }),
                                         }}
                                         onPress={() => {
                                             if (this.props.conStock && producto.stock <= 0) {
@@ -138,8 +151,12 @@ export default class Modelo extends Component {
                                                 </SView>
                                                 <SView>
                                                     {producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)}
+                                                    {/* {producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} >activo {producto?.activo} </SText>)} */}
                                                 </SView>
                                             </SView>
+
+
+
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
                                                 <SView style={{ flex: 1, paddingRight: 8 }}>
                                                     <SText fontSize={14} color={STheme.color.text} numberOfLines={2} >{producto?.descripcion} </SText>

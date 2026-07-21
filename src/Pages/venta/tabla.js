@@ -581,8 +581,8 @@ export default class tabla extends Component {
 				hoverStyle={{ backgroundColor: STheme.color.card + "30" }}
 				buildRowStyle={({ item }) => Number(item?.__original?.estado) === 0 ? { opacity: 0.45 } : {}}
 				listFooterComponent={() => <SHr height={60} />}
-				onEvent={(e) => { if (e.evt === "render") {  } }}
-				onSelectionChange={() => {  }}
+				onEvent={(e) => { if (e.evt === "render") { } }}
+				onSelectionChange={() => { }}
 				renderHeaderActions={() => null}
 				renderLoading={() => (
 					<SView col={"xs-12"} center padding={24}>
@@ -638,8 +638,8 @@ export default class tabla extends Component {
 					}
 				}}
 			>
-				{}
-				{}
+				{ }
+				{ }
 				<DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
 					data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
 					cellStyle={{ padding: 4, gap: 4 }}
@@ -827,7 +827,7 @@ export default class tabla extends Component {
 
 				<DinamicTable.Col key="cuotas_cantidad_pagadas"
 					label="# Pago"
-					sumTotal={['', 0]} width={74} height={60}
+					sumTotal={['', 0]} width={70} height={60}
 					dataType="number"
 					sumExcel
 					cellStyle={{ backgroundColor: STheme.color.success + "33" }}
@@ -845,7 +845,7 @@ export default class tabla extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={110} height={60}
+				<DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={125} height={60}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + (Number(row.monto_amortizado_base) || 0), 0);
 						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -890,7 +890,7 @@ export default class tabla extends Component {
 
 					dataType="number"
 					sumExcel
-					width={60} height={60}
+					width={70} height={60}
 
 					cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
 
@@ -910,7 +910,7 @@ export default class tabla extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={130} height={60}
+				<DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={125} height={60}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((Number(row.cuotas?.total_base) || 0) - (Number(row.monto_amortizado_base) || 0)), 0);
 						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -951,7 +951,7 @@ export default class tabla extends Component {
 						);
 					}} />
 
-				<DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" sumTotal={['', 0]} width={60} height={60}
+				<DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Mora" sumTotal={['', 0]} width={70} height={60}
 
 					dataType="number"
 					sumExcel
@@ -969,7 +969,7 @@ export default class tabla extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col wrap key="en_mora" label="Mora" width={130} height={60}
+				<DinamicTable.Col wrap key="en_mora" label="Mora" width={125} height={60}
 					sumTotal={rows => {
 						const totalBase = rows.reduce((s, row) => s + (Number(row.cuotas_en_mora?.monto_base) || 0), 0);
 						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
@@ -1066,7 +1066,7 @@ export default class tabla extends Component {
 
 	render() {
 		return (
-			<SPage title="Tabla de Ventas" disableScroll>
+			<SPage title="Tabla de Veddntas" disableScroll>
 				<SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
 					<SView col={"xs-12 sm-8.2 lg-3.3"} row center>
 						<FechaFullFilter
