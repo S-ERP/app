@@ -126,7 +126,7 @@ export default class table extends Component {
 		);
 	}
 	render() {
-		return <SPage title={"Modelos alvaro"} disableScroll >
+		return <SPage title={"Modelos"} disableScroll >
 			<SView row col={"xs-12"} style={{
 				backgroundColor: "transparent",
 				borderBottomWidth: 1,
@@ -543,8 +543,8 @@ export default class table extends Component {
 					data={(e) => e.row.activo == null ? "" : (e.row.activo ? "Activo" : "Inactivo")}
 					customComponent={e => {
 						if (e.row.activo == null) return;
-						const color = e.row.activo ? STheme.color.blue : STheme.color.danger;
-						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: color + "44", borderWidth: 1, borderColor: color }}>
+						const color = e.row.activo ? "#017aff" : STheme.color.danger;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: color + "99", borderWidth: 1, borderColor: color }}>
 							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
 						</SView>
 					}}
