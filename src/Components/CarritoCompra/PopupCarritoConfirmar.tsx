@@ -187,7 +187,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         </SView>
                         <SView flex height={40} borderRadius={8} center backgroundColor={colorCompra}
                             onPress={() => { SPopup.close("popup-compra-completada"); SNavigation.navigate("/venta/profile2", { pk: key_compra }); }}>
-                            <SText color={STheme.color.text} center>Ver compra</SText>
+                            <SText color={STheme.color.white} center>Ver compra</SText>
                         </SView>
                         <SView flex height={40} borderRadius={8} center backgroundColor={colorCompra + "44"}
                             style={{ borderWidth: 1, borderColor: colorCompra }}

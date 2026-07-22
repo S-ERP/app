@@ -1,12 +1,14 @@
 import React from "react";
-import { SHr, SMath, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SHr, SMath, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import FiltroMoneda from "../FiltroMoneda";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
 import ReciboCarta from "../PDF/venta/ReciboCarta";
-const HEADER_COLOR = "#198754";
+import { ColorCompraVenta } from "../../Config/theme";
+
+const colorVenta = ColorCompraVenta.venta;
 interface ClienteType {
     key?: string;
     nit?: string;
@@ -98,7 +100,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             content: (
                 <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24}
                     style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }}>
-                    <SView width={80} height={80} borderRadius={40} backgroundColor={"#198754"} center style={{ marginBottom: 16 }}> <SText fontSize={36} color="white">✔</SText> </SView>
+                    <SView width={80} height={80} borderRadius={40} backgroundColor={colorVenta} center style={{ marginBottom: 16 }}> <SText fontSize={36} color="white">✔</SText> </SView>
                     <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Venta realizada con éxito!</SText>
                     <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}> Tu transacción se ha completado correctamente. </SText>
                     <SView row col="xs-12 md-11" style={{ justifyContent: "space-between", gap: 16, width: "100%", flexWrap: "nowrap" }}>
@@ -106,12 +108,12 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             onPress={() => SPopup.close("popup-venta-completada")}>
                             <SText color={STheme.color.background} center>Salir</SText>
                         </SView>
-                        <SView flex height={40} borderRadius={8} center backgroundColor={"#198754"}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={colorVenta}
                             onPress={() => { SPopup.close("popup-venta-completada"); SNavigation.navigate("/venta/profile2", { pk: key_venta }); }}>
-                            <SText color={STheme.color.text} center>Ver venta</SText>
+                            <SText color={STheme.color.white} center>Ver venta</SText>
                         </SView>
-                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.card}
-                            style={{ borderWidth: 1, borderColor: "#198754" }}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={colorVenta + "22"}
+                            style={{ borderWidth: 1, borderColor: colorVenta }}
                             onPress={() => { ReciboCarta.imprimir(key_venta); }}>
                             <SText color={STheme.color.text} center>Imprimir PDF</SText>
                         </SView>
@@ -294,16 +296,19 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         const total = subtotal2 - totalDescuento;
         return (
             <SView col={"xs-12"} height>
-                <SView row style={{ backgroundColor: HEADER_COLOR, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
-                    <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
-                        onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
-                        <SIconApp name="Arrow" fill={STheme.color.text} />
-                    </SView>
-                    <SText fontSize={16} bold color={STheme.color.text}>{"Resumen de Venta"}</SText>
-                    <SView flex />
-                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
-                        onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
-                        <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
+                <SView style={{ position: "relative", overflow: "hidden" }}>
+                    <SGradient colors={[colorVenta, "#4d8a2e"]} deg={120} />
+                    <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
+                        <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
+                            onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
+                            <SIconApp name="Arrow" fill={STheme.color.white + "cc"} />
+                        </SView>
+                        <SText fontSize={16} bold color={STheme.color.white}>{"Resumen de Venta"}</SText>
+                        <SView flex />
+                        <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
+                            onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>
+                            <SText fontSize={10} bold color={STheme.color.white}>{"✕"}</SText>
+                        </SView>
                     </SView>
                 </SView>
                 <SView flex>
@@ -345,7 +350,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             <SText>{almacen?.descripcion}</SText>
                         </SView>
                         <SHr h={20} />
-                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 2, borderColor: STheme.color.card }}>
+                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 1, borderColor: colorVenta + "40", backgroundColor: colorVenta + "0a" }}>
                             <SView row style={{ justifyContent: "space-between", marginBottom: 6 }}>
                                 <SText fontSize={13} color={STheme.color.text}>{"Subtotal:"}</SText>
                                 <SText fontSize={13} bold color={STheme.color.text}>
@@ -358,11 +363,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                                     {"- "}{monedaActual?.observacion ?? "Bs"}{" "}{SMath.formatMoney(totalDescuento || 0, 2)}
                                 </SText>
                             </SView>
-                            <SView style={{ borderColor: STheme.color.gray, borderBottomWidth: 2, marginBottom: 6 }} />
+                            <SView style={{ borderColor: colorVenta + "30", borderBottomWidth: 1, marginBottom: 6 }} />
                             <SView row style={{ justifyContent: "space-between", alignItems: "center" }}>
                                 <SText fontSize={18} color={STheme.color.text}>{"Total:"}</SText>
                                 <SView style={{ flex: 1, alignItems: "flex-end" }}>
-                                    <SText fontSize={18} bold color={STheme.color.text} numberOfLines={1} adjustsFontSizeToFit>
+                                    <SText fontSize={18} bold color={colorVenta} numberOfLines={1} adjustsFontSizeToFit>
                                         {monedaActual?.observacion ?? "Bs"}{" "}{SMath.formatMoney(total, 2)}
                                     </SText>
                                 </SView>
@@ -370,10 +375,17 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         </SView>
                     </SView>
                 </SView>
-                <SView style={{ backgroundColor: STheme.color.card, borderTopWidth: 1, borderTopColor: STheme.color.gray, paddingHorizontal: 14, paddingVertical: 10 }}>
-                    <SView style={{ backgroundColor: HEADER_COLOR, borderRadius: 4, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
+                <SView style={{
+                    backgroundColor: STheme.color.background, borderTopWidth: 1, borderTopColor: STheme.color.lightGray + "50",
+                    paddingHorizontal: 14, paddingVertical: 10,
+                    shadowColor: "#000", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.08, shadowRadius: 12,
+                }}>
+                    <SView style={{
+                        backgroundColor: colorVenta, borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center",
+                        shadowColor: colorVenta, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8,
+                    }}
                         onPress={() => this.handleOnPress()}>
-                        <SText fontSize={14} bold color={STheme.color.text}>{"Confirmar venta"}</SText>
+                        <SText fontSize={14} bold color={STheme.color.white}>{"Confirmar venta"}</SText>
                     </SView>
                 </SView>
             </SView>
