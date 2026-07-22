@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { SView, SPage, SHr, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
@@ -150,7 +150,6 @@ export default class reporteMoviminetos extends Component {
 	}
 	async loadInitialData() {
 		try {
-			console.log("📦 Cargando movimientos de caja...");
 			const empresaKey = MDL.empresa.select?.key;
 			if (!empresaKey) throw new Error("Empresa no seleccionada.");
 			const { fecha_inicio, fecha_fin } = this.state;
@@ -192,7 +191,6 @@ export default class reporteMoviminetos extends Component {
 				estado_venta: mov.key_compra_venta ? (compraVentaMap[mov.key_compra_venta]?.estado ?? null) : null,
 			}));
 
-			console.log("DATOS MOVIMIENTOS:", processedData);
 			return processedData;
 		} catch (error) {
 			console.error("❌ Error al cargar movimientos:", error);
@@ -221,11 +219,13 @@ export default class reporteMoviminetos extends Component {
 						<SText fontSize={13} color={STheme.color.text + "99"}>Cargando movimientos...</SText>
 					</SView>
 				)}
+
 				renderNoResults={() => (
 					<SView col={"xs-12"} center padding={24}>
 						<SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron movimientos en el rango seleccionado.</SText>
 					</SView>
 				)}
+
 				renderError={({ error }) => (
 					<SView col={"xs-12"} padding={16}>
 						<SText fontSize={13} color={STheme.color.danger}>Error: {error?.message || String(error)}</SText>
@@ -324,7 +324,6 @@ export default class reporteMoviminetos extends Component {
 				loadInitialState={async () => ({
 					sorters: [{ key: "fecha_movimiento", order: "desc", type: "date" }],
 				})}
-				{...Config.table.applyTheme()}
 
 				listFooterComponent={() => {
 					return <SHr height={100} />
@@ -524,7 +523,7 @@ export default class reporteMoviminetos extends Component {
 						const monto = e.row?.monto ?? 0;
 						return SMath.formatMoney(monto, 2);
 					}}
-					cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73", color: "blue" }}
+					cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73" }}
 					customComponent={e => {
 						const anulado = this.esRegistroAnulado(e.row, e.dinamicTable?.data);
 						return (
@@ -554,8 +553,6 @@ export default class reporteMoviminetos extends Component {
 					dateFormat="yyyy-MM-dd hh:mm:ss"
 				/>
 
-				{}
-
 				<DinamicTable.Col
 					key="codigo_comprobante"
 					wrap
@@ -583,8 +580,6 @@ export default class reporteMoviminetos extends Component {
 						);
 					}}
 				/>
-
-				{}
 
 				<DinamicTable.Col
 					key="empresa_tipo_pago"
@@ -620,8 +615,6 @@ export default class reporteMoviminetos extends Component {
 					data={e => e.row?.moneda?.descripcion ?? 0}
 				/>
 
-				{}
-
 				<DinamicTable.Col
 					key="monto_base"
 					wrap label="MONTO BASE"
@@ -641,7 +634,6 @@ export default class reporteMoviminetos extends Component {
 						);
 					}}
 				/>
-				{}
 
 				<DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
 					if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
@@ -655,17 +647,11 @@ export default class reporteMoviminetos extends Component {
 							{(e.row.vouchers ?? []).map((p, index) => (
 								<SView key={index} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4, marginRight: 4, }}
 									onPress={() => {
-										console.log("📦 VOUCHER..." + JSON.stringify(p));
-
 										const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
 										Linking.openURL(url);
 									}}
 								>
-									{}
-									{}
 									{this.iconotipoArchivo(p.name, p.type)}
-
-									{}
 								</SView>
 							))}
 						</SView>

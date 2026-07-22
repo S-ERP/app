@@ -11,6 +11,7 @@ import InputSelector from '../../../Components/Selectores/InputSelector';
 import Cuentas_anidadas from '../../conta/cuentas_anidadas';
 import CuentasAnidadas from '../../conta/cuentas_anidadas';
 import SForm2 from '../../../Components/SForm2';
+import ToolTips from '../../../Components/ToolTips';
 
 type Props = {
     editObject?: any,
@@ -319,11 +320,22 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("barcode");
                         }
                     },
+                    "activo": {
+                        col: "xs-12",
+                        defaultValue: this.props.editObject ? !!this.props.editObject?.activo : true,
+                        label: <SView row center>
+                            <SText fontSize={16}>Activar en Ventas</SText>
+                            <SView width={8} />
+                            <ToolTips type="info" small descripcion='Al desactivar esta opción, este modelo dejará de estar disponible en el punto de venta para los cajeros.' />
+                        </SView>,
+                        type: "checkBox",
+                    },
+
                     "codigo_ref": {
                         col: "xs-5.5",
                         icon: <SView />,
                         defaultValue: (!this.props.editObject?.codigo_ref ? "" : this.props.editObject?.codigo_ref),
-                        label: "Codigo de Rewwferencia", placeholder: "[ 000 ]",
+                        label: "Codigo de Referencia", placeholder: "[ 000 ]",
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("precio_compra");
                         }
@@ -513,6 +525,7 @@ export default class FormularioModelo extends Component<Props> {
                         precio_compra_moneda: data?.precio_compra_moneda,
                         key_tipo_producto: this.state.key_tipo_producto,
                         descripcion: data.descripcion,
+                        activo: data.activo ? 1 : 0,
                         observacion: data.observacion,
                         barcode: data.barcode,
                         precio_compra: parseFloat(data.precio_compra ?? 0),
