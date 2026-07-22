@@ -501,7 +501,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     </SView>
                     <SHr />
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
-                        <SText color={STheme.color.lightGray}>{"Descripción"}</SText>
+                        <SText color={STheme.color.text}>{"Descripción"}</SText>
                         <SInput type="textArea" ref={ref => this.inputDescripcionVenta = ref} placeholder={"Descripción de la compra"} style={{ height: 50, padding: 3, marginVertical: 4 }} />
                     </SView>
                     <SHr />
@@ -518,11 +518,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         </SView>
                     </SView>
                 </SView>
-                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", paddingHorizontal: 14, paddingVertical: 10 }}>
+                <SView style={{ backgroundColor: STheme.color.background + "99", borderTopWidth: 1, borderTopColor: STheme.color.darkGray, paddingHorizontal: 14, paddingVertical: 10 }}>
+
+                    {/* <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", paddingHorizontal: 14, paddingVertical: 10 }}> */}
                     <SView row style={{ gap: 8 }}>
-                        <SView flex style={{ backgroundColor: "#3a3f4a", borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: STheme.color.darkGray, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        // <SView flex style={{ backgroundColor: "#3a3f4a", borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => this.handleOnPress2(true)}>
-                            <SText fontSize={13} bold color={STheme.color.text}>{"Guardar Recurrente"}</SText>
+                            <SText fontSize={13} bold color={STheme.color.background}>{"Guardar Recurrente"}</SText>
                         </SView>
                         <SView flex style={{ backgroundColor: "#a046e8", borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => {
@@ -540,7 +543,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 }
                                 this.handleOnPress2(false);
                             }}>
-                            <SText fontSize={14} bold color={STheme.color.text}>{"Confirmar"}</SText>
+                            <SText fontSize={14} bold color={STheme.color.background}>{"Confirmar"}</SText>
                         </SView>
                     </SView>
                 </SView>

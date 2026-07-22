@@ -1,5 +1,5 @@
 import React from "react";
-import { SImage, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import { FlatList } from "react-native";
@@ -12,10 +12,10 @@ const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
     colors: {
         background: "#252a33",
-        header: "#a046e8",
+        header: "#9f29ff",
         danger: "#dc3545",
-        itemBg: "#303744",
-        mutedDark: "#1f242d",
+        itemBg: "#5eff00", // activo
+        mutedDark: "#00eeff",
         accent: "#6cffb4",
         error: "#bf0505",
         border: "#434c5d",
@@ -32,7 +32,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     position: "absolute", top: 8, right: 8,
                     width: "100%", maxWidth: 300,
                     height: "95%", maxHeight: 620,
-                    backgroundColor: UI.colors.background,
+                    backgroundColor: STheme.color.background + "99",
                     borderRadius: 8,
                     overflow: "hidden",
                     shadowColor: "#000",
@@ -73,12 +73,13 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         const items = MDL.carrito.carrito_compra?.items || [];
         const { selectedMoneda } = this.state;
         return (
-            <SView col={"xs-12"} height style={{ backgroundColor: UI.colors.background }}>
+            <SView col={"xs-12"} height >
+                {/* <SView col={"xs-12"} height style={{ backgroundColor: UI.colors.background }}> */}
                 <SView row style={{ backgroundColor: UI.colors.header, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}>
                         <SText fontSize={UI.font.icon}>🛍️</SText>
                     </SView>
-                    <SText fontSize={UI.font.title} bold color={STheme.color.text}>{"Carrito de Compras"}</SText>
+                    <SText fontSize={UI.font.title} bold color={STheme.color.text}>{"Carrito de Comprasss"}</SText>
                     <SView flex />
                     <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center" }}
                         onPress={() => SPopup.close("PopupCarrito")}>
@@ -94,7 +95,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }}
                     />
                 </SView>
-                <SView row style={{ paddingHorizontal: 10, paddingVertical: 8, alignItems: "center" }}>
+
+
+                {/* <SView style={{ backgroundColor: STheme.color.background+"99", borderTopWidth: 1, borderTopColor: STheme.color.darkGray, paddingHorizontal: 14, paddingVertical: 10 }}> */}
+
+                <SView row style={{ paddingHorizontal: 10, paddingVertical: 4, alignItems: "center", borderBottomWidth: 1, borderBottomColor: STheme.color.lightGray, }}>
+                    {/* <SView row style={{ paddingHorizontal: 10, paddingVertical: 8, alignItems: "center", borderTopWidth: 1, borderTopColor: STheme.color.darkGray,  }}> */}
                     <SText fontSize={UI.font.small} color={STheme.color.text}>
                         {"Productos ("}{MDL.carrito.carrito_compra.cantidad_items}{")"}
                     </SText>
@@ -103,13 +109,16 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         {"Sub: "}{selectedMoneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.carrito.carrito_compra?.monto_total || 0)}
                     </SText>
                 </SView>
+
+
                 <FlatList
                     data={items}
                     renderItem={({ item }) => <ItemComp item={item} moneda={selectedMoneda} />}
                     keyExtractor={(item) => item.modelo?.key ?? Math.random().toString()}
-                    style={{ flex: 1, paddingHorizontal: 8 }}
+                    style={{ flex: 1, paddingHorizontal: 8, paddingTop: 8 }}
                 />
-                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <SView style={{ backgroundColor: STheme.color.background + "99", borderTopWidth: 1, borderTopColor: STheme.color.darkGray, paddingHorizontal: 14, paddingVertical: 10 }}>
+                    {/* <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: UI.colors.border, paddingHorizontal: 14, paddingVertical: 10 }}> */}
                     <SView row style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Total Compra"}</SText>
                         <SText fontSize={UI.font.small} bold color={STheme.color.text}>
@@ -208,7 +217,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     };
     return (
         <SView style={{
-            backgroundColor: Number(precioFormateado) > 0 ? UI.colors.itemBg : "#3a1515",
+            backgroundColor: Number(precioFormateado) > 0 ? STheme.color.background : STheme.color.danger + "33",
             borderRadius: 10,
             padding: 10,
             marginBottom: 10,
@@ -220,9 +229,10 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     <SView style={{ width: 35, height: 35, borderRadius: 2, overflow: "hidden" }}>
                         <SImage src={(SSocket.api as any).inventario + "modelo/" + (modelo?.key ?? "")} style={{ resizeMode: "cover" }} />
                     </SView>
-                    <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center" }}
+                    <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
+                        // <SView style={{ position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: "#ff5252", justifyContent: "center", alignItems: "center" }}
                         onPress={() => MDL.carrito.removerItemAlCarritoDeCompras(item)}>
-                        <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
+                        <SText fontSize={10} bold color={STheme.color.background}>{"✕"}</SText>
                     </SView>
                 </SView>
                 <SView flex>
@@ -230,10 +240,11 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         {modelo?.descripcion ?? "Producto"}
                     </SText>
                     <SView row style={{ alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <SView flex style={{ backgroundColor: Number(precioFormateado) > 0 ? UI.colors.mutedDark : UI.colors.error, borderRadius: 2, height: 18, justifyContent: "center", }}>
+                        {/* <SView flex style={{   borderRadius: 2, height: 18, justifyContent: "center", }}> */}
+                        <SView flex style={{ backgroundColor: Number(precioFormateado) > 0 ? STheme.color.darkGray + "55" : STheme.color.danger, borderRadius: 2, height: 18, justifyContent: "center", }}>
                             {puedeEditarCosto ? (
                                 <SView row center style={{ paddingHorizontal: 2 }}>
-                                    <SText fontSize={UI.font.tiny} color={UI.colors.accent} style={{ marginRight: 2 }}>{moneda?.observacion ?? "BS"}</SText>
+                                    <SText fontSize={UI.font.tiny} color={"#5eff00"} style={{ marginRight: 2 }}>{moneda?.observacion ?? "BS"}</SText>
                                     <SView flex>
                                         <SInput2
                                             ref={inputPrecioRef}
@@ -291,7 +302,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             {subtotalStr}
                         </SText>
                     </SView>
-                    <SView style={{ height: 20, backgroundColor: UI.colors.mutedDark, borderRadius: 2, marginTop: 6 }}>
+                    <SView style={{ height: 20, borderRadius: 2, marginTop: 6 }}>
+                        {/* <SView style={{ height: 20, backgroundColor: STheme.color.background, borderRadius: 2, marginTop: 6 }}> */}
                         <SInput
                             style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }}
                             type="date"
