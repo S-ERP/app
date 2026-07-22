@@ -41,7 +41,8 @@ export default class Categoria extends Component {
     renderCategorias() {
         const { tipomodelos, selectedCategory, selectedMoneda } = this.state;
         return (
-            <SView col={"xs-12 md-12"} backgroundColor={STheme.color.darkGray} row center style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
+            <SView col={"xs-12 md-12"} row center style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
+                {/* <SView col={"xs-12 md-12"} backgroundColor={STheme.color.background} row center style={{ paddingHorizontal: 8, paddingVertical: 8 }}> */}
                 <SView col={"xs-12"} row>
                     <ScrollView horizontal scroll={false} style={{ flex: 1 }} contentContainerStyle={{ minWidth: "100%" }}>
                         {tipomodelos.map((cat) => (
