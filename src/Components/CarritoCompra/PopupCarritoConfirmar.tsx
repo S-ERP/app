@@ -334,7 +334,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 <SView flex>
                     <SView padding={8}>
                         <SView row col={"xs-12"} style={{ alignItems: "center", marginBottom: 4 }}>
-                            <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del proveedor:"}</SText>
+                            <SText col={"xs-6"} color={STheme.color.text}>{"Datos del proveedor:"}</SText>
                             <SView col={"xs-6"} row style={{ alignItems: "center", justifyContent: "flex-end" }}>
                                 <SInput height={30} style={{ marginTop: 0 }} label={"Con factura"} type="checkBox" labelStyle={{ left: 12 }} onChangeText={(val) => this.setState({ factura: val })} />
                             </SView>
@@ -343,7 +343,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SInput
                             ref={ref => (this.inputCliente = ref)}
                             inputStyle={this.state.factura || this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
-                            icon={<SText color={STheme.color.lightGray} bold>{"Proveedor: "}</SText>}
+                            icon={<SText color={STheme.color.text} bold>{"Proveedor: "}</SText>}
                             placeholder={"Escriba el nombre del proveedor"}
                             height={40}
                             type="select2"
@@ -437,7 +437,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             <SInput
                                 inputStyle={{ borderColor: STheme.color.danger, borderWidth: 1 }}
                                 ref={ref => this.inputRazonSocial = ref}
-                                icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>}
+                                icon={<SText color={STheme.color.text} bold>{"Razón Social:"}</SText>}
                                 placeholder={"Razón Social"}
                                 value={this.state.razon_social}
                                 onChangeText={(valor) => this.setState({ razon_social: valor || "" })}
@@ -446,7 +446,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             <SInput
                                 inputStyle={{ borderColor: STheme.color.danger, borderWidth: 1 }}
                                 ref={ref => this.inputNit = ref}
-                                icon={<SText color={STheme.color.lightGray} bold>{"NIT:"}</SText>}
+                                icon={<SText color={STheme.color.text} bold>{"NIT:"}</SText>}
                                 placeholder={"NIT"}
                                 value={this.state.nit}
                                 onChangeText={(e) => {
@@ -472,10 +472,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     </SView>
                     <SHr />
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
-                        <SText color={STheme.color.lightGray}>{"Seleccione el almacén"}</SText>
+                        <SText color={STheme.color.text}>{"Seleccione el almacén"}</SText>
                         <SelectorAlmacen
                             selectFirst
-                            icon={<SText color={STheme.color.lightGray} bold>{"Almacén:"}</SText>}
+                            icon={<SText color={STheme.color.text} bold>{"Almacén:"}</SText>}
                             placeholder={"Escriba el nombre del almacén"}
                             filterData={(e) => e.key_sucursal == MDL.caja.activa?.key_sucursal}
                             onChangeSelect={e => this.setState({ almacen: e })}
@@ -489,7 +489,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     ? arr.find((a: any) => a.key === actual.key)
                                     : arr.find((a: any) => a.tipo === "base");
                             }}
-                            icon={<SText color={STheme.color.lightGray} bold>{"Moneda:"}</SText>}
+                            icon={<SText color={STheme.color.text} bold>{"Moneda:"}</SText>}
                             placeholder={"Moneda"}
                             onChangeSelect={e => {
                                 this.setState({ moneda: e });
@@ -506,7 +506,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     </SView>
                     <SHr />
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 8 }}>
-                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 2, borderColor: STheme.color.card }}>
+                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 2, borderColor: STheme.color.lightGray }}>
                             <SView row style={{ justifyContent: "space-between", alignItems: "center" }}>
                                 <SText fontSize={18} color={STheme.color.text}>{"Total:"}</SText>
                                 <SView style={{ flex: 1, alignItems: "flex-end" }}>
