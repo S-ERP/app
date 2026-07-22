@@ -30,7 +30,6 @@ export default class ventas extends React.Component {
         dataSucursalesCards: [],
         loading: true,
         empresaSeleccionada: null,
-        clientesActivos: {},
     };
 
     componentDidMount() {
@@ -299,7 +298,6 @@ export default class ventas extends React.Component {
             this.loadTimeSeries(empresaSeleccionada.key),
             this.loadTopProducts(empresaSeleccionada.key),
             this.loadMetodoPago(empresaSeleccionada.key),
-            this.cargarClientesActivos()
         ]);
         if (this._mounted) this.setState({ loading: false });
     };
@@ -458,32 +456,6 @@ export default class ventas extends React.Component {
             }
         }
     };
-
-    cargarClientesActivos = async () => {
-        console.log(MDL.empresa.select)
-        try {
-
-            const res = await MDL.inventario.execute_function(
-                "get_clientes_suscripcion_resumen_por_sucursal_filtro_fecha",
-                [MDL.empresa.select.key, null, this.state.fecha_inicio, this.state.fecha_fin]
-            );
-
-            console.log("CLIENTES ACTIVOS:", res);
-
-            // const clientesActivos = {};
-
-            // (res || []).forEach(item => {
-            //     clientesActivos[item.key_sucursal] = Number(item.clientes_activos);
-            // });
-
-            this.setState({
-                clientesActivos: res || []
-            });
-
-        } catch (e) {
-            console.error("Error cargando clientes activos:", e);
-        }
-    }
 
     extractTipoProductoLista = (raw) => {
         if (!Array.isArray(raw)) return [];
@@ -862,7 +834,6 @@ export default class ventas extends React.Component {
             let maxMonto = Math.max(...dataSucursalesCards.map(branch => branch.total));
             let minMonto = Math.min(...dataSucursalesCards.map(branch => branch.total));
             // let montos = dataSucursalesCards.map(branch => branch.total);
-            console.log("clientesActivos", this.state.clientesActivos);
 
             return (
                 <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }}>
@@ -872,70 +843,51 @@ export default class ventas extends React.Component {
                             <SText fontSize={12} color={STheme.color.lightGray}>Mostrando todas las sucursales en el período seleccionado.</SText>
                         </SView>
                     </SView>
-                    {dataSucursalesCards.map((branch) => {
-                        console.log("branchhh", branch);
-                        // let clientesActivos = this.state.clientesActivos?.[branch.key] || 0;
-                        console.log(this.state.clientesActivos);
-
-                        let clientesActivos = this.state.clientesActivos?.find(item => item.key_sucursal === branch.key);
-                        // const clientesActivos =
-                        //     this.state.clientesActivos?.find(
-                        //         item => item.key_sucursal === branch.key_sucursal
-                        //     )?.clientes_activos || 0;
-                        console.log(clientesActivos);
-
-                        return (
-                            <SView key={branch.key} col="xs-12 md-6 lg-3" padding={5}>
-                                <SView
-                                    card
-                                    style={{
-                                        padding: 15,
-                                        minHeight: 140,
-                                        borderRadius: 10,
-                                        borderTopWidth: 3,
-                                        // borderColor: STheme.color.gray + "44",
-                                        borderTopColor: setColor(branch.total, maxMonto, minMonto),
-                                        borderWidth: 0.5,
-                                        borderColor: setColor(branch.total, maxMonto, minMonto),
-                                        backgroundColor: STheme.color.card,
-                                    }}
-                                >
-                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <SText fontSize={14} bold>{branch.name}</SText>
-                                        <SView style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: STheme.color.card, alignItems: 'center', justifyContent: 'center' }}>
-                                            {/* <SText fontSize={12} color={STheme.color.white}>{branch.key?.substring(0, 3) || "#"}</SText> */}
-                                            <SIcon name="iconEdifcio" width={22} height={22} fill={STheme.color.text} />
-                                        </SView>
+                    {dataSucursalesCards.map((branch) => (
+                        <SView key={branch.key} col="xs-12 md-6 lg-3" padding={5}>
+                            <SView
+                                card
+                                style={{
+                                    padding: 15,
+                                    minHeight: 140,
+                                    borderRadius: 10,
+                                    borderTopWidth: 3,
+                                    // borderColor: STheme.color.gray + "44",
+                                    borderTopColor: setColor(branch.total, maxMonto, minMonto),
+                                    borderWidth: 0.5,
+                                    borderColor: setColor(branch.total, maxMonto, minMonto),
+                                    backgroundColor: STheme.color.card,
+                                }}
+                            >
+                                <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <SText fontSize={14} bold>{branch.name}</SText>
+                                    <SView style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: STheme.color.card, alignItems: 'center', justifyContent: 'center' }}>
+                                        {/* <SText fontSize={12} color={STheme.color.white}>{branch.key?.substring(0, 3) || "#"}</SText> */}
+                                        <SIcon name="iconEdifcio" width={22} height={22} fill={STheme.color.text} />
                                     </SView>
-                                    <SHr />
-                                    <SView>
-                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                            <SText fontSize={12} color={STheme.color.lightGray}>Clientes activos</SText>
-                                            <SText fontSize={12} bold>{Number(clientesActivos?.clientes_activos || 0).toLocaleString('es-ES')}</SText>
-                                            {/* <SText fontSize={8} color={STheme.color.white}>{branch.key || "#"}</SText> */}
-
-                                        </SView>
-                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                            <SText fontSize={12} color={STheme.color.lightGray}>Nuevos clientes</SText>
-                                            <SText fontSize={12} bold>{Number(clientesActivos?.nuevos_clientes || 0).toLocaleString('es-ES')}</SText>
-                                        </SView>
-                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                            <SText fontSize={12} color={STheme.color.lightGray}>Reactivaciones</SText>
-                                            <SText fontSize={12} bold>{Number(clientesActivos?.clientes_reactivados || 0).toLocaleString('es-ES')}</SText>
-                                        </SView>
-                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                            <SText fontSize={12} color={STheme.color.lightGray}>Cantidad de Ventas</SText>
-                                            <SText fontSize={12} bold>{Number(branch.cantidadVentas || 0).toLocaleString('es-ES')}</SText>
-                                        </SView>
-                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <SText fontSize={12} color={STheme.color.lightGray}>Ingresos/{`${monedaBase?.observacion ?? ''}`}</SText>
-                                            <SText fontSize={12} bold>{`${monedaBase?.observacion ?? ''} ${Number(branch.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
-                                        </SView>
+                                </SView>
+                                <SHr />
+                                <SView>
+                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                        <SText fontSize={12} color={STheme.color.lightGray}>Clientes</SText>
+                                        <SText fontSize={12} bold>{Number(branch.clients || 0).toLocaleString('es-ES')}</SText>
+                                    </SView>
+                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                        <SText fontSize={12} color={STheme.color.lightGray}>Becados</SText>
+                                        <SText fontSize={12} bold>{Number(branch.becados || 0).toLocaleString('es-ES')}</SText>
+                                    </SView>
+                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                        <SText fontSize={12} color={STheme.color.lightGray}>Cantidad de Ventas</SText>
+                                        <SText fontSize={12} bold>{Number(branch.cantidadVentas || 0).toLocaleString('es-ES')}</SText>
+                                    </SView>
+                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <SText fontSize={12} color={STheme.color.lightGray}>Ingresos/{`${monedaBase?.observacion ?? ''}`}</SText>
+                                        <SText fontSize={12} bold>{`${monedaBase?.observacion ?? ''} ${Number(branch.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
                                     </SView>
                                 </SView>
                             </SView>
-                        );
-                    })}
+                        </SView>
+                    ))}
                 </SView>
             );
         };
