@@ -129,6 +129,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             type: "custom",
                             customInputClass: InputSelector,
                             // customStyle: "tipoPago" as any,
+                            style: { padding: 0, borderWidth: 0 },
+
                             // style: { width: "100%", textTransform: "capitalize" },
                             defaultValue: this.props.editObject?.key_tipo_pago || "",
                             options: this.state.tipo_pago.map((item: any) => ({

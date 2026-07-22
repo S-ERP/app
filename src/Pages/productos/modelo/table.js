@@ -104,6 +104,10 @@ export default class table extends Component {
 				);
 			}
 			this.modelos = data_mejorada;
+
+
+			console.clear();
+			console.log(JSON.stringify(data_mejorada));
 			return data_mejorada;
 		} catch (error) {
 			console.error("Error real en loadData:", error);
@@ -126,7 +130,7 @@ export default class table extends Component {
 		);
 	}
 	render() {
-		return <SPage title={"Modelos"} disableScroll >
+		return <SPage title={"Modelosddddddd"} disableScroll >
 			<SView row col={"xs-12"} style={{
 				backgroundColor: "transparent",
 				borderBottomWidth: 1,
@@ -353,6 +357,41 @@ export default class table extends Component {
 				<DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
 
 				<DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
+
+
+
+				<DinamicTable.Col key={"tipo_prodducto_tipo"} label='Tipo Producto' width={85}
+					data={(e) => e.row?.tipo_producto?.tipo}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+					customComponent={e => {
+						if (!e.data) return;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+						</SView>
+					}}
+				/>
+
+					<DinamicTable.Col key={"tipo_proddducto_tidpo"} label='Tiempo' width={85}
+					data={(e) => e.row?.tipo_producto?.tipo}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+					customComponent={e => {
+						if (!e.data) return;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+						</SView>
+					}}
+				/>
+
+						<DinamicTable.Col key={"tipo_proddductodfs_tidpo"} label='Personas' width={85}
+					data={(e) => e.row?.tipo_producto?.tipo}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+					customComponent={e => {
+						if (!e.data) return;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+						</SView>
+					}}
+				/>
 
 				<DinamicTable.Col key="nombre" label="Nombre" headerStyle={{ paddingLeft: 4 }} width={150} height={60}
 					data={(e) => e.row.descripcion ?? ""}

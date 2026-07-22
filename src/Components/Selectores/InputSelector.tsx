@@ -650,6 +650,7 @@ class ListSelectorContent extends React.Component<{
                     return <View
                         style={{
                             padding: 8,
+                            // alvaro
                             backgroundColor: isSelected ? STheme.color.card : 'transparent',
                             // @ts-ignore
                             cursor: 'pointer',
