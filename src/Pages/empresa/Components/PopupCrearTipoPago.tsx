@@ -58,21 +58,29 @@ export default class PopupCrearTipoPago extends Component<Props> {
     }
 
     componentDidMount(): void {
+        // console.log("[PopupCrearTipoPago] componentDidMount, editObject:", this.props.editObject);
+
         // Traer tipos de pago
         MDL.caja.tipo_pago_getAll().then(item => {
-            this.setState({ tipo_pago: Object.values(item) });
-        }).catch(e => console.error(e));
+            const tipo_pago = Object.values(item);
+            this.setState({ tipo_pago });
+        }).catch(e => console.error("Error en tipo_pago_getAll:", e));
+
         // Traer monedas
         MDL.empresa.getFull().then(empresa => {
+            // console.info(`[PopupCrearTipoPago] empresa.getFull exito, ${empresa.monedas?.length ?? 0} monedas:`, empresa.monedas);
             this.setState({ monedas: empresa.monedas }, () => {
                 if (this.form && this.props.editObject?.key_moneda) {
                     const moneda = this.state.monedas.find(c => c.key == this.props.editObject.key_moneda);
                     if (moneda) {
                         this.form.setValues({ key_moneda: moneda.key });
+                    } else {
+                        console.warn("No se encontro la moneda:", this.props.editObject.key_moneda);
                     }
                 }
             });
-        });
+        }).catch(e => console.error("Error en empresa.getFull:", e));
+
         // Traer cuentas
         MDL.contabilidad.getCuentas().then(cuentas => {
             const arrCuentas = Object.values(cuentas);
@@ -80,26 +88,23 @@ export default class PopupCrearTipoPago extends Component<Props> {
                 const hijas = arrCuentas.filter((c: any) => c.codigo.startsWith(cuenta.codigo) && c.codigo != cuenta.codigo);
                 cuenta.cantidad_hijas = hijas.length;
             });
-            this.setState({ cuentas: arrCuentas.sort((a: any, b: any) => a.codigo > b.codigo ? 1 : -1) }, () => {
-                if (this.form && this.props.editObject?.key_cuenta_contable) {
-                    const cuenta = this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable);
-                    if (cuenta) {
-                        this.form.setValues({ key_cuenta_contable: cuenta.key });
-                    }
+            const sortedCuentas = arrCuentas.sort((a: any, b: any) => a.codigo > b.codigo ? 1 : -1);
+            const cuentaSeleccionada: any = this.props.editObject?.key_cuenta_contable
+                ? sortedCuentas.find((c: any) => c.key == this.props.editObject?.key_cuenta_contable)
+                : null;
+            if (this.props.editObject?.key_cuenta_contable) {
+                console.warn(`NO ENCONTRADA (key_cuenta_contable: ${this.props.editObject.key_cuenta_contable})`);
+            }
+            this.setState({ cuentas: sortedCuentas, cuentaSeleccionada }, () => {
+                if (this.form && cuentaSeleccionada) {
+                    this.form.setValues({ key_cuenta_contable: cuentaSeleccionada.key });
                 }
             });
-        }).catch(e => console.error(e));
+        }).catch(e => console.error("Error en getCuentas:", e));
     }
 
     render() {
         if (!this.state.cuentas || !this.state.monedas || !this.state.tipo_pago) return <SLoad />
-        let cuentaSeleccionada;
-        if (this.props?.editObject?.key_cuenta_contable) {
-            let allCuentas = this.state.cuentas;
-            console.log("allCuentas", allCuentas)
-            cuentaSeleccionada = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable)[0]
-            console.log("cuentaSeleccionada", cuentaSeleccionada)
-        }
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"} Tipo De Pago</SText>
             <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
@@ -152,7 +157,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             value:
                                 this.state.cuentaSeleccionada
                                     ? `${this.state.cuentaSeleccionada.codigo} - ${this.state.cuentaSeleccionada.descripcion}`
-                                    : this.props.editObject?.key_cuenta_contable ? `${cuentaSeleccionada?.codigo} - ${cuentaSeleccionada?.descripcion}` : ""
+                                    : ""
                             ,
                             //cuentaSeleccionada
                             // options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0).map((item: any) => ({
@@ -188,7 +193,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                         }} withoutFeedback>
                                         <CuentasAnidadas
                                             select={(cuentaSelec: any) => {
-                                                console.log("SELECCIONADO:", cuentaSelec)
+                                                // console.log("[PopupCrearTipoPago] cuenta contable seleccionada desde CuentasAnidadas:", cuentaSelec);
                                                 this.setState({
                                                     cuentaSeleccionada: cuentaSelec
                                                 });
@@ -201,8 +206,10 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 });
                             },
                             onChangeText: (value: string) => {
+                                // console.log("[PopupCrearTipoPago] key_cuenta_contable onChangeText, value:", value);
                                 const cuenta = this.state.cuentas.find(c => c.key == value);
                                 if (cuenta?.key_moneda) {
+                                    console.log("Moneda seleccionada:", cuenta.key_moneda);
                                     this.form?.setValues({ key_moneda: cuenta.key_moneda });
                                 }
                             }
@@ -239,11 +246,23 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             defaultValue: this.props.editObject?.key_pasarela_empresa,
                         },
                     }}
+                    onSubmitError={(e: any) => {
+                        const labels = (e?.invalidKeys || []).map((k: string) => this.form?.props?.inputs?.[k]?.label || k);
+                        console.error(`Faltan datos en el formulario de Tipo de Pago: ${labels.join(", ")} (keys: ${(e?.invalidKeys || []).join(", ")})`);
+                        SNotification.send({
+                            key: "tipo_pago",
+                            title: "Faltan datos",
+                            body: `Debes completar: ${labels.join(", ")}`,
+                            time: 3000,
+                            color: STheme.color.danger,
+                        });
+                    }}
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;
-                        data.key_cuenta_contable = this.state.cuentaSeleccionada.key
-                        console.log("dataaa", data)
-                        SNotification.send({ key: "tipo_pago", title: "Tipo de pago", type: "loading" });
+                        data.key_cuenta_contable = this.state.cuentaSeleccionada?.key;
+
+                        // console.log(`modo: ${data.key ? "editar" : "crear"}, data:`, data);
+
                         MDL.caja.empresa_tipo_pago_save(data).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp);
                             SNotification.send({
@@ -254,7 +273,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 color: STheme.color.success,
                             });
                         }).catch((e: any) => {
-                            console.error("Error al guardar el Tipo de pago:", e);
+                            console.error(`Error al guardar el Tipo de pago. data enviada:`, data, "error:", e);
                             SNotification.send({
                                 key: "tipo_pago",
                                 title: "Error",
