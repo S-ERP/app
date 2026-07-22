@@ -322,7 +322,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 <SView row style={{ backgroundColor: "#a046e8", paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                         onPress={() => SPopup.close("PopupCarritoConfirmar")}>
-                        <SIconApp name="Arrow" fill={STheme.color.white+"99999"} />
+                        <SIconApp name="Arrow" fill={STheme.color.white+"88"} />
                     </SView>
                     <SText fontSize={16} bold color={STheme.color.white}>{"Confirmar Compra"}</SText>
                     <SView flex />

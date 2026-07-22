@@ -32,7 +32,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     position: "absolute", top: 8, right: 8,
                     width: "100%", maxWidth: 300,
                     height: "95%", maxHeight: 620,
-                    backgroundColor: STheme.color.background + "99",
+                    backgroundColor: STheme.color.background,
+                    // backgroundColor: STheme.color.background + "99",
                     borderWidth: 1,
                     borderColor: STheme.color.card,
                     borderRadius: 8,
@@ -80,11 +81,11 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}>
                         <SText fontSize={UI.font.icon}>🛍️</SText>
                     </SView>
-                    <SText fontSize={UI.font.title} bold color={STheme.color.text}>{"Carrito de Compras"}</SText>
+                    <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrito de Compras"}</SText>
                     <SView flex />
                     <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center" }}
                         onPress={() => SPopup.close("PopupCarrito")}>
-                        <SText fontSize={UI.font.tiny} bold color={STheme.color.text}>{"✕"}</SText>
+                        <SText fontSize={UI.font.tiny} bold color={STheme.color.white}>{"✕"}</SText>
                     </SView>
                 </SView>
                 <SView style={{ padding: 8 }}>
