@@ -15,11 +15,6 @@ type Props = {
     onSuccess?: Function,
 }
 
-const cuentaToText = (c: any) => {
-    if (!c) return "";
-    return `${c.codigo} - ${c.descripcion}`
-}
-
 export default class PopupCrearTipoPago extends Component<Props> {
     static open(props: Props) {
         SPopup.open({
@@ -58,8 +53,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
     }
 
     componentDidMount(): void {
-        // console.log("[PopupCrearTipoPago] componentDidMount, editObject:", this.props.editObject);
-
         // Traer tipos de pago
         MDL.caja.tipo_pago_getAll().then(item => {
             const tipo_pago = Object.values(item);
@@ -68,7 +61,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
 
         // Traer monedas
         MDL.empresa.getFull().then(empresa => {
-            // console.info(`[PopupCrearTipoPago] empresa.getFull exito, ${empresa.monedas?.length ?? 0} monedas:`, empresa.monedas);
             this.setState({ monedas: empresa.monedas }, () => {
                 if (this.form && this.props.editObject?.key_moneda) {
                     const moneda = this.state.monedas.find(c => c.key == this.props.editObject.key_moneda);
@@ -92,8 +84,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
             const cuentaSeleccionada: any = this.props.editObject?.key_cuenta_contable
                 ? sortedCuentas.find((c: any) => c.key == this.props.editObject?.key_cuenta_contable)
                 : null;
-            if (this.props.editObject?.key_cuenta_contable) {
-                console.warn(`NO ENCONTRADA (key_cuenta_contable: ${this.props.editObject.key_cuenta_contable})`);
+            if (this.props.editObject?.key_cuenta_contable && !cuentaSeleccionada) {
+                console.warn(`No se encontro la cuenta contable: ${this.props.editObject.key_cuenta_contable}`);
             }
             this.setState({ cuentas: sortedCuentas, cuentaSeleccionada }, () => {
                 if (this.form && cuentaSeleccionada) {
@@ -145,36 +137,13 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         },
                         "key_cuenta_contable": {
                             label: "Cuenta Contable",
-                            //type: "custom",
                             customInputClass: InputSelector,
                             style: { width: "100%" },
-                            // defaultValue: this.props.editObject?.key_cuenta_contable || "",
-                            // defaultValue:
-                            //     this.state.cuentaSeleccionada
-                            //         ? `${this.state.cuentaSeleccionada.codigo} - ${this.state.cuentaSeleccionada.descripcion}`
-                            //         : ""
-                            // ,
                             value:
                                 this.state.cuentaSeleccionada
                                     ? `${this.state.cuentaSeleccionada.codigo} - ${this.state.cuentaSeleccionada.descripcion}`
                                     : ""
                             ,
-                            //cuentaSeleccionada
-                            // options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0).map((item: any) => ({
-                            //     label: cuentaToText(item),
-                            //     value: item.key,
-                            //     customComponent: (e: any) => {
-                            //         let moneda = this.state.monedas.find((m: any) => m.key == e.data.key_moneda);
-                            //         if (!moneda) {
-                            //             moneda = this.state.monedas.find((m: any) => m.tipo == "base");
-                            //         }
-                            //         return <SView>
-                            //             <SText fontSize={12} color={STheme.color.lightGray}>{e.data.codigo}</SText>
-                            //             <SText fontSize={12} color={STheme.color.lightGray}>{moneda?.descripcion}</SText>
-                            //         </SView>
-                            //     },
-                            //     data: item
-                            // })),
                             isRequired: true,
                             onPress: () => {
                                 SPopup.open({
@@ -193,7 +162,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                         }} withoutFeedback>
                                         <CuentasAnidadas
                                             select={(cuentaSelec: any) => {
-                                                // console.log("[PopupCrearTipoPago] cuenta contable seleccionada desde CuentasAnidadas:", cuentaSelec);
                                                 this.setState({
                                                     cuentaSeleccionada: cuentaSelec
                                                 });
@@ -206,10 +174,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 });
                             },
                             onChangeText: (value: string) => {
-                                // console.log("[PopupCrearTipoPago] key_cuenta_contable onChangeText, value:", value);
                                 const cuenta = this.state.cuentas.find(c => c.key == value);
                                 if (cuenta?.key_moneda) {
-                                    console.log("Moneda seleccionada:", cuenta.key_moneda);
                                     this.form?.setValues({ key_moneda: cuenta.key_moneda });
                                 }
                             }
@@ -241,7 +207,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         },
                         "key_pasarela_empresa": {
                             col: "xs-5.5 sm-5",
-                            // type: "checkBox",
                             label: "Key Pasarela empresa",
                             defaultValue: this.props.editObject?.key_pasarela_empresa,
                         },
@@ -260,8 +225,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;
                         data.key_cuenta_contable = this.state.cuentaSeleccionada?.key;
-
-                        // console.log(`modo: ${data.key ? "editar" : "crear"}, data:`, data);
 
                         MDL.caja.empresa_tipo_pago_save(data).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp);
