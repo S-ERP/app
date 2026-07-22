@@ -44,6 +44,34 @@ const inputs = (): SInputsCofig => {
 
 
         },
+        tipoPago: {
+            LabelStyle: {
+                position: "absolute",
+                top: -8,
+                left: 0,
+                fontSize: 12,
+                width: "100%",
+            },
+            View: {
+                height: 40,
+                borderRadius: 2,
+                marginTop: 30,
+                paddingStart: 4,
+                backgroundColor: STheme.color.card,
+                borderWidth: 2,
+                borderColor: STheme.color.lightGray + "55",
+            },
+            InputText: {
+                paddingLeft: 8,
+                paddingRight: 8,
+                color: STheme.color.text,
+                placeholderTextColor: STheme.color.gray
+            },
+            error: {
+                borderWidth: 2,
+                borderColor: "#FA8081"
+            },
+        },
         erp: {
             labelProps: {
                 clean: true

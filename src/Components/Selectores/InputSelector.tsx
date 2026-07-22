@@ -546,7 +546,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 onKeyPress={this.handleKeyPress.bind(this)}
                 // @ts-ignore
                 onKeyDown={(e: any) => { if (e.key === 'Escape') { e.preventDefault(); this.setState({ displayValue: this.originalDisplayValue, filteredOptions: this.props.options }); this.hasEditedValue = false; SPopup.close("InputSelector"); this.removeScrollListener(); if (this.inputRef) this.inputRef.blur(); } }}
-                style={[style, this.props.style, this.state.error ? { borderColor: STheme.color.error, borderWidth: 2, backgroundColor: STheme.color.error + "22" } : {}]}
+                style={[style, { borderWidth: 2, borderColor: STheme.color.lightGray + "55" }, this.props.style, this.state.error ? { borderColor: STheme.color.error, borderWidth: 2, backgroundColor: STheme.color.error + "22" } : {}]}
                 ref={(ref) => this.inputRef = ref}
                 selectTextOnFocus={!this.props.value}
                 editable={!this.props.value}

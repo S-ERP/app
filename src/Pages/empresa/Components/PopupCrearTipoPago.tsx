@@ -123,6 +123,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         },
                         "descripcion": {
                             col: "xs-12",
+                            customStyle: "tipoPago" as any,
                             style: { paddingStart: 0, fontSize: 10 },
                             labelStyle: { top: -10 },
                             inputStyle: { paddingStart: 8, fontSize: 10 },
@@ -137,6 +138,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         },
                         "key_cuenta_contable": {
                             label: "Cuenta Contable",
+                            customStyle: "tipoPago" as any,
                             customInputClass: InputSelector,
                             style: { width: "100%" },
                             value:
@@ -191,7 +193,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 value: item.key,
                                 customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.descripcion}</SText>,
                                 data: item
-                            }))
+                            })),
+                            isRequired: true,
                         },
                         "habilita_venta": {
                             col: "xs-5.5 sm-4",
@@ -206,7 +209,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             defaultValue: this.props.editObject?.habilita_compra,
                         },
                         "key_pasarela_empresa": {
-                            col: "xs-5.5 sm-5",
+                            // col: "xs-5.5 sm-5",
                             label: "Key Pasarela empresa",
                             defaultValue: this.props.editObject?.key_pasarela_empresa,
                         },
@@ -225,6 +228,18 @@ export default class PopupCrearTipoPago extends Component<Props> {
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;
                         data.key_cuenta_contable = this.state.cuentaSeleccionada?.key;
+
+                        if (!data.habilita_venta && !data.habilita_compra) {
+                            console.error("[PopupCrearTipoPago] debe habilitarse para Ventas o Compras, data:", data);
+                            SNotification.send({
+                                key: "tipo_pago",
+                                title: "Faltan datos",
+                                body: "Debes habilitar el tipo de pago para Ventas o para Compras.",
+                                time: 3000,
+                                color: STheme.color.danger,
+                            });
+                            return;
+                        }
 
                         MDL.caja.empresa_tipo_pago_save(data).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp);
