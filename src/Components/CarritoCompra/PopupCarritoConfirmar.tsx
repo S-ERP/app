@@ -8,6 +8,7 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
+import { colorCompra } from "./Colores";
 type PopupCarritoConfirmarProps = {
     moneda?: any;
 }
@@ -171,7 +172,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             content: (
                 <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24}
                     style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }}>
-                    <SView width={80} height={80} borderRadius={40} backgroundColor={"#a046e8"} center style={{ marginBottom: 16 }}>
+                    <SView width={80} height={80} borderRadius={40} backgroundColor={colorCompra} center style={{ marginBottom: 16 }}>
                         <SText fontSize={36} color="white">✔</SText>
                     </SView>
                     <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Compra realizada con éxito!</SText>
@@ -181,12 +182,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             onPress={() => SPopup.close("popup-compra-completada")}>
                             <SText color={STheme.color.background} center>Salir</SText>
                         </SView>
-                        <SView flex height={40} borderRadius={8} center backgroundColor={"#a046e8"}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={colorCompra}
                             onPress={() => { SPopup.close("popup-compra-completada"); SNavigation.navigate("/venta/profile2", { pk: key_compra }); }}>
                             <SText color={STheme.color.text} center>Ver compra</SText>
                         </SView>
-                        <SView flex height={40} borderRadius={8} center backgroundColor={"#a046e844"}
-                            style={{ borderWidth: 1, borderColor: "#a046e8" }}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={colorCompra + "44"}
+                            style={{ borderWidth: 1, borderColor: colorCompra }}
                             onPress={() => { SPopup.close("popup-compra-completada"); ComprobanteCarta.imprimir(key_compra); }}>
                             <SText color={STheme.color.text} center>Imprimir PDF</SText>
                         </SView>
@@ -319,7 +320,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     render() {
         return (
             <SView col={"xs-12"} height>
-                <SView row style={{ backgroundColor: "#a046e8", paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
+                <SView row style={{ backgroundColor: colorCompra, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                         onPress={() => SPopup.close("PopupCarritoConfirmar")}>
                         <SIconApp name="Arrow" fill={STheme.color.white+"88"} />
@@ -524,7 +525,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             onPress={() => this.handleOnPress2(true)}>
                             <SText fontSize={13} bold color={STheme.color.white}>{"Guardar Recurrente"}</SText>
                         </SView>
-                        <SView flex style={{ backgroundColor: "#a046e8", borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: colorCompra, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => {
                                 if (this.state.factura && this.proveedor) {
                                     const rsActual = this.state.razon_social;

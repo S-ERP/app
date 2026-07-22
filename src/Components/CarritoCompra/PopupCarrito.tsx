@@ -6,15 +6,11 @@ import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
+import { colorCompra } from "./Colores";
 
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
-    colors: {
-        header: "#9f29ff",
-        danger: "#dc3545",
-        accent: "#6cffb4",
-    }
 };
 
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
@@ -71,13 +67,13 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         const { selectedMoneda } = this.state;
         return (
             <SView col={"xs-12"} height >
-                <SView row style={{ backgroundColor: UI.colors.header, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
+                <SView row style={{ backgroundColor: colorCompra, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
                     <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}>
                         <SText fontSize={UI.font.icon}>🛍️</SText>
                     </SView>
                     <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrito de Compras"}</SText>
                     <SView flex />
-                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center" }}
+                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
                         onPress={() => SPopup.close("PopupCarrito")}>
                         <SText fontSize={UI.font.tiny} bold color={STheme.color.white}>{"✕"}</SText>
                     </SView>
@@ -116,7 +112,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         </SText>
                     </SView>
                     <SView row style={{ gap: 8 }}>
-                        <SView flex style={{ backgroundColor: UI.colors.danger, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: STheme.color.danger, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => {
                                 SPopup.confirm({
                                     title: "¿Seguro que quieres limpiar el carrito?",
@@ -128,7 +124,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             }}>
                             <SText fontSize={UI.font.subtitle} bold color={STheme.color.white}>{"Limpiar"}</SText>
                         </SView>
-                        <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: colorCompra, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => {
                                 const items = MDL.carrito.carrito_compra?.items ?? [];
                                 const itemConPrecioInvalido = items.find(it => {
@@ -212,9 +208,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             padding: 10,
             marginBottom: 10,
             borderLeftWidth: 3,
-            borderLeftColor: Number(precioFormateado) > 0 ? UI.colors.header : UI.colors.danger,
+            borderLeftColor: Number(precioFormateado) > 0 ? colorCompra : STheme.color.danger,
             borderWidth: 1,
-            borderColor: Number(precioFormateado) > 0 ? UI.colors.header + "88" : UI.colors.danger,
+            borderColor: Number(precioFormateado) > 0 ? colorCompra + "88" : STheme.color.danger,
 
 
         }}>
@@ -239,13 +235,12 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             {puedeEditarCosto ? (
                                 <SView row center style={{ paddingHorizontal: 2 }}>
                                     <SText fontSize={UI.font.tiny} color={STheme.color.text} style={{ marginRight: 2 }} bold>{moneda?.observacion ?? "BS"}</SText>
-                                    {/* <SText fontSize={UI.font.tiny} color={"#9f29ff"} style={{ marginRight: 2 }} bold>{moneda?.observacion ?? "BS"}</SText> */}
                                     <SView flex>
                                         <SInput2
                                             ref={inputPrecioRef}
                                             name="precio"
                                             type="money"
-                                            style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: UI.colors.accent }}
+                                            style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: STheme.color.card }}
                                             defaultValue={precioFormateado}
                                             onChangeText={(e) => {
                                                 setPrecioStr(e);
