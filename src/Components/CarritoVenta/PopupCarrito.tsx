@@ -8,9 +8,8 @@ import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
-import { ColorCompraVenta } from "../../Config/theme";
 
-const colorVenta = ColorCompraVenta.venta;
+const colorVenta = "#2e7d32";
 
 type PopupCarritoProps = {}
 const UI = {
@@ -132,7 +131,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         return (
             <SView col={"xs-12"} height style={{ backgroundColor: UI.colors.background }}>
                 <SView style={{ position: "relative", overflow: "hidden" }}>
-                    <SGradient colors={[colorVenta, "#4d8a2e"]} deg={120} />
+                    <SGradient colors={[colorVenta, "#1b5e20"]} deg={120} />
                     <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center", }}>
                         <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}> <SText fontSize={UI.font.icon}>🛒</SText> </SView>
                         <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrito de Ventas"}</SText>

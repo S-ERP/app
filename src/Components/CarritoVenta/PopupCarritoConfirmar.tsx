@@ -5,9 +5,8 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
-import { ColorCompraVenta } from "../../Config/theme";
 
-const colorVenta = ColorCompraVenta.venta;
+const colorVenta = "#2e7d32";
 
 type PopupCarritoConfirmarProps = {};
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
@@ -178,7 +177,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         return (
             <SView col={"xs-12"} height>
                 <SView style={{ position: "relative", overflow: "hidden" }}>
-                    <SGradient colors={[colorVenta, "#4d8a2e"]} deg={120} />
+                    <SGradient colors={[colorVenta, "#1b5e20"]} deg={120} />
                     <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
                         <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                             onPress={() => SPopup.close("PopupCarritoConfirmar")}>

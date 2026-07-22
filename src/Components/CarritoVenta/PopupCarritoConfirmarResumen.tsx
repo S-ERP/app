@@ -6,9 +6,8 @@ import SIconApp from "../../Assets/SIconApp";
 import FiltroMoneda from "../FiltroMoneda";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
 import ReciboCarta from "../PDF/venta/ReciboCarta";
-import { ColorCompraVenta } from "../../Config/theme";
 
-const colorVenta = ColorCompraVenta.venta;
+const colorVenta = "#2e7d32";
 interface ClienteType {
     key?: string;
     nit?: string;
@@ -297,7 +296,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         return (
             <SView col={"xs-12"} height>
                 <SView style={{ position: "relative", overflow: "hidden" }}>
-                    <SGradient colors={[colorVenta, "#4d8a2e"]} deg={120} />
+                    <SGradient colors={[colorVenta, "#1b5e20"]} deg={120} />
                     <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
                         <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
                             onPress={() => SPopup.close("PopupCarritoConfirmarResumen")}>

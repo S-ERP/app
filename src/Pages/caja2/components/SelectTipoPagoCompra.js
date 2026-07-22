@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { View, SectionList } from 'react-native';
-import { SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SGradient, SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import PagarConPasarela from '../../pasarela/Components/PagarConPasarela';
 import SInput2 from '../../../Components/SForm2/SInput2';
+
+const colorCompra = "#a741e6";
+const colorVenta = "#2e7d32";
 type SelectTipoPagoCompraProps = {
     key_punto_venta: string,
     solo_para_caja: boolean,
@@ -92,10 +95,18 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         })
         this.setState({ ready: true });
     }
+    get headerColor() {
+        return this.props.compra ? colorCompra : colorVenta;
+    }
     renderItemTipoPago(item) {
         const select = item.__select
+        const headerColor = this.headerColor;
         return <SView style={{ padding: 4, }} col={"xs-12"}>
-            <SView style={{ borderWidth: 1, borderColor: select ? STheme.color.success : STheme.color.card, borderRadius: 8, overflow: "hidden", alignItems: "center" }}
+            <SView style={{
+                borderWidth: select ? 2 : 1, borderColor: select ? headerColor : STheme.color.card,
+                backgroundColor: select ? headerColor + "0d" : "transparent",
+                borderRadius: 8, overflow: "hidden", alignItems: "center",
+            }}
                 onPress={() => {
                     item.__select = !item.__select;
                     const selecteds = this.pvtp.filter(a => !!a.__select);
@@ -246,19 +257,23 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const nada = selecteds.length === 0;
         const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
         const puedeConfirmar = !nada && Math.abs(diff) <= 0.001;
-        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? "#dc3545" : diff > 0.001 ? "#e6a817" : "#198754";
+        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? STheme.color.danger : diff > 0.001 ? "#e6a817" : STheme.color.success;
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
         const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
-        const headerColor = this.props.compra ? "#a046e8" : "#198754";
+        const headerColor = this.headerColor;
+        const headerColorDark = this.props.compra ? "#6d1fc4" : "#1b5e20";
         return (
             <SView col={"xs-12"} height>
-                <SView row style={{ backgroundColor: headerColor, paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
-                    <SText fontSize={16} bold color={STheme.color.text}>{"Tipo de Pago"}</SText>
-                    <SView flex />
-                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#dc3545", justifyContent: "center", alignItems: "center" }}
-                        onPress={() => SelectTipoPagoCompra.closePopup()}>
-                        <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
+                <SView style={{ position: "relative", overflow: "hidden" }}>
+                    <SGradient colors={[headerColor, headerColorDark]} deg={120} />
+                    <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
+                        <SText fontSize={16} bold color={STheme.color.white}>{"Tipo de Pago"}</SText>
+                        <SView flex />
+                        <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
+                            onPress={() => SelectTipoPagoCompra.closePopup()}>
+                            <SText fontSize={10} bold color={STheme.color.white}>{"✕"}</SText>
+                        </SView>
                     </SView>
                 </SView>
                 {this.props.montoMaximo != null && (
@@ -312,16 +327,20 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         )
                 }
                 <SHr />
-                <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", padding: 12 }}>
+                <SView style={{
+                    backgroundColor: STheme.color.background, borderTopWidth: 1, borderTopColor: STheme.color.lightGray + "50", padding: 12,
+                    shadowColor: "#000", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.08, shadowRadius: 12,
+                }}>
                     <SView row style={{ gap: 12 }}>
-                        <SView flex style={{ backgroundColor: "#dc3545", borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: STheme.color.danger, borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
                             onPress={() => {
                                 if (!this.state.loading) SelectTipoPagoCompra.closePopup();
                             }}>
-                            <SText bold color={STheme.color.text}>{"Cancelar"}</SText>
+                            <SText bold color={STheme.color.white}>{"Cancelar"}</SText>
                         </SView>
                         <SView flex style={{
                             backgroundColor: headerColor, borderRadius: 6, paddingVertical: 10, alignItems: "center", justifyContent: "center",
+                            shadowColor: headerColor, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8,
                             opacity: (puedeConfirmar && !this.state.loading) ? 1 : 0.45
                         }}
                             onPress={(this.state.loading || !puedeConfirmar) ? undefined : async () => {
@@ -352,7 +371,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     }
                                 }
                             }}>
-                            {this.state.loading ? <SLoad /> : <SText bold color={STheme.color.text}>{"Aceptar"}</SText>}
+                            {this.state.loading ? <SLoad /> : <SText bold color={STheme.color.white}>{"Aceptar"}</SText>}
                         </SView>
                     </SView>
                 </SView>
