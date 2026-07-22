@@ -27,12 +27,14 @@ export default class SelectorAlmacen extends React.Component<SelectorAlmacenProp
         this.state.almacenes = almacenes;
         if (this.props.defaultValueTypeKey) {
             const elm = almacenes.find((elm: any) => elm.key == this.props.defaultValueTypeKey);
-            this.state.select = elm;
-            if (this.input) this.input.setValue(this.toString(elm));
-            if (this.props.onChangeSelect) {
-                this.props.onChangeSelect(elm);
+            if (elm) {
+                this.state.select = elm;
+                if (this.input) this.input.setValue(this.toString(elm));
+                if (this.props.onChangeSelect) {
+                    this.props.onChangeSelect(elm);
+                }
             }
-        } else if (this.props.selectFirst) {
+        } else if (this.props.selectFirst && almacenes[0]) {
             this.state.select = almacenes[0];
             if (this.input) this.input.setValue(this.toString(this.state.select));
             if (this.props.onChangeSelect) {
@@ -44,7 +46,7 @@ export default class SelectorAlmacen extends React.Component<SelectorAlmacenProp
         })
     }
     toString(e: any) {
-        return e.descripcion
+        return e ? e.descripcion : ""
     }
     render() {
         return <SInput {...this.props}
