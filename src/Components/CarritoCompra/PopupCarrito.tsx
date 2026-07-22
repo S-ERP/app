@@ -11,14 +11,9 @@ type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
     colors: {
-        background: "#252a33",
         header: "#9f29ff",
         danger: "#dc3545",
-        itemBg: "#5eff00", // activo
-        mutedDark: "#00eeff",
         accent: "#6cffb4",
-        error: "#bf0505",
-        border: "#434c5d",
     }
 };
 
@@ -33,7 +28,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     width: "100%", maxWidth: 300,
                     height: "95%", maxHeight: 620,
                     backgroundColor: STheme.color.background,
-                    // backgroundColor: STheme.color.background + "99",
                     borderWidth: 1,
                     borderColor: STheme.color.card,
                     borderRadius: 8,
@@ -96,7 +90,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             MDL.carrito.calcularValoresCarritDeCompras();
                         }}
                     />
-                </SView>                <SView row style={{ paddingHorizontal: 10, paddingVertical: 4, alignItems: "center", borderBottomWidth: 1, borderBottomColor: STheme.color.lightGray, }}>
+                </SView>
+                <SView row style={{ paddingHorizontal: 10, paddingVertical: 4, alignItems: "center", borderBottomWidth: 1, borderBottomColor: STheme.color.lightGray, }}>
                     <SText fontSize={UI.font.small} color={STheme.color.text}>
                         {"Productos ("}{MDL.carrito.carrito_compra?.cantidad_items}{")"}
                     </SText>
@@ -135,7 +130,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         </SView>
                         <SView flex style={{ backgroundColor: UI.colors.header, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => {
-                                const items = MDL.carrito.carrito_compra.items ?? [];
+                                const items = MDL.carrito.carrito_compra?.items ?? [];
                                 const itemConPrecioInvalido = items.find(it => {
                                     const precio = (it?.modelo as any)?.precio_compra_moneda || (it?.modelo as any)?.precio_compra || 0;
                                     return precio <= 0;

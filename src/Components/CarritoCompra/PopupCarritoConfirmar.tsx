@@ -519,8 +519,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     </SView>
                 </SView>
                 <SView style={{ backgroundColor: STheme.color.background + "99", borderTopWidth: 1, borderTopColor: STheme.color.darkGray, paddingHorizontal: 14, paddingVertical: 10 }}>
-
-                    {/* <SView style={{ backgroundColor: "#1e222b", borderTopWidth: 1, borderTopColor: "#434c5d", paddingHorizontal: 14, paddingVertical: 10 }}> */}
                     <SView row style={{ gap: 8 }}>
                         <SView flex style={{ backgroundColor: STheme.color.gray, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
                             onPress={() => this.handleOnPress2(true)}>
