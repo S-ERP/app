@@ -43,6 +43,23 @@ export default class PopupCrearTipoPago extends Component<Props> {
 
     form: SForm | undefined = undefined;
     _ref: any = {}
+
+    validarVentaCompra = (showNotification: boolean) => {
+        const habilitaVenta = this.form?._ref?.["habilita_venta"]?.getValue?.();
+        const habilitaCompra = this.form?._ref?.["habilita_compra"]?.getValue?.();
+        const valido = !!habilitaVenta || !!habilitaCompra;
+        this.setState({ errorVentaCompra: !valido });
+        if (!valido && showNotification) {
+            SNotification.send({
+                key: "tipo_pago",
+                title: "Faltan datos",
+                body: "Debes habilitar el tipo de pago para Ventas o para Compras.",
+                time: 3000,
+                color: STheme.color.danger,
+            });
+        }
+        return valido;
+    }
     state: any = {
         tipo_pago: [], // inicializamos vacio,
         cuentas: [],
@@ -111,7 +128,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             label: "Tipo de Pago",
                             type: "custom",
                             customInputClass: InputSelector,
-                            style: { width: "100%", textTransform: "capitalize" },
+                            // customStyle: "tipoPago" as any,
+                            // style: { width: "100%", textTransform: "capitalize" },
                             defaultValue: this.props.editObject?.key_tipo_pago || "",
                             options: this.state.tipo_pago.map((item: any) => ({
                                 label: item.descripcion,
@@ -123,23 +141,24 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         },
                         "descripcion": {
                             col: "xs-12",
+                            label: "Nombre del tipo de pago",
                             customStyle: "tipoPago" as any,
                             style: { paddingStart: 0, fontSize: 10 },
                             labelStyle: { top: -10 },
                             inputStyle: { paddingStart: 8, fontSize: 10 },
-                            label: "Nombre del tipo de pago",
                             placeholder: "Ingresa el nombre del tipo de pago",
                             defaultValue: this.props.editObject?.descripcion,
                             isRequired: true,
-                            onSubmitEditing: () => { this.form?.submit() },
                             icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
                                 <InputFoto ref={ref => this._ref.image_sucursal = ref} src={(SSocket.api as any).empresa + "tipo_pago/" + this.props.editObject?.key} style={{ width: 50, height: 50 }} />
-                            </SView>
+                            </SView>,
+                            onSubmitEditing: () => { this.form?.submit() },
                         },
                         "key_cuenta_contable": {
+
                             label: "Cuenta Contable",
-                            customStyle: "tipoPago" as any,
                             customInputClass: InputSelector,
+                            customStyle: "tipoPago" as any,
                             style: { width: "100%" },
                             value:
                                 this.state.cuentaSeleccionada
@@ -198,18 +217,26 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         },
                         "habilita_venta": {
                             col: "xs-5.5 sm-4",
-                            type: "checkBox",
                             label: "Habilitar en Ventas?",
+                            type: "checkBox",
+                            color: this.state.errorVentaCompra ? STheme.color.error : STheme.color.text,
                             defaultValue: this.props.editObject?.habilita_venta,
+                            onChangeText: () => {
+                                if (this.state.errorVentaCompra) this.setState({ errorVentaCompra: false });
+                            },
                         },
                         "habilita_compra": {
                             col: "xs-5.5 sm-5",
-                            type: "checkBox",
                             label: "Habilitar en Compras?",
+                            type: "checkBox",
+                            color: this.state.errorVentaCompra ? STheme.color.error : STheme.color.text,
                             defaultValue: this.props.editObject?.habilita_compra,
+                            onChangeText: () => {
+                                if (this.state.errorVentaCompra) this.setState({ errorVentaCompra: false });
+                            },
                         },
                         "key_pasarela_empresa": {
-                            // col: "xs-5.5 sm-5",
+                            col: "xs-12",
                             label: "Key Pasarela empresa",
                             defaultValue: this.props.editObject?.key_pasarela_empresa,
                         },
@@ -229,15 +256,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         data.key = this.props.editObject?.key;
                         data.key_cuenta_contable = this.state.cuentaSeleccionada?.key;
 
-                        if (!data.habilita_venta && !data.habilita_compra) {
+                        if (!this.validarVentaCompra(true)) {
                             console.error("[PopupCrearTipoPago] debe habilitarse para Ventas o Compras, data:", data);
-                            SNotification.send({
-                                key: "tipo_pago",
-                                title: "Faltan datos",
-                                body: "Debes habilitar el tipo de pago para Ventas o para Compras.",
-                                time: 3000,
-                                color: STheme.color.danger,
-                            });
                             return;
                         }
 
@@ -275,7 +295,10 @@ export default class PopupCrearTipoPago extends Component<Props> {
                     <Btn type='danger' label='CANCELAR' onPress={() => this.props.onCancel()} />
                     <SView width={8} />
                 </>}
-                <Btn type='primary' label='GUARDAR' onPress={() => this.form?.submit()} />
+                <Btn type='primary' label='GUARDAR' onPress={() => {
+                    this.validarVentaCompra(false);
+                    this.form?.submit();
+                }} />
             </SView>
         </SView>
     }
