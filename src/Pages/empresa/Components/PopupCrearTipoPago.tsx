@@ -99,7 +99,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
         if (!this.state.cuentas || !this.state.monedas || !this.state.tipo_pago) return <SLoad />
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"} Tipo De Pago</SText>
-            <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
+            <SText fontSize={16} style={{ userSelect: "text" } as any}>{this.props.editObject?.key}</SText>
 
             <ScrollView>
                 <SForm
