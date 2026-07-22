@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SInput, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SHr, SInput, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import SMath from "servisofts-component/Component/SMath";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
@@ -8,7 +8,10 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
 import SelectTipoPagoCompra from "../../Pages/caja2/components/SelectTipoPagoCompra";
-import { colorCompra } from "./Colores";
+import { ColorCompraVenta } from "../../Config/theme";
+
+const colorCompra = ColorCompraVenta.compra;
+
 type PopupCarritoConfirmarProps = {
     moneda?: any;
 }
@@ -320,16 +323,19 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     render() {
         return (
             <SView col={"xs-12"} height>
-                <SView row style={{ backgroundColor: colorCompra, paddingHorizontal: 14, paddingVertical: 8, alignItems: "center" }}>
-                    <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
-                        onPress={() => SPopup.close("PopupCarritoConfirmar")}>
-                        <SIconApp name="Arrow" fill={STheme.color.white+"88"} />
-                    </SView>
-                    <SText fontSize={16} bold color={STheme.color.white}>{"Confirmar Compra"}</SText>
-                    <SView flex />
-                    <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#dc3545", justifyContent: "center", alignItems: "center" }}
-                        onPress={() => SPopup.close("PopupCarritoConfirmar")}>
-                        <SText fontSize={10} bold color={STheme.color.text}>{"✕"}</SText>
+                <SView style={{ position: "relative", overflow: "hidden" }}>
+                    <SGradient colors={[colorCompra, "#6d1fc4"]} deg={120} />
+                    <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center" }}>
+                        <SView style={{ width: 28, height: 28, justifyContent: "center", alignItems: "center", marginRight: 8 }}
+                            onPress={() => SPopup.close("PopupCarritoConfirmar")}>
+                            <SIconApp name="Arrow" fill={STheme.color.white + "cc"} />
+                        </SView>
+                        <SText fontSize={16} bold color={STheme.color.white}>{"Confirmar Compra"}</SText>
+                        <SView flex />
+                        <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center" }}
+                            onPress={() => SPopup.close("PopupCarritoConfirmar")}>
+                            <SText fontSize={10} bold color={STheme.color.white}>{"✕"}</SText>
+                        </SView>
                     </SView>
                 </SView>
                 <SView flex>
@@ -478,6 +484,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             selectFirst
                             icon={<SText color={STheme.color.text} bold>{"Almacén:"}</SText>}
                             placeholder={"Escriba el nombre del almacén"}
+                            inputStyle={{ borderWidth: 1, borderColor: STheme.color.lightGray + "60", borderRadius: 6, backgroundColor: STheme.color.card }}
                             filterData={(e) => e.key_sucursal == MDL.caja.activa?.key_sucursal}
                             onChangeSelect={e => this.setState({ almacen: e })}
                         />
@@ -492,6 +499,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             }}
                             icon={<SText color={STheme.color.text} bold>{"Moneda:"}</SText>}
                             placeholder={"Moneda"}
+                            inputStyle={{ borderWidth: 1, borderColor: STheme.color.lightGray + "60", borderRadius: 6, backgroundColor: STheme.color.card }}
                             onChangeSelect={e => {
                                 this.setState({ moneda: e });
                                 MDL.compra_venta.setMonedaSeleccionada(e);
@@ -507,11 +515,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     </SView>
                     <SHr />
                     <SView style={{ paddingHorizontal: 10, paddingVertical: 8 }}>
-                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 2, borderColor: STheme.color.lightGray }}>
+                        <SView style={{ borderRadius: 8, padding: 12, borderWidth: 1, borderColor: colorCompra + "40", backgroundColor: colorCompra + "0a" }}>
                             <SView row style={{ justifyContent: "space-between", alignItems: "center" }}>
                                 <SText fontSize={18} color={STheme.color.text}>{"Total:"}</SText>
                                 <SView style={{ flex: 1, alignItems: "flex-end" }}>
-                                    <SText fontSize={18} bold color={STheme.color.text} numberOfLines={1} adjustsFontSizeToFit>
+                                    <SText fontSize={18} bold color={colorCompra} numberOfLines={1} adjustsFontSizeToFit>
                                         {this.state.moneda?.observacion ?? "Bs"}{" "}{SMath.formatMoney(this.state.subtotal, 2)}
                                     </SText>
                                 </SView>
@@ -519,13 +527,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         </SView>
                     </SView>
                 </SView>
-                <SView style={{ backgroundColor: STheme.color.background + "99", borderTopWidth: 1, borderTopColor: STheme.color.darkGray, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <SView style={{
+                    backgroundColor: STheme.color.background, borderTopWidth: 1, borderTopColor: STheme.color.lightGray + "50",
+                    paddingHorizontal: 14, paddingVertical: 10,
+                    shadowColor: "#000", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.08, shadowRadius: 12,
+                }}>
                     <SView row style={{ gap: 8 }}>
-                        <SView flex style={{ backgroundColor: STheme.color.gray, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{ backgroundColor: STheme.color.gray, borderRadius: 6, paddingVertical: 9, alignItems: "center", justifyContent: "center" }}
                             onPress={() => this.handleOnPress2(true)}>
                             <SText fontSize={13} bold color={STheme.color.white}>{"Guardar Recurrente"}</SText>
                         </SView>
-                        <SView flex style={{ backgroundColor: colorCompra, borderRadius: 4, paddingVertical: 8, alignItems: "center", justifyContent: "center" }}
+                        <SView flex style={{
+                            backgroundColor: colorCompra, borderRadius: 6, paddingVertical: 9, alignItems: "center", justifyContent: "center",
+                            shadowColor: colorCompra, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8,
+                        }}
                             onPress={() => {
                                 if (this.state.factura && this.proveedor) {
                                     const rsActual = this.state.razon_social;
