@@ -215,7 +215,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const precioValido = Number(precioFormateado) > 0;
     return (
         <SView style={{
-            backgroundColor: precioValido ? STheme.color.card : STheme.color.danger + "0d",
+            backgroundColor: precioValido ? colorCompra + "25": STheme.color.danger + "25",
+            // backgroundColor: precioValido ? STheme.color.card + "1c": STheme.color.danger + "0d",
             borderRadius: 12,
             padding: 10,
             marginBottom: 10,
