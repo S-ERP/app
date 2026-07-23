@@ -8,6 +8,7 @@ import SInput2 from '../../../Components/SForm2/SInput2';
 
 const colorCompra = "#a741e6";
 const colorVenta = "#2e7d32";
+const colorExito = "#2e7d32";
 type SelectTipoPagoCompraProps = {
     key_punto_venta: string,
     solo_para_caja: boolean,
@@ -257,7 +258,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const nada = selecteds.length === 0;
         const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
         const puedeConfirmar = !nada && Math.abs(diff) <= 0.001;
-        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? STheme.color.danger : diff > 0.001 ? "#e6a817" : STheme.color.success;
+        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? STheme.color.danger : diff > 0.001 ? "#e6a817" : colorExito;
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
         const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
@@ -279,26 +280,29 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                 {this.props.montoMaximo != null && (
                     <>
                         <SView row style={{ padding: 8, paddingBottom: 4, gap: 8 }}>
-                            <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center" }}>
-                                <SText fontSize={12} color={STheme.color.lightGray}>{"Monto a Pagar"}</SText>
-                                <SText bold fontSize={16}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0)))}</SText>
+                            <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center", borderWidth: 1, borderColor: STheme.color.lightGray + "40" }}>
+                                <SText bold fontSize={12} color={STheme.color.text}>{"Monto a Pagar"}</SText>
+                                <SText bold fontSize={16} color={STheme.color.text}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0)))}</SText>
                                 {this.moneda?.tipo != "base" && (
-                                    <SText fontSize={11} color={STheme.color.lightGray}>{obs}{" "}{SMath.formatMoney(montoAPagar)}{" · "}{this.moneda?.descripcion}</SText>
+                                    <SText fontSize={11} color={STheme.color.text}>{obs}{" "}{SMath.formatMoney(montoAPagar)}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
                             </SView>
-                            <SView flex style={{ backgroundColor: STheme.color.card, borderRadius: 8, padding: 10, alignItems: "center", borderWidth: 2, borderColor: statusColor }}>
-                                <SText fontSize={12} color={STheme.color.lightGray}>{"Monto Insertado"}</SText>
+                            <SView flex style={{ backgroundColor: statusColor + "18", borderRadius: 8, padding: 10, alignItems: "center", borderWidth: 2, borderColor: statusColor }}>
+                                <SText bold fontSize={12} color={statusColor}>{"Monto Insertado"}</SText>
                                 <SText bold fontSize={16} color={statusColor}>{this.moneda_base?.observacion ?? "Bs"}{" "}{SMath.formatMoney(this.calcularMontoInsertadoBase())}</SText>
                                 {this.moneda?.tipo != "base" && (
-                                    < SText fontSize={11} color={STheme.color.lightGray}>{obs}{" "}{SMath.formatMoney(montoInsertadoNum)}{" · "}{this.moneda?.descripcion}</SText>
+                                    < SText fontSize={11} color={statusColor}>{obs}{" "}{SMath.formatMoney(montoInsertadoNum)}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
                             </SView>
                         </SView>
                         <SView style={{ paddingHorizontal: 8, paddingBottom: 8 }}>
-                            <SView style={{ backgroundColor: statusColor + "22", borderRadius: 6, paddingVertical: 6, paddingHorizontal: 12, alignItems: "center" }}>
-                                <SText bold fontSize={13} color={statusColor}>{statusMsg}</SText>
+                            <SView style={{
+                                backgroundColor: statusColor, borderRadius: 6, paddingVertical: 8, paddingHorizontal: 12, alignItems: "center",
+                                shadowColor: statusColor, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.4, shadowRadius: 6,
+                            }}>
+                                <SText bold fontSize={14} color={STheme.color.white}>{statusMsg}</SText>
                                 {this.moneda?.tipo != "base" && Math.abs(diffBase) > 0.001 && (
-                                    <SText fontSize={11} color={statusColor}>{obs}{" "}{SMath.formatMoney(Math.abs(diff))}{" · "}{this.moneda?.descripcion}</SText>
+                                    <SText fontSize={11} bold color={STheme.color.white}>{obs}{" "}{SMath.formatMoney(Math.abs(diff))}{" · "}{this.moneda?.descripcion}</SText>
                                 )}
                             </SView>
                         </SView>
