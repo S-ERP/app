@@ -20,6 +20,8 @@ import lista from "./lista";
 import tabla from "./tabla";
 import import_odoo from "./import_odoo";
 import venta_grupal from "./grupal";
+import tabla_productos from "./tabla_productos";
+
 
 const model = Model.compra_venta;
 
@@ -43,6 +45,7 @@ export default SPage.combinePages("venta",
         "profile": profile,
         "profile2": profile2,
         "tabla": tabla,
+        "tabla_productos": tabla_productos,
         import_odoo,
         editar_plan_pagos,
         ...detalle,
