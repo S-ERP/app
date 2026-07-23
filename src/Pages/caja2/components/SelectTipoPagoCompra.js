@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  FlatList } from 'react-native';
+import { FlatList } from 'react-native';
 import { SGradient, SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
@@ -25,15 +25,19 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     static openPopup(props: SelectTipoPagoCompraProps) {
         SPopup.open({
             key: "SelectTipoPagoCompra",
-            type: "1",
+            type: "3",
             content: <SView style={{
-                width: 380,
-                maxWidth: "95%",
-
-                maxHeight: "95%",
-
+                position: "absolute",
+                top: 8,
+                right: 8,
+                width: "100%",
+                maxWidth: 380,
+                height: "95%",
+                maxHeight: 620,
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
+                borderWidth: 1,
+                borderColor: STheme.color.card,
                 overflow: "hidden",
                 cursor: "default",
                 userSelect: "text",
