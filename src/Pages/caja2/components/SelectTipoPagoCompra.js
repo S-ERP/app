@@ -156,7 +156,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                     </SView>
                     <SView flex col={"xs-12"} center>
                         <SView col={"xs-12"} withoutFeedback center style={{ paddingTop: 5, paddingRight: 2 }}>
-                            <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
+                            <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.lightGray + "40", borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
                                 <SText style={{ marginRight: 2 }}> {item?.moneda?.observacion ?? "BS"} </SText>
                                 <SView flex row>
                                     <SInput2 ref={ref => item.__ref = ref} autoFocus name={`monto_${item.key}`} type="money"
@@ -192,10 +192,13 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             </SView>
                             <SHr />
                             {(item?.moneda?.tipo_cambio != 1) &&
-                                <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
+                                <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.lightGray + "40", borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
                                     <SText style={{ marginRight: 2 }}>{this.moneda_base?.observacion}</SText>
                                     <SView flex row>
-                                        <SInput2 ref={ref => item.__ref_extranjera = ref} name={`monto_extranjera_${item.key}`} type="money"
+                                        <SInput2
+
+                                            ref={ref => item.__ref_extranjera = ref}
+                                            name={`monto_extranjera_${item.key}`} type="money"
                                             style={{ width: "100%", textAlign: "right", fontSize: 14, paddingRight: 4 }}
                                             defaultValue={String(parseFloat(item.monto ?? "0"))}
                                         />
@@ -203,13 +206,16 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 </SView>
                             }
                             <SHr height={2} />
-                            <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderRadius: 2, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
-                                <SText style={{ marginRight: 0, paddingLeft: 2 }} >REF:</SText>
+                            <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.lightGray + "40", borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
+                                <SText style={{ marginRight: 2 }} >REF:  </SText>
                                 <SView flex row center >
-                                    <SInput placeholder="Referencia / Descripción"
-                                        style={{ height: 32, fontSize: 14, backgroundColor: STheme.color.card + "66", paddingLeft: 2 }}
+                                    <SInput2
+
+                                        placeholder="Referencia / Descripción"
+                                        style={{ width: "100%", textAlign: "right", fontSize: 14, paddingRight: 4 }}
                                         defaultValue={item.referencia || ""}
-                                        onChangeText={(e) => { item.referencia = e; }} />
+                                        onChangeText={(e) => { item.referencia = e; }}
+                                    />
                                 </SView>
                             </SView>
                             {item.key_pasarela_empresa && (
