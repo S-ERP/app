@@ -25,19 +25,27 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     static openPopup(props: SelectTipoPagoCompraProps) {
         SPopup.open({
             key: "SelectTipoPagoCompra",
-            type: "1",
+            type: "2",
             content: <SView style={{
-                width: 380,
-                maxWidth: "95%",
-                height: "95%",
-                maxHeight: 620,
-                backgroundColor: STheme.color.background,
-                borderRadius: 8,
-                overflow: "hidden",
-                cursor: "default",
-                userSelect: "text",
-            }} withoutFeedback>
-                <SelectTipoPagoCompra {...props} />
+                width: "100%",
+                height: "100%",
+                backgroundColor: STheme.color.card,
+                justifyContent: "center",
+                alignItems: "center",
+            }}>
+                <SView style={{
+                    width: 380,
+                    maxWidth: "95%",
+                    height: "95%",
+                    maxHeight: 620,
+                    backgroundColor: STheme.color.background,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    cursor: "default",
+                    userSelect: "text",
+                }} withoutFeedback>
+                    <SelectTipoPagoCompra {...props} />
+                </SView>
             </SView>
         })
     }
