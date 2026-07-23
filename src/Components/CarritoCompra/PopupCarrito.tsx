@@ -247,14 +247,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SText>
                     <SView row style={{ alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                         <SView flex style={{
-                            backgroundColor: precioValido ? colorCompra + "12" : STheme.color.danger + "18",
-                            borderWidth: 1,
-                            borderColor: precioValido ? colorCompra + "35" : STheme.color.danger + "50",
+                            backgroundColor: precioValido ? colorCompra + "25" : STheme.color.danger + "25",
+                            borderWidth: 1.5,
+                            borderColor: precioValido ? colorCompra : STheme.color.danger,
                             borderRadius: 6, height: 22, justifyContent: "center",
                         }}>
                             {puedeEditarCosto ? (
                                 <SView row center style={{ paddingHorizontal: 4 }}>
-                                    <SText fontSize={UI.font.tiny} color={precioValido ? colorCompra : STheme.color.danger} style={{ marginRight: 2 }} bold>{moneda?.observacion ?? "BS"}</SText>
+                                    <SText fontSize={UI.font.small} color={precioValido ? colorCompra : STheme.color.danger} style={{ marginRight: 2 }} bold>{moneda?.observacion ?? "BS"}</SText>
                                     <SView flex>
                                         <SInput2
                                             ref={inputPrecioRef}
