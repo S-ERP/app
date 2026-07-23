@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList } from 'react-native';
+import { View, SectionList } from 'react-native';
 import { SGradient, SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
@@ -25,19 +25,14 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     static openPopup(props: SelectTipoPagoCompraProps) {
         SPopup.open({
             key: "SelectTipoPagoCompra",
-            type: "3",
+            type: "1",
             content: <SView style={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                width: "100%",
-                maxWidth: 380,
+                width: 380,
+                maxWidth: "95%",
                 height: "95%",
                 maxHeight: 620,
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
-                borderWidth: 1,
-                borderColor: STheme.color.card,
                 overflow: "hidden",
                 cursor: "default",
                 userSelect: "text",
@@ -140,9 +135,9 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                     this.forceUpdate();
                 }} row>
                 {!select && <>
-                    <SView style={{ width: 50, height: 50 }}>
+                    <View style={{ width: 50, height: 50 }}>
                         <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
-                    </SView>
+                    </View>
                     <SView flex center style={{ minHeight: 52, overflow: "hidden", paddingStart: 10 }}>
                         <SView col={"xs-12"}>
                             <SText key={item.key_tipo_pago} col={"xs-12"} numberOfLines={2} style={{ textAlign: "justify" }}>{item?.descripcion}</SText>
@@ -154,9 +149,9 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                 {select && <>
                     <SView flex col={"xs-12"} center>
                         <SView row col={"xs-12"} center style={{ padding: 8 }}>
-                            <SView style={{ width: 40, alignItems: 'flex-end' }}>
+                            <View style={{ width: 40, alignItems: 'flex-end' }}>
                                 <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} width={26} height={26} />
-                            </SView>
+                            </View>
                             <SView width={2} />
                             <SView flex>
                                 <SText key={item.key_tipo_pago} numberOfLines={2} fontSize={12} style={{ textTransform: "uppercase" }}>{item.tipo_pago ? item.descripcion : item.key_tipo_pago}</SText>
@@ -270,6 +265,18 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     calcularMontoInsertado() {
         return SMath.formatMoney(this.calcularMontoInsertadoNum());
     }
+    agruparPorMoneda(lista) {
+        const grupos = {};
+        lista.forEach(item => {
+            const key = item.key_moneda;
+            const descripcion = item.moneda?.descripcion || "Sin moneda";
+            if (!grupos[key]) {
+                grupos[key] = { title: descripcion, key_moneda: key, data: [] };
+            }
+            grupos[key].data.push(item);
+        });
+        return Object.values(grupos);
+    }
     render() {
         const montoAPagar = Number(this.props.montoMaximo ?? 0) / Number(this.moneda?.tipo_cambio || 1);
         const obs = this.moneda?.observacion ?? "Bs";
@@ -332,10 +339,15 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                 {
                     this.state.ready
                         ? (
-                            <FlatList
+                            <SectionList
                                 style={{ flex: 1, paddingHorizontal: 4 }}
-                                data={this.pvtp}
+                                sections={this.agruparPorMoneda(this.pvtp)}
                                 keyExtractor={(item, index) => item.key + "_" + index}
+                                renderSectionHeader={({ section }) => (
+                                    <SView style={{ paddingTop: 8, paddingBottom: 2, paddingLeft: 8, backgroundColor: STheme.color.background }}>
+                                        <SText bold fontSize={14} color={STheme.color.lightGray}>{section.title}</SText>
+                                    </SView>
+                                )}
                                 renderItem={({ item }) => this.renderItemTipoPago(item)}
                             />
                         )
