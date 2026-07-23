@@ -172,25 +172,38 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     showCompraPopup(key_compra: string) {
         SPopup.open({
             key: "popup-compra-completada",
+            style: { backgroundColor: "rgba(0,0,0,0.55)" },
             content: (
                 <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24}
-                    style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }}>
+                    style={{
+                        borderRadius: 16, maxWidth: "100%", alignItems: "center",
+
+                        //esto es la sombra
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 10 },
+                        shadowOpacity: 0.4,
+                        shadowRadius: 30,
+                    }}>
                     <SView width={80} height={80} borderRadius={40} backgroundColor={colorCompra} center style={{ marginBottom: 16 }}>
                         <SText fontSize={36} color="white">✔</SText>
                     </SView>
                     <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Compra realizada con éxito!</SText>
                     <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}>Tu transacción se ha completado correctamente. </SText>
                     <SView row col="xs-12 md-11" style={{ justifyContent: "space-between", gap: 16, width: "100%", flexWrap: "nowrap" }}>
-                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.black}
+                            // <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.danger}
+                            style={{ shadowColor: STheme.color.black, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8 }}
+                            // style={{ shadowColor: STheme.color.danger, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8 }}
                             onPress={() => SPopup.close("popup-compra-completada")}>
-                            <SText color={STheme.color.background} center>Salir</SText>
+                            <SText color={STheme.color.white} center>Salir</SText>
                         </SView>
                         <SView flex height={40} borderRadius={8} center backgroundColor={colorCompra}
+                            style={{ shadowColor: colorCompra, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8 }}
                             onPress={() => { SPopup.close("popup-compra-completada"); SNavigation.navigate("/venta/profile2", { pk: key_compra }); }}>
                             <SText color={STheme.color.white} center>Ver compra</SText>
                         </SView>
                         <SView flex height={40} borderRadius={8} center backgroundColor={colorCompra + "44"}
-                            style={{ borderWidth: 1, borderColor: colorCompra }}
+                            style={{ borderWidth: 1, borderColor: colorCompra, shadowColor: colorCompra, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 5 }}
                             onPress={() => { SPopup.close("popup-compra-completada"); ComprobanteCarta.imprimir(key_compra); }}>
                             <SText color={STheme.color.text} center>Imprimir PDF</SText>
                         </SView>

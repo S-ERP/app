@@ -43,6 +43,12 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                     overflow: "hidden",
                     cursor: "default",
                     userSelect: "text",
+                    //esto es la sombra
+                    overflow: "hidden",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 10 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 30,
                 }} withoutFeedback>
                     <SelectTipoPagoCompra {...props} />
                 </SView>
