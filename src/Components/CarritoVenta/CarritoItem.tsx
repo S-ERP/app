@@ -80,8 +80,8 @@ const CarritoItem = () => {
                 <SView width={50} height={50} center style={{ backgroundColor: ColorCompraVenta.venta, borderRadius: 8, justifyContent: "center", alignItems: "center" }}>
                     <SIconApp name="ventaCarro" fill={STheme.color.white} width={35} height={35} style={{ left: 6, position: "absolute" }} />
                 </SView>
-                <SView style={{ width: 25, height: 25, backgroundColor: STheme.color.text, borderRadius: 100, position: "absolute", justifyContent: "center", alignItems: "center", top: -14, right: -14 }}>
-                    <SText fontSize={10} center color={STheme.color.primary} bold>{MDL.carrito.carrito_venta.cantidad_items}</SText>
+                <SView style={{ width: 25, height: 25, backgroundColor: STheme.color.lightGray, borderRadius: 100, position: "absolute", justifyContent: "center", alignItems: "center", top: -14, right: -14 }}>
+                    <SText fontSize={10} center color={STheme.color.black} bold>{MDL.carrito.carrito_venta.cantidad_items}</SText>
                 </SView>
             </Animated.View>
         </GestureDetector>
