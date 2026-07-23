@@ -9,6 +9,7 @@ import SInput2 from '../../../Components/SForm2/SInput2';
 const colorCompra = "#a741e6";
 const colorVenta = "#2e7d32";
 const colorExito = "#2e7d32";
+const colorVuelto = "#b8690e";
 type SelectTipoPagoCompraProps = {
     key_punto_venta: string,
     solo_para_caja: boolean,
@@ -258,7 +259,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         const nada = selecteds.length === 0;
         const diff = MDL.contabilidad.round(montoInsertadoNum - montoAPagar);
         const puedeConfirmar = !nada && Math.abs(diff) <= 0.001;
-        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? STheme.color.danger : diff > 0.001 ? "#e6a817" : colorExito;
+        const statusColor = nada ? STheme.color.gray : diff < -0.001 ? STheme.color.danger : diff > 0.001 ? colorVuelto : colorExito;
         const diffBase = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - Number(this.props.montoMaximo ?? 0));
         const obsBase = this.moneda_base?.observacion ?? "Bs";
         const statusMsg = nada ? "Seleccione un tipo de pago" : diffBase < -0.001 ? `Falta: ${obsBase} ${SMath.formatMoney(Math.abs(diffBase))}` : diffBase > 0.001 ? `Vuelto: ${obsBase} ${SMath.formatMoney(diffBase)}` : "✓ Monto exacto";
