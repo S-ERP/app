@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ScrollView } from 'react-native';
 import { SForm, SHr, SLoad, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
@@ -31,7 +32,8 @@ export default class FormularioModelo extends Component<Props> {
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,
-                backgroundColor: STheme.color.background
+                backgroundColor: STheme.color.background,
+                overflow: "hidden",
             }} withoutFeedback >
                 <FormularioModelo {...props} onCancel={() => {
                     SPopup.close("FormularioModelo")
@@ -94,9 +96,12 @@ export default class FormularioModelo extends Component<Props> {
     form: SForm | undefined = undefined;
     render() {
         if (!this.state.monedas) return <SLoad />
-        return <SView col={"xs-12"} center padding={16}>
-            <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Modelo"}</SText>
-            <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
+        return <SView col={"xs-12"} height>
+            <SView center style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+                <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Modelo"}</SText>
+                <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
+            </SView>
+            <ScrollView style={{ flex: 1, width: "100%" }} contentContainerStyle={{ alignItems: "center", padding: 16 }}>
             <SForm2 ref={(ref: any) => this.form = ref} row
                 style={{
                     justifyContent: "space-between",
@@ -584,17 +589,20 @@ export default class FormularioModelo extends Component<Props> {
                     })
                 }}
             />
-            <SHr h={16} />
-            <SView row col={"xs-12"}>
-                {this.props.onCancel && <>
-                    <Btn type='danger' label='CANCELAR' onPress={() => {
-                        if (this.props.onCancel) this.props.onCancel()
+            </ScrollView>
+            <SView style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+                <SHr h={16} />
+                <SView row col={"xs-12"}>
+                    {this.props.onCancel && <>
+                        <Btn type='danger' label='CANCELAR' onPress={() => {
+                            if (this.props.onCancel) this.props.onCancel()
+                        }} />
+                        <SView width={8} />
+                    </>}
+                    <Btn type='primary' label='GUARDAR' onPress={() => {
+                        if (this.form) this.form.submit();
                     }} />
-                    <SView width={8} />
-                </>}
-                <Btn type='primary' label='GUARDAR' onPress={() => {
-                    if (this.form) this.form.submit();
-                }} />
+                </SView>
             </SView>
         </SView>
     }
