@@ -395,6 +395,7 @@ export class SInput2Class extends React.Component<SInput2Props, {
                 { outline: "none", fontSize: 12, color: STheme.color.text } as any,
                 hasWrapper ? { flex: 1, height: "100%" } as any : null,
                 icon ? { paddingRight: 2, textAlign: "right" } as any : { paddingLeft: 4 } as any,
+                !hasWrapper ? style : null,
                 inputStyle,
                 d,
             ]}

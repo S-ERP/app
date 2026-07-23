@@ -103,11 +103,12 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     renderItemTipoPago(item) {
         const select = item.__select
         const headerColor = this.headerColor;
-        return <SView col={"xs-12"}>
+        return <SView col={"xs-12"} style={{ marginBottom: 6 }}>
             <SView style={{
-                // borderWidth: select ? 2 : 1, borderColor: select ? headerColor : STheme.color.card,
-                // backgroundColor: select ? headerColor + "0d" : "transparent",
-                // borderRadius: 8,
+                borderWidth: select ? 2 : 1,
+                borderColor: select ? headerColor : STheme.color.lightGray + "30",
+                backgroundColor: select ? headerColor + "14" : STheme.color.card,
+                borderRadius: 8,
                 overflow: "hidden", alignItems: "center",
             }}
                 onPress={() => {
@@ -131,13 +132,13 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         });
                     }
                     this.forceUpdate();
-                }} row border="pink">
+                }} row>
                 {!select && <>
                     <View style={{ width: 50, height: 50 }}>
                         <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
                     </View>
-                    <SView flex center backgroundColor={STheme.color.card} style={{ minHeight: 52, overflow: "hidden", borderBottomRightRadius: 6, paddingStart: 10 }} backgroundColor="cyan">
-                        <SView col={"xs-12"} backgroundColor={"transparent"}>
+                    <SView flex center style={{ minHeight: 52, overflow: "hidden", paddingStart: 10 }}>
+                        <SView col={"xs-12"}>
                             <SText key={item.key_tipo_pago} col={"xs-12"} numberOfLines={2} style={{ textAlign: "justify" }}>{item?.descripcion}</SText>
                         </SView>
                         <SHr />
@@ -145,14 +146,13 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                     </SView>
                 </>}
                 {select && <>
-                    <SView flex col={"xs-12"} center border="blue">
-                        <SView row col={"xs-12"} center backgroundColor='yellow'>
-                            {/* <SView width={60} /> */}
-                            <View style={{ width: 40, alignItems: 'flex-end' }} border="green" >
+                    <SView flex col={"xs-12"} center>
+                        <SView row col={"xs-12"} center style={{ padding: 8 }}>
+                            <View style={{ width: 40, alignItems: 'flex-end' }}>
                                 <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} width={26} height={26} />
                             </View>
                             <SView width={2} />
-                            <SView flex border="green">
+                            <SView flex>
                                 <SText key={item.key_tipo_pago} numberOfLines={2} fontSize={12} style={{ textTransform: "uppercase" }}>{item.tipo_pago ? item.descripcion : item.key_tipo_pago}</SText>
                                 <SText key={item.key_tipo_pago} fontSize={12} color={STheme.color.lightGray}>{item?.moneda?.descripcion}</SText>
                             </SView>
@@ -162,19 +162,16 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
 
                     <SView width={4} />
 
-                    <SView flex col={"xs-12"} center border="red">
+                    <SView flex col={"xs-12"} center style={{ paddingVertical: 8, paddingRight: 8 }}>
 
-                        <SView col={"xs-12"} withoutFeedback center backgroundColor='transferent'>
+                        <SView col={"xs-12"} withoutFeedback center>
 
 
                             <SView width={"100%"} row center style={{
-                                backgroundColor: STheme.color.danger, borderWidth: 1, borderColor: STheme.color.lightGray + "40",
+                                backgroundColor: STheme.color.card, borderWidth: 1, borderColor: headerColor,
                                 borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center"
                             }}>
-
-
-
-                                <SText style={{ marginRight: 2 }}> {item?.moneda?.observacion ?? "BS"} </SText>
+                                <SText bold style={{ marginRight: 2 }} color={headerColor}> {item?.moneda?.observacion ?? "BS"} </SText>
                                 <SView flex row>
                                     <SInput2 ref={ref => item.__ref = ref} autoFocus name={`monto_${item.key}`} type="money"
                                         style={{ width: "100%", textAlign: "right", fontSize: 14, }}
@@ -192,7 +189,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         }}
                                     />
                                 </SView>
-                                <SView style={{ paddingRight: 8, paddingLeft: 1 }} row center onPress={() => {
+                                <SView style={{ paddingRight: 4, paddingLeft: 4 }} row center onPress={() => {
                                     const totalSinEste = MDL.contabilidad.round(this.calcularMontoInsertadoBase() - item.monto);
                                     const falta = MDL.contabilidad.round(Number(this.props.montoMaximo ?? 0) - totalSinEste);
                                     item.monto = falta;
@@ -209,10 +206,9 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                             </SView>
 
 
-                            {/* <SHr height={2} /> */}
                             {(item?.moneda?.tipo_cambio != 1) &&
-                                <SView width={"100%"} row center style={{ backgroundColor: STheme.color.danger, borderWidth: 1, borderColor: STheme.color.lightGray + "40", borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center" }}>
-                                    <SText style={{ marginRight: 2 }}>{this.moneda_base?.observacion}</SText>
+                                <SView width={"100%"} row center style={{ backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.lightGray + "40", borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center", marginTop: 4 }}>
+                                    <SText style={{ marginRight: 2 }} color={STheme.color.lightGray}>{this.moneda_base?.observacion}</SText>
                                     <SView flex row>
                                         <SInput2
 
@@ -224,20 +220,18 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     </SView>
                                 </SView>
                             }
-                            {/* <SHr height={2} /> */}
-                            {/* <SView width={"100%"} height={4} /> */}
 
                             <SView width={"100%"} row center
                                 style={{
                                     backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.lightGray + "40",
-                                    borderRadius: 4, height: 28, justifyContent: "center"
+                                    borderRadius: 4, height: 28, justifyContent: "center", marginTop: 4
                                 }}
                             >
                                 <SText style={{ marginRight: 2 }} >REF:  </SText>
                                 <SView flex row center >
                                     <SInput2
                                         placeholder="Referencia / Descripción"
-                                        style={{ width: "100%", textAlign: "right", fontSize: 14, paddingRight: 4 }}
+                                        style={{ width: "100%", textAlign: "left", fontSize: 14, paddingRight: 4 }}
                                         defaultValue={item.referencia || ""}
                                         onChangeText={(e) => { item.referencia = e; }}
                                     />
