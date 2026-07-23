@@ -97,6 +97,7 @@ export type InputSelectorProps = {
     value?: string | null;
     defaultValue?: string | null;
     required?: boolean;
+    isRequired?: boolean;
     autoSelectOnBlur?: boolean;
     onCreate?: (value: string) => Promise<Option>;
     onSelect?: (option: Option) => void;
@@ -158,7 +159,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         }
     }
     verify() {
-        if (!this.props.required) return true;
+        if (!this.props.required && !this.props.isRequired) return true;
         if (!this.getValue()) {
             this.setState({ error: true });
             return false;
@@ -545,7 +546,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 onKeyPress={this.handleKeyPress.bind(this)}
                 // @ts-ignore
                 onKeyDown={(e: any) => { if (e.key === 'Escape') { e.preventDefault(); this.setState({ displayValue: this.originalDisplayValue, filteredOptions: this.props.options }); this.hasEditedValue = false; SPopup.close("InputSelector"); this.removeScrollListener(); if (this.inputRef) this.inputRef.blur(); } }}
-                style={[style, this.props.style, this.state.error ? { borderColor: STheme.color.error, borderWidth: 1, } : {}]}
+                style={[style, { borderWidth: 2, borderColor: STheme.color.lightGray + "55" }, this.props.style, this.state.error ? { borderColor: STheme.color.error, borderWidth: 2, backgroundColor: STheme.color.error + "22" } : {}]}
                 ref={(ref) => this.inputRef = ref}
                 selectTextOnFocus={!this.props.value}
                 editable={!this.props.value}
@@ -649,6 +650,7 @@ class ListSelectorContent extends React.Component<{
                     return <View
                         style={{
                             padding: 8,
+                            // alvaro
                             backgroundColor: isSelected ? STheme.color.card : 'transparent',
                             // @ts-ignore
                             cursor: 'pointer',
