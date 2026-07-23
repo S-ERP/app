@@ -87,6 +87,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     height: "95%", maxHeight: 620,
                     backgroundColor: UI.colors.background,
                     borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
                     overflow: "hidden",
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 10 },
