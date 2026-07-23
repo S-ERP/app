@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import { SHr, SImage, SMath, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
@@ -32,7 +32,6 @@ export default class table extends Component {
 			selectedTipoModelo: null,
 
 		};
-		this.selectorRef = createRef();
 		this.modelos = null;
 	}
 	componentDidMount() {
@@ -105,9 +104,6 @@ export default class table extends Component {
 			}
 			this.modelos = data_mejorada;
 
-
-			console.clear();
-			console.log(JSON.stringify(data_mejorada));
 			return data_mejorada;
 		} catch (error) {
 			console.error("Error real en loadData:", error);
@@ -206,13 +202,6 @@ export default class table extends Component {
 				</SView>
 			</SView>
 			<SHr height={8} />
-			{/* <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
-				<SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
-				<SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock?.nombre || "Todos"} </SText> </SText>
-				<SText fontSize={13} color={STheme.color.lightGray}> Tipo cuenta: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoCuenta?.nombre || "Todos"} </SText> </SText>
-				<SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
-			</SView>
-			<SHr height={8} /> */}
 			<DinamicTable key={"tabla_modelo"}
 				ref={ref => this.table = ref}
 				{...Config.table.applyTheme()}
@@ -359,40 +348,6 @@ export default class table extends Component {
 				<DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
 
 
-
-				<DinamicTable.Col key={"tipo_prodducto_tipo"} label='Tipo Producto' width={85}
-					data={(e) => e.row?.tipo_producto?.tipo}
-					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
-					customComponent={e => {
-						if (!e.data) return;
-						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
-							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
-						</SView>
-					}}
-				/>
-
-					<DinamicTable.Col key={"tipo_proddducto_tidpo"} label='Tiempo' width={85}
-					data={(e) => e.row?.tipo_producto?.tipo}
-					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
-					customComponent={e => {
-						if (!e.data) return;
-						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
-							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
-						</SView>
-					}}
-				/>
-
-						<DinamicTable.Col key={"tipo_proddductodfs_tidpo"} label='Personas' width={85}
-					data={(e) => e.row?.tipo_producto?.tipo}
-					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
-					customComponent={e => {
-						if (!e.data) return;
-						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
-							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
-						</SView>
-					}}
-				/>
-
 				<DinamicTable.Col key="nombre" label="Nombre" headerStyle={{ paddingLeft: 4 }} width={150} height={60}
 					data={(e) => e.row.descripcion ?? ""}
 					customComponent={e => {
@@ -428,7 +383,7 @@ export default class table extends Component {
 										onSuccess: () => {
 											if (this.table) {
 												this.table.loadData();
-												this.state.time = new Date().getTime();
+												this.setState({ time: new Date().getTime() });
 											}
 										}
 									})
@@ -464,7 +419,7 @@ export default class table extends Component {
 										onSuccess: () => {
 											if (this.table) {
 												this.table.loadData();
-												this.state.time = new Date().getTime();
+												this.setState({ time: new Date().getTime() });
 											}
 										}
 									})
@@ -575,6 +530,28 @@ export default class table extends Component {
 					}}
 				/>
 
+				{/* <DinamicTable.Col key={"duracion_medida"} label='Vigencia' width={85}
+					data={(e) => e.row?.duracion_medida}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+					customComponent={e => {
+						if (!e.data) return;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.row?.duracion} {e.data}</SText>
+						</SView>
+					}}
+				/> */}
+
+				{/* <DinamicTable.Col key={"cantidad_suscriptores"} label='Personas' width={85}
+					data={(e) => e.row?.cantidad_suscriptores}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+					customComponent={e => {
+						if (!e.data) return;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+						</SView>
+					}}
+				/> */}
+
 				<DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
 
 				<DinamicTable.Col key={"activo"} label='Estado' width={70}
@@ -588,6 +565,7 @@ export default class table extends Component {
 						</SView>
 					}}
 				/>
+
 
 				{/* <DinamicTable.Col
 					key={"contactos_"}
@@ -626,6 +604,7 @@ export default class table extends Component {
 						</SView>
 					)}
 				/> */}
+
 			</DinamicTable>
 			<FloatButtom onPress={() => {
 				PopupDetalleModelo.open({
@@ -634,7 +613,7 @@ export default class table extends Component {
 					onSuccess: () => {
 						if (this.table) {
 							this.table.loadData();
-							this.state.time = new Date().getTime();
+							this.setState({ time: new Date().getTime() });
 						}
 					}
 				});
