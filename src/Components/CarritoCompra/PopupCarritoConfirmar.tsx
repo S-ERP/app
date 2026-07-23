@@ -484,7 +484,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             selectFirst
                             icon={<SText color={STheme.color.text} bold>{"Almacén:"}</SText>}
                             placeholder={"Escriba el nombre del almacén"}
-                            inputStyle={{ borderWidth: 1, borderColor: STheme.color.lightGray + "60", borderRadius: 6, backgroundColor: STheme.color.card }}
                             filterData={(e) => e.key_sucursal == MDL.caja.activa?.key_sucursal}
                             onChangeSelect={e => this.setState({ almacen: e })}
                         />
@@ -499,7 +498,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             }}
                             icon={<SText color={STheme.color.text} bold>{"Moneda:"}</SText>}
                             placeholder={"Moneda"}
-                            inputStyle={{ borderWidth: 1, borderColor: STheme.color.lightGray + "60", borderRadius: 6, backgroundColor: STheme.color.card }}
                             onChangeSelect={e => {
                                 this.setState({ moneda: e });
                                 MDL.compra_venta.setMonedaSeleccionada(e);
