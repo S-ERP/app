@@ -126,7 +126,7 @@ export default class table extends Component {
 		);
 	}
 	render() {
-		return <SPage title={"Modelosddddddd"} disableScroll >
+		return <SPage title={"Modelos"} disableScroll >
 			<SView row col={"xs-12"} style={{
 				backgroundColor: "transparent",
 				borderBottomWidth: 1,
