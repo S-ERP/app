@@ -148,7 +148,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }}
                     />
                 </SView>
-                <SView row style={{ paddingHorizontal: 10, paddingVertical: 6, alignItems: "center", backgroundColor: colorVenta + "10", borderBottomWidth: 1, borderBottomColor: colorVenta + "30" }}>
+                <SView row style={{ paddingHorizontal: 10, paddingVertical: 6, alignItems: "center", backgroundColor: colorVenta + "1c", borderBottomWidth: 1, borderBottomColor: colorVenta + "40" }}>
                     <SText fontSize={UI.font.small} color={STheme.color.text}> {"Productos ("}{MDL.carrito.carrito_venta.cantidad_items}{")"} </SText>
                     <SView flex />
                     <SText fontSize={UI.font.small} bold color={colorVenta}> {"Sub: "}{selectedMoneda?.observacion ?? "$"}{" "}{SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)} </SText>
@@ -306,7 +306,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const precioValido = Number(precioFormateado) > 0;
     return (
         <SView style={{
-            backgroundColor: precioValido ? STheme.color.background : STheme.color.danger + "0d",
+            backgroundColor: precioValido ? STheme.color.card : STheme.color.danger + "0d",
             borderRadius: 12,
             padding: 10,
             marginBottom: 10,
