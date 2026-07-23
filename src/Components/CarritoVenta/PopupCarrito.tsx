@@ -1,9 +1,9 @@
 import React from "react";
-import { SDate, SGradient, SImage, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SDate, SGradient, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
-import { FlatList } from "react-native";
+import { FlatList, Image } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
@@ -288,6 +288,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     };
     const [precio, setPrecio] = React.useState(calcularPrecio);
     const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
+    const [imgError, setImgError] = React.useState(false);
     const inputPrecioRef = React.useRef<SInput2Class>(null);
     React.useEffect(() => {
         const p = calcularPrecio();
@@ -321,8 +322,23 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         }}>
             <SView row style={{ gap: 8, alignItems: "flex-start" }}>
                 <SView style={{ position: "relative" }}>
-                    <SView style={{ width: 35, height: 35, borderRadius: 6, overflow: "hidden" }}>
-                        <SImage src={(SSocket.api as any).inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
+                    <SView style={{
+                        width: 35, height: 35, borderRadius: 6, overflow: "hidden",
+                        borderWidth: 1, borderColor: STheme.color.lightGray + "50",
+                        backgroundColor: STheme.color.lightGray + "20",
+                        justifyContent: "center", alignItems: "center",
+                    }}>
+                        {imgError ? (
+                            <SText fontSize={16} bold color={STheme.color.text}>
+                                {(item.modelo.descripcion?.trim()?.charAt(0) || "?").toUpperCase()}
+                            </SText>
+                        ) : (
+                            <Image
+                                source={{ uri: (SSocket.api as any).inventario + "modelo/" + item.modelo.key }}
+                                style={{ width: "100%", height: "100%", resizeMode: "cover" }}
+                                onError={() => setImgError(true)}
+                            />
+                        )}
                     </SView>
                     <SView style={{
                         position: "absolute", top: -6, left: -6, width: 18, height: 18, borderRadius: 10, backgroundColor: STheme.color.danger, justifyContent: "center", alignItems: "center",
