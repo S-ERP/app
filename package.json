@@ -108,7 +108,7 @@
     "servisofts-rn-spdf": "^1.0.7",
     "servisofts-rn-usuario": "1.0.11",
     "servisofts-socket": "4.0.8",
-    "servisofts-table": "1.0.34",
+    "servisofts-table": "^1.0.35",
     "stats-js": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",

@@ -30,7 +30,7 @@ export default class ventas extends React.Component {
         dataSucursalesCards: [],
         loading: true,
         empresaSeleccionada: null,
-        clientesActivos: {},
+        clientesActivos: [],
     };
 
     componentDidMount() {
@@ -406,11 +406,26 @@ export default class ventas extends React.Component {
     loadTopProducts = async (keyEmpresa) => {
         try {
             const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
-            const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            // const res = await MDL.compra_venta.execute_function("productos_mas_vendidos_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            console.log("PRODUCTOS MÁS VENDIDOS:", res);
 
-            const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+            console.log(selectedTipoProducto)
+            const res = await MDL.compra_venta.execute_function("productos_mas_vendidos4", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            // const res = await MDL.compra_venta.execute_function("productos_mas_vendidos3", [keyEmpresa, "venta", fecha_inicio, fecha_fin, selectedTipoProducto]);
+            // const res = await MDL.compra_venta.execute_function("productos_mas_vendidos_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            console.log("PRODUCTOS MÁS VENDIDOS AQUI:", res);
+
+            let raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+            if (selectedTipoProducto !== null && selectedTipoProducto !== undefined) {
+                console.log("hola")
+                const filtered = raw.filter(producto =>
+                    producto.detalles.some(det =>
+                        det.data?.tipo_producto === selectedTipoProducto
+                    )
+                );
+                console.log(filtered)
+                raw = filtered;
+                console.log("PRODUCTOS MÁS VENDIDOS FILTRADOS POR TIPO DE PRODUCTO:", raw);
+            }
+            console.log("PRODUCTOS MÁS VENDIDOS FILTRADOS:", raw);
             const products = raw
                 .map((item) => ({
                     producto: item.producto ?? item.nombre ?? "Sin nombre",
@@ -876,7 +891,7 @@ export default class ventas extends React.Component {
                         console.log("branchhh", branch);
                         // let clientesActivos = this.state.clientesActivos?.[branch.key] || 0;
                         console.log(this.state.clientesActivos);
-
+                        if (!this.state.clientesActivos) return null;
                         let clientesActivos = this.state.clientesActivos?.find(item => item.key_sucursal === branch.key);
                         // const clientesActivos =
                         //     this.state.clientesActivos?.find(
@@ -1039,26 +1054,27 @@ export default class ventas extends React.Component {
                                 <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
                                 <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
                             </SView> */}
-
-                            {/* <SView col="xs-12" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
-                                <SButtom
-                                    type={!selectedTipoProducto ? 'danger' : 'outline'}
-                                    onPress={() => this.handleTipoProductoSelect(null)}
-                                    style={{ minWidth: 80, height: 40 }}
-                                >
-                                    <SText>Todos</SText>
-                                </SButtom>
-                                {(tipoProductoLista || []).map((tipoKey) => (
+                            {(tipoProductoLista && tipoProductoLista.length > 1) && (
+                                <SView col="xs-12 md-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                     <SButtom
-                                        key={tipoKey}
-                                        type={selectedTipoProducto === tipoKey ? 'danger' : 'outline'}
-                                        onPress={() => this.handleTipoProductoSelect(tipoKey)}
-                                        style={{ minWidth: 130, padding: 5, height: 40 }}
+                                        type={!selectedTipoProducto ? 'danger' : 'outline'}
+                                        onPress={() => this.handleTipoProductoSelect(null)}
+                                        style={{ minWidth: 80, height: 40 }}
                                     >
-                                        <SText>{this.getTipoProductoLabel(tipoKey)}</SText>
+                                        <SText>Todos</SText>
                                     </SButtom>
-                                ))}
-                            </SView> */}
+                                    {(tipoProductoLista || []).map((tipoKey) => (
+                                        <SButtom
+                                            key={tipoKey}
+                                            type={selectedTipoProducto === tipoKey ? 'danger' : 'outline'}
+                                            onPress={() => this.handleTipoProductoSelect(tipoKey)}
+                                            style={{ minWidth: 130, padding: 5, height: 40 }}
+                                        >
+                                            <SText>{this.getTipoProductoLabel(tipoKey)}</SText>
+                                        </SButtom>
+                                    ))}
+                                </SView>
+                            )}
                         </SView>
                         <SHr height={5} />
                         {/* <SHr style={{ marginVertical: 0 }} /> */}

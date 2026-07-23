@@ -41,6 +41,7 @@ export default class tabla extends Component {
 				type: "loading",
 			});
 			const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+			console.log("Registros obtenidosss:", registros);
 
 			const empresa = await MDL.empresa.getFull();
 			if (!registros || !empresa) {

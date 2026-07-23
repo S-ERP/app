@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme, SButtom, SNavigation, SInput, SForm, SIcon } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -9,6 +9,8 @@ import LineaRechartsBd from "../recharts/Components/LineaRechartsBd";
 import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
 import DetalleTabla from "./Components/DetalleTabla";
 import Model from "../../Model";
+import InputSelector from '../../Components/Selectores/InputSelector';
+import SSocket from "servisofts-socket";
 
 export default class ventas extends React.Component {
     state = {
@@ -25,8 +27,10 @@ export default class ventas extends React.Component {
         dataBranchShareBarras: [],
         dataMetodoPago: [],
         tipoProductoLista: [],
+        dataSucursalesCards: [],
         loading: true,
         empresaSeleccionada: null,
+        clientesActivos: [],
     };
 
     componentDidMount() {
@@ -58,6 +62,16 @@ export default class ventas extends React.Component {
         return d;
     };
 
+    startOfMonth = (date) => {
+        const d = new Date(date);
+        return new Date(d.getFullYear(), d.getMonth(), 1);
+    };
+
+    endOfMonth = (date) => {
+        const d = new Date(date);
+        return new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    };
+
     startOfYear = (date) => new Date(date.getFullYear(), 0, 1);
     endOfYear = (date) => new Date(date.getFullYear(), 11, 31);
 
@@ -68,11 +82,179 @@ export default class ventas extends React.Component {
                 return { fecha_inicio: this.formatDate(today), fecha_fin: this.formatDate(today) };
             case "semana":
                 return { fecha_inicio: this.formatDate(this.startOfWeek(today)), fecha_fin: this.formatDate(today) };
+            case "este_mes":
+                return { fecha_inicio: this.formatDate(this.startOfMonth(today)), fecha_fin: this.formatDate(this.endOfMonth(today)) };
             case "año":
                 return { fecha_inicio: this.formatDate(this.startOfYear(today)), fecha_fin: this.formatDate(this.endOfYear(today)) };
             default:
                 return { fecha_inicio: this.formatDate(this.startOfWeek(today)), fecha_fin: this.formatDate(today) };
         }
+    };
+
+    getPeriodoFromKeyOpciones = (key_opciones, fecha_inicio = this.state.fecha_inicio, fecha_fin = this.state.fecha_fin) => {
+        console.log("getPeriodoFromKeyOpciones", { key_opciones, fecha_inicio, fecha_fin });
+        switch (key_opciones) {
+            case "hoy":
+                return "hoy";
+
+            case "esta_semana":
+                return "semana";
+
+            case "este_mes":
+                return "este_mes";
+
+            case "este_año":
+                return "año";
+
+            case "entre": {
+                // // const { fecha_inicio, fecha_fin } = this.state;
+                console.log("getPeriodoFromKeyOpciones entre", { fecha_inicio, fecha_fin });
+                const hoy = new Date();
+
+                // const fi = this.formatDate(fecha_inicio);
+                // const ff = this.formatDate(fecha_fin);
+                const fi = String(fecha_inicio).substring(0, 10);
+                const ff = String(fecha_fin).substring(0, 10);
+
+                // Hoy
+                const hoyStr = this.formatDate(hoy);
+                if (fi === hoyStr && ff === hoyStr) {
+                    console.log("Periodo determinado como 'hoy' por fechas:", fi, ff);
+                    return "hoy";
+                }
+
+                // Semana actual
+                const semanaInicio = this.formatDate(this.startOfWeek(hoy));
+                const semanaFin = this.formatDate(hoy);
+
+                if (fi === semanaInicio && ff === semanaFin) {
+                    console.log("Periodo determinado como 'semana' por fechas:", fi, ff);
+                    return "semana";
+                }
+
+                // Mes actual
+                const mesInicio = this.formatDate(this.startOfMonth(hoy));
+                const mesFin = this.formatDate(this.endOfMonth(hoy));
+
+                if (fi === mesInicio && ff === mesFin) {
+                    console.log("Periodo determinado como 'este_mes' por fechas:", fi, ff);
+                    return "este_mes";
+                }
+
+                // Año actual
+                const anioInicio = this.formatDate(this.startOfYear(hoy));
+                const anioFin = this.formatDate(this.endOfYear(hoy));
+
+                if (fi === anioInicio && ff === anioFin) {
+                    console.log("Periodo determinado como 'año' por fechas:", fi, ff);
+                    return "año";
+                }
+
+                // Si es un rango personalizado
+                return "entre";
+
+
+
+
+                // try {
+                //     // let { fecha_inicio, fecha_fin } = this.state;
+                //     // if (!fecha_inicio || !fecha_fin) return this.state.periodo;
+                //     let inicio = new Date(fecha_inicio);
+                //     let fin = new Date(fecha_fin);
+                //     if (isNaN(inicio) || isNaN(fin)) return this.state.periodo;
+                //     // si están invertidas, las invierte
+                //     if (inicio > fin) {
+                //         const tmp = inicio; inicio = fin; fin = tmp;
+                //     }
+
+                //     const hoy = new Date();
+                //     // comparar usando formato YYYY-MM-DD para evitar problemas de zona horaria
+                //     const inicioStr = this.formatDate(inicio);
+                //     const finStr = this.formatDate(fin);
+                //     const hoyStr = this.formatDate(hoy);
+
+                //     const semanaInicioStr = this.formatDate(this.startOfWeek(hoy));
+                //     const semanaFinStr = this.formatDate(this.endOfWeek(hoy));
+                //     const mesInicioStr = this.formatDate(this.startOfMonth(hoy));
+                //     const mesFinStr = this.formatDate(this.endOfMonth(hoy));
+                //     const anioInicioStr = this.formatDate(this.startOfYear(hoy));
+                //     const anioFinStr = this.formatDate(this.endOfYear(hoy));
+                //     console.log(inicioStr, finStr);
+
+                //     if (inicioStr === hoyStr && finStr === hoyStr) return "hoy";
+                //     if (inicioStr === semanaInicioStr && finStr === semanaFinStr) return "semana";
+                //     if (inicioStr === mesInicioStr && finStr === mesFinStr) return "este_mes";
+                //     if (inicioStr === anioInicioStr && finStr === anioFinStr) return "año";
+                // } catch (e) {
+                //     console.warn("getPeriodoFromKeyOpciones entre error:", e);
+                // }
+            }
+
+            default:
+                console.log("Periodo por defecto:", this.state.periodo);
+                return this.state.periodo;
+        }
+    };
+
+    // getPeriodoFromKeyOpciones = (key_opciones) => {
+    //     console.log("key_opciones", key_opciones);
+    //     console.log(this.state.periodo);
+    //     switch (key_opciones) {
+    //         case "hoy":
+    //             return "hoy";
+    //         case "esta_semana":
+    //             return "semana";
+    //         case "este_mes":
+    //             return "este_mes";
+    //         case "este_año":
+    //             return "año";
+    //         case "entre":
+    //             // // validar si fecha_inicio y fecha_fin corresponden a un rango específico
+    //             // try {
+    //             //     let { fecha_inicio, fecha_fin } = this.state;
+    //             //     if (!fecha_inicio || !fecha_fin) return this.state.periodo;
+    //             //     let inicio = new Date(fecha_inicio);
+    //             //     let fin = new Date(fecha_fin);
+    //             //     if (isNaN(inicio) || isNaN(fin)) return this.state.periodo;
+    //             //     // si están invertidas, las invierte
+    //             //     if (inicio > fin) {
+    //             //         const tmp = inicio; inicio = fin; fin = tmp;
+    //             //     }
+
+    //             //     const hoy = new Date();
+    //             //     // comparar usando formato YYYY-MM-DD para evitar problemas de zona horaria
+    //             //     const inicioStr = this.formatDate(inicio);
+    //             //     const finStr = this.formatDate(fin);
+    //             //     const hoyStr = this.formatDate(hoy);
+
+    //             //     const semanaInicioStr = this.formatDate(this.startOfWeek(hoy));
+    //             //     const semanaFinStr = this.formatDate(this.endOfWeek(hoy));
+    //             //     const mesInicioStr = this.formatDate(this.startOfMonth(hoy));
+    //             //     const mesFinStr = this.formatDate(this.endOfMonth(hoy));
+    //             //     const anioInicioStr = this.formatDate(this.startOfYear(hoy));
+    //             //     const anioFinStr = this.formatDate(this.endOfYear(hoy));
+    //             //     console.log(inicioStr, finStr);
+
+    //             //     if (inicioStr === hoyStr && finStr === hoyStr) return "hoy";
+    //             //     if (inicioStr === semanaInicioStr && finStr === semanaFinStr) return "semana";
+    //             //     if (inicioStr === mesInicioStr && finStr === mesFinStr) return "este_mes";
+    //             //     if (inicioStr === anioInicioStr && finStr === anioFinStr) return "año";
+    //             // } catch (e) {
+    //             //     console.warn("getPeriodoFromKeyOpciones entre error:", e);
+    //             // }
+
+    //         default:
+    //             return this.state.periodo;
+    //     }
+    // };
+
+    getTimeSeriesFunctionName = (periodo) => {
+        if (periodo === "semana") return "ventas_por_dia_por_tipo_all";
+        if (periodo === "este_mes") return "ventas_por_dia_mes_por_tipo_all";
+        // if (periodo === "año") return "ventas_por_mes_por_tipo_all";
+        if (periodo === "año") return "ventas_por_mes_por_tipo_all2";
+        if (periodo === "entre") return "ventas_entre_fecha_por_tipo";
+        return "ventas_por_hora_por_tipo";
     };
 
     initDashboard = async () => {
@@ -85,6 +267,7 @@ export default class ventas extends React.Component {
         };
 
         const selected = MDL.empresa.select || await waitForSelect();
+
         if (!selected) {
             if (this._mounted) {
                 this.setState({ loading: false });
@@ -92,11 +275,19 @@ export default class ventas extends React.Component {
             return;
         }
 
+        const empresa = await MDL.empresa.getFull();
+        if (!empresa) throw new Error("No se pudo obtener la empresa.");
+        console.log("EMPRESA_", empresa)
+        const monedaBase = empresa.monedas.find(
+            moneda => moneda.tipo === "base"
+        );
+        console.log("MONEDA BASE:", monedaBase);
+        console.log("MONEDA EMPRESA:", empresa.monedas);
         const sucursales = await MDL.empresa.getAllSucursales();
 
         const tipoProducto = await MDL.inventario.getAllTipoProducto();
         if (this._mounted) {
-            this.setState({ empresaSeleccionada: selected, sucursales, tipoProducto }, this.loadDashboardData);
+            this.setState({ empresaSeleccionada: selected, sucursales, tipoProducto, monedaBase }, this.loadDashboardData);
         }
     };
 
@@ -108,17 +299,23 @@ export default class ventas extends React.Component {
             this.loadTimeSeries(empresaSeleccionada.key),
             this.loadTopProducts(empresaSeleccionada.key),
             this.loadMetodoPago(empresaSeleccionada.key),
+            this.cargarClientesActivos()
         ]);
         if (this._mounted) this.setState({ loading: false });
     };
 
     loadTimeSeries = async (keyEmpresa) => {
         try {
-            const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
+            const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto, periodo } = this.state;
             const sucursales = await MDL.empresa.getAllSucursales();
             console.log("sucursales disponibles:", sucursales);
-            const res = await MDL.compra_venta.execute_function("ventas_por_dia_por_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            
+
+            console.log("PERIODO", periodo);
+            const functionName = this.getTimeSeriesFunctionName(periodo);
+            console.log("PERIODO", periodo, "función a ejecutar:", functionName);
+
+            const res = await MDL.compra_venta.execute_function(functionName, [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+
             console.log("BASE DE DATOS:", res);
             // const rescompleto = res.find((item) => item.key_sucursal === sucursales?.key) || res.find((item) => item.key_sucursal == null) || res;
             // const itemSucursal = res.filter(
@@ -133,6 +330,38 @@ export default class ventas extends React.Component {
             //     : res.find((item) => item.key_sucursal == null) || res;
             // console.log("rescompleto:", rescompleto);
             // const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+
+
+
+
+            //CLIENTES activos
+            // const rSuscriptores = res.map((item) => {
+            //     const sucursal = sucursales.find(
+            //         (s) => s.key === item.key_sucursal
+            //     );
+
+            // });
+
+            // const resClientes = await MDL.compra_venta.execute_function("ventas_por_dia_clientes", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            // const resSuscriptores = await SSocket.sendPromise({
+            //     service: "inventario",
+            //     component: "suscripcion",
+            //     estado: "cargando",
+            //     type: "getByKeyCliente",
+            //     key_cliente: data.key
+            // }).then(e => {
+            //     const hoy = new Date();
+            //     const vigente = e.data.filter(item => {
+            //         const inicio = new Date(item.fecha_inicio);
+            //         const fin = new Date(item.fecha_fin);
+            //         return hoy >= inicio && hoy <= fin;
+            //     });
+            //     console.log("paquete actual ", vigente)
+            //     this.setState({ paquete: vigente[0] });
+            // }).catch(console.error);
+
+
+
 
             const rescompleto = res.map((item) => {
                 const sucursal = sucursales.find(
@@ -152,14 +381,17 @@ export default class ventas extends React.Component {
             const data = this.transformTimeSeries(raw, sucursales, selectedSucursal?.key, selectedTipoProducto);
             const branchShare = this.transformBranchShare(raw, selectedTipoProducto);
             const branchShareBarras = this.transformBranchShareBarras(raw, selectedTipoProducto);
+            const branchCards = this.transformBranchCards(raw, selectedTipoProducto, selectedSucursal?.key, sucursales);
             const tipoProductoLista = this.extractTipoProductoLista(raw);
             console.log("Datos transformados para participación por sucursal:", branchShare);
             console.log("Datos transformados para participación por sucursal (barras):", branchShareBarras);
+            console.log("Datos de tarjetas por sucursal:", branchCards);
             if (this._mounted) {
                 this.setState({
                     dataTimeSeries: data,
                     dataBranchShare: branchShare,
                     dataBranchShareBarras: branchShareBarras,
+                    dataSucursalesCards: branchCards,
                     tipoProductoLista: tipoProductoLista.length ? tipoProductoLista : this.state.tipoProductoLista,
                 });
             }
@@ -174,42 +406,23 @@ export default class ventas extends React.Component {
     loadTopProducts = async (keyEmpresa) => {
         try {
             const { fecha_inicio, fecha_fin, selectedSucursal, selectedTipoProducto } = this.state;
+
+            console.log(selectedTipoProducto)
             const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
-            console.log("PRODUCTOS MÁS VENDIDOS:", res);
-            const modelos = await MDL.inventario.getAllModelo();
-            const rawModelos = res.map((item) => {
-                const modelo = modelos.find((m) => m.key === item.key_modelo);
-                return {
-                    ...item,
-                    tipo_producto: item.tipo_producto ?? (modelo ? modelo.key_tipo_producto : null),
-                    // key_tipo_producto: item.tipo_producto ?? (modelo ? modelo.key_tipo_producto : null),
-                };
-            });
-            console.log("Modelos de inventario:", rawModelos);
-            const keyTiposProducto = [
-                ...new Set(rawModelos.map(item => item.tipo_producto).filter(Boolean))
-            ];
-            console.log("keyTiposProducto_:", keyTiposProducto);
-            
+            // const res = await MDL.compra_venta.execute_function("productos_mas_vendidos3", [keyEmpresa, "venta", fecha_inicio, fecha_fin, selectedTipoProducto]);
+            // const res = await MDL.compra_venta.execute_function("productos_mas_vendidos_tipo", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            console.log("PRODUCTOS MÁS VENDIDOS AQUI:", res);
 
-            this.setState({ tipoProductoLista: keyTiposProducto.length ? keyTiposProducto : this.state.tipoProductoLista });
-
-            const raw = Array.isArray(rawModelos) ? rawModelos : rawModelos?.data ?? rawModelos?.result ?? [];
+            const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
             const products = raw
                 .map((item) => ({
                     producto: item.producto ?? item.nombre ?? "Sin nombre",
                     cantidad_total_vendida: Number(item.cantidad_total_vendida ?? item.cantidad ?? item.total_ventas ?? 0),
                     total: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
                     sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],
-                    // tipo_producto: item.tipo_producto ?? item.key_tipo_producto,
-                    tipo_producto: item.tipo_producto ?? null,
+                    tipos_producto: Array.isArray(item.tipos_producto) ? item.tipos_producto : [] // Aseguramos que sea un array, incluso si viene como null o string
                 }))
-                .filter((item) => {
-                    if (selectedTipoProducto) {
-                        return item.tipo_producto === selectedTipoProducto;
-                    }
-                    return true;
-                })
+
                 .filter((item) => {
                     if (!selectedSucursal?.key) return true;
                     return item.sucursales.length === 0 || item.sucursales.includes(selectedSucursal.key);
@@ -249,13 +462,39 @@ export default class ventas extends React.Component {
         }
     };
 
+    cargarClientesActivos = async () => {
+        console.log(MDL.empresa.select)
+        try {
+
+            const res = await MDL.inventario.execute_function(
+                "get_clientes_suscripcion_resumen_por_sucursal_filtro_fecha",
+                [MDL.empresa.select.key, null, this.state.fecha_inicio, this.state.fecha_fin]
+            );
+
+            console.log("CLIENTES ACTIVOS:", res);
+
+            // const clientesActivos = {};
+
+            // (res || []).forEach(item => {
+            //     clientesActivos[item.key_sucursal] = Number(item.clientes_activos);
+            // });
+
+            this.setState({
+                clientesActivos: res || []
+            });
+
+        } catch (e) {
+            console.error("Error cargando clientes activos:", e);
+        }
+    }
+
     extractTipoProductoLista = (raw) => {
         if (!Array.isArray(raw)) return [];
         const tipos = raw.flatMap((row) => {
             const dias = Array.isArray(row.dias) ? row.dias : [row];
             return dias.flatMap((item) => {
                 const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
-                console.log("detalles tipo_producto:", detalles);
+                // console.log("detalles tipo_producto:", detalles);
                 return detalles.map((tipo) => tipo?.tipo_producto).filter(Boolean);
             });
         });
@@ -368,6 +607,58 @@ export default class ventas extends React.Component {
             .slice(0, 6);
     };
 
+    transformBranchCards = (raw, selectedTipoProducto, selectedSucursalKey, sucursales = []) => {
+        if (!Array.isArray(raw)) raw = [];
+        console.log("DATA COMPLETA:", raw);
+        const branchCards = {};
+        raw.forEach((row) => {
+            const key = row.key_sucursal || row.key || "all";
+            if (selectedSucursalKey && key !== selectedSucursalKey) return;
+            const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
+            const dias = Array.isArray(row.dias) ? row.dias : [row];
+            const total = dias.reduce((sum, item) => {
+                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
+                return sum + detalles.reduce((sub, tipo) => {
+                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
+                    return sub + Number(tipo.monto_total ?? tipo.total_bs ?? tipo.total ?? 0);
+                }, 0);
+            }, 0);
+            const cantidadVentas = dias.reduce((sum, item) => {
+                const detalles = Array.isArray(item.tipos) ? item.tipos : [item];
+                return sum + detalles.reduce((sub, tipo) => {
+                    if (selectedTipoProducto && tipo.tipo_producto !== selectedTipoProducto) return sub;
+                    return sub + Number(tipo.cantidad_ventas ?? tipo.total_ventas ?? tipo.cantidad ?? 0);
+                }, 0);
+            }, 0);
+            const clients = Number(row.clientes ?? row.cantidad_clientes ?? row.total_clientes ?? row.clientes_totales ?? row.cantidad_de_clientes ?? 0);
+            const becados = Number(row.becados ?? row.cantidad_becados ?? row.total_becados ?? 0);
+            if (!branchCards[key]) {
+                branchCards[key] = { key, name, total, cantidadVentas, clients, becados };
+            } else {
+                branchCards[key].total += total;
+                branchCards[key].cantidadVentas += cantidadVentas;
+                branchCards[key].clients += clients;
+                branchCards[key].becados += becados;
+            }
+        });
+        if (!selectedSucursalKey) {
+            sucursales.forEach((sucursal) => {
+                if (!branchCards[sucursal.key]) {
+                    branchCards[sucursal.key] = {
+                        key: sucursal.key,
+                        name: sucursal.descripcion || "Sucursal",
+                        total: 0,
+                        cantidadVentas: 0,
+                        clients: 0,
+                        becados: 0,
+                    };
+                }
+            });
+        }
+        return Object.values(branchCards)
+            .sort((a, b) => b.total - a.total || b.clients - a.clients || a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+    };
+
     handleChangePeriodo = (periodo) => {
         const range = this.getRangeForPeriodo(periodo);
         this.setState({ periodo, ...range }, this.loadDashboardData);
@@ -379,6 +670,8 @@ export default class ventas extends React.Component {
     handleTipoProductoSelect = (tipoProducto) => {
         this.setState({ selectedTipoProducto: tipoProducto }, () => this.loadDashboardData());
     };
+
+
 
     render() {
         // let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
@@ -393,6 +686,51 @@ export default class ventas extends React.Component {
             );
         }
 
+        const setColor = (monto, max, min) => {
+            // if (monto > 60000) {
+            //     console.log("> 60.000");
+            //     return "green";
+            // }
+            // if (monto > 45000) {
+            //     console.log("> 45.000");
+            //     return "yellow";
+            // }
+            // if (monto > 30000) {
+            //     console.log("> 30.000");
+            //     return "red";
+            // }
+            // if (monto < 30000) {
+            //     console.log("< 30.000");
+            //     return STheme.color.card;
+            // }
+
+            // if (monto > 600) {
+            //     console.log("> 600");
+            //     return STheme.color.success;
+            // }
+            // if (monto > 450) {
+            //     console.log("> 450");
+            //     return STheme.color.warning;
+            // }
+            // if (monto > 300) {
+            //     console.log("> 300");
+            //     return STheme.color.danger;
+            // }
+            // if (monto < 300) {
+            //     console.log("< 300");
+            //     return STheme.color.card;
+            // }
+
+            const p = (monto - min) / (max - min);
+
+            if (p >= 0.75) return STheme.color.success;
+            if (p >= 0.5) return STheme.color.warning;
+            if (p >= 0.25) return STheme.color.danger;
+
+            return STheme.color.card;
+
+        }
+
         const {
             periodo,
             fecha_inicio,
@@ -404,10 +742,12 @@ export default class ventas extends React.Component {
             dataBranchShare,
             dataBranchShareBarras,
             dataMetodoPago,
+            dataSucursalesCards,
             loading,
             tipoProducto,
             tipoProductoLista,
             selectedTipoProducto,
+            monedaBase
         } = this.state;
 
         const selectedBranchName = selectedSucursal?.descripcion || "Todas las sucursales";
@@ -423,32 +763,182 @@ export default class ventas extends React.Component {
             const topProduct = dataTopProducts[0]?.producto || "N/A";
 
             return (
-                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }} >
-                    {[{
-                        label: "Sucursal",
-                        value: selectedBranchName,
-                    }, {
-                        label: "Total ventas",
-                        value: `Bs. ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
-                    }, {
-                        label: "Cantidad de ventas",
-                        value: totalTickets,
-                    }, {
-                        label: "Top producto",
-                        value: topProduct,
-                    }].map((item, index) => (
-                        <SView key={index}
-                            col="xs-12 md-6 lg-3" padding={5} >
+                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }}>
+                    {[
+                        {
+                            label: "Sucursal",
+                            value: selectedBranchName,
+                            icon: "iconHome",
+                        },
+                        {
+                            label: "Total ventas",
+                            value: `${monedaBase?.observacion ?? ''} ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+                            icon: "pagoefectivo",
+                        },
+                        {
+                            label: "Cantidad de ventas",
+                            value: totalTickets,
+                            icon: "tpIn",
+                        },
+                        {
+                            label: "Top producto",
+                            value: topProduct,
+                            icon: "crmllamadatasaconversion",
+                        }
+                    ].map((item, index) => (
+                        <SView
+                            key={index}
+                            col="xs-12 md-6 lg-3"
+                            padding={5}
+                        >
                             <SView
-
                                 card
-                                style={{ padding: 15, minHeight: 110, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                                row
+                                style={{
+                                    padding: 15,
+                                    minHeight: 80,
+                                    borderRadius: 10,
+                                    borderWidth: 1,
+                                    borderColor: STheme.color.gray + "44",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}
                             >
-                                <SText fontSize={14} bold color={STheme.color.lightGray}>{item.label}</SText>
-                                <SText fontSize={18} bold>{item.value}</SText>
+                                <SView flex>
+                                    <SText
+                                        fontSize={14}
+                                        bold
+                                        color={STheme.color.lightGray}
+                                    >
+                                        {item.label}
+                                    </SText>
+
+                                    <SText fontSize={18} bold>
+                                        {item.value}
+                                    </SText>
+                                </SView>
+                                <SView width={50} height={50} style={{ borderRadius: 80, backgroundColor: STheme.color.card }} center>
+                                    <SIcon
+                                        name={item.icon}
+                                        width={32}
+                                        height={32}
+                                        fill={STheme.color.text}
+                                    />
+                                </SView>
                             </SView>
                         </SView>
                     ))}
+                </SView>
+                // <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }} >
+                //     {[{
+                //         label: "Sucursal",
+                //         value: selectedBranchName,
+                //     }, {
+                //         label: "Total ventas",
+                //         value: `${monedaBase?.observacion ?? ''} ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+                //     }, {
+                //         label: "Cantidad de ventas",
+                //         value: totalTickets,
+                //     }, {
+                //         label: "Top producto",
+                //         value: topProduct,
+                //     }].map((item, index) => (
+                //         <SView key={index}
+                //             col="xs-12 md-6 lg-3" padding={5} >
+                //             <SView
+
+                //                 card
+                //                 style={{ padding: 15, minHeight: 80, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44", }}
+                //             >
+                //                 <SText fontSize={14} bold color={STheme.color.lightGray}>{item.label}</SText>
+                //                 <SText fontSize={18} bold>{item.value}</SText>
+                //             </SView>
+                //         </SView>
+                //     ))}
+                // </SView>
+            );
+        };
+
+        const renderSucursalesCards = () => {
+            if (selectedSucursal) return null;
+            if (!dataSucursalesCards?.length) return null;
+            let maxMonto = Math.max(...dataSucursalesCards.map(branch => branch.total));
+            let minMonto = Math.min(...dataSucursalesCards.map(branch => branch.total));
+            // let montos = dataSucursalesCards.map(branch => branch.total);
+            console.log("clientesActivos", this.state.clientesActivos);
+
+            return (
+                <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap' }}>
+                    <SView col="xs-12" padding={5}>
+                        <SView card style={{ padding: 15, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.gray + "44" }}>
+                            <SText fontSize={16} bold>Resumen por sucursal</SText>
+                            <SText fontSize={12} color={STheme.color.lightGray}>Mostrando todas las sucursales en el período seleccionado.</SText>
+                        </SView>
+                    </SView>
+                    {dataSucursalesCards.map((branch) => {
+                        console.log("branchhh", branch);
+                        // let clientesActivos = this.state.clientesActivos?.[branch.key] || 0;
+                        console.log(this.state.clientesActivos);
+                        if (!this.state.clientesActivos) return null;
+                        let clientesActivos = this.state.clientesActivos?.find(item => item.key_sucursal === branch.key);
+                        // const clientesActivos =
+                        //     this.state.clientesActivos?.find(
+                        //         item => item.key_sucursal === branch.key_sucursal
+                        //     )?.clientes_activos || 0;
+                        console.log(clientesActivos);
+
+                        return (
+                            <SView key={branch.key} col="xs-12 md-6 lg-3" padding={5}>
+                                <SView
+                                    card
+                                    style={{
+                                        padding: 15,
+                                        minHeight: 140,
+                                        borderRadius: 10,
+                                        borderTopWidth: 3,
+                                        // borderColor: STheme.color.gray + "44",
+                                        borderTopColor: setColor(branch.total, maxMonto, minMonto),
+                                        borderWidth: 0.5,
+                                        borderColor: setColor(branch.total, maxMonto, minMonto),
+                                        backgroundColor: STheme.color.card,
+                                    }}
+                                >
+                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <SText fontSize={14} bold>{branch.name}</SText>
+                                        <SView style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: STheme.color.card, alignItems: 'center', justifyContent: 'center' }}>
+                                            {/* <SText fontSize={12} color={STheme.color.white}>{branch.key?.substring(0, 3) || "#"}</SText> */}
+                                            <SIcon name="iconEdifcio" width={22} height={22} fill={STheme.color.text} />
+                                        </SView>
+                                    </SView>
+                                    <SHr />
+                                    <SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Clientes activos</SText>
+                                            <SText fontSize={12} bold>{Number(clientesActivos?.clientes_activos || 0).toLocaleString('es-ES')}</SText>
+                                            {/* <SText fontSize={8} color={STheme.color.white}>{branch.key || "#"}</SText> */}
+
+                                        </SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Nuevos clientes</SText>
+                                            <SText fontSize={12} bold>{Number(clientesActivos?.nuevos_clientes || 0).toLocaleString('es-ES')}</SText>
+                                        </SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Reactivaciones</SText>
+                                            <SText fontSize={12} bold>{Number(clientesActivos?.clientes_reactivados || 0).toLocaleString('es-ES')}</SText>
+                                        </SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Cantidad de Ventas</SText>
+                                            <SText fontSize={12} bold>{Number(branch.cantidadVentas || 0).toLocaleString('es-ES')}</SText>
+                                        </SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Ingresos/{`${monedaBase?.observacion ?? ''}`}</SText>
+                                            <SText fontSize={12} bold>{`${monedaBase?.observacion ?? ''} ${Number(branch.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
+                                        </SView>
+                                    </SView>
+                                </SView>
+                            </SView>
+                        );
+                    })}
                 </SView>
             );
         };
@@ -459,6 +949,8 @@ export default class ventas extends React.Component {
         console.log("selectedTipoProducto", selectedTipoProducto);
         console.log("tipoProductoLista", tipoProductoLista);
         console.log("tipoProducto", tipoProducto);
+        console.log("fecha_inicio", fecha_inicio);
+        console.log("fecha_fin", fecha_fin);
         return (
             <SPage title="Dashboard de Ventas">
                 <ScrollView>
@@ -466,17 +958,59 @@ export default class ventas extends React.Component {
                         <SText fontSize={18} bold>Dashboard de Ventas</SText>
                         <SHr height={20} />
                         <SView col="xs-12" row card center padding={8}>
-                            <SView row col="xs-12 md-6 lg-4" style={{}}  >
-                                <FechaFullFilter
-                                    key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
-                                    fecha_inicio={fecha_inicio}
-                                    fecha_fin={fecha_fin}
-                                    onChange={(dates) => {
-                                        this.setState({ fecha_inicio: dates.fecha_inicio, fecha_fin: dates.fecha_fin }, this.loadDashboardData);
+                            <SView col={"xs-12 md-4"}>
+                                <SForm
+                                    style={{ zIndex: 99, height: 65, marginTop: -35 }}
+                                    inputs={{
+                                        sucursal: {
+                                            // label: "Sucursales",
+                                            placeholder: "Seleccione una sucursal",
+                                            type: "custom",
+                                            customInputClass: InputSelector,
+                                            defaultValue: selectedSucursal?.key ?? "todos",
+                                            options: [
+                                                {
+                                                    label: "Todas las sucursales",
+                                                    value: "todos",
+                                                    data: null
+                                                },
+                                                ...(sucursales || []).map(item => ({
+                                                    label: item.descripcion,
+                                                    value: item.key,
+                                                    data: item
+                                                }))
+                                            ],
+                                            onSelect: (val) => {
+                                                this.handleSucursalSelect(val.data);
+                                            }
+                                        }
                                     }}
                                 />
                             </SView>
-                            <SView col="xs-12 md-6 lg-8" flex   >
+                            <SView row col="xs-2" />
+                            <SView row col="xs-12 md-4" style={{ alignItems: "flex-end" }}  >
+                                <FechaFullFilter
+                                    key_opciones={
+                                        periodo === 'hoy' ? 'hoy' :
+                                            periodo === 'este_mes' ? 'este_mes' :
+                                                periodo === 'año' ? 'este_año' :
+                                                    'esta_semana'
+                                    }
+                                    fecha_inicio={fecha_inicio}
+                                    fecha_fin={fecha_fin}
+                                    onChange={(dates) => {
+                                        const newPeriodo = this.getPeriodoFromKeyOpciones(dates.key_opciones, dates.fecha_inicio, dates.fecha_fin);
+                                        console.log("newPeriodo", newPeriodo);
+                                        this.setState({
+                                            fecha_inicio: dates.fecha_inicio,
+                                            fecha_fin: dates.fecha_fin,
+                                            periodo: newPeriodo,
+                                        }, this.loadDashboardData);
+                                    }}
+                                />
+                            </SView>
+
+                            <SView col="xs-12 md-2"    >
                                 <SView style={{ alignItems: "flex-end", justifyContent: "flex-end" }} row center>
                                     {['hoy', 'semana', 'año'].map((item) => (
                                         <SButtom
@@ -492,44 +1026,28 @@ export default class ventas extends React.Component {
                             </SView>
                         </SView>
 
-                        <SView col="xs-12" row center style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} >
+                        <SView col="xs-12" row style={{ gap: 0, flexWrap: 'wrap', marginTop: 5 }} card>
 
-                            <SView col="xs-12 md-6 lg-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
-                                <SButtom
-                                    type={!selectedSucursal ? 'danger' : 'outline'}
-                                    onPress={() => this.handleSucursalSelect(null)}
-                                    style={{ minWidth: 100, height: 50 }}
-                                >
-                                    <SText>Todos</SText>
-                                </SButtom>
-                                {(sucursales || []).slice(0, 4).map((sucursal) => (
-                                    <SButtom
-                                        key={sucursal.key}
-                                        type={selectedSucursal?.key === sucursal.key ? 'danger' : 'outline'}
-                                        onPress={() => this.handleSucursalSelect(sucursal)}
-                                        style={{ minWidth: 130, padding: 8, }}
-                                    >
-                                        <SText>{sucursal.descripcion}</SText>
-                                    </SButtom>
-                                ))}
+
+                            <SView col="xs-12 md-4" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
+                                <SView col="xs-12" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
+                                    <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
+                                    <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
+                                </SView>
+
+                                {/* </SView> */}
                             </SView>
-                            <SView col="xs-12 md-6 lg-4" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
-                                {/* <FechaFullFilter
-                                    key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
-                                    fecha_inicio={fecha_inicio}
-                                    fecha_fin={fecha_fin}
-                                    onChange={(dates) => {
-                                        this.setState({ fecha_inicio: dates.fecha_inicio, fecha_fin: dates.fecha_fin }, this.loadDashboardData);
-                                    }}
-                                /> */}
+                            {/* <SView col="xs-12 md-6 lg-4" padding={8} card style={{ backgroundColor: STheme.color.secondary + "60" }}>
+                               
                                 <SText fontSize={14} color={STheme.color.text}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
                                 <SText fontSize={14} color={STheme.color.text}>Sucursal: {selectedBranchName}</SText>
-                            </SView>
-                            <SView col="xs-12 md-6 lg-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
+                            </SView> */}
+
+                            <SView col="xs-12 md-8" row style={{ gap: 8, flexWrap: 'wrap' }} padding={8} >
                                 <SButtom
                                     type={!selectedTipoProducto ? 'danger' : 'outline'}
                                     onPress={() => this.handleTipoProductoSelect(null)}
-                                    style={{ minWidth: 100, height: 50 }}
+                                    style={{ minWidth: 80, height: 40 }}
                                 >
                                     <SText>Todos</SText>
                                 </SButtom>
@@ -538,14 +1056,14 @@ export default class ventas extends React.Component {
                                         key={tipoKey}
                                         type={selectedTipoProducto === tipoKey ? 'danger' : 'outline'}
                                         onPress={() => this.handleTipoProductoSelect(tipoKey)}
-                                        style={{ minWidth: 130, padding: 8, }}
+                                        style={{ minWidth: 130, padding: 5, height: 40 }}
                                     >
                                         <SText>{this.getTipoProductoLabel(tipoKey)}</SText>
                                     </SButtom>
                                 ))}
                             </SView>
                         </SView>
-
+                        <SHr height={5} />
                         {/* <SHr style={{ marginVertical: 0 }} /> */}
                         {/* <SView col="xs-12" style={{ marginVertical: 10 }}>
                             <SText fontSize={14} color={STheme.color.gray}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
@@ -553,8 +1071,9 @@ export default class ventas extends React.Component {
                         </SView> */}
 
                         {renderResumenTarjetas()}
-
-                        {/* <SHr style={{ marginVertical: 10 }} /> */}
+                        <SHr height={10} />
+                        {renderSucursalesCards()}
+                        <SHr height={10} />
 
                         <SView col="xs-12" row style={{ flexWrap: 'wrap' }} >
                             <SView col="xs-12 lg-8" row padding={5} >
@@ -698,7 +1217,7 @@ export default class ventas extends React.Component {
 
 
                         <SView col="xs-12" row>
-                            <SView col="xs-12 lg-6" row padding={5} >
+                            <SView col="xs-12 lg-12" row padding={5} >
                                 <SView
                                     col="xs-12"
                                     card
@@ -720,7 +1239,7 @@ export default class ventas extends React.Component {
                                     )}
                                 </SView>
                             </SView>
-                            <SView col="xs-12 lg-6" padding={5}>
+                            {/* <SView col="xs-12 lg-6" padding={5}>
                                 <SView
                                     col="xs-12"
                                     card
@@ -741,7 +1260,7 @@ export default class ventas extends React.Component {
                                         />
                                     )}
                                 </SView>
-                            </SView>
+                            </SView> */}
                         </SView>
 
 
@@ -787,7 +1306,7 @@ export default class ventas extends React.Component {
                                             key="total"
                                             label='Total Bs'
                                             width={120}
-                                            data={e => `Bs. ${Number(e.row.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                            data={e => `${monedaBase?.observacion ?? ''} ${Number(e.row.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
                                         />
                                     </DinamicTable>
                                 )}
