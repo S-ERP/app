@@ -216,7 +216,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const precioValido = Number(precioFormateado) > 0;
     return (
         <SView style={{
-            backgroundColor: precioValido ? colorCompra + "25": STheme.color.danger + "25",
+            backgroundColor: precioValido ? colorCompra + "25" : STheme.color.danger + "25",
             // backgroundColor: precioValido ? STheme.color.card + "1c": STheme.color.danger + "0d",
             borderRadius: 12,
             padding: 10,
@@ -237,11 +237,11 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         borderWidth: 1, borderColor: STheme.color.lightGray + "50",
                         backgroundColor: STheme.color.lightGray + "20",
                         justifyContent: "center", alignItems: "center",
-                    }}>
+                    }}center>
                         {imgError ? (
-                            <SText fontSize={16} bold color={STheme.color.text}>
-                                {(modelo?.descripcion?.trim()?.charAt(0) || "?").toUpperCase()}
-                            </SText>
+                            <SText fontSize={10} color={STheme.color.lightGray}>IMG</SText>
+
+                            // <SText fontSize={10} color={STheme.color.lightGray}>{(modelo?.descripcion?.trim()?.charAt(0) || "?").toUpperCase()}</SText>
                         ) : (
                             <Image
                                 source={{ uri: (SSocket.api as any).inventario + "modelo/" + (modelo?.key ?? "") }}
