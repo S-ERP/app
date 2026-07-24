@@ -324,14 +324,15 @@ export default class tabla_productos extends Component {
 						);
 					})}
 				/> */}
-				<DinamicTable.Col key="tipo_producto" label="Tipo" width={100} height={60}
+				<DinamicTable.Col key="tipo_producto" label="Tipo" width={80} height={60}
 					data={e => e.row?.data?.tipo_producto ?? ""}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
 					customComponent={e => {
 						const tipo = e.row?.data?.tipo_producto || "";
 						const estilo = TIPO_PRODUCTO_MAP[tipo?.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
 						return (
-							<SView style={{ backgroundColor: estilo.color, borderRadius: 4, padding: 5, minWidth: 50, alignItems: "center" }}>
-								<SText style={{ fontSize: 12, color: STheme.color.text }}>{estilo.label}</SText>
+							<SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+								<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
 							</SView>
 						);
 					}}
@@ -339,10 +340,10 @@ export default class tabla_productos extends Component {
 
 				<DinamicTable.Col key="producto" label="Producto" width={140} height={60} data={(e) => e.row?.producto ?? ""} />
 				<DinamicTable.Col key="modelo" label="Tipo producto" width={140} height={60} data={(e) => e.row?.modelo?.tipo_producto?.descripcion ?? ""} />
-				<DinamicTable.Col key="codigo" label="Código" width={140} height={60} data={(e) => e.row?.modelo?.tipo_producto?.cod_ref ?? ""} />
+				<DinamicTable.Col key="codigo" label="Código" width={85} height={60} data={(e) => e.row?.modelo?.tipo_producto?.cod_ref ?? ""} />
 
 
-				<DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} height={60} dataType="datetime" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+				<DinamicTable.Col key={"fecha_on"} label="Fecha" width={90} height={60} dataType="datetime" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
 				<DinamicTable.Col key="sucursal" label="Sucursal" width={100} height={60} data={(e) => e.row?.sucursal?.descripcion ?? ""}
 					customComponent={e => {
@@ -401,7 +402,7 @@ export default class tabla_productos extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col key="cliente" label="Cliente" width={100} height={60} data={(e) => e.row?.cliente?.razon_social ?? ""}
+				<DinamicTable.Col key="cliente" label="Cliente" width={120} height={60} data={(e) => e.row?.cliente?.razon_social ?? ""}
 					customComponent={e => {
 						const nombre = e.row?.cliente?.razon_social || "";
 						const avatarSize = e.filterList ? 16 : 21;
@@ -426,14 +427,42 @@ export default class tabla_productos extends Component {
 						const total = rows.reduce((s, row) => s + (Number(row.cantidad) || 0), 0);
 						return total ? `${total}` : '';
 					}}
+					sumExcel
 				/>
-				<DinamicTable.Col key="precio_unitario" label="Precio" width={80} height={60} data={(e) => e.row?.precio_unitario ?? 0} dataType="number" textStyle={{ fontSize: 12, color: STheme.color.text }} />
+				<DinamicTable.Col key="precio_unitario" label="Precio" width={80} height={60} data={(e) => e.row?.precio_unitario ?? 0} dataType="number" textStyle={{ fontSize: 12, color: STheme.color.text }} format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					customComponent={e => {
+						return (
+							<>
+								{(e.data) ?
+									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
+										<SText fontSize={13} numberOfLines={0}>  {e.row?.moneda ? e.row?.moneda?.observacion : ""} {SMath.formatMoney(e.data)}  </SText>
+									</SView> : null}
+							</>
+						);
+					}}
+				/>
 				<DinamicTable.Col key="total" label="Total" width={80} height={60} data={(e) => e.row?.total ?? 0} dataType="number" textStyle={{ fontSize: 12, color: STheme.color.text }}
 					sumTotal={rows => {
+						console.log("AQUI", rows);
 						const total = rows.reduce((s, row) => s + (Number(row.total) || 0), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.moneda?.observacion || 'Bs';
 						return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
 					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					customComponent={e => {
+						return (
+							<>
+								{(e.data) ?
+									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
+										<SText fontSize={13} numberOfLines={0}>  {e.row?.moneda ? e.row?.moneda?.observacion : ""} {SMath.formatMoney(e.data)}  </SText>
+									</SView> : null}
+							</>
+						);
+					}}
+
+
 
 				/>
 
