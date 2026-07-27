@@ -212,11 +212,12 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                         onPress: () => {
                             // Respaldo en localStorage: SNavigation no persiste params tipo objeto
-                            // en la URL, por lo que se pierden si el usuario recarga la página.
+                            // en la URL, por lo que se pierden si el usuario recarga la página. d
                             console.clear();
                             console.log(JSON.stringify(factura.data));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
-                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, tipo: "editar" });
+                            SStorage.setItem("factura_editar_key_pendiente", factura.key);
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_key: factura.key, tipo: "editar" });
                         }
                     },
                     factura.state === "anulada" && {

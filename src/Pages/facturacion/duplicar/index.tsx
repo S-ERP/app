@@ -1,5 +1,6 @@
 import React from "react";
-import { SDate, SHr, SLoad, SNavigation, SNotification, SPage, SStorage, STheme, SUuid, SView } from "servisofts-component";
+import { SDate, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SStorage, STheme, SUuid, SView, SText } from "servisofts-component";
+import SSocket from "servisofts-socket";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
 import Model from "../../../Model";
@@ -10,14 +11,20 @@ import Detalle from "./Detalle";
 import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
+import SIconApp from "../../../Assets/SIconApp";
 
 // Misma key usada por BoxMenu al presionar "Duplicar Factura": sirve de respaldo
 // porque SNavigation no persiste params tipo objeto en la URL (se pierden al recargar).
 const STORAGE_KEY_FACTURA_DUPLICAR = "factura_duplicar_pendiente";
+// Al "Editar Factura" se necesita la key original para actualizar el mismo registro
+// en vez de emitir uno nuevo; se respalda igual que factura_duplicar_pendiente.
+const STORAGE_KEY_FACTURA_EDITAR_KEY = "factura_editar_key_pendiente";
 
 export default class index extends React.Component {
     _____ambiente = MDL.factura.getAmbiente();
 
+    tipo: "duplicar" | "editar" = "duplicar";
+    facturaKeyOriginal?: string;
     factura: Factura;
     parametricas: Parametricas = {};
     state = {
@@ -27,10 +34,15 @@ export default class index extends React.Component {
     }
     constructor(props: any) {
         super(props);
+        this.tipo = SNavigation.getParam("tipo") === "editar" ? "editar" : "duplicar";
         const param = SNavigation.getParam("factura_duplicar");
         // Al recargar la página, SNavigation solo conserva el param si viene por navegación
         // en memoria; tras un F5 llega como string ("[object Object]") o undefined.
         const facturaDuplicar = param && typeof param === "object" ? param : undefined;
+        if (this.tipo === "editar") {
+            const facturaKeyParam = SNavigation.getParam("factura_key");
+            this.facturaKeyOriginal = typeof facturaKeyParam === "string" ? facturaKeyParam : undefined;
+        }
         this.factura = index.buildFactura(facturaDuplicar);
         this.state.loadingDuplicado = !facturaDuplicar;
     }
@@ -113,6 +125,11 @@ export default class index extends React.Component {
 
     componentDidMount(): void {
         if (this.state.loadingDuplicado) {
+            if (this.tipo === "editar" && !this.facturaKeyOriginal) {
+                SStorage.getItem(STORAGE_KEY_FACTURA_EDITAR_KEY).then((key) => {
+                    this.facturaKeyOriginal = key || undefined;
+                });
+            }
             SStorage.getItem(STORAGE_KEY_FACTURA_DUPLICAR).then((raw) => {
                 let facturaDuplicar: any = undefined;
                 if (raw) {
@@ -170,6 +187,44 @@ export default class index extends React.Component {
         }).catch(e => {
             console.error(e);
         })
+        this.updatePageBackground();
+    }
+
+    async actualizarNumeroFactura() {
+        try {
+            const response: any = await SSocket.sendPromise({
+                service: "facturacion",
+                component: "factura",
+                type: "getAll",
+                estado: "cargando",
+                key_usuario: Model.usuario.Action.getKey(),
+                key_empresa: Model.empresa.Action.getKey(),
+            });
+            const facturas: any[] = Object.values(response?.data ?? {});
+            let max = 0;
+            facturas.forEach((f: any) => {
+                if (f?.ambiente != this.state.ambiente) return;
+                if ((f?.data?.codigoSucursal ?? "") != this.factura.data.codigoSucursal) return;
+                if ((f?.data?.codigoPuntoVenta ?? "") != this.factura.data.codigoPuntoVenta) return;
+                const n = parseInt(f?.data?.numeroFactura ?? "0");
+                if (!isNaN(n) && n > max) max = n;
+            });
+            this.factura.data.numeroFactura = (max + 1).toString();
+            this.setState({ ...this.state });
+        } catch (e) {
+            console.error("No se pudo calcular el correlativo de factura", e);
+        }
+    }
+
+    componentDidUpdate(prevProps: any, prevState: any) {
+        if (prevState.ambiente !== this.state.ambiente) {
+            this.updatePageBackground();
+        }
+    }
+
+    updatePageBackground() {
+        const backgroundColor = this.state.ambiente === 1 ? STheme.color.success : STheme.color.warning;
+        SPage.setBackground(<SView style={{ backgroundColor }} />);
     }
 
     validarAntesDeEmitir() {
@@ -255,6 +310,25 @@ export default class index extends React.Component {
 
     handleEnviar() {
         this.validarAntesDeEmitir();
+
+        if (this.tipo === "editar") {
+            if (!this.facturaKeyOriginal) {
+                SNotification.send({
+                    title: "Error",
+                    body: "No se encontró la factura original a editar.",
+                    color: STheme.color.danger,
+                    time: 5000,
+                });
+                return;
+            }
+            MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data).then(() => {
+                SNavigation.goBack();
+            }).catch((e) => {
+                console.error(e);
+            });
+            return;
+        }
+
         // return;
         const FacturaData = this.factura;
         const FacturaAmbiente = this.state.ambiente;
@@ -290,18 +364,27 @@ export default class index extends React.Component {
 
     }
     render() {
+        const accionText = this.tipo === "editar" ? "Editar Factura" : "Duplicar Factura";
+        const titleText = `${accionText} (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
+
+        const header = <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor : STheme.color.warning, height: 36, overflow: "hidden" }} row center>
+            <SView width={60} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
+            <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
+            <SView width={60} height={"100%"} center> <SText>Logo</SText> </SView>
+        </SView>;
+
         if (this.state.loadingDuplicado) {
-            return <SPage title={`Duplicar Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
+            return <SPage hidden title={titleText} header={header}>
                 <SView col={"xs-12"} padding={40} center>
                     <SLoad />
                 </SView>
             </SPage>;
         }
-        return <SPage title={`Duplicar Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
+        return <SPage hidden title={titleText} header={header}>
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
-                        <SelectSucursalPuntoVenta factura={this.factura} />
+                        <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} />
                     </SView>
                     <SView flex={2} />
                     <SView flex={3} center style={{ minWidth: 150 }}>
@@ -319,6 +402,28 @@ export default class index extends React.Component {
                 <Detalle factura={this.factura} parametricas={this.parametricas} />
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
+            </SView>
+
+            <SView col={"xs-12"} row center>
+                <SView width={150} height={30} style={{
+                    borderTopRightRadius: 10,
+                    borderTopLeftRadius: 10,
+                    backgroundColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                    padding: 8,
+                    borderWidth: 1,
+                    borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                }} row center
+                    onPress={() => {
+                        MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
+                        this.setState({ ambiente: MDL.factura.ambiente }, () => {
+                            this.actualizarNumeroFactura();
+                        })
+                    }}
+                >
+                    <SText fontSize={12} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+                    <SView flex />
+                    <SIcon name='Reload' width={10} fill={STheme.color.text} />
+                </SView>
             </SView>
         </SPage>;
     }
