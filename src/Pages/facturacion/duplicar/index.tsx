@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SNavigation, SNotification, SPage, STheme, SUuid, SView } from "servisofts-component";
+import { SDate, SHr, SLoad, SNavigation, SNotification, SPage, SStorage, STheme, SUuid, SView } from "servisofts-component";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
 import Model from "../../../Model";
@@ -11,6 +11,10 @@ import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
 
+// Misma key usada por BoxMenu al presionar "Duplicar Factura": sirve de respaldo
+// porque SNavigation no persiste params tipo objeto en la URL (se pierden al recargar).
+const STORAGE_KEY_FACTURA_DUPLICAR = "factura_duplicar_pendiente";
+
 export default class index extends React.Component {
     _____ambiente = MDL.factura.getAmbiente();
 
@@ -19,11 +23,20 @@ export default class index extends React.Component {
     state = {
         siat: null,
         ambiente: MDL.factura.ambiente,
+        loadingDuplicado: false,
     }
     constructor(props: any) {
         super(props);
-        const facturaDuplicar = SNavigation.getParam("factura_duplicar");
-        this.factura = {
+        const param = SNavigation.getParam("factura_duplicar");
+        // Al recargar la página, SNavigation solo conserva el param si viene por navegación
+        // en memoria; tras un F5 llega como string ("[object Object]") o undefined.
+        const facturaDuplicar = param && typeof param === "object" ? param : undefined;
+        this.factura = index.buildFactura(facturaDuplicar);
+        this.state.loadingDuplicado = !facturaDuplicar;
+    }
+
+    static buildFactura(facturaDuplicar?: any): Factura {
+        return {
             key: SUuid(),
             key_usuario: Model.usuario.Action.getKey(),
             key_empresa: Model.empresa.Action.getKey(),
@@ -102,6 +115,20 @@ export default class index extends React.Component {
     }
 
     componentDidMount(): void {
+        if (this.state.loadingDuplicado) {
+            SStorage.getItem(STORAGE_KEY_FACTURA_DUPLICAR).then((raw) => {
+                let facturaDuplicar: any = undefined;
+                if (raw) {
+                    try {
+                        facturaDuplicar = JSON.parse(raw);
+                    } catch (e) {
+                        console.error("No se pudo leer la factura a duplicar guardada", e);
+                    }
+                }
+                this.factura = index.buildFactura(facturaDuplicar);
+                this.setState({ loadingDuplicado: false });
+            });
+        }
         SNotification.send({
             key: "ambienteFacturacion",
             title: this._____ambiente === 1 ? "Modo PRODUCCIÓN" : "Modo PRUEBA",
@@ -266,6 +293,13 @@ export default class index extends React.Component {
 
     }
     render() {
+        if (this.state.loadingDuplicado) {
+            return <SPage title={`Duplicar Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
+                <SView col={"xs-12"} padding={40} center>
+                    <SLoad />
+                </SView>
+            </SPage>;
+        }
         return <SPage title={`Duplicar Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
