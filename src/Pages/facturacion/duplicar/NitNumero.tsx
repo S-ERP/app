@@ -21,6 +21,8 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                 <Label bold flex>{"NIT"}</Label>
 
                 <SInput flex customStyle={customStyle}
+                    disabled
+                    style={{ backgroundColor: STheme.color.text + "33" }}
                     defaultValue={this.props.factura.data.nitEmisor}
 
                     onChangeText={e => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SIcon, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SIcon, SInput, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import Label from "./Label";
 import { Factura } from "../../../MDL/factura/type";
 import PopupSelectSucursalPuntoVenta from "./PopupSelectSucursalPuntoVenta";
@@ -11,6 +11,7 @@ import { Sucursal } from "../../../MDL/empresa/type";
 type SelectSucursalPuntoVentaProps = {
     factura: Factura
 }
+const customStyle: any = "factura";
 export default class SelectSucursalPuntoVenta extends React.Component<SelectSucursalPuntoVentaProps> {
 
     state = {
@@ -115,8 +116,26 @@ export default class SelectSucursalPuntoVenta extends React.Component<SelectSucu
             <Label bold>{razonSocialEmisor}</Label>
             <Label flex bold>{this.state?.sucursal?.descripcion}</Label>
             <Label>{"No. Punto de Venta " + codigoPuntoVenta}</Label>
-            <Label>{direccion}</Label>
-            <Label>{telefono}</Label>
+            <SView col={"xs-12"} onPress={(e: any) => e?.stopPropagation?.()}>
+                <SInput
+                    customStyle={customStyle}
+                    style={{ textAlign: "center" }}
+                    defaultValue={direccion}
+                    onChangeText={e => {
+                        this.props.factura.data.direccion = e
+                    }}
+                />
+            </SView>
+            <SView col={"xs-12"} onPress={(e: any) => e?.stopPropagation?.()}>
+                <SInput
+                    customStyle={customStyle}
+                    style={{ textAlign: "center" }}
+                    defaultValue={telefono}
+                    onChangeText={e => {
+                        this.props.factura.data.telefono = e
+                    }}
+                />
+            </SView>
             <Label>{municipio}</Label>
         </SView>
     }
