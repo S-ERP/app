@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SText, STheme, SView, SPopup, SButtom, SInput, SNotification } from 'servisofts-component';
+import { SHr, SIcon, SText, STheme, SView, SPopup, SButtom, SInput, SNotification, SNavigation } from 'servisofts-component';
 import MDL from '../../../MDL';
 import { Linking } from 'react-native';
 import SIconApp from '../../../Assets/SIconApp';
@@ -193,6 +193,13 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     }}
                                 />
                             });
+                        }
+                    },
+                    {
+                        label: "Duplicar Factura",
+                        icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        onPress: () => {
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data });
                         }
                     },
                     factura.state === "anulada" && {

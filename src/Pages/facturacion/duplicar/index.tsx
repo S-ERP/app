@@ -21,7 +21,9 @@ export default class index extends React.Component {
         ambiente: MDL.factura.ambiente,
     }
     constructor(props: any) {
-        super(props); this.factura = {
+        super(props);
+        const facturaDuplicar = SNavigation.getParam("factura_duplicar");
+        this.factura = {
             key: SUuid(),
             key_usuario: Model.usuario.Action.getKey(),
             key_empresa: Model.empresa.Action.getKey(),
@@ -30,6 +32,7 @@ export default class index extends React.Component {
             data: {
                 nitEmisor: Model.empresa.Action.getSelect().nit,
                 razonSocialEmisor: Model.empresa.Action.getSelect().razon_social,
+
                 numeroFactura: "01",
                 cuf: "",
                 cufd: "",
@@ -72,7 +75,28 @@ export default class index extends React.Component {
                         numeroImei: "",
                         numeroSerie: ""
                     }
-                ]
+                ],
+                ...(facturaDuplicar ? {
+                    ...facturaDuplicar,
+                    cuf: "",
+                    cufd: "",
+                    cafc: "",
+                    fechaEmision: new SDate().toString() + "",
+                    detalle: (facturaDuplicar.detalle ?? []).map((item: any) => ({
+                        ...item,
+                        codigoProducto: item.codigoProducto != null ? String(item.codigoProducto) : "",
+                        codigoProductoSin: item.codigoProductoSin != null ? String(item.codigoProductoSin) : "",
+                        actividadEconomica: item.actividadEconomica != null ? String(item.actividadEconomica) : "",
+                        cantidad: item.cantidad != null ? String(item.cantidad) : "1",
+                        unidadMedida: item.unidadMedida != null ? String(item.unidadMedida) : "1",
+                        descripcion: item.descripcion != null ? String(item.descripcion) : "",
+                        precioUnitario: item.precioUnitario != null ? String(item.precioUnitario) : "0",
+                        montoDescuento: item.montoDescuento != null ? String(item.montoDescuento) : "0",
+                        subTotal: item.subTotal != null ? String(item.subTotal) : "0",
+                        numeroImei: item.numeroImei != null ? String(item.numeroImei) : "",
+                        numeroSerie: item.numeroSerie != null ? String(item.numeroSerie) : "",
+                    })),
+                } : {})
             }
         }
     }
@@ -242,7 +266,7 @@ export default class index extends React.Component {
 
     }
     render() {
-        return <SPage title={`Emitir Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
+        return <SPage title={`Duplicar Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>

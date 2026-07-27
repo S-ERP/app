@@ -11,6 +11,7 @@ import puntos_de_ventas_registro from "./puntos_de_ventas_registro";
 import emitir2 from "./emitir2";
 import importar from "./importar";
 import create from "./create"
+import duplicar from "./duplicar"
 import anular_cuf from "./anular_cuf";
 export const Parent = {
     name: "facturacion",
@@ -23,6 +24,7 @@ export default SPage.combinePages(Parent.name, {
     emitir,
     emitir2,
     create,
+    duplicar,
     libro_ventas,
     libro_ventas2,
     pdf,
