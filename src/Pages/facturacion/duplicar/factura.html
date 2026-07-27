@@ -1,0 +1,1172 @@
+<!-- <div class="modal">
+    <div class="modal-header">
+        <h2>✏️ Confirmar edición</h2>
+    </div>
+
+    <div class="modal-body">
+        <div class="icon">📝</div>
+
+        <h3>¿Está seguro de editar esta factura?</h3>
+
+        <p>
+            Podrá modificar la información de la factura antes de volver a emitirla o guardarla.
+        </p>
+
+        <p class="warning">
+            Verifique los datos antes de guardar los cambios.
+        </p>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-cancel">
+            Cancelar
+        </button>
+
+        <button class="btn btn-confirm">
+            ✔ Sí, editar factura
+        </button>
+    </div>
+</div> -->
+
+<!-- <div class="modal">
+    <div class="modal-header">
+        <h2>📄 Confirmar duplicación</h2>
+    </div>
+
+    <div class="modal-body">
+        <div class="icon">📑</div>
+
+        <h3>¿Está seguro de duplicar esta factura?</h3>
+
+        <p>
+            Se creará una nueva factura con la misma información que la actual para que pueda realizar las modificaciones necesarias antes de emitirla.
+        </p>
+
+        <p class="warning">
+            La factura original no será modificada.
+        </p>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-cancel">
+            Cancelar
+        </button>
+
+        <button class="btn btn-confirm">
+            ✔ Sí, duplicar factura
+        </button>
+    </div>
+</div> -->
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emitir Factura · SIAT</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Tipografía moderna -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           TOKENS DE DISEÑO
+        ========================================================= */
+        :root {
+            --brand: #198754;
+            --brand-dark: #146c43;
+            --brand-light: #e8f6ee;
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e7eaf0;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 2px rgba(16, 24, 40, .04), 0 1px 3px rgba(16, 24, 40, .06);
+            --shadow-md: 0 4px 12px rgba(16, 24, 40, .06), 0 2px 4px rgba(16, 24, 40, .04);
+            --shadow-lg: 0 12px 32px rgba(16, 24, 40, .10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+        .app-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-back {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            transition: all .18s ease;
+        }
+
+        .btn-back:hover {
+            background: var(--brand-light);
+            border-color: var(--brand);
+            color: var(--brand-dark);
+            transform: translateX(-2px);
+        }
+
+        .header-title {
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -.02em;
+            margin-bottom: 0;
+        }
+
+        .header-subtitle {
+            font-size: .8rem;
+            color: var(--text-muted);
+        }
+
+        .badge-ambiente {
+            font-weight: 700;
+            font-size: .72rem;
+            letter-spacing: .04em;
+            padding: .5em .9em;
+            border-radius: 999px;
+            background: #fff4e8;
+            color: var(--warning);
+            border: 1px solid #ffe1bf;
+            display: inline-flex;
+            align-items: center;
+            gap: .4em;
+        }
+
+        .badge-ambiente .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--warning);
+            box-shadow: 0 0 0 3px #ffe1bf;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================= */
+        .card-erp {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow .2s ease;
+            overflow: hidden;
+        }
+
+        .card-erp:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-erp-header {
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        .card-erp-body {
+            padding: 1.5rem;
+        }
+
+        .card-erp-title {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-weight: 700;
+            font-size: 1.02rem;
+            margin: 0;
+        }
+
+        .card-erp-title .icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--brand-light);
+            color: var(--brand);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+        }
+
+        /* =========================================================
+           FORM CONTROLS
+        ========================================================= */
+        .form-label-erp {
+            font-size: .74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--text-muted);
+            margin-bottom: .4rem;
+        }
+
+        .form-control-erp,
+        .form-select-erp {
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: .55rem .8rem;
+            font-size: .92rem;
+            background: var(--bg);
+            transition: all .16s ease;
+        }
+
+        .form-control-erp:focus,
+        .form-select-erp:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px var(--brand-light);
+            background: var(--surface);
+            outline: none;
+        }
+
+        .form-control-erp:disabled {
+            background: #eef1f5;
+            color: var(--text-muted);
+        }
+
+        /* =========================================================
+           BOTONES
+        ========================================================= */
+        .btn-brand {
+            background: var(--brand);
+            border: 1px solid var(--brand);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: .55rem 1.1rem;
+            transition: all .18s ease;
+            box-shadow: 0 1px 2px rgba(25, 135, 84, .25);
+        }
+
+        .btn-brand:hover {
+            background: var(--brand-dark);
+            border-color: var(--brand-dark);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(25, 135, 84, .28);
+        }
+
+        .btn-brand:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline-erp {
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all .18s ease;
+        }
+
+        .btn-outline-erp:hover {
+            border-color: var(--brand);
+            color: var(--brand-dark);
+            background: var(--brand-light);
+        }
+
+        .btn-icon-danger {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1.5px solid #f8d7da;
+            background: #fff5f5;
+            color: var(--danger);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .16s ease;
+        }
+
+        .btn-icon-danger:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+            transform: scale(1.06);
+        }
+
+        .btn-emitir {
+            width: 100%;
+            padding: .95rem 1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            letter-spacing: .01em;
+        }
+
+        /* =========================================================
+           TABLA DE PRODUCTOS (estilo tarjetas de fila, sin tabla gris)
+        ========================================================= */
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .items-table thead th {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0 .6rem .5rem;
+            border: none;
+        }
+
+        .items-table tbody tr {
+            background: var(--bg);
+            transition: background .15s ease;
+        }
+
+        .items-table tbody tr:hover {
+            background: var(--brand-light);
+        }
+
+        .items-table tbody td {
+            border: none;
+            padding: .6rem;
+            vertical-align: middle;
+        }
+
+        .items-table tbody tr td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .items-table tbody tr td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .subtotal-cell {
+            font-weight: 700;
+            color: var(--brand-dark);
+            white-space: nowrap;
+        }
+
+        .btn-add-item {
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           CARD TOTALES
+        ========================================================= */
+        .totales-card {
+            position: sticky;
+            top: 100px;
+        }
+
+        .totales-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .55rem 0;
+            font-size: .92rem;
+            color: var(--text-muted);
+        }
+
+        .totales-row strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .totales-divider {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: .6rem 0;
+        }
+
+        .total-final {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-top: .3rem;
+        }
+
+        .total-final .label {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .total-final .amount {
+            font-weight: 800;
+            font-size: 1.9rem;
+            color: var(--brand);
+            letter-spacing: -.02em;
+        }
+
+        /* =========================================================
+           FOOTER LEGAL
+        ========================================================= */
+        .footer-legal {
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            font-size: .82rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+        }
+
+        .footer-legal i {
+            color: var(--brand);
+            font-size: 1.1rem;
+            margin-top: .1rem;
+        }
+
+        /* =========================================================
+           UTILIDADES / ANIMACIÓN DE ENTRADA
+        ========================================================= */
+        .fade-in-up {
+            animation: fadeInUp .45s ease both;
+        }
+
+        .fade-in-up.delay-1 {
+            animation-delay: .05s;
+        }
+
+        .fade-in-up.delay-2 {
+            animation-delay: .10s;
+        }
+
+        .fade-in-up.delay-3 {
+            animation-delay: .15s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .totales-card {
+                position: static;
+                margin-top: 1.5rem;
+            }
+        }
+
+        /* =========================================================
+           MODAL DE ÉXITO (tema oscuro, sobre backdrop difuminado)
+        ========================================================= */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 18, 22, .72);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1080;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .22s ease, visibility .22s ease;
+            padding: 1rem;
+        }
+
+        .success-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-modal {
+            background: #24282e;
+            color: #fff;
+            border-radius: var(--radius-lg);
+            padding: 2.25rem 2rem 1.75rem;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            transform: scale(.9) translateY(10px);
+            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .success-overlay.show .success-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .success-icon {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            font-size: 2.1rem;
+            color: #fff;
+            box-shadow: 0 0 0 8px rgba(25, 135, 84, .18);
+            animation: popIn .35s ease .1s both;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(.4);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-modal h3 {
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: .5rem;
+        }
+
+        .success-modal p {
+            color: #a7adb5;
+            font-size: .9rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .success-actions {
+            display: flex;
+            gap: .6rem;
+            flex-wrap: wrap;
+        }
+
+        .success-actions .btn {
+            flex: 1 1 auto;
+            min-width: 92px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: .88rem;
+            padding: .6rem .75rem;
+            transition: all .18s ease;
+        }
+
+        .btn-salir-dark {
+            background: #101214;
+            border: 1px solid #101214;
+            color: #fff;
+        }
+
+        .btn-salir-dark:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        .btn-ver-venta {
+            background: var(--brand);
+            border: 1px solid var(--brand);
+            color: #fff;
+        }
+
+        .btn-ver-venta:hover {
+            background: var(--brand-dark);
+            border-color: var(--brand-dark);
+            color: #fff;
+        }
+
+        .btn-imprimir-pdf {
+            background: transparent;
+            border: 1px solid var(--brand);
+            color: var(--brand);
+        }
+
+        .btn-imprimir-pdf:hover {
+            background: var(--brand);
+            color: #fff;
+        }
+
+        /* =========================================================
+           MODAL DE CONFIRMACIÓN (previo a emitir)
+        ========================================================= */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 18, 22, .55);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1090;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .2s ease, visibility .2s ease;
+            padding: 1rem;
+        }
+
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-modal {
+            width: 420px;
+            max-width: 100%;
+            background: #fff;
+            color: var(--text);
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transform: scale(.92) translateY(8px);
+            transition: transform .22s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .confirm-overlay.show .confirm-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-modal-header {
+            padding: 18px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .confirm-modal-header h2 {
+            color: #d97706;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .confirm-modal-body {
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .confirm-modal-body .icon {
+            font-size: 3.4rem;
+            margin-bottom: 14px;
+            line-height: 1;
+        }
+
+        .confirm-modal-body h3 {
+            color: #222;
+            font-size: 1.25rem;
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        .confirm-modal-body p {
+            color: #555;
+            line-height: 1.6;
+            font-size: .92rem;
+            margin: 0;
+        }
+
+        .confirm-modal-body .warning {
+            margin-top: 12px;
+            color: #b91c1c;
+            font-weight: 600;
+            font-size: .88rem;
+        }
+
+        .confirm-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .confirm-modal-footer .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: .92rem;
+            font-weight: 600;
+            transition: background .2s ease;
+        }
+
+        .btn-cancel-confirm {
+            background: var(--bg);
+            color: #444;
+        }
+
+        .btn-cancel-confirm:hover {
+            background: #e5e7eb;
+            color: #444;
+        }
+
+        .btn-confirm-emit {
+            background: var(--brand);
+            color: #fff;
+        }
+
+        .btn-confirm-emit:hover {
+            background: var(--brand-dark);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+    ========================================================= -->
+    <header class="app-header">
+        <div class="container-xxl py-3 d-flex align-items-center justify-content-between gap-3 flex-wrap">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-back" title="Volver">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </button>
+                <div>
+                    <h1 class="header-title">Emitir Factura</h1>
+                    <div class="header-subtitle">Facturación electrónica · SIAT Bolivia</div>
+                </div>
+            </div>
+            <span class="badge-ambiente">
+                <span class="dot"></span> AMBIENTE: PRUEBA
+            </span>
+        </div>
+    </header>
+
+    <main class="container-xxl py-4 pb-5">
+
+        <div class="row g-4">
+
+            <!-- =========================================================
+                 COLUMNA IZQUIERDA (contenido principal)
+            ========================================================= -->
+            <div class="col-lg-8">
+
+                <div class="row g-4">
+
+                    <!-- CARD EMPRESA -->
+                    <div class="col-12">
+                        <section class="card-erp fade-in-up">
+                            <div class="card-erp-header">
+                                <h2 class="card-erp-title">
+                                    <span class="icon-wrap"><i class="bi bi-building"></i></span>
+                                    Datos de la Empresa
+                                </h2>
+                                <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>Casa Matriz</span>
+                            </div>
+                            <div class="card-erp-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label-erp">Razón Social</label>
+                                        <input type="text" class="form-control form-control-erp" disabled
+                                            value="SERVISOFTS S.R.L.">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label-erp">NIT</label>
+                                        <input type="text" class="form-control form-control-erp" disabled
+                                            value="1023456019">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label-erp">Ciudad</label>
+                                        <input type="text" class="form-control form-control-erp" disabled
+                                            value="Santa Cruz">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-erp">Dirección</label>
+                                        <input type="text" class="form-control form-control-erp"
+                                            value="Av. Cristo Redentor #123">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label-erp">Teléfono</label>
+                                        <input type="text" class="form-control form-control-erp" value="70012345">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label-erp">N° Punto de Venta</label>
+                                        <input type="text" class="form-control form-control-erp" disabled value="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-erp">Número de Factura</label>
+                                        <input type="text" class="form-control form-control-erp" value="00000145">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-erp">Código de Autorización (CUF)</label>
+                                        <input type="text" class="form-control form-control-erp"
+                                            placeholder="Se genera al emitir" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- CARD CLIENTE -->
+                    <div class="col-12">
+                        <section class="card-erp fade-in-up delay-1">
+                            <div class="card-erp-header">
+                                <h2 class="card-erp-title">
+                                    <span class="icon-wrap"><i class="bi bi-person-badge"></i></span>
+                                    Datos del Cliente
+                                </h2>
+                            </div>
+                            <div class="card-erp-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label-erp">Fecha</label>
+                                        <input type="date" class="form-control form-control-erp">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label-erp">NIT / CI</label>
+                                        <input type="text" class="form-control form-control-erp"
+                                            placeholder="Ej. 9999999">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label-erp">Código Cliente</label>
+                                        <input type="text" class="form-control form-control-erp" placeholder="—">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label-erp">Nombre / Razón Social</label>
+                                        <input type="text" class="form-control form-control-erp"
+                                            placeholder="Sin Nombre">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- CARD DETALLE DE PRODUCTOS -->
+                    <div class="col-12">
+                        <section class="card-erp fade-in-up delay-2">
+                            <div class="card-erp-header">
+                                <h2 class="card-erp-title">
+                                    <span class="icon-wrap"><i class="bi bi-box-seam"></i></span>
+                                    Detalle de Productos
+                                </h2>
+                                <button class="btn btn-brand btn-add-item" id="btnAgregarItem">
+                                    <i class="bi bi-plus-lg me-1"></i> Agregar Item
+                                </button>
+                            </div>
+                            <div class="card-erp-body">
+                                <div class="table-responsive">
+                                    <table class="items-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="min-width:180px">Producto</th>
+                                                <th style="width:90px">Cantidad</th>
+                                                <th style="width:140px">Unidad</th>
+                                                <th style="min-width:160px">Descripción</th>
+                                                <th style="width:120px">P. Unitario</th>
+                                                <th style="width:110px">Descuento</th>
+                                                <th style="width:110px">Subtotal</th>
+                                                <th style="width:50px"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemsBody">
+                                            <!-- Fila generada por JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 COLUMNA DERECHA — CARD TOTALES
+            ========================================================= -->
+            <div class="col-lg-4">
+                <section class="card-erp totales-card fade-in-up delay-3">
+                    <div class="card-erp-header">
+                        <h2 class="card-erp-title">
+                            <span class="icon-wrap"><i class="bi bi-calculator"></i></span>
+                            Resumen
+                        </h2>
+                    </div>
+                    <div class="card-erp-body">
+                        <div class="totales-row">
+                            <span>Subtotal</span>
+                            <strong id="txtSubtotal">Bs 0.00</strong>
+                        </div>
+                        <div class="totales-row">
+                            <span>Descuento</span>
+                            <strong id="txtDescuento">Bs 0.00</strong>
+                        </div>
+                        <div class="totales-row">
+                            <span>ICE <span class="text-muted">(opcional)</span></span>
+                            <strong id="txtIce">Bs 0.00</strong>
+                        </div>
+                        <div class="totales-row">
+                            <span>IVA <span class="text-muted">(13%)</span></span>
+                            <strong id="txtIva">Bs 0.00</strong>
+                        </div>
+
+                        <hr class="totales-divider">
+
+                        <div class="total-final mb-4">
+                            <span class="label">TOTAL A PAGAR</span>
+                            <span class="amount" id="txtTotal">Bs 0.00</span>
+                        </div>
+
+                        <button class="btn btn-brand btn-emitir" id="btnEmitirFactura">
+                            <i class="bi bi-send-check me-2"></i>Emitir Factura
+                        </button>
+                        <button class="btn btn-outline-erp w-100 mt-2 py-2">
+                            <i class="bi bi-file-earmark-arrow-down me-2"></i>Guardar Borrador
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             FOOTER — LEYENDA SIAT
+        ========================================================= -->
+        <div class="footer-legal mt-4 fade-in-up delay-3">
+            <i class="bi bi-shield-check"></i>
+            <div>
+                <strong>Ley N° 453:</strong> Tiene derecho a recibir información sobre las características y
+                contenidos de los servicios que utilice.
+            </div>
+        </div>
+
+    </main>
+
+    <!-- =========================================================
+         MODAL DE CONFIRMACIÓN — se muestra al presionar "Emitir Factura"
+    ========================================================= -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-modal-header">
+                <h2>⚠ Confirmar emisión</h2>
+            </div>
+
+            <div class="confirm-modal-body">
+                <div class="icon">🧾</div>
+
+                <h3>¿Está seguro de emitir esta factura?</h3>
+
+                <p>
+                    Una vez emitida, la factura será enviada al
+                    <strong>SIAT</strong> y no podrá modificarse.
+                </p>
+
+                <p class="warning">
+                    Esta acción no se puede deshacer.
+                </p>
+            </div>
+
+            <div class="confirm-modal-footer">
+                <button type="button" class="btn btn-cancel-confirm" id="btnCancelarConfirm">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-confirm-emit" id="btnSiEmitir">
+                    ✔ Sí, emitir factura
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         MODAL DE ÉXITO — se muestra tras confirmar la emisión
+    ========================================================= -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-modal">
+            <div class="success-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <h3>¡Venta realizada con éxito!</h3>
+            <p>Tu transacción se ha completado correctamente.</p>
+            <div class="success-actions">
+                <button type="button" class="btn btn-salir-dark" id="btnSalirModal">Salir</button>
+                <button type="button" class="btn btn-ver-venta">Ver venta</button>
+                <button type="button" class="btn btn-imprimir-pdf">Imprimir PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // =========================================================
+        // LÓGICA DE ITEMS (agregar / eliminar / calcular totales)
+        // =========================================================
+        const itemsBody = document.getElementById('itemsBody');
+        const btnAgregarItem = document.getElementById('btnAgregarItem');
+        const IVA_RATE = 0.13;
+
+        const productosDemo = ['Producto genérico', 'Servicio de consultoría', 'Licencia de software', 'Otros'];
+        const unidadesDemo = ['Unidad (UND)', 'Pieza (PZA)', 'Kilogramo (KG)', 'Servicio (SER)'];
+
+        function crearFila() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <select class="form-select form-select-erp">
+                        ${productosDemo.map(p => `<option>${p}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" min="1" value="1" class="form-control form-control-erp cantidad"></td>
+                <td>
+                    <select class="form-select form-select-erp">
+                        ${unidadesDemo.map(u => `<option>${u}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="text" class="form-control form-control-erp" placeholder="Descripción"></td>
+                <td><input type="number" min="0" step="0.01" value="0.00" class="form-control form-control-erp precio"></td>
+                <td><input type="number" min="0" step="0.01" value="0.00" class="form-control form-control-erp descuento"></td>
+                <td class="subtotal-cell text-end">Bs 0.00</td>
+                <td class="text-center">
+                    <button type="button" class="btn-icon-danger btnEliminarFila" title="Eliminar fila">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </td>
+            `;
+            itemsBody.appendChild(tr);
+            recalcularTotales();
+        }
+
+        function recalcularTotales() {
+            let subtotal = 0;
+            let descuentoTotal = 0;
+
+            itemsBody.querySelectorAll('tr').forEach(row => {
+                const cantidad = parseFloat(row.querySelector('.cantidad')?.value) || 0;
+                const precio = parseFloat(row.querySelector('.precio')?.value) || 0;
+                const descuento = parseFloat(row.querySelector('.descuento')?.value) || 0;
+
+                const bruto = cantidad * precio;
+                const neto = Math.max(bruto - descuento, 0);
+
+                row.querySelector('.subtotal-cell').textContent = 'Bs ' + neto.toFixed(2);
+
+                subtotal += bruto;
+                descuentoTotal += descuento;
+            });
+
+            const baseImponible = Math.max(subtotal - descuentoTotal, 0);
+            const iva = baseImponible * IVA_RATE;
+            const total = baseImponible; // El IVA en Bolivia está incluido en el precio final
+
+            document.getElementById('txtSubtotal').textContent = 'Bs ' + subtotal.toFixed(2);
+            document.getElementById('txtDescuento').textContent = 'Bs ' + descuentoTotal.toFixed(2);
+            document.getElementById('txtIva').textContent = 'Bs ' + iva.toFixed(2);
+            document.getElementById('txtTotal').textContent = 'Bs ' + total.toFixed(2);
+        }
+
+        // Delegación de eventos: eliminar fila y recalcular en cualquier cambio
+        itemsBody.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btnEliminarFila');
+            if (!btn) return;
+            btn.closest('tr').remove();
+            recalcularTotales();
+        });
+
+        itemsBody.addEventListener('input', (e) => {
+            if (e.target.matches('.cantidad, .precio, .descuento')) {
+                recalcularTotales();
+            }
+        });
+
+        btnAgregarItem.addEventListener('click', crearFila);
+
+        // Fila inicial de ejemplo
+        crearFila();
+
+        // =========================================================
+        // MODAL DE CONFIRMACIÓN → MODAL DE ÉXITO AL EMITIR
+        // =========================================================
+        const confirmOverlay = document.getElementById('confirmOverlay');
+        const successOverlay = document.getElementById('successOverlay');
+        const btnEmitirFactura = document.getElementById('btnEmitirFactura');
+        const btnCancelarConfirm = document.getElementById('btnCancelarConfirm');
+        const btnSiEmitir = document.getElementById('btnSiEmitir');
+        const btnSalirModal = document.getElementById('btnSalirModal');
+
+        function mostrarConfirmacion() {
+            confirmOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarConfirmacion() {
+            confirmOverlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function mostrarExito() {
+            successOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarExito() {
+            successOverlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // 1) "Emitir Factura" abre el modal de confirmación
+        btnEmitirFactura.addEventListener('click', mostrarConfirmacion);
+        btnCancelarConfirm.addEventListener('click', cerrarConfirmacion);
+
+        // 2) Al confirmar, se cierra la confirmación y se muestra el éxito
+        btnSiEmitir.addEventListener('click', () => {
+            cerrarConfirmacion();
+            mostrarExito();
+        });
+
+        btnSalirModal.addEventListener('click', cerrarExito);
+
+        // Cierra al hacer click fuera de la tarjeta (sobre el backdrop)
+        confirmOverlay.addEventListener('click', (e) => {
+            if (e.target === confirmOverlay) cerrarConfirmacion();
+        });
+        successOverlay.addEventListener('click', (e) => {
+            if (e.target === successOverlay) cerrarExito();
+        });
+    </script>
+
+</body>
+
+</html>
