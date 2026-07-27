@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SStorage, STheme, SUuid, SView, SText } from "servisofts-component";
+import { SDate, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SPopup, SStorage, STheme, SUuid, SView, SText } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
@@ -191,6 +191,9 @@ export default class index extends React.Component {
     }
 
     async actualizarNumeroFactura() {
+        // Al editar, la factura conserva su numeroFactura original; el correlativo
+        // solo aplica cuando se está creando una factura nueva (duplicar).
+        if (this.tipo === "editar") return;
         try {
             const response: any = await SSocket.sendPromise({
                 service: "facturacion",
@@ -312,56 +315,65 @@ export default class index extends React.Component {
         this.validarAntesDeEmitir();
 
         if (this.tipo === "editar") {
-            if (!this.facturaKeyOriginal) {
-                SNotification.send({
-                    title: "Error",
-                    body: "No se encontró la factura original a editar.",
-                    color: STheme.color.danger,
-                    time: 5000,
-                });
-                return;
-            }
-            MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data).then(() => {
-                SNavigation.goBack();
-            }).catch((e) => {
-                console.error(e);
+            SPopup.confirm({
+                title: "Seguro de editar",
+                message: "¿Está seguro de editar esta factura?",
+                onPress: () => {
+                    if (!this.facturaKeyOriginal) {
+                        SNotification.send({
+                            title: "Error",
+                            body: "No se encontró la factura original a editar.",
+                            color: STheme.color.danger,
+                            time: 5000,
+                        });
+                        return;
+                    }
+                    MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data).then(() => {
+                        SNavigation.goBack();
+                    }).catch((e) => {
+                        console.error(e);
+                    });
+                }
             });
             return;
         }
 
-        // return;
-        const FacturaData = this.factura;
-        const FacturaAmbiente = this.state.ambiente;
-        console.log("Factura a emitir:", FacturaData);
-        console.log("Ambiente de emisión:", FacturaAmbiente === 1 ? "Producción" : "Prueba");
-        // return;
+        SPopup.confirm({
+            title: "Seguro de duplicar",
+            message: "¿Está seguro de duplicar esta factura?",
+            onPress: () => {
+                const FacturaData = this.factura;
+                const FacturaAmbiente = this.state.ambiente;
+                console.log("Factura a emitir:", FacturaData);
+                console.log("Ambiente de emisión:", FacturaAmbiente === 1 ? "Producción" : "Prueba");
 
-        SNotification.send({
-            key: "facturacionEmitir",
-            title: "Emitiendo factura",
-            type: "loading"
-        })
-        const resp = MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
-            SNotification.send({
-                key: "facturacionEmitir",
-                title: "Factura emitida con éxito",
-                color: STheme.color.success,
-                time: 5000,
-            });
-            MDL.factura.imprimir({ cuf: e.data.cuf })
+                SNotification.send({
+                    key: "facturacionEmitir",
+                    title: "Emitiendo factura",
+                    type: "loading"
+                })
+                const resp = MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
+                    SNotification.send({
+                        key: "facturacionEmitir",
+                        title: "Factura emitida con éxito",
+                        color: STheme.color.success,
+                        time: 5000,
+                    });
+                    MDL.factura.imprimir({ cuf: e.data.cuf })
 
-        }).catch((e) => {
-            SNotification.send({
-                key: "facturacionEmitir",
-                title: "Ocurrio un error al emitir la factura",
-                body: e.error + "aaaa",
-                color: STheme.color.danger,
-                time: 5000,
-            })
-        })
+                }).catch((e) => {
+                    SNotification.send({
+                        key: "facturacionEmitir",
+                        title: "Ocurrio un error al emitir la factura",
+                        body: e.error + "aaaa",
+                        color: STheme.color.danger,
+                        time: 5000,
+                    })
+                })
 
-        console.log("%c" + JSON.stringify(resp), `color: #cc2eb2; font-weight: bold;`);
-
+                console.log("%c" + JSON.stringify(resp), `color: #cc2eb2; font-weight: bold;`);
+            }
+        });
     }
     render() {
         const accionText = this.tipo === "editar" ? "Editar Factura" : "Duplicar Factura";
