@@ -13,10 +13,21 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
 
 
     render() {
+
+        console.clear();
+        console.log(JSON.stringify(this.props.factura.data));
         return <SView col={"xs-12"} center>
             <SView col={"xs-12"} row >
                 <Label bold flex>{"NIT"}</Label>
-                <Label style={{ width: 90 }} >{this.props.factura.data.nitEmisor}</Label>
+
+                <SInput flex customStyle={customStyle}
+                    defaultValue={this.props.factura.data.nitEmisor}
+
+                    onChangeText={e => {
+                        this.props.factura.data.nitEmisor = e
+                    }} />
+
+
             </SView>
             <SView col={"xs-12"} row >
                 <Label bold flex>{"FACTURA N"}</Label>
@@ -28,7 +39,11 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
             </SView>
             <SView col={"xs-12"} row >
                 <Label bold flex>{"CÓD. AUTORIZACIÓN"}</Label>
-                <Label style={{ width: 90 }} >{this.props.factura.data.cuf}</Label>
+                <SInput flex customStyle={customStyle}
+                    defaultValue={this.props.factura.data.cuf}
+                    onChangeText={e => {
+                        this.props.factura.data.cuf = e
+                    }} />
             </SView>
             <SView col={"xs-12"} row >
                 <Label bold flex>{"MÉTODO DE PAGO"}</Label>
@@ -36,30 +51,6 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                     defaultValue={this.props.factura.data.codigoMetodoPago}
                     onChangeText={e => {
                         this.props.factura.data.codigoMetodoPago = e
-                    }} />
-            </SView>
-            <SView col={"xs-12"} row >
-                <Label bold flex>{"ACT. ECONÓMICA"}</Label>
-                <SInput flex customStyle={customStyle}
-                    defaultValue={this.props.factura.data.detalle[0]?.actividadEconomica}
-                    onChangeText={e => {
-                        if (this.props.factura.data.detalle[0]) this.props.factura.data.detalle[0].actividadEconomica = e
-                    }} />
-            </SView>
-            <SView col={"xs-12"} row >
-                <Label bold flex>{"CÓD. PRODUCTO"}</Label>
-                <SInput flex customStyle={customStyle}
-                    defaultValue={this.props.factura.data.detalle[0]?.codigoProducto}
-                    onChangeText={e => {
-                        if (this.props.factura.data.detalle[0]) this.props.factura.data.detalle[0].codigoProducto = e
-                    }} />
-            </SView>
-            <SView col={"xs-12"} row >
-                <Label bold flex>{"CÓD. PRODUCTO SIN"}</Label>
-                <SInput flex customStyle={customStyle}
-                    defaultValue={this.props.factura.data.detalle[0]?.codigoProductoSin}
-                    onChangeText={e => {
-                        if (this.props.factura.data.detalle[0]) this.props.factura.data.detalle[0].codigoProductoSin = e
                     }} />
             </SView>
         </SView>

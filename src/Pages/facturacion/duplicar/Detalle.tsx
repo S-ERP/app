@@ -103,6 +103,18 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
+        {/* ACTIVIDAD ECONÓMICA */}
+        <Cell>
+            <SInput
+                customStyle={customStyle}
+                value={item.actividadEconomica ?? ""}
+                onChangeText={e => {
+                    item.actividadEconomica = e;
+                    reload();
+                }}
+            />
+        </Cell>
+
         {/* UNIDAD */}
         <Cell>
             <FiltroSelector
@@ -257,6 +269,7 @@ export default class Detalle extends React.Component<DetalleProps> {
         return <SView col={"xs-12"} row>
             <Cell label="CÓDIGO PRODUCTO / SERVICIO" />
             <Cell label="CANTIDAD" />
+            <Cell label="CÓD. ACTIVIDAD ECONÓMICA" />
             <Cell label="UNIDAD DE MEDIDA" />
             <Cell label="DESCRIPCIÓN" flex={3} />
             <Cell label="PRECIO UNITARIO" />

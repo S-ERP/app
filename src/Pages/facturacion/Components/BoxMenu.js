@@ -201,6 +201,8 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         onPress: () => {
                             // Respaldo en localStorage: SNavigation no persiste params tipo objeto
                             // en la URL, por lo que se pierden si el usuario recarga la página.
+                            console.clear();
+                            console.log(JSON.stringify(factura.data));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
                             SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data });
                         }

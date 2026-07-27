@@ -91,9 +91,6 @@ export default class index extends React.Component {
                 ],
                 ...(facturaDuplicar ? {
                     ...facturaDuplicar,
-                    cuf: "",
-                    cufd: "",
-                    cafc: "",
                     fechaEmision: new SDate().toString() + "",
                     detalle: (facturaDuplicar.detalle ?? []).map((item: any) => ({
                         ...item,
