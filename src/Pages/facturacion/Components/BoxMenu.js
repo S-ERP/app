@@ -3,6 +3,7 @@ import { SHr, SIcon, SText, STheme, SView, SPopup, SButtom, SInput, SNotificatio
 import MDL from '../../../MDL';
 import { Linking } from 'react-native';
 import SIconApp from '../../../Assets/SIconApp';
+import tipo from '../../whatsapp/tipo';
 
 export type BoxMenuPropsType = {
     data: any,
@@ -204,7 +205,18 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                             console.clear();
                             console.log(JSON.stringify(factura.data));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
-                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data });
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, tipo: "duplicar" });
+                        }
+                    },     {
+                        label: "Editar Factura",
+                        icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        onPress: () => {
+                            // Respaldo en localStorage: SNavigation no persiste params tipo objeto
+                            // en la URL, por lo que se pierden si el usuario recarga la página.
+                            console.clear();
+                            console.log(JSON.stringify(factura.data));
+                            SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, tipo: "editar" });
                         }
                     },
                     factura.state === "anulada" && {

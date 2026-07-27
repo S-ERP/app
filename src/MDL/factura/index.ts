@@ -149,8 +149,6 @@ export default class factura extends MDLAbstract<EventListener> {
         }, 1000 * 60)
         return resp
     }
-
-
     imprimir({ cuf = "", tipo = "carta" }: { cuf: string, tipo?: "carta" | "rollo" }) {
         SNotification.send({ key: "imprimirFactura" + cuf, title: "Imprimiendo factura", body: cuf, type: "loading" })
         SSocket.sendPromise({
@@ -214,8 +212,6 @@ export default class factura extends MDLAbstract<EventListener> {
             })
         })
     }
-
-
     reenviar({ cuf = "" }) {
         return new Promise((resolve, reject) => {
             SPopup.confirm({
@@ -352,7 +348,6 @@ export default class factura extends MDLAbstract<EventListener> {
             }
         })
     }
-
     eliminarFactura(factura_key: any) {
         const ___data = {
             key: factura_key,
@@ -401,7 +396,6 @@ export default class factura extends MDLAbstract<EventListener> {
         });
     }
 
-
     async editarDetalle(factura_key: string, factura_data: any, nuevoDetalle: any[]) {
         const payload = {
             key: factura_key,
@@ -411,7 +405,7 @@ export default class factura extends MDLAbstract<EventListener> {
             }
         };
 
-        
+
         console.log("%c" + JSON.stringify(payload), `color: #2ECC40; font-weight: bold;`);
         // return;
         try {
@@ -484,7 +478,6 @@ export default class factura extends MDLAbstract<EventListener> {
             throw e; // Lanza el error para que quien llame pueda manejarlo con try/catch
         });
     }
-
     async getClientes(buscar: string) {
         const resp: any = await SSocket.sendPromise({
             service: "facturacion",

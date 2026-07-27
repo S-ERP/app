@@ -9,7 +9,8 @@ import { Sucursal } from "../../../MDL/empresa/type";
 
 
 type SelectSucursalPuntoVentaProps = {
-    factura: Factura
+    factura: Factura,
+    onPuntoVentaChange?: () => void
 }
 export default class SelectSucursalPuntoVenta extends React.Component<SelectSucursalPuntoVentaProps> {
 
@@ -61,6 +62,7 @@ export default class SelectSucursalPuntoVenta extends React.Component<SelectSucu
         this.state.sucursal = sucursal;
         this.setState({ ...this.state })
 
+        if (this.props.onPuntoVentaChange) this.props.onPuntoVentaChange();
     }
 
 

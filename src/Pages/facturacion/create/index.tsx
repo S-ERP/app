@@ -1,5 +1,6 @@
 import React from "react";
 import { SDate, SHr, SIcon, SNavigation, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
+import SSocket from "servisofts-socket";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
 import Model from "../../../Model";
@@ -127,6 +128,32 @@ export default class index extends React.Component {
         this.updatePageBackground();
     }
 
+    async actualizarNumeroFactura() {
+        try {
+            const response: any = await SSocket.sendPromise({
+                service: "facturacion",
+                component: "factura",
+                type: "getAll",
+                estado: "cargando",
+                key_usuario: Model.usuario.Action.getKey(),
+                key_empresa: Model.empresa.Action.getKey(),
+            });
+            const facturas: any[] = Object.values(response?.data ?? {});
+            let max = 0;
+            facturas.forEach((f: any) => {
+                if (f?.ambiente != this.state.ambiente) return;
+                if ((f?.data?.codigoSucursal ?? "") != this.factura.data.codigoSucursal) return;
+                if ((f?.data?.codigoPuntoVenta ?? "") != this.factura.data.codigoPuntoVenta) return;
+                const n = parseInt(f?.data?.numeroFactura ?? "0");
+                if (!isNaN(n) && n > max) max = n;
+            });
+            this.factura.data.numeroFactura = (max + 1).toString();
+            this.setState({ ...this.state });
+        } catch (e) {
+            console.error("No se pudo calcular el correlativo de factura", e);
+        }
+    }
+
     componentDidUpdate(prevProps: any, prevState: any) {
         if (prevState.ambiente !== this.state.ambiente) {
             this.updatePageBackground();
@@ -221,7 +248,13 @@ export default class index extends React.Component {
 
     handleEnviar() {
         this.validarAntesDeEmitir();
-        // return;
+
+        const faccc = this.factura;
+        console.clear();
+        // console.dir(JSON.stringify(faccc));
+        console.dir(faccc);
+
+        return;
         SNotification.send({
             key: "facturacionEmitir",
             title: "Emitiendo factura",
@@ -266,7 +299,7 @@ export default class index extends React.Component {
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
-                        <SelectSucursalPuntoVenta factura={this.factura} />
+                        <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} />
                     </SView>
                     <SView flex={2} />
                     <SView flex={3} center style={{ minWidth: 150 }}>
@@ -287,7 +320,6 @@ export default class index extends React.Component {
             </SView>
 
             <SView col={"xs-12"} row center>
-
                 <SView width={150} height={30} style={{
                     borderTopRightRadius: 10,
                     borderTopLeftRadius: 10,
@@ -296,18 +328,17 @@ export default class index extends React.Component {
                     borderWidth: 1,
                     borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
                 }} row center
-
                     onPress={() => {
                         MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
-                        this.setState({ ambiente: MDL.factura.ambiente })
+                        this.setState({ ambiente: MDL.factura.ambiente }, () => {
+                            this.actualizarNumeroFactura();
+                        })
                     }}
                 >
                     <SText fontSize={12} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
                     <SView flex />
                     <SIcon name='Reload' width={10} fill={STheme.color.text} />
                 </SView>
-
-
             </SView>
         </SPage>;
     }
