@@ -37,6 +37,8 @@ export default class index extends React.Component {
     state = {
         siat: null,
         ambiente: MDL.factura.ambiente,
+        // estado: "emitida",
+        // alvaro
         loadingDuplicado: false,
     }
     constructor(props: any) {
@@ -52,7 +54,8 @@ export default class index extends React.Component {
         }
         const facturaEstadoParam = SNavigation.getParam("factura_estado");
         this.facturaEstadoOriginal = typeof facturaEstadoParam === "string" ? facturaEstadoParam : undefined;
-        const facturaAmbienteParam = SNavigation.getParam("factura_ambiente");
+        if (this.facturaEstadoOriginal) this.state.estado = this.facturaEstadoOriginal;
+        const facturaAmbienteParam = parseInt(SNavigation.getParam("factura_ambiente") as any, 10);
         this.facturaAmbienteOriginal = (facturaAmbienteParam === 1 || facturaAmbienteParam === 2) ? facturaAmbienteParam : undefined;
         if (this.facturaAmbienteOriginal) this.state.ambiente = this.facturaAmbienteOriginal;
         this.factura = index.buildFactura(facturaDuplicar);
@@ -166,6 +169,7 @@ export default class index extends React.Component {
                 this.setState({
                     loadingDuplicado: false,
                     ambiente: this.facturaAmbienteOriginal ?? this.state.ambiente,
+                    estado: this.facturaEstadoOriginal ?? this.state.estado,
                 });
             });
         }
@@ -354,7 +358,7 @@ export default class index extends React.Component {
                         });
                         return;
                     }
-                    MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.facturaEstadoOriginal ?? "emitida").then(() => {
+                    MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.state.estado).then(() => {
                         SNavigation.goBack();
                     }).catch((e) => {
                         console.error(e);
@@ -449,7 +453,9 @@ export default class index extends React.Component {
                     </SView>
                     <SView flex={2} />
                     <SView flex={3} center style={{ minWidth: 150 }}>
-                        <NitNumero factura={this.factura} estado={this.facturaEstadoOriginal} ambiente={this.state.ambiente} />
+                        <NitNumero factura={this.factura} estado={this.state.estado} ambiente={this.state.ambiente}
+                            onEstadoChange={(estado) => { this.facturaEstadoOriginal = estado; this.setState({ estado }); }}
+                        />
                     </SView>
                 </SView>
                 <SHr h={30} />
