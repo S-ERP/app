@@ -188,7 +188,10 @@ export default class libro_ventas extends Component {
                             width: 230,
                         }
                         ]} center>
-                            <BoxMenu data={e.row}
+                            <BoxMenu 
+                            data={e.row}
+                            ambiente={e.row?.ambiente}
+
                                 anular={this.anular.bind(this)}
                                 onReload={() => {
                                     this.table.loadData();

@@ -8,9 +8,11 @@ import { Factura } from "../../../MDL/factura/type";
 type NitNumeroProps = {
     factura: Factura,
     estado?: string,
-    ambiente?: number
+    ambiente?: number,
+    onEstadoChange?: (estado: string) => void
 }
 const customStyle: any = "factura";
+const ESTADOS = ["enviada", "procesando", "emitida", "anulada"];
 export default class NitNumero extends React.Component<NitNumeroProps> {
 
     getEstadoColor(estado?: string) {
@@ -19,6 +21,26 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
         if (estado == "anulada") return STheme.color.danger;
         if (estado == "procesando") return STheme.color.gray;
         return STheme.color.primary;
+    }
+
+    openSelectEstado() {
+        SPopup.open({
+            key: "select_estado_factura",
+            content: <SView width={140} backgroundColor={STheme.color.background} withoutFeedback center
+                style={{ borderRadius: 6, overflow: "hidden", borderWidth: 1, borderColor: "#66666699" }}>
+                {ESTADOS.map(estado => (
+                    <SView key={estado} col={"xs-12"} padding={6}
+                        onPress={() => {
+                            SPopup.close("select_estado_factura");
+                            if (this.props.onEstadoChange) this.props.onEstadoChange(estado);
+                        }}>
+                        <SView backgroundColor={this.getEstadoColor(estado)} height={22} borderRadius={4} center>
+                            <SText fontSize={11} color={"#fff"} bold>{estado.toUpperCase()}</SText>
+                        </SView>
+                    </SView>
+                ))}
+            </SView>
+        });
     }
 
     render() {
@@ -67,7 +89,8 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
             <SView col={"xs-12"} row center>
                 <Label bold flex>{"ESTADO"}</Label>
                 <SView flex center>
-                    <SView backgroundColor={this.getEstadoColor(this.props.estado)} width={90} height={22} borderRadius={4} center>
+                    <SView backgroundColor={this.getEstadoColor(this.props.estado)} width={90} height={22} borderRadius={4} center
+                        onPress={() => this.openSelectEstado()}>
                         <SText fontSize={11} color={"#fff"} bold>{(this.props.estado || "-").toUpperCase()}</SText>
                     </SView>
                 </SView>
