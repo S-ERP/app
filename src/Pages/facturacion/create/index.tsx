@@ -250,11 +250,11 @@ export default class index extends React.Component {
         this.validarAntesDeEmitir();
 
         const faccc = this.factura;
-        console.clear();
+        // console.clear();
         // console.dir(JSON.stringify(faccc));
         console.dir(faccc);
 
-        return;
+        // return;
         SNotification.send({
             key: "facturacionEmitir",
             title: "Emitiendo factura",
@@ -286,11 +286,28 @@ export default class index extends React.Component {
         return <SPage
             hidden title={titleText} header={
                 <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor : STheme.color.warning, height: 36, overflow: "hidden" }} row center>
-                    <SView width={60} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
+                    <SView width={120} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
                     <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
-                    <SView width={60} height={"100%"} center> <SText>Logo</SText> </SView>
-
-
+                    <SView width={120} height={"100%"} center>
+                        <SView height={26} style={{
+                            borderRadius: 6,
+                            backgroundColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                            paddingHorizontal: 8,
+                            borderWidth: 1,
+                            borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                        }} row center
+                            onPress={() => {
+                                MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
+                                this.setState({ ambiente: MDL.factura.ambiente }, () => {
+                                    this.actualizarNumeroFactura();
+                                })
+                            }}
+                        >
+                            <SText fontSize={11} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+                            <SView width={4} />
+                            <SIcon name='Reload' width={9} fill={STheme.color.text} />
+                        </SView>
+                    </SView>
                 </SView>
             }
 
@@ -317,28 +334,6 @@ export default class index extends React.Component {
                 <Detalle factura={this.factura} parametricas={this.parametricas} />
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
-            </SView>
-
-            <SView col={"xs-12"} row center>
-                <SView width={150} height={30} style={{
-                    borderTopRightRadius: 10,
-                    borderTopLeftRadius: 10,
-                    backgroundColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
-                    padding: 8,
-                    borderWidth: 1,
-                    borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
-                }} row center
-                    onPress={() => {
-                        MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
-                        this.setState({ ambiente: MDL.factura.ambiente }, () => {
-                            this.actualizarNumeroFactura();
-                        })
-                    }}
-                >
-                    <SText fontSize={12} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
-                    <SView flex />
-                    <SIcon name='Reload' width={10} fill={STheme.color.text} />
-                </SView>
             </SView>
         </SPage>;
     }

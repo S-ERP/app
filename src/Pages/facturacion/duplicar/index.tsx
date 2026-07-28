@@ -19,12 +19,19 @@ const STORAGE_KEY_FACTURA_DUPLICAR = "factura_duplicar_pendiente";
 // Al "Editar Factura" se necesita la key original para actualizar el mismo registro
 // en vez de emitir uno nuevo; se respalda igual que factura_duplicar_pendiente.
 const STORAGE_KEY_FACTURA_EDITAR_KEY = "factura_editar_key_pendiente";
+// Estado (enviada, anulada, emitida) de la factura original, solo informativo.
+const STORAGE_KEY_FACTURA_ESTADO = "factura_estado_pendiente";
+// Ambiente (1=producción, 2=prueba) en el que se emitió la factura original: se usa
+// para consultar paramétricas del ambiente correcto y no mezclar producción con prueba.
+const STORAGE_KEY_FACTURA_AMBIENTE = "factura_ambiente_pendiente";
 
 export default class index extends React.Component {
     _____ambiente = MDL.factura.getAmbiente();
 
     tipo: "duplicar" | "editar" = "duplicar";
     facturaKeyOriginal?: string;
+    facturaEstadoOriginal?: string;
+    facturaAmbienteOriginal?: number;
     factura: Factura;
     parametricas: Parametricas = {};
     state = {
@@ -43,6 +50,11 @@ export default class index extends React.Component {
             const facturaKeyParam = SNavigation.getParam("factura_key");
             this.facturaKeyOriginal = typeof facturaKeyParam === "string" ? facturaKeyParam : undefined;
         }
+        const facturaEstadoParam = SNavigation.getParam("factura_estado");
+        this.facturaEstadoOriginal = typeof facturaEstadoParam === "string" ? facturaEstadoParam : undefined;
+        const facturaAmbienteParam = SNavigation.getParam("factura_ambiente");
+        this.facturaAmbienteOriginal = (facturaAmbienteParam === 1 || facturaAmbienteParam === 2) ? facturaAmbienteParam : undefined;
+        if (this.facturaAmbienteOriginal) this.state.ambiente = this.facturaAmbienteOriginal;
         this.factura = index.buildFactura(facturaDuplicar);
         this.state.loadingDuplicado = !facturaDuplicar;
     }
@@ -125,12 +137,23 @@ export default class index extends React.Component {
 
     componentDidMount(): void {
         if (this.state.loadingDuplicado) {
-            if (this.tipo === "editar" && !this.facturaKeyOriginal) {
-                SStorage.getItem(STORAGE_KEY_FACTURA_EDITAR_KEY).then((key) => {
-                    this.facturaKeyOriginal = key || undefined;
-                });
-            }
-            SStorage.getItem(STORAGE_KEY_FACTURA_DUPLICAR).then((raw) => {
+            const pKey = (this.tipo === "editar" && !this.facturaKeyOriginal)
+                ? SStorage.getItem(STORAGE_KEY_FACTURA_EDITAR_KEY)
+                : Promise.resolve(this.facturaKeyOriginal ?? null);
+            const pEstado = this.facturaEstadoOriginal
+                ? Promise.resolve(this.facturaEstadoOriginal)
+                : SStorage.getItem(STORAGE_KEY_FACTURA_ESTADO);
+            const pAmbiente = this.facturaAmbienteOriginal
+                ? Promise.resolve(this.facturaAmbienteOriginal + "")
+                : SStorage.getItem(STORAGE_KEY_FACTURA_AMBIENTE);
+            const pDuplicar = SStorage.getItem(STORAGE_KEY_FACTURA_DUPLICAR);
+
+            Promise.all([pKey, pEstado, pAmbiente, pDuplicar]).then(([key, estado, ambiente, raw]) => {
+                if (this.tipo === "editar") this.facturaKeyOriginal = key || undefined;
+                this.facturaEstadoOriginal = estado || undefined;
+                const ambienteNum = parseInt(ambiente);
+                this.facturaAmbienteOriginal = (ambienteNum === 1 || ambienteNum === 2) ? ambienteNum : undefined;
+
                 let facturaDuplicar: any = undefined;
                 if (raw) {
                     try {
@@ -140,7 +163,10 @@ export default class index extends React.Component {
                     }
                 }
                 this.factura = index.buildFactura(facturaDuplicar);
-                this.setState({ loadingDuplicado: false });
+                this.setState({
+                    loadingDuplicado: false,
+                    ambiente: this.facturaAmbienteOriginal ?? this.state.ambiente,
+                });
             });
         }
         SNotification.send({
@@ -328,7 +354,7 @@ export default class index extends React.Component {
                         });
                         return;
                     }
-                    MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data).then(() => {
+                    MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.facturaEstadoOriginal ?? "emitida").then(() => {
                         SNavigation.goBack();
                     }).catch((e) => {
                         console.error(e);
@@ -352,7 +378,7 @@ export default class index extends React.Component {
                     title: "Emitiendo factura",
                     type: "loading"
                 })
-                const resp = MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
+                const resp = MDL.factura.duplicar(this.factura, this.state.ambiente).then((e) => {
                     SNotification.send({
                         key: "facturacionEmitir",
                         title: "Factura emitida con éxito",
@@ -379,10 +405,30 @@ export default class index extends React.Component {
         const accionText = this.tipo === "editar" ? "Editar Factura" : "Duplicar Factura";
         const titleText = `${accionText} (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
 
-        const header = <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor : STheme.color.warning, height: 36, overflow: "hidden" }} row center>
-            <SView width={60} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
+        // const header = <SView col="xs-12" style={{ backgroundColor: STheme.color.background, height: 36, overflow: "hidden" }} row center>
+        const header = <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor + "66" : STheme.color.warning + "66", height: 36, overflow: "hidden" }} row center>
+            <SView width={120} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
             <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
-            <SView width={60} height={"100%"} center> <SText>Logo</SText> </SView>
+            <SView width={120} height={"100%"} center>
+                <SView height={26} style={{
+                    borderRadius: 6,
+                    backgroundColor: this.state.ambiente == 1 ? STheme.color.success + "99" : STheme.color.warning + "88",
+                    paddingHorizontal: 8,
+                    borderWidth: 1,
+                    borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
+                }} row center
+                    onPress={() => {
+                        MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
+                        this.setState({ ambiente: MDL.factura.ambiente }, () => {
+                            this.actualizarNumeroFactura();
+                        })
+                    }}
+                >
+                    <SText fontSize={11} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+                    <SView width={4} />
+                    <SIcon name='Reload' width={9} fill={STheme.color.text} />
+                </SView>
+            </SView>
         </SView>;
 
         if (this.state.loadingDuplicado) {
@@ -392,7 +438,10 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage hidden title={titleText} header={header}>
+        // return <SPage hidden title={titleText} header={header}>
+        return <SPage disableScroll hidden>
+
+            {header}
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
@@ -400,7 +449,7 @@ export default class index extends React.Component {
                     </SView>
                     <SView flex={2} />
                     <SView flex={3} center style={{ minWidth: 150 }}>
-                        <NitNumero factura={this.factura} />
+                        <NitNumero factura={this.factura} estado={this.facturaEstadoOriginal} ambiente={this.state.ambiente} />
                     </SView>
                 </SView>
                 <SHr h={30} />
@@ -414,28 +463,6 @@ export default class index extends React.Component {
                 <Detalle factura={this.factura} parametricas={this.parametricas} />
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
-            </SView>
-
-            <SView col={"xs-12"} row center>
-                <SView width={150} height={30} style={{
-                    borderTopRightRadius: 10,
-                    borderTopLeftRadius: 10,
-                    backgroundColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
-                    padding: 8,
-                    borderWidth: 1,
-                    borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
-                }} row center
-                    onPress={() => {
-                        MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
-                        this.setState({ ambiente: MDL.factura.ambiente }, () => {
-                            this.actualizarNumeroFactura();
-                        })
-                    }}
-                >
-                    <SText fontSize={12} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
-                    <SView flex />
-                    <SIcon name='Reload' width={10} fill={STheme.color.text} />
-                </SView>
             </SView>
         </SPage>;
     }

@@ -47,7 +47,7 @@ class BoxMenu extends Component<BoxMenuPropsType> {
             </>
         );
     }
-    EditarDetallePopup = ({ factura_key, factura_data, detalleActual, onClose, onConfirm }) => {
+    EditarDetallePopup = ({ factura_key, factura_data, factura_ambiente, factura_state, detalleActual, onClose, onConfirm }) => {
         const [detalleText, setDetalleText] = React.useState(JSON.stringify(detalleActual, null, 2));
         const handleConfirm = async () => {
             let nuevoDetalle;
@@ -63,7 +63,7 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                 });
                 return;
             }
-            MDL.factura.editarDetalle(factura_key, factura_data, nuevoDetalle).then(e => {
+            MDL.factura.editarDetalle(factura_key, factura_data, nuevoDetalle, factura_ambiente, factura_state).then(e => {
                 if (this.props.onReload) this.props.onReload();
                 SPopup.close("popup_editar_detalle")
 
@@ -180,6 +180,8 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                 content: <this.EditarDetallePopup
                                     factura_key={factura.key}
                                     factura_data={factura.data}
+                                    factura_ambiente={factura.ambiente}
+                                    factura_state={factura.state}
                                     detalleActual={factura.data.detalle}
                                     onClose={() => SPopup.close("popup_editar_detalle")}
                                     onConfirm={(nuevoDetalle) => {
@@ -205,7 +207,9 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                             console.clear();
                             console.log(JSON.stringify(factura.data));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
-                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, tipo: "duplicar" });
+                            SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
+                            SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "duplicar" });
                         }
                     },     {
                         label: "Editar Factura",
@@ -217,7 +221,9 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                             console.log(JSON.stringify(factura.data));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
                             SStorage.setItem("factura_editar_key_pendiente", factura.key);
-                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_key: factura.key, tipo: "editar" });
+                            SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
+                            SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_key: factura.key, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "editar" });
                         }
                     },
                     factura.state === "anulada" && {
@@ -264,7 +270,7 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                 }
                                 const randomIndex = Math.floor(Math.random() * response.length);
                                 const leyenda = response[randomIndex].descripcionLeyenda;
-                                MDL.factura.editarLeyenda(factura.key, factura.data, leyenda).then(e => {
+                                MDL.factura.editarLeyenda(factura.key, factura.data, leyenda, factura.ambiente, factura.state).then(e => {
                                     if (this.props.onReload) this.props.onReload();
                                 }).catch(e => { console.error(e); });
                                 SNotification.send({
@@ -309,6 +315,9 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                     borderColor: "#66666699",
                 }}
             >
+                <SView col={"xs-12"} row center padding={6} style={{ backgroundColor: factura.ambiente == 1 ? STheme.color.success : STheme.color.warning }}>
+                    <SText fontSize={11} color={"#fff"} bold>{factura.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+                </SView>
                 {groups.map((group, gi) => (
                     <SView key={gi} col={"xs-12"}>
                         <SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }} >

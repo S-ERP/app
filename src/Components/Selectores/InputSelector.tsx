@@ -152,9 +152,11 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 error: false
             });
         } else {
+            // Sin coincidencia en las opciones actuales (p.ej. catálogo distinto entre ambientes):
+            // mostramos el código original en vez de dejar el campo en blanco.
             this.setState({
                 inputValue: value,
-                displayValue: ''
+                displayValue: value ? String(value) : ''
             });
         }
     }

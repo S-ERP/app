@@ -6,11 +6,20 @@ import { Factura } from "../../../MDL/factura/type";
 
 
 type NitNumeroProps = {
-    factura: Factura
+    factura: Factura,
+    estado?: string,
+    ambiente?: number
 }
 const customStyle: any = "factura";
 export default class NitNumero extends React.Component<NitNumeroProps> {
 
+    getEstadoColor(estado?: string) {
+        if (estado == "enviada") return STheme.color.success;
+        if (estado == "emitida") return STheme.color.warning;
+        if (estado == "anulada") return STheme.color.danger;
+        if (estado == "procesando") return STheme.color.gray;
+        return STheme.color.primary;
+    }
 
     render() {
 
@@ -54,6 +63,22 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                     onChangeText={e => {
                         this.props.factura.data.codigoMetodoPago = e
                     }} />
+            </SView>
+            <SView col={"xs-12"} row center>
+                <Label bold flex>{"ESTADO"}</Label>
+                <SView flex center>
+                    <SView backgroundColor={this.getEstadoColor(this.props.estado)} width={90} height={22} borderRadius={4} center>
+                        <SText fontSize={11} color={"#fff"} bold>{(this.props.estado || "-").toUpperCase()}</SText>
+                    </SView>
+                </SView>
+            </SView>
+            <SView col={"xs-12"} row center>
+                <Label bold flex>{"AMBIENTE"}</Label>
+                <SView flex center>
+                    <SView backgroundColor={this.props.ambiente === 1 ? STheme.color.success : STheme.color.warning} width={90} height={22} borderRadius={4} center>
+                        <SText fontSize={11} color={"#fff"} bold>{this.props.ambiente === 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+                    </SView>
+                </SView>
             </SView>
         </SView>
     }
