@@ -34,6 +34,7 @@ export default class tabla_productos extends Component {
 	}
 
 	async loadInitialData() {
+		const { fecha_inicio, fecha_fin } = this.state;
 		try {
 			SNotification.send({
 				key: "load_ventas",
@@ -41,7 +42,15 @@ export default class tabla_productos extends Component {
 				type: "loading",
 			});
 			// const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-			const registros = await MDL.compra_venta.execute_function("reporte_ventas_all", [MDL.empresa.select.key, "2025-01-01", "2030-09-05", null, null, null, "venta"]);
+			// const registros = await MDL.compra_venta.execute_function("reporte_ventas_all", [MDL.empresa.select.key, "2025-01-01", "2030-09-05", null, null, null, "venta"]);
+			let registros = [];
+			if (this._fechaFilterListo) {
+				registros = await MDL.compra_venta.execute_function("reporte_ventas_all", [MDL.empresa.select.key, fecha_inicio, fecha_fin, null, null, null, "venta"]);
+
+			} else {
+				registros = await MDL.compra_venta.execute_function("reporte_ventas_all", [MDL.empresa.select.key, "2025-01-01", "2030-09-05", null, null, null, "venta"]);
+
+			}
 
 			console.log("Registros obtenidosss:", registros);
 
@@ -343,7 +352,7 @@ export default class tabla_productos extends Component {
 				<DinamicTable.Col key="codigo" label="Código" width={85} height={60} data={(e) => e.row?.modelo?.tipo_producto?.cod_ref ?? ""} />
 
 
-				<DinamicTable.Col key={"fecha_on"} label="Fecha" width={90} height={60} dataType="datetime" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+				<DinamicTable.Col key={"fecha_on"} label="Fecha" width={105} height={60} dataType="datetime" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
 				<DinamicTable.Col key="sucursal" label="Sucursal" width={100} height={60} data={(e) => e.row?.sucursal?.descripcion ?? ""}
 					customComponent={e => {

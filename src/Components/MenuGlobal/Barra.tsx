@@ -125,7 +125,7 @@ export default class Barra extends React.Component {
                     <Page label={"Administrar Cajas"} permiso="page" permiso_url="/reporte_cajas" icon={<SIconApp name="menuAll" fill={STheme.color.text} />} >
                         <Page label={"Historial de Cajas"} url={"/caja/reporte_cajas"} permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Movimientos de Cajas"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-
+                        <Page label={"Informe Caja"} url={"/caja/ventas_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
 
 
                         <Page label={"Pagos QR"} url={"/solicitud_qr/table"} permiso="pagosqr" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
@@ -147,6 +147,7 @@ export default class Barra extends React.Component {
                         <Page label={"Suscriptores"} url={"/suscriptores"} permiso="ver" />
                         <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                         <Page label={"Ventas - Productos"} url={"/venta/tabla_productos"} permiso="ver" permiso_url="/venta" />
+
                         <Page label={"Cotizaciones"} url={"/cotizacion"} permiso="ver" permiso_url="/venta" />
                         {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}
                         <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />
@@ -243,7 +244,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Ventas"} permiso="ver" url={"/dashboard"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Inventario"} permiso="ver" url={"/dashboard/inventario"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-                        <Page label={"Cajas"}  url={"/dashboard/cajas"}  permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Cajas"} url={"/dashboard/cajas"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
 
 
                     </Page>
