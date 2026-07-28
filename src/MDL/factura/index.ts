@@ -136,6 +136,22 @@ export default class factura extends MDLAbstract<EventListener> {
         }, 1000 * 60)
         return resp
     }
+
+    async duplicar(fact: Factura, ambiente = 1) {
+
+        const resp: any = await SSocket.sendPromise({
+            service: "facturacion",
+            component: "factura",
+            type: "duplicar",
+            data: fact.data,
+            ambiente: ambiente,
+            estado: "cargando",
+            enviar_siat: true,
+            key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey(),
+        }, 1000 * 60)
+        return resp
+    }
     async verificarNit(nit: string) {
         const resp: any = await SSocket.sendPromise({
             service: "facturacion",
