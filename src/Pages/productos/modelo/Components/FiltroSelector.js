@@ -22,14 +22,20 @@ export default class FiltroSelector extends Component {
             const data = await this.props.loadData();
             const options = [{ key: "todos", nombre: "Todos" }, ...data.map(this.props.mapOption)];
             this.setState({ options }, () => {
-                const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
-                const payload = defaultOption.key === "todos" ? { key: null, nombre: "Todos" } : defaultOption;
-                this.setState({ selectedKey: defaultOption.key }, () => {
+                const previousKey = this.state.selectedKey;
+                const found = options.find(o => o.key === previousKey);
+                // Si ya traía un código propio (ej. al duplicar/editar una factura) pero no aparece
+                // en el catálogo recién cargado (puede diferir entre ambientes Producción/Prueba),
+                // conservamos el código original visible en vez de resetear a "Todos".
+                const keepOriginal = !found && !!previousKey && previousKey !== "todos";
+                const resolvedKey = found ? found.key : (keepOriginal ? previousKey : "todos");
+                const payload = resolvedKey === "todos" ? { key: null, nombre: "Todos" } : found;
+                this.setState({ selectedKey: resolvedKey }, () => {
                     // Asegurar que el input muestre el valor por defecto correcto
-                    this.selectorRef.current?.setValue(defaultOption.key);
+                    this.selectorRef.current?.setValue(resolvedKey);
                     // skipInitialOnSelect: usado por filas ya cargadas con datos (ej. duplicar factura)
                     // para no sobrescribir el valor existente con el default al montar.
-                    if (this.props.onSelect && !this.props.skipInitialOnSelect) {
+                    if (this.props.onSelect && !this.props.skipInitialOnSelect && !keepOriginal) {
                         console.log("🔷 FiltroSelector.loadData - Llamando onSelect con:", payload);
                         this.props.onSelect(payload);
                     }
