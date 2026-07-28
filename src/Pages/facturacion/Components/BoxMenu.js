@@ -171,54 +171,35 @@ class BoxMenu extends Component<BoxMenuPropsType> {
             {
                 title: "GESTIÓN",
                 items: [
+
+                    // factura.ambiente == 1 &&
                     {
-                        label: "Editar Data",
-                        icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
-                        onPress: () => {
-                            SPopup.open({
-                                key: "popup_editar_detalle",
-                                content: <this.EditarDetallePopup
-                                    factura_key={factura.key}
-                                    factura_data={factura.data}
-                                    factura_ambiente={factura.ambiente}
-                                    factura_state={factura.state}
-                                    detalleActual={factura.data.detalle}
-                                    onClose={() => SPopup.close("popup_editar_detalle")}
-                                    onConfirm={(nuevoDetalle) => {
-                                        SNotification.send({
-                                            key: "editarDetalle_" + factura.key,
-                                            title: "Detalle actualizado",
-                                            body: "El detalle se actualizó correctamente.",
-                                            color: STheme.color.success,
-                                            time: 5000,
-                                        });
-                                        SPopup.close("popup_editar_detalle")
-                                    }}
-                                />
-                            });
-                        }
-                    },
-                    {
+
                         label: "Duplicar Factura",
-                        icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        icon: <SIconApp name='transferir' fill='rgb(160, 14, 173)' stroke='#2b6b17ff' width={16} />,
                         onPress: () => {
-                            // Respaldo en localStorage: SNavigation no persiste params tipo objeto
-                            // en la URL, por lo que se pierden si el usuario recarga la página.
                             console.clear();
+                            console.log(factura.ambiente);
                             console.log(JSON.stringify(factura.data));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
                             SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
                             SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
                             SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "duplicar" });
                         }
-                    },     {
+                    }
+                    ,
+                    ((factura.ambiente == 1 && factura.state === "emitida") || factura.ambiente != 1) &&
+                    {
                         label: "Editar Factura",
-                        icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        // icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                         onPress: () => {
                             // Respaldo en localStorage: SNavigation no persiste params tipo objeto
                             // en la URL, por lo que se pierden si el usuario recarga la página. d
+                            const a = this.props.data;
                             console.clear();
-                            console.log(JSON.stringify(factura.data));
+                            // console.log(JSON.stringify(a));
+                            console.log(JSON.stringify(factura));
                             SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
                             SStorage.setItem("factura_editar_key_pendiente", factura.key);
                             SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
