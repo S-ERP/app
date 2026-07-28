@@ -172,41 +172,33 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                 title: "GESTIÓN",
                 items: [
 
-                    // factura.ambiente == 1 &&
-                    {
+                    // {
 
-                        label: "Duplicar Factura",
-                        icon: <SIconApp name='transferir' fill='rgb(160, 14, 173)' stroke='#2b6b17ff' width={16} />,
-                        onPress: () => {
-                            console.clear();
-                            console.log(factura.ambiente);
-                            console.log(JSON.stringify(factura.data));
-                            SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
-                            SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
-                            SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
-                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "duplicar" });
-                        }
-                    }
-                    ,
-                    ((factura.ambiente == 1 && factura.state === "emitida") || factura.ambiente != 1) &&
-                    {
-                        label: "Editar Factura",
-                        icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
-                        // icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
-                        onPress: () => {
-                            // Respaldo en localStorage: SNavigation no persiste params tipo objeto
-                            // en la URL, por lo que se pierden si el usuario recarga la página. d
-                            const a = this.props.data;
-                            console.clear();
-                            // console.log(JSON.stringify(a));
-                            console.log(JSON.stringify(factura));
-                            SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
-                            SStorage.setItem("factura_editar_key_pendiente", factura.key);
-                            SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
-                            SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
-                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_key: factura.key, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "editar" });
-                        }
-                    },
+                    //     label: "Duplicar Factura",
+                    //     icon: <SIconApp name='transferir' fill='rgb(160, 14, 173)' stroke='#2b6b17ff' width={16} />,
+                    //     onPress: () => {
+                    //         console.clear();
+                    //         console.log(factura.ambiente);
+                    //         console.log(JSON.stringify(factura.data));
+                    //         SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
+                    //         SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
+                    //         SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
+                    //         SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "duplicar" });
+                    //     }
+                    // }
+                    // ,
+                    // ((factura.ambiente == 1 && factura.state === "emitida") || factura.ambiente != 1) &&
+                    // {
+                    //     label: "Editar Factura",
+                    //     icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                    //     onPress: () => {
+                    //         SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
+                    //         SStorage.setItem("factura_editar_key_pendiente", factura.key);
+                    //         SStorage.setItem("factura_estado_pendiente", factura.state ?? "");
+                    //         SStorage.setItem("factura_ambiente_pendiente", factura.ambiente ?? "");
+                    //         SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_key: factura.key, factura_estado: factura.state, factura_ambiente: factura.ambiente, tipo: "editar" });
+                    //     }
+                    // },
                     factura.state === "anulada" && {
                         label: "Revertir factura",
                         icon: <SIconApp name='Reload' fill='#ff9900ff' stroke='#ff9900ff' width={16} />,

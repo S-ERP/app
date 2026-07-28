@@ -289,7 +289,8 @@ export default class index extends React.Component {
                     <SView width={120} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
                     <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
                     <SView width={120} height={"100%"} center>
-                        <SView height={26} style={{
+                        {/* alvaro */}
+                        {/* <SView height={26} style={{
                             borderRadius: 6,
                             backgroundColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
                             paddingHorizontal: 8,
@@ -306,7 +307,7 @@ export default class index extends React.Component {
                             <SText fontSize={11} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
                             <SView width={4} />
                             <SIcon name='Reload' width={9} fill={STheme.color.text} />
-                        </SView>
+                        </SView> */}
                     </SView>
                 </SView>
             }
