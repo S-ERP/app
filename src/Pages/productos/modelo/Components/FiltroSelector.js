@@ -22,16 +22,18 @@ export default class FiltroSelector extends Component {
             const data = await this.props.loadData();
             const options = [{ key: "todos", nombre: "Todos" }, ...data.map(this.props.mapOption)];
             this.setState({ options }, () => {
-                if (this.props.onSelect) {
-                    const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
-                    const payload = defaultOption.key === "todos" ? { key: null, nombre: "Todos" } : defaultOption;
-                    this.setState({ selectedKey: defaultOption.key }, () => {
+                const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
+                const payload = defaultOption.key === "todos" ? { key: null, nombre: "Todos" } : defaultOption;
+                this.setState({ selectedKey: defaultOption.key }, () => {
+                    // Asegurar que el input muestre el valor por defecto correcto
+                    this.selectorRef.current?.setValue(defaultOption.key);
+                    // skipInitialOnSelect: usado por filas ya cargadas con datos (ej. duplicar factura)
+                    // para no sobrescribir el valor existente con el default al montar.
+                    if (this.props.onSelect && !this.props.skipInitialOnSelect) {
                         console.log("🔷 FiltroSelector.loadData - Llamando onSelect con:", payload);
-                        // Asegurar que el input muestre el valor por defecto correcto
-                        this.selectorRef.current?.setValue(defaultOption.key);
                         this.props.onSelect(payload);
-                    });
-                }
+                    }
+                });
             });
         } catch (error) {
             console.error("Error al cargar opciones:", error);

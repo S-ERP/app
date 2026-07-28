@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SText, STheme, SView, SPopup, SButtom, SInput, SNotification } from 'servisofts-component';
+import { SHr, SIcon, SText, STheme, SView, SPopup, SButtom, SInput, SNotification, SNavigation, SStorage } from 'servisofts-component';
 import MDL from '../../../MDL';
 import { Linking } from 'react-native';
 import SIconApp from '../../../Assets/SIconApp';
+import tipo from '../../whatsapp/tipo';
 
 export type BoxMenuPropsType = {
     data: any,
@@ -193,6 +194,30 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     }}
                                 />
                             });
+                        }
+                    },
+                    {
+                        label: "Duplicar Factura",
+                        icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        onPress: () => {
+                            // Respaldo en localStorage: SNavigation no persiste params tipo objeto
+                            // en la URL, por lo que se pierden si el usuario recarga la página.
+                            console.clear();
+                            console.log(JSON.stringify(factura.data));
+                            SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, tipo: "duplicar" });
+                        }
+                    },     {
+                        label: "Editar Factura",
+                        icon: <SIconApp name='Add' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                        onPress: () => {
+                            // Respaldo en localStorage: SNavigation no persiste params tipo objeto
+                            // en la URL, por lo que se pierden si el usuario recarga la página. d
+                            console.clear();
+                            console.log(JSON.stringify(factura.data));
+                            SStorage.setItem("factura_duplicar_pendiente", JSON.stringify(factura.data));
+                            SStorage.setItem("factura_editar_key_pendiente", factura.key);
+                            SNavigation.navigate("/facturacion/duplicar", { factura_duplicar: factura.data, factura_key: factura.key, tipo: "editar" });
                         }
                     },
                     factura.state === "anulada" && {

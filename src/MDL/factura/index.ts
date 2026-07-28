@@ -149,8 +149,6 @@ export default class factura extends MDLAbstract<EventListener> {
         }, 1000 * 60)
         return resp
     }
-
-
     imprimir({ cuf = "", tipo = "carta" }: { cuf: string, tipo?: "carta" | "rollo" }) {
         SNotification.send({ key: "imprimirFactura" + cuf, title: "Imprimiendo factura", body: cuf, type: "loading" })
         SSocket.sendPromise({
@@ -214,8 +212,6 @@ export default class factura extends MDLAbstract<EventListener> {
             })
         })
     }
-
-
     reenviar({ cuf = "" }) {
         return new Promise((resolve, reject) => {
             SPopup.confirm({
@@ -352,7 +348,6 @@ export default class factura extends MDLAbstract<EventListener> {
             }
         })
     }
-
     eliminarFactura(factura_key: any) {
         const ___data = {
             key: factura_key,
@@ -401,7 +396,6 @@ export default class factura extends MDLAbstract<EventListener> {
         });
     }
 
-
     async editarDetalle(factura_key: string, factura_data: any, nuevoDetalle: any[]) {
         const payload = {
             key: factura_key,
@@ -411,7 +405,7 @@ export default class factura extends MDLAbstract<EventListener> {
             }
         };
 
-        
+
         console.log("%c" + JSON.stringify(payload), `color: #2ECC40; font-weight: bold;`);
         // return;
         try {
@@ -483,6 +477,38 @@ export default class factura extends MDLAbstract<EventListener> {
             });
             throw e; // Lanza el error para que quien llame pueda manejarlo con try/catch
         });
+    }
+    async editarFactura(factura_key: string, factura_data: any) {
+        const payload = {
+            key: factura_key,
+            data: factura_data
+        };
+        try {
+            const result = await SSocket.sendPromise({
+                service: "facturacion",
+                component: "factura",
+                type: "editar",
+                key_empresa: Model.empresa.Action.getKey(),
+                key_usuario: Model.usuario.Action.getKey(),
+                data: payload
+            });
+            SNotification.send({
+                key: "editarFactura_" + factura_key,
+                title: "Factura actualizada con éxito",
+                color: STheme.color.success,
+                time: 5000,
+            });
+            return result;
+        } catch (error: any) {
+            SNotification.send({
+                key: "editarFactura_" + factura_key,
+                title: "Error al actualizar la factura",
+                body: error?.error || "Error desconocido.",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            throw error;
+        }
     }
 
     async getClientes(buscar: string) {
