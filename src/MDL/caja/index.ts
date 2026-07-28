@@ -169,7 +169,8 @@ export default class caja extends MDLAbstract<EventListener> {
 
   async editar_detalle(caja_detalle: CajaDetalle) {
 
-    const resp: any = await SSocket.sendPromise({ service: "caja", component: "caja_detalle",
+    const resp: any = await SSocket.sendPromise({
+      service: "caja", component: "caja_detalle",
       type: "editar",
       data: caja_detalle,
       key_empresa: MDL.empresa.select?.key,
@@ -310,6 +311,26 @@ export default class caja extends MDLAbstract<EventListener> {
     });
     this.dispatchEvent({ type: "onDetalleChange" })
     return resp;
+  }
+
+  async execute_function(func: string, params: string[]) {
+    let newParams: any = [];
+    if (params) {
+      params.map(p => {
+        if (typeof p == "string") {
+          p = "'" + p + "'"
+        }
+        newParams.push(p)
+      })
+    }
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "reporte",
+      type: "execute_function",
+      func: func,
+      params: newParams,
+    });
+    return resp.data || [];
   }
 
   detalle_types = {
