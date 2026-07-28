@@ -494,10 +494,17 @@ export default class factura extends MDLAbstract<EventListener> {
             throw e; // Lanza el error para que quien llame pueda manejarlo con try/catch
         });
     }
-    async editarFactura(factura_key: string, factura_data: any) {
+    async editarFactura(factura_key: string, factura_data: any, ambiente: number, state: string) {
         const payload = {
             key: factura_key,
             data: factura_data
+            // data: {
+            //     ambiente: ambiente,
+            //     state: state,
+            //     ...factura_data
+            // }
+                ,ambiente: ambiente,
+                state: state,
         };
         try {
             const result = await SSocket.sendPromise({
