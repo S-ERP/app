@@ -384,28 +384,47 @@ export default class index extends React.Component {
         const accionText = this.tipo === "editar" ? "Editar Factura" : "Duplicar Factura";
         const titleText = `${accionText} (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
 
-        const header = <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor + "66" : STheme.color.warning + "66", height: 36, overflow: "hidden" }} row center>
-            <SView width={120} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
-            <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
-            <SView width={120} height={"100%"} center>
-                <SView height={26} style={{
-                    borderRadius: 6,
-                    backgroundColor: this.state.ambiente == 1 ? STheme.color.success + "99" : STheme.color.warning + "88",
-                    paddingHorizontal: 8,
-                    borderWidth: 1,
-                    borderColor: this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning,
-                }} row center
-                    onPress={() => {
-                        MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
-                        this.setState({ ambiente: MDL.factura.ambiente }, () => {
-                            this.actualizarNumeroFactura();
-                        })
-                    }}
-                >
-                    <SText fontSize={11} color={STheme.color.text} center bold >{this.state.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
-                    <SView width={4} />
-                    <SIcon name='Reload' width={9} fill={STheme.color.text} />
-                </SView>
+        const ambienteColor = this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning;
+        const header = <SView col="xs-12" style={{
+            backgroundColor: STheme.color.background,
+            height: 64,
+            borderBottomWidth: 1,
+            borderColor: STheme.color.lightGray,
+            paddingHorizontal: 12,
+        }} row center>
+            <SView width={42} height={42} onPress={() => SNavigation.goBack()} center style={{
+                borderRadius: 21,
+                backgroundColor: STheme.color.card,
+                borderWidth: 1,
+                borderColor: STheme.color.lightGray,
+            }}>
+                <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} />
+            </SView>
+            <SView width={12} />
+            <SView flex>
+                <SText fontSize={16} bold numberOfLines={1}>{accionText}</SText>
+                <SText fontSize={11} color={STheme.color.gray} numberOfLines={1}>{"Facturación electrónica · SIAT Bolivia"}</SText>
+            </SView>
+            <SView row center style={{
+                borderRadius: 999,
+                backgroundColor: ambienteColor + "22",
+                borderWidth: 1,
+                borderColor: ambienteColor,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+            }}
+                onPress={() => {
+                    MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
+                    this.setState({ ambiente: MDL.factura.ambiente }, () => {
+                        this.actualizarNumeroFactura();
+                    })
+                }}
+            >
+                <SView width={7} height={7} style={{ borderRadius: 4, backgroundColor: ambienteColor }} />
+                <SView width={6} />
+                <SText fontSize={11} bold color={ambienteColor}>{this.state.ambiente == 1 ? "AMBIENTE: PRODUCCIÓN" : "AMBIENTE: PRUEBA"}</SText>
+                <SView width={6} />
+                <SIcon name='Reload' width={9} fill={ambienteColor} />
             </SView>
         </SView>;
 
@@ -443,6 +462,10 @@ export default class index extends React.Component {
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
             </SView>
+
+
+                        {footerAlvaro}
+
         </SPage>;
     }
 }
