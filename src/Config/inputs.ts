@@ -194,7 +194,8 @@ const inputs = (): SInputsCofig => {
                 paddingStart: 0,
                 justifyContent: 'center',
                 borderWidth: 1,
-                borderColor: "#2563eb",
+                borderColor: STheme.color.card,
+                // borderColor: "#2563eb",
                 backgroundColor: STheme.color.text + "11",
             },
             InputText: {

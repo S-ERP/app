@@ -322,6 +322,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                     padding={8}
                     onPress={this.handleAddItem.bind(this)}
                     style={{ borderRadius: 4 }}
+                    border={STheme.color.gray}
                 >
                     <SIcon name="adicionar" fill={STheme.color.white} width={15} height={15} />
                     <SView width={8} />

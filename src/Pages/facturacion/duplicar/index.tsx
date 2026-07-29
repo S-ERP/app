@@ -424,6 +424,7 @@ export default class index extends React.Component {
             paddingHorizontal: 12,
         }} row center >
 
+
             <SView width={42} height={42} onPress={() => SNavigation.goBack()} center style={{
                 borderRadius: 21,
                 backgroundColor: STheme.color.card,
@@ -433,8 +434,9 @@ export default class index extends React.Component {
             >
                 <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} />
             </SView>
+
             <SView width={12} />
-            <SView flex border={"red"}
+            <SView flex
             >
                 <SText fontSize={16} bold numberOfLines={1}>{accionText}</SText>
                 <SText fontSize={11} color={STheme.color.gray} numberOfLines={1}>{"Facturación electrónica · SIAT Bolivia"}</SText>
@@ -478,6 +480,7 @@ export default class index extends React.Component {
             <Label fontSize={11} color={STheme.color.gray}>{"• Podrá editar cualquier dato antes de emitir la nueva factura."}</Label>
             <Label fontSize={11} color={STheme.color.gray}>{"• Se generará un nuevo número de factura al momento de la emisión."}</Label>
         </SView> : <>
+
             <SView col={"xs-12 md-10"} style={{
                 borderWidth: 1,
                 borderStyle: "dashed",
@@ -509,6 +512,8 @@ export default class index extends React.Component {
 
             <SView col={"xs-12 "} row center>
                 <SView col={"xs-12 md-8"} padding={8}>
+                    <SHr h={16} />
+
                     <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                         <SView flex={3} center>
                             <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
@@ -545,10 +550,22 @@ export default class index extends React.Component {
 
                     <SHr h={16} />
 
-                    <SView row>
-                        <SButtom style={{ height: 35 }} type={"danger"} onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
-                        <SView width={5} />
-                        <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>{accionText}</SButtom>
+                    <SView col={"xs-12"}  >
+
+                        <SView style={{ justifyContent: "flex-end" }} row>
+
+                            <SButtom
+                                style={{ height: 35, background: STheme.color.danger + "88" }}
+                                type={"outline"}
+
+                                onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
+                            <SView width={5} />
+                            <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>
+                                                <SIcon name={"MessageSend"} fill={STheme.color.text} width={10}/>
+
+                                {accionText}
+                                </SButtom>
+                        </SView>
                     </SView>
 
                 </SView>
