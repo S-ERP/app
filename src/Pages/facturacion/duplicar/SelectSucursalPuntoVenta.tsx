@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SIcon, SInput, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SInput, SNotification, STheme, SView } from "servisofts-component";
 import Label from "./Label";
 import { Factura } from "../../../MDL/factura/type";
 import PopupSelectSucursalPuntoVenta from "./PopupSelectSucursalPuntoVenta";
@@ -90,31 +90,16 @@ export default class SelectSucursalPuntoVenta extends React.Component<SelectSucu
             })
         })
     }
-    getSucursal() {
-
-    }
 
     render() {
         const {
             razonSocialEmisor,
             direccion,
             telefono,
-            codigoSucursal,
             municipio,
             codigoPuntoVenta } = this.props.factura?.data
-        const sucursal = this.getSucursal();
 
         return <SView center onPress={this.handlePress.bind(this)}>
-            {/* <SView style={{
-                position: "absolute",
-                right: -8,
-                bottom: 0,
-                width: 28,
-                height: 28
-            }}>
-                <SIcon name="sucursal" />
-            </SView>
-            <SHr /> */}
             <Label bold>{razonSocialEmisor}</Label>
             <Label flex bold>{this.state?.sucursal?.descripcion}</Label>
             <Label>{"No. Punto de Venta " + codigoPuntoVenta}</Label>

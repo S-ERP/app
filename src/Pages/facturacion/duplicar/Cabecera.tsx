@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SInput, SLoad, SNotification, SPage, SPopup, SText, STheme, SThread, SView } from "servisofts-component";
+import { SDate, SHr, SInput, SLoad, SThread, SView } from "servisofts-component";
 import Label from "./Label";
 import { Factura } from "../../../MDL/factura/type";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
@@ -50,7 +50,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                                 }
                             })}
                             onChangeText={e => {
-                                // console.log(e);
                                 this.props.factura.data.codigoTipoDocumentoIdentidad = e
                                 this.setState({ ...this.state })
                             }} />
@@ -65,7 +64,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                             ref: (ref) => this.popupBuscarNit = ref,
                             onClose: () => this.popupBuscarNit = undefined,
                             onSelect: (e) => {
-                                console.log(e);
                                 if (this.inpnit) this.inpnit.setValue(e.codigotipodocumentoidentidad)
                                 if (this.inputdocumento) this.inputdocumento.setValue(e.numerodocumento)
                                 if (this.inprazonsocial) this.inprazonsocial.setValue(e.nombrerazonsocial)
@@ -89,17 +87,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                         if (this.popupBuscarNit) {
                             this.popupBuscarNit.buscar(e)
                         }
-                        // new SThread(1000, "Asda", true).start(() => {
-                        //     if (this.props.factura.data.codigoTipoDocumentoIdentidad == "5") {
-                        //         console.log("Verificando el nit")
-                        //         MDL.factura.verificarNit(this.props.factura.data.numeroDocumento).then(e => {
-                        //             console.log(e);
-                        //         }).catch(e => {
-                        //             console.log(e);
-                        //         })
-                        //     }
-
-                        // })
                     }} />
 
                 {["1", "2"].includes(this.props.factura.data.codigoTipoDocumentoIdentidad + "") && <>
@@ -108,8 +95,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                         <SInput customStyle={customStyle}
                             defaultValue={""}
                             placeholder={"Comp."}
-                            // type="select"
-                            // options={}
                             onChangeText={e => {
                                 this.props.factura.data.complemento = e
 
@@ -118,8 +103,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                 </>}
 
                 <SHr />
-
-                {/* <Label style={{ width: 90 }} >{"__CLINETE_NIT_"}</Label> */}
             </SView>
 
             <SView col={"xs-12 sm-5"} row center>
@@ -129,7 +112,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                     this.props.factura.data.nombreRazonSocial = e
                 }} />
                 <SHr />
-                {/* <Label style={{ width: 90 }} >{"__CLINETE_NIT_"}</Label> */}
             </SView>
             <SView col={"sm-2"} />
             <SView col={"xs-12 sm-5"} row center>
@@ -139,7 +121,6 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                     this.props.factura.data.codigoCliente = e
                 }} />
                 <SHr />
-                {/* <Label style={{ width: 90 }} >{"__CLINETE_NIT_"}</Label> */}
             </SView>
         </SView>
     }

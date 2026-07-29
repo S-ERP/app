@@ -1,10 +1,7 @@
 import React from "react";
-import { SHr, SImage, SList, SList2, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
-import SSocket from "servisofts-socket";
-import Model from "../../../Model";
+import { SList2, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../../MDL";
-import { Dimensions, SectionList } from "react-native";
-import { PuntoVenta, Sucursal } from "../../../MDL/empresa/type";
+import { Dimensions } from "react-native";
 
 
 type PopupBuscarNitProps = {
@@ -14,7 +11,6 @@ type PopupBuscarNitProps = {
     onClose: () => void,
     defaultValue: any,
     onSelect: (cliente: any) => void
-    // onSelect: (sucursal: Sucursal, puntoVenta: PuntoVenta) => void
 }
 export default class PopupBuscarNit extends React.Component<PopupBuscarNitProps> {
     static close() {
@@ -40,7 +36,6 @@ export default class PopupBuscarNit extends React.Component<PopupBuscarNitProps>
                     left: pageX,
                     top: top,
                     width: width,
-                    // itemHeight: itemHeight,
                 }}
                     {...props} />
             })
@@ -71,8 +66,6 @@ export default class PopupBuscarNit extends React.Component<PopupBuscarNitProps>
             withoutFeedback={true}
             style={{
                 height: 220,
-                // padding: 8,
-                // justifyContent: "center",
                 alignItems: "center",
                 position: "absolute",
                 top: 0,
@@ -80,18 +73,16 @@ export default class PopupBuscarNit extends React.Component<PopupBuscarNitProps>
                 borderColor: STheme.color.lightGray,
                 borderWidth: 1,
                 borderRadius: 8,
-                padding:8,
+                padding: 8,
                 ...this.props.style
 
             }}>
-            {/* <SText color={STheme.color.gray}>{this.state.text}</SText> */}
             {this.state.clientes.length <= 0 ? <SView flex><SText>No se encontraron clientes.</SText></SView> :
                 <SList2 data={this.state.clientes}
                     render={(e) => {
                         return <SView col={"xs-12"} card onPress={() => {
                             if (this.props.onSelect) this.props.onSelect(e);
                         }} padding={4}>
-                            {/* <SText>{e.codigotipodocumentoidentidad}</SText> */}
                             <SText fontSize={12}>{e.numerodocumento}</SText>
                             <SText fontSize={12}>{e.nombrerazonsocial}</SText>
                         </SView>

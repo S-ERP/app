@@ -1,7 +1,6 @@
 import React from "react";
-import { SHr, SImage, SList, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SPopup, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
-import Model from "../../../Model";
 import MDL from "../../../MDL";
 import { SectionList } from "react-native";
 import { PuntoVenta, Sucursal } from "../../../MDL/empresa/type";
@@ -31,10 +30,8 @@ export default class PopupSelectSucursalPuntoVenta extends React.Component<Popup
                 ...sucursal,
                 data: sucursal.punto_venta ?? []
             }));
-            console.log(sections)
             this.setState({ sucursales: sections })
         }).catch(e => {
-            console.log(e)
         })
     }
     renderItemHeader(item: Sucursal) {
@@ -43,7 +40,6 @@ export default class PopupSelectSucursalPuntoVenta extends React.Component<Popup
         return <SView col={"xs-12"} style={{
             alignItems: "center",
             padding: 4,
-            // borderBottomWidth: 1,
         }} row>
             <SView style={{ width: 30, height: 30, borderRadius: 100, backgroundColor: STheme.color.card }} center>
                 <SText>{item.codigo_facturacion}</SText>
@@ -62,14 +58,12 @@ export default class PopupSelectSucursalPuntoVenta extends React.Component<Popup
         return <SView col={"xs-12"} style={{
             alignItems: "center",
             padding: 4,
-            // borderBottomWidth: 1,
         }} row card onPress={e => {
             this.props.onSelect(section, item)
             SPopup.close("PopupSelectSucursalPuntoVenta");
         }}>
             <SView style={{
                 width: 30, height: 30,
-                // borderRadius: 100, backgroundColor: STheme.color.card
             }} center>
                 <SText>{section.codigo_facturacion}</SText>
             </SView>

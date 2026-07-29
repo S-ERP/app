@@ -88,8 +88,8 @@ export default class FiltroSelector extends Component {
                     style={{
                         backgroundColor: STheme.color.card,
                         borderRadius: 2,
-                        borderWidth: 1,
-                        borderColor: STheme.color.lightGray + "40",
+                        borderWidth: this.props.error ? 2 : 1,
+                        borderColor: this.props.error ? STheme.color.danger : STheme.color.lightGray + "40",
                         overflow: "hidden",
                         elevation: 1,
                         shadowColor: "#000",

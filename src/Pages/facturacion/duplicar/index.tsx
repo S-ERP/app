@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SPopup, SStorage, STheme, SUuid, SView, SText } from "servisofts-component";
+import { SDate, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SPopup, SStorage, STheme, SUuid, SView, SText, SButtom } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
@@ -32,6 +32,8 @@ export default class index extends React.Component {
         siat: null,
         ambiente: MDL.factura.ambiente,
         loadingDuplicado: false,
+        mostrarErrores: false,
+        estado: undefined as string | undefined,
     }
     constructor(props: any) {
         super(props);
@@ -250,35 +252,26 @@ export default class index extends React.Component {
 
     validarAntesDeEmitir() {
         const detalle = this.factura.data.detalle;
+
+        const hayCamposVacios = detalle.some((item) => {
+            return !item.codigoProducto || item.codigoProducto.trim() === ""
+                || !item.unidadMedida || item.unidadMedida.trim() === ""
+                || !item.precioUnitario || item.precioUnitario.trim() === "";
+        });
+        if (hayCamposVacios) {
+            this.setState({ mostrarErrores: true });
+            SNotification.send({
+                title: "Campos incompletos",
+                body: "Debe completar los campos requeridos.",
+                color: STheme.color.danger,
+                time: 2000,
+            });
+            return false;
+        }
+        this.setState({ mostrarErrores: false });
+
         for (let i = 0; i < detalle.length; i++) {
             const item = detalle[i];
-            if (!item.codigoProducto || item.codigoProducto.trim() === "") {
-                SNotification.send({
-                    title: "codigoProducto requerida",
-                    body: `El item ${i + 1} no tiene codigoProducto.`,
-                    color: STheme.color.danger,
-                    time: 1000,
-                });
-                return false;
-            }
-            if (!item.unidadMedida || item.unidadMedida.trim() === "") {
-                SNotification.send({
-                    title: "Unidad de medida requerida",
-                    body: `El item ${i + 1} no tiene unidad de medida.`,
-                    color: STheme.color.danger,
-                    time: 1000,
-                });
-                return false;
-            }
-            if (!item.precioUnitario || item.precioUnitario.trim() === "") {
-                SNotification.send({
-                    title: "Precio requerido",
-                    body: `El item ${i + 1} no tiene precio unitario.`,
-                    color: STheme.color.danger,
-                    time: 1000,
-                });
-                return false;
-            }
             const precio = parseFloat(item.precioUnitario);
             if (isNaN(precio) || precio <= 0) {
                 SNotification.send({
@@ -333,7 +326,7 @@ export default class index extends React.Component {
             });
             return;
         }
-        MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.state.estado).then(() => {
+        MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.state.estado ?? "").then(() => {
             SNavigation.goBack();
         }).catch((e) => {
             console.error(e);
@@ -412,13 +405,14 @@ export default class index extends React.Component {
         const titleText = `${accionText} (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
 
         const ambienteColor = this.state.ambiente == 1 ? STheme.color.success : STheme.color.warning;
-        const header = <SView col="xs-12" style={{
+        const header = <SView col="xs-12 " style={{
             backgroundColor: STheme.color.background,
             height: 64,
             borderBottomWidth: 1,
             borderColor: STheme.color.lightGray,
             paddingHorizontal: 12,
         }} row center>
+
             <SView width={42} height={42} onPress={() => SNavigation.goBack()} center style={{
                 borderRadius: 21,
                 backgroundColor: STheme.color.card,
@@ -455,7 +449,7 @@ export default class index extends React.Component {
             </SView>
         </SView>;
 
-        const footerAlvaro = this.tipo === "duplicar" ? <SView col={"xs-12"} style={{
+        const footerAlvaro = this.tipo === "duplicar" ? <SView col={"xs-12 md-10"} style={{
             borderWidth: 1,
             borderStyle: "dashed",
             borderColor: STheme.color.lightGray,
@@ -469,7 +463,7 @@ export default class index extends React.Component {
             <Label fontSize={11} color={STheme.color.gray}>{"• La factura original permanecerá sin modificaciones."}</Label>
             <Label fontSize={11} color={STheme.color.gray}>{"• Podrá editar cualquier dato antes de emitir la nueva factura."}</Label>
             <Label fontSize={11} color={STheme.color.gray}>{"• Se generará un nuevo número de factura al momento de la emisión."}</Label>
-        </SView> : <SView col={"xs-12"} style={{
+        </SView> : <SView col={"xs-12 md-10"} style={{
             borderWidth: 1,
             borderStyle: "dashed",
             borderColor: STheme.color.lightGray,
@@ -515,10 +509,23 @@ export default class index extends React.Component {
                 <SHr h={16} />
                 <Cabecera factura={this.factura} parametricas={this.parametricas} />
                 <SHr h={16} />
-                <Detalle factura={this.factura} parametricas={this.parametricas} />
+                <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
+
+
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
                 <SHr h={16} />
+
+                <SView row>
+                    <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
+                        SNavigation.goBack()
+                    }}>Cancelar</SButtom>
+                    <SView width={5} />
+                    <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
+                        this.handleEnviar()
+                    }}>Aceptar</SButtom>
+                </SView>
+
             </SView>
             {footerAlvaro}
             {/* <SHr h={10} /> */}

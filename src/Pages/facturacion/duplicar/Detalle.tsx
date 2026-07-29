@@ -1,20 +1,22 @@
 
 import React from "react";
-import { SHr, SIcon, SInput, SNotification, SText, STheme, SView, SViewProps } from "servisofts-component";
+import { SHr, SIcon, SInput, SText, STheme, SView, SViewProps } from "servisofts-component";
 import Label from "./Label";
 import { Factura, FacturaDetalle } from "../../../MDL/factura/type";
+import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import { FlatList } from "react-native";
 import MDL from "../../../MDL";
 import FiltroSelector from "../../productos/modelo/Components/FiltroSelector";
 
 type DetalleProps = {
     factura: Factura,
+    parametricas?: Parametricas,
+    mostrarErrores?: boolean,
 }
 
 const customStyle: any = "factura";
 
 
-// CELDA
 const Cell = ({ label = "", flex = 1, children, style = {} }: {
     label?: string,
     flex?: number,
@@ -31,12 +33,12 @@ const Cell = ({ label = "", flex = 1, children, style = {} }: {
     </SView>
 }
 
-// ITEM
-const Item = ({ item, reload, onDelete, state }: {
+const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
     item: FacturaDetalle,
     reload: () => void,
     onDelete: any,
-    state: any
+    state: any,
+    mostrarErrores?: boolean
 }) => {
 
     const calcularSubTotal = () => {
@@ -53,11 +55,11 @@ const Item = ({ item, reload, onDelete, state }: {
 
     return <SView col={"xs-12"} row>
 
-        {/* PRODUCTO */}
         <Cell>
             <FiltroSelector
                 ref={(ref) => (state.filtroProductoRef = ref)}
                 label="Producto / Servicio"
+                error={mostrarErrores && !item.codigoProducto}
                 defaultOption={item.codigoProducto ? String(item.codigoProducto) : "todos"}
                 skipInitialOnSelect
                 loadData={async () => {
@@ -80,17 +82,12 @@ const Item = ({ item, reload, onDelete, state }: {
                     item.descripcion = data?.descripcionProducto ?? "";
                     item.actividadEconomica = data?.codigoActividad?.toString() ?? "";
 
-                    // opcional si tienes estos campos
-                    // item.precioUnitario = data?.precio ?? "0";
-                    // item.unidadMedida = data?.unidadMedida ?? "1";
-
                     calcularSubTotal();
                     reload();
                 }}
             />
         </Cell>
 
-        {/* CANTIDAD */}
         <Cell>
             <SInput
                 customStyle={customStyle}
@@ -103,7 +100,6 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-        {/* ACTIVIDAD ECONÓMICA */}
         <Cell>
             <SInput
                 customStyle={customStyle}
@@ -115,11 +111,11 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-        {/* UNIDAD */}
         <Cell>
             <FiltroSelector
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
                 label="Unidad de Medida"
+                error={mostrarErrores && !item.unidadMedida}
                 defaultOption={item.unidadMedida ? String(item.unidadMedida) : "todos"}
                 skipInitialOnSelect
                 loadData={async () => {
@@ -131,10 +127,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 }}
                 mapOption={(a) => ({
                     key: String(a?.codigoClasificador ?? ""),
-
                     nombre: `${a?.codigoClasificador ?? ""} - ${a?.descripcion ?? ""}`,
-
-                    // nombre: a?.descripcion ?? "",
                     data: a
                 })}
                 onSelect={(um) => {
@@ -144,7 +137,6 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-        {/* DESCRIPCIÓN */}
         <Cell flex={3} style={{ padding: 2 }}>
             <SInput
                 customStyle={customStyle}
@@ -152,14 +144,9 @@ const Item = ({ item, reload, onDelete, state }: {
                 height={"100%"}
                 style={{ fontSize: 10 }}
                 value={item.descripcion ?? ""}
-                // onChangeText={text => {
-                //     item.descripcion = text.replace(/"/g, "'");
-                //     reload();
-                // }}
                 onChangeText={text => {
                     let value = text.replace(/"/g, "'");
 
-                    // Mantener solo la primera comilla simple
                     const firstIndex = value.indexOf("'");
                     if (firstIndex !== -1) {
                         value =
@@ -170,14 +157,13 @@ const Item = ({ item, reload, onDelete, state }: {
                     item.descripcion = value;
                     reload();
                 }}
-
             />
         </Cell>
 
-        {/* PRECIO */}
         <Cell>
             <SInput
                 customStyle={customStyle}
+                style={mostrarErrores && !item.precioUnitario ? { borderWidth: 2, borderColor: STheme.color.danger } : undefined}
                 value={item.precioUnitario ?? ""}
                 onChangeText={e => {
                     item.precioUnitario = e;
@@ -187,7 +173,6 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-        {/* DESCUENTO */}
         <Cell>
             <SInput
                 customStyle={customStyle}
@@ -200,7 +185,6 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-        {/* SUBTOTAL */}
         <Cell>
             <Label>{item.subTotal}</Label>
 
@@ -219,7 +203,6 @@ const Item = ({ item, reload, onDelete, state }: {
     </SView>
 }
 
-// MAIN COMPONENT
 export default class Detalle extends React.Component<DetalleProps> {
 
     state = {
@@ -353,6 +336,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                         reload={() => this.setState({ ...this.state })}
                         onDelete={() => this.handleDeleteItem(index)}
                         state={this.state}
+                        mostrarErrores={this.props.mostrarErrores}
                     />
                 )}
             />
