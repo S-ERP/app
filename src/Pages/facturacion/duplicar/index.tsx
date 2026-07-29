@@ -252,12 +252,22 @@ export default class index extends React.Component {
 
     validarAntesDeEmitir() {
         const detalle = this.factura.data.detalle;
+        const data = this.factura.data;
 
-        const hayCamposVacios = detalle.some((item) => {
+        const hayCamposVaciosCabecera = !data.numeroDocumento || !data.nombreRazonSocial || !data.codigoCliente
+            || !data.numeroFactura || !data.codigoMetodoPago || !data.direccion || !data.telefono;
+
+        const hayCamposVaciosDetalle = detalle.some((item) => {
             return !item.codigoProducto || item.codigoProducto.trim() === ""
                 || !item.unidadMedida || item.unidadMedida.trim() === ""
-                || !item.precioUnitario || item.precioUnitario.trim() === "";
+                || !item.precioUnitario || item.precioUnitario.trim() === ""
+                || !item.cantidad || item.cantidad.trim() === ""
+                || !item.actividadEconomica || item.actividadEconomica.trim() === ""
+                || !item.descripcion || item.descripcion.trim() === ""
+                || item.montoDescuento == null || item.montoDescuento.trim() === "";
         });
+
+        const hayCamposVacios = hayCamposVaciosCabecera || hayCamposVaciosDetalle;
         if (hayCamposVacios) {
             this.setState({ mostrarErrores: true });
             SNotification.send({
@@ -492,11 +502,12 @@ export default class index extends React.Component {
             <SView col={"xs-12 md-8"} padding={8} row center>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
-                        <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} />
+                        <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
                     </SView>
                     <SView flex={2} />
                     <SView flex={3} center style={{ minWidth: 150 }}>
                         <NitNumero factura={this.factura} estado={this.state.estado} ambiente={this.state.ambiente}
+                            mostrarErrores={this.state.mostrarErrores}
                             onEstadoChange={(estado) => { this.facturaEstadoOriginal = estado; this.setState({ estado }); }}
                         />
                     </SView>
@@ -507,13 +518,13 @@ export default class index extends React.Component {
                     <Label >{"(Con Derecho a Crédito Fiscal)"}</Label>
                 </SView>
                 <SHr h={16} />
-                <Cabecera factura={this.factura} parametricas={this.parametricas} />
+                <Cabecera factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
                 <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
 
 
-                <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
+                <Footer factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} onSend={this.handleEnviar.bind(this)} />
                 <SHr h={16} />
 
                 <SView row>

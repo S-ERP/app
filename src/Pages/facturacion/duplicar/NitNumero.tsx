@@ -9,9 +9,11 @@ type NitNumeroProps = {
     factura: Factura,
     estado?: string,
     ambiente?: number,
+    mostrarErrores?: boolean,
     onEstadoChange?: (estado: string) => void
 }
-const customStyle: any = "factura";
+const customStyle: any = "facturaDuplicar";
+const errorStyle = { borderWidth: 2, borderColor: STheme.color.danger };
 const ESTADOS = ["enviada", "procesando", "emitida", "anulada"];
 export default class NitNumero extends React.Component<NitNumeroProps> {
 
@@ -61,6 +63,7 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                 <Label bold flex>{"FACTURA N"}</Label>
                 <SInput flex customStyle={customStyle}
                     defaultValue={this.props.factura.data.numeroFactura}
+                    style={this.props.mostrarErrores && !this.props.factura.data.numeroFactura ? errorStyle : undefined}
                     onChangeText={e => {
                         this.props.factura.data.numeroFactura = e
                     }} />
@@ -77,6 +80,7 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                 <Label bold flex>{"MÉTODO DE PAGO"}</Label>
                 <SInput flex customStyle={customStyle}
                     defaultValue={this.props.factura.data.codigoMetodoPago}
+                    style={this.props.mostrarErrores && !this.props.factura.data.codigoMetodoPago ? errorStyle : undefined}
                     onChangeText={e => {
                         this.props.factura.data.codigoMetodoPago = e
                     }} />

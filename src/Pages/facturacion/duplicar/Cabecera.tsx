@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SInput, SLoad, SThread, SView } from "servisofts-component";
+import { SDate, SHr, SInput, SLoad, STheme, SThread, SView } from "servisofts-component";
 import Label from "./Label";
 import { Factura } from "../../../MDL/factura/type";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
@@ -10,9 +10,11 @@ import PopupBuscarNit from "./PopupBuscarNit";
 
 type CabeceraProps = {
     factura: Factura,
-    parametricas?: Parametricas
+    parametricas?: Parametricas,
+    mostrarErrores?: boolean,
 }
-const customStyle: any = "factura";
+const errorStyle = { borderWidth: 2, borderColor: STheme.color.danger };
+const customStyle: any = "facturaDuplicar";
 export default class Cabecera extends React.Component<CabeceraProps> {
 
     inpnit: SInput | undefined;
@@ -57,6 +59,7 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                 </SView>
                 <SView width={8} />
                 <SInput ref={ref => this.inputdocumento = ref ?? undefined} flex customStyle={customStyle} defaultValue={numeroDocumento}
+                    style={this.props.mostrarErrores && !numeroDocumento ? errorStyle : undefined}
                     onFocus={(e) => {
                         PopupBuscarNit.open({
                             e: e,
@@ -108,18 +111,22 @@ export default class Cabecera extends React.Component<CabeceraProps> {
             <SView col={"xs-12 sm-5"} row center>
                 <Label bold >{"Nombre/Razón Social"}</Label>
                 <SView width={16} />
-                <SInput ref={ref => this.inprazonsocial = ref ?? undefined} flex customStyle={customStyle} defaultValue={nombreRazonSocial} onChangeText={e => {
-                    this.props.factura.data.nombreRazonSocial = e
-                }} />
+                <SInput ref={ref => this.inprazonsocial = ref ?? undefined} flex customStyle={customStyle} defaultValue={nombreRazonSocial}
+                    style={this.props.mostrarErrores && !nombreRazonSocial ? errorStyle : undefined}
+                    onChangeText={e => {
+                        this.props.factura.data.nombreRazonSocial = e
+                    }} />
                 <SHr />
             </SView>
             <SView col={"sm-2"} />
             <SView col={"xs-12 sm-5"} row center>
                 <Label bold >{"Cod. Cliente"}</Label>
                 <SView width={8} />
-                <SInput flex customStyle={customStyle} defaultValue={codigoCliente} onChangeText={e => {
-                    this.props.factura.data.codigoCliente = e
-                }} />
+                <SInput flex customStyle={customStyle} defaultValue={codigoCliente}
+                    style={this.props.mostrarErrores && !codigoCliente ? errorStyle : undefined}
+                    onChangeText={e => {
+                        this.props.factura.data.codigoCliente = e
+                    }} />
                 <SHr />
             </SView>
         </SView>

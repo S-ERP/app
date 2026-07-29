@@ -10,9 +10,11 @@ import { Sucursal } from "../../../MDL/empresa/type";
 
 type SelectSucursalPuntoVentaProps = {
     factura: Factura,
-    onPuntoVentaChange?: () => void
+    onPuntoVentaChange?: () => void,
+    mostrarErrores?: boolean,
 }
-const customStyle: any = "factura";
+const customStyle: any = "facturaDuplicar";
+const errorStyle = { borderWidth: 2, borderColor: STheme.color.danger };
 export default class SelectSucursalPuntoVenta extends React.Component<SelectSucursalPuntoVentaProps> {
 
     state = {
@@ -106,7 +108,7 @@ export default class SelectSucursalPuntoVenta extends React.Component<SelectSucu
             <SView col={"xs-12"} onPress={(e: any) => e?.stopPropagation?.()}>
                 <SInput
                     customStyle={customStyle}
-                    style={{ textAlign: "center" }}
+                    style={{ textAlign: "center", ...(this.props.mostrarErrores && !direccion ? errorStyle : {}) }}
                     defaultValue={direccion}
                     onChangeText={e => {
                         this.props.factura.data.direccion = e
@@ -116,7 +118,7 @@ export default class SelectSucursalPuntoVenta extends React.Component<SelectSucu
             <SView col={"xs-12"} onPress={(e: any) => e?.stopPropagation?.()}>
                 <SInput
                     customStyle={customStyle}
-                    style={{ textAlign: "center" }}
+                    style={{ textAlign: "center", ...(this.props.mostrarErrores && !telefono ? errorStyle : {}) }}
                     defaultValue={telefono}
                     onChangeText={e => {
                         this.props.factura.data.telefono = e

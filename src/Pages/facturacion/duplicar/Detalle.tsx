@@ -14,7 +14,8 @@ type DetalleProps = {
     mostrarErrores?: boolean,
 }
 
-const customStyle: any = "factura";
+const customStyle: any = "facturaDuplicar";
+const errorStyle = { borderWidth: 2, borderColor: STheme.color.danger };
 
 
 const Cell = ({ label = "", flex = 1, children, style = {} }: {
@@ -91,6 +92,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         <Cell>
             <SInput
                 customStyle={customStyle}
+                style={mostrarErrores && !item.cantidad ? errorStyle : undefined}
                 value={item.cantidad ?? ""}
                 onChangeText={e => {
                     item.cantidad = e;
@@ -103,6 +105,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         <Cell>
             <SInput
                 customStyle={customStyle}
+                style={mostrarErrores && !item.actividadEconomica ? errorStyle : undefined}
                 value={item.actividadEconomica ?? ""}
                 onChangeText={e => {
                     item.actividadEconomica = e;
@@ -142,7 +145,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
                 customStyle={customStyle}
                 type="textArea"
                 height={"100%"}
-                style={{ fontSize: 10 }}
+                style={{ fontSize: 10, ...(mostrarErrores && !item.descripcion ? errorStyle : {}) }}
                 value={item.descripcion ?? ""}
                 onChangeText={text => {
                     let value = text.replace(/"/g, "'");
@@ -163,7 +166,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         <Cell>
             <SInput
                 customStyle={customStyle}
-                style={mostrarErrores && !item.precioUnitario ? { borderWidth: 2, borderColor: STheme.color.danger } : undefined}
+                style={mostrarErrores && !item.precioUnitario ? errorStyle : undefined}
                 value={item.precioUnitario ?? ""}
                 onChangeText={e => {
                     item.precioUnitario = e;
@@ -176,6 +179,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         <Cell>
             <SInput
                 customStyle={customStyle}
+                style={mostrarErrores && !item.montoDescuento ? errorStyle : undefined}
                 value={item.montoDescuento ?? ""}
                 onChangeText={e => {
                     item.montoDescuento = e;
@@ -287,6 +291,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                 <Cell>
                     <SInput
                         customStyle={customStyle}
+                        style={this.props.mostrarErrores && !this.props.factura.data.descuentoAdicional ? errorStyle : undefined}
                         value={this.props.factura.data.descuentoAdicional ?? ""}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";

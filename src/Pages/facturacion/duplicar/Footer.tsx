@@ -9,9 +9,11 @@ import { Parametricas } from "../../../MDL/factura/typeParametricas";
 type FooterProps = {
     factura: Factura,
     parametricas: Parametricas,
+    mostrarErrores?: boolean,
     onSend: () => void
 }
-const customStyle: any = "factura";
+const customStyle: any = "facturaDuplicar";
+const errorStyle = { borderWidth: 2, borderColor: STheme.color.danger };
 export default class Footer extends React.Component<FooterProps> {
     render() {
         return <SView col={"xs-12"} row>
@@ -19,9 +21,11 @@ export default class Footer extends React.Component<FooterProps> {
                 <SView col={"xs-12"} row center>
                     <Label bold>{"Leyenda"}</Label>
                     <SView width={8} />
-                    <SInput flex customStyle={customStyle} defaultValue={this.props.factura.data.leyenda} onChangeText={e => {
-                        this.props.factura.data.leyenda = e
-                    }} />
+                    <SInput flex customStyle={customStyle} defaultValue={this.props.factura.data.leyenda}
+                        style={this.props.mostrarErrores && !this.props.factura.data.leyenda ? errorStyle : undefined}
+                        onChangeText={e => {
+                            this.props.factura.data.leyenda = e
+                        }} />
                 </SView>
                 <Label center fontSize={9}>{`"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de facturación en línea"`}</Label>
             </SView>
