@@ -505,16 +505,10 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage hidden header={header}
+        return <SPage hidden header={header}>
 
-        // footer={footerAlvaro}
-        >
-
-            <SView col={"xs-12 "} row center border={"green"}  >
-
-
-                <SView col={"xs-12 md-8"} padding={8} border={"blue"}
-                >
+            <SView col={"xs-12 "} row center>
+                <SView col={"xs-12 md-8"} padding={8}>
                     <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                         <SView flex={3} center>
                             <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
@@ -528,8 +522,7 @@ export default class index extends React.Component {
                         </SView>
                     </SView>
                     <SHr h={30} />
-                    <SView center border={"red"}
-                    >
+                    <SView center>
                         <Label fontSize={30} bold>{"FACTURA"}</Label>
                         <Label >{"(Con Derecho a Crédito Fiscal)"}</Label>
                     </SView>
@@ -538,9 +531,7 @@ export default class index extends React.Component {
                     <SHr h={16} />
 
 
-                    <SView col={"md-12"} center border={"pink"}
-                    // flex
-                    >
+                    <SView col={"md-12"} center>
 
                         <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                     </SView>
@@ -550,19 +541,18 @@ export default class index extends React.Component {
 
 
                     <Footer factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} onSend={this.handleEnviar.bind(this)} />
+
+
                     <SHr h={16} />
 
                     <SView row>
                         <SButtom style={{ height: 35 }} type={"danger"} onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
                         <SView width={5} />
-                        <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>Duplicar Factura</SButtom>
+                        <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>{accionText}</SButtom>
                     </SView>
 
                 </SView>
-
             </SView>
-
-            {/* {footerAlvaro} */}
         </SPage>;
     }
 }

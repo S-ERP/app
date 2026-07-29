@@ -1,5 +1,5 @@
 import React from "react";
-import { SIcon, SInput, STheme, SView } from "servisofts-component";
+import { SHr, SIcon, SInput, STheme, SView } from "servisofts-component";
 import Label from "./Label";
 import { Factura } from "../../../MDL/factura/type";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
@@ -27,6 +27,8 @@ export default class Footer extends React.Component<FooterProps> {
                             this.props.factura.data.leyenda = e
                         }} />
                 </SView>
+                                    <SHr h={16} />
+                
                 <Label center fontSize={9}>{`"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de facturación en línea"`}</Label>
             </SView>
             {/* <SView width={16} />
