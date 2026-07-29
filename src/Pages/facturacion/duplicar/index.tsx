@@ -13,18 +13,12 @@ import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import SIconApp from "../../../Assets/SIconApp";
 
-// Misma key usada por BoxMenu al presionar "Duplicar Factura": sirve de respaldo
-// porque SNavigation no persiste params tipo objeto en la URL (se pierden al recargar).
 const STORAGE_KEY_FACTURA_DUPLICAR = "factura_duplicar_pendiente";
-// Al "Editar Factura" se necesita la key original para actualizar el mismo registro
-// en vez de emitir uno nuevo; se respalda igual que factura_duplicar_pendiente.
 const STORAGE_KEY_FACTURA_EDITAR_KEY = "factura_editar_key_pendiente";
-// Estado (enviada, anulada, emitida) de la factura original, solo informativo.
 const STORAGE_KEY_FACTURA_ESTADO = "factura_estado_pendiente";
-// Ambiente (1=producción, 2=prueba) en el que se emitió la factura original: se usa
-// para consultar paramétricas del ambiente correcto y no mezclar producción con prueba.
 const STORAGE_KEY_FACTURA_AMBIENTE = "factura_ambiente_pendiente";
 
+// alvaro titulo
 export default class index extends React.Component {
     _____ambiente = MDL.factura.getAmbiente();
 
@@ -37,16 +31,12 @@ export default class index extends React.Component {
     state = {
         siat: null,
         ambiente: MDL.factura.ambiente,
-        // estado: "emitida",
-        // alvaro
         loadingDuplicado: false,
     }
     constructor(props: any) {
         super(props);
         this.tipo = SNavigation.getParam("tipo") === "editar" ? "editar" : "duplicar";
         const param = SNavigation.getParam("factura_duplicar");
-        // Al recargar la página, SNavigation solo conserva el param si viene por navegación
-        // en memoria; tras un F5 llega como string ("[object Object]") o undefined.
         const facturaDuplicar = param && typeof param === "object" ? param : undefined;
         if (this.tipo === "editar") {
             const facturaKeyParam = SNavigation.getParam("factura_key");
@@ -221,8 +211,6 @@ export default class index extends React.Component {
     }
 
     async actualizarNumeroFactura() {
-        // Al editar, la factura conserva su numeroFactura original; el correlativo
-        // solo aplica cuando se está creando una factura nueva (duplicar).
         if (this.tipo === "editar") return;
         try {
             const response: any = await SSocket.sendPromise({
@@ -261,30 +249,27 @@ export default class index extends React.Component {
     }
 
     validarAntesDeEmitir() {
-        const detalle = this.factura.data.detalle; for (let i = 0; i < detalle.length; i++) {
+        const detalle = this.factura.data.detalle;
+        for (let i = 0; i < detalle.length; i++) {
             const item = detalle[i];
-            // 🔴 codigoProducto
             if (!item.codigoProducto || item.codigoProducto.trim() === "") {
                 SNotification.send({
                     title: "codigoProducto requerida",
                     body: `El item ${i + 1} no tiene codigoProducto.`,
                     color: STheme.color.danger,
                     time: 1000,
-
                 });
-                return false; // 🔥 IMPORTANTE
-            }// 🔴 UNIDAD DE MEDIDA
+                return false;
+            }
             if (!item.unidadMedida || item.unidadMedida.trim() === "") {
                 SNotification.send({
                     title: "Unidad de medida requerida",
                     body: `El item ${i + 1} no tiene unidad de medida.`,
                     color: STheme.color.danger,
                     time: 1000,
-
                 });
-                return false; // 🔥 IMPORTANTE
+                return false;
             }
-            // 🔴 PRECIO UNITARIO
             if (!item.precioUnitario || item.precioUnitario.trim() === "") {
                 SNotification.send({
                     title: "Precio requerido",
@@ -294,7 +279,6 @@ export default class index extends React.Component {
                 });
                 return false;
             }
-            // 🔴 PRECIO INVÁLIDO
             const precio = parseFloat(item.precioUnitario);
             if (isNaN(precio) || precio <= 0) {
                 SNotification.send({
@@ -304,7 +288,8 @@ export default class index extends React.Component {
                     time: 1000,
                 });
                 return false;
-            } const cantidad = parseFloat(item.cantidad ?? "0");
+            }
+            const cantidad = parseFloat(item.cantidad ?? "0");
             const descuento = parseFloat(item.montoDescuento ?? "0");
             const cantidadValida = isNaN(cantidad) ? 0 : cantidad;
             const precioValido = isNaN(precio) ? 0 : precio;
@@ -320,9 +305,6 @@ export default class index extends React.Component {
                 return false;
             }
         }
-        // aqui pongo que no tiene leyenda y genera
-        // this.factura.data.leyenda = "";
-        // 🔴 VALIDAR LEYENDA
         if (!this.factura.data.leyenda || this.factura.data.leyenda.trim() === "") {
             const leyendas = this.parametricas.leyendasFactura;
             if (leyendas && leyendas.length > 0) {
@@ -372,17 +354,12 @@ export default class index extends React.Component {
             title: "Seguro de duplicar",
             message: "¿Está seguro de duplicar esta factura?",
             onPress: () => {
-                const FacturaData = this.factura;
-                const FacturaAmbiente = this.state.ambiente;
-                console.log("Factura a emitir:", FacturaData);
-                console.log("Ambiente de emisión:", FacturaAmbiente === 1 ? "Producción" : "Prueba");
-
                 SNotification.send({
                     key: "facturacionEmitir",
                     title: "Emitiendo factura",
                     type: "loading"
                 })
-                const resp = MDL.factura.duplicar(this.factura, this.state.ambiente).then((e) => {
+                MDL.factura.duplicar(this.factura, this.state.ambiente).then((e) => {
                     SNotification.send({
                         key: "facturacionEmitir",
                         title: "Factura emitida con éxito",
@@ -400,8 +377,6 @@ export default class index extends React.Component {
                         time: 5000,
                     })
                 })
-
-                console.log("%c" + JSON.stringify(resp), `color: #cc2eb2; font-weight: bold;`);
             }
         });
     }
@@ -409,7 +384,6 @@ export default class index extends React.Component {
         const accionText = this.tipo === "editar" ? "Editar Factura" : "Duplicar Factura";
         const titleText = `${accionText} (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
 
-        // const header = <SView col="xs-12" style={{ backgroundColor: STheme.color.background, height: 36, overflow: "hidden" }} row center>
         const header = <SView col="xs-12" style={{ backgroundColor: this.state.ambiente === 1 ? STheme.color.barColor + "66" : STheme.color.warning + "66", height: 36, overflow: "hidden" }} row center>
             <SView width={120} height={"100%"} onPress={() => SNavigation.goBack()} center> <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} /> </SView>
             <SView flex center> <SText fontSize={14} numberOfLines={1}>{titleText}</SText> </SView>
@@ -442,7 +416,6 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        // return <SPage hidden title={titleText} header={header}>
         return <SPage disableScroll hidden>
 
             {header}
