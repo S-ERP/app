@@ -29,10 +29,10 @@ export default class Footer extends React.Component<FooterProps> {
                 </SView>
                 <Label center fontSize={9}>{`"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de facturación en línea"`}</Label>
             </SView>
-            <SView width={16} />
+            {/* <SView width={16} />
             <SView width={80} height={80} card padding={8} onPress={this.props.onSend} >
                 <SIcon name={"MessageSend"} fill={STheme.color.text} />
-            </SView>
+            </SView> */}
         </SView>
     }
 }

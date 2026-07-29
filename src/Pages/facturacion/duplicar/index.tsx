@@ -496,9 +496,9 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage hidden header={header} center>
+        return <SPage hidden header={header}  >
 
-            <SView col={"xs-12 md-8"} padding={8}>
+            <SView col={"xs-12 md-8"} padding={8} center >
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
                         <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
@@ -519,7 +519,14 @@ export default class index extends React.Component {
                 <SHr h={16} />
                 <Cabecera factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
-                <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
+
+
+                <SView col={"md-8"} center  >
+
+                    <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
+                </SView>
+
+
                 <SHr h={16} />
 
 
@@ -531,14 +538,14 @@ export default class index extends React.Component {
                         SNavigation.goBack()
                     }}>Cancelar</SButtom>
                     <SView width={5} />
-                    <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
+                    <SButtom style={{ height: 35, background:"green" }} type={"outline"}  onPress={() => {
                         this.handleEnviar()
-                    }}>Aceptar</SButtom>
+                    }}>Duplicar Factura</SButtom>
                 </SView>
 
             </SView>
             {footerAlvaro}
-            {/* <SHr h={10} /> */}
+            <SHr h={10} />
         </SPage>;
     }
 }
