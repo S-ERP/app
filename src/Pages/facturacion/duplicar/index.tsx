@@ -323,61 +323,88 @@ export default class index extends React.Component {
         return true;
     }
 
-    handleEnviar() {
-        this.validarAntesDeEmitir();
-
-        if (this.tipo === "editar") {
-            SPopup.confirm({
-                title: "Seguro de editar",
-                message: "¿Está seguro de editar esta factura?",
-                onPress: () => {
-                    if (!this.facturaKeyOriginal) {
-                        SNotification.send({
-                            title: "Error",
-                            body: "No se encontró la factura original a editar.",
-                            color: STheme.color.danger,
-                            time: 5000,
-                        });
-                        return;
-                    }
-                    MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.state.estado).then(() => {
-                        SNavigation.goBack();
-                    }).catch((e) => {
-                        console.error(e);
-                    });
-                }
+    confirmarEditar() {
+        if (!this.facturaKeyOriginal) {
+            SNotification.send({
+                title: "Error",
+                body: "No se encontró la factura original a editar.",
+                color: STheme.color.danger,
+                time: 5000,
             });
             return;
         }
+        MDL.factura.editarFactura(this.facturaKeyOriginal, this.factura.data, this.state.ambiente, this.state.estado).then(() => {
+            SNavigation.goBack();
+        }).catch((e) => {
+            console.error(e);
+        });
+    }
 
-        SPopup.confirm({
-            title: "Seguro de duplicar",
-            message: "¿Está seguro de duplicar esta factura?",
-            onPress: () => {
-                SNotification.send({
-                    key: "facturacionEmitir",
-                    title: "Emitiendo factura",
-                    type: "loading"
-                })
-                MDL.factura.duplicar(this.factura, this.state.ambiente).then((e) => {
-                    SNotification.send({
-                        key: "facturacionEmitir",
-                        title: "Factura emitida con éxito",
-                        color: STheme.color.success,
-                        time: 5000,
-                    });
-                    MDL.factura.imprimir({ cuf: e.data.cuf })
+    confirmarDuplicar() {
+        SNotification.send({
+            key: "facturacionEmitir",
+            title: "Emitiendo factura",
+            type: "loading"
+        })
+        MDL.factura.duplicar(this.factura, this.state.ambiente).then((e) => {
+            SNotification.send({
+                key: "facturacionEmitir",
+                title: "Factura emitida con éxito",
+                color: STheme.color.success,
+                time: 5000,
+            });
+            MDL.factura.imprimir({ cuf: e.data.cuf })
 
-                }).catch((e) => {
-                    SNotification.send({
-                        key: "facturacionEmitir",
-                        title: "Ocurrio un error al emitir la factura",
-                        body: e.error + "aaaa",
-                        color: STheme.color.danger,
-                        time: 5000,
-                    })
-                })
-            }
+        }).catch((e) => {
+            SNotification.send({
+                key: "facturacionEmitir",
+                title: "Ocurrio un error al emitir la factura",
+                body: e.error + "aaaa",
+                color: STheme.color.danger,
+                time: 5000,
+            })
+        })
+    }
+
+    handleEnviar() {
+        if (!this.validarAntesDeEmitir()) return;
+
+        const isEditar = this.tipo === "editar";
+        const key = "confirmEnviarFactura";
+
+        SPopup.open({
+            key: key,
+            style: { backgroundColor: STheme.color.text + "AA" },
+            content: <SView width={340} style={{ maxWidth: "100%", borderRadius: 14, overflow: "hidden" }} backgroundColor={STheme.color.background} withoutFeedback center>
+                <SView col={"xs-12"} padding={16} center style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray }}>
+                    <SText fontSize={18} bold color={STheme.color.warning}>{isEditar ? "⚠ Confirmar edición" : "⚠ Confirmar emisión"}</SText>
+                </SView>
+                <SView col={"xs-12"} padding={24} center>
+                    <SText fontSize={40}>{isEditar ? "📝" : "🧾"}</SText>
+                    <SHr h={8} />
+                    <SText fontSize={16} bold center>{isEditar ? "¿Está seguro de editar esta factura?" : "¿Está seguro de emitir esta factura?"}</SText>
+                    <SHr h={8} />
+                    <SText fontSize={12} center color={STheme.color.gray}>
+                        {isEditar
+                            ? "Podrá modificar la información de la factura antes de guardar los cambios."
+                            : "Una vez emitida, la factura será enviada al SIAT y no podrá modificarse."}
+                    </SText>
+                    <SHr h={8} />
+                    <SText fontSize={12} bold center color={STheme.color.danger}>{"Esta acción no se puede deshacer."}</SText>
+                </SView>
+                <SView col={"xs-12"} row padding={16} style={{ borderTopWidth: 1, borderColor: STheme.color.lightGray }}>
+                    <SView flex center onPress={() => SPopup.close(key)} style={{ padding: 12, borderRadius: 8, backgroundColor: STheme.color.card, marginRight: 6 }}>
+                        <SText center bold>{"Cancelar"}</SText>
+                    </SView>
+                    <SView flex center onPress={() => {
+                        SPopup.close(key);
+                        if (isEditar) this.confirmarEditar();
+                        else this.confirmarDuplicar();
+                    }} style={{ padding: 12, borderRadius: 8, backgroundColor: STheme.color.success, marginLeft: 6 }}>
+                        <SText center bold color={STheme.color.white}>{isEditar ? "✔ Sí, editar factura" : "✔ Sí, emitir factura"}</SText>
+                    </SView>
+                </SView>
+            </SView>
         });
     }
     render() {
@@ -428,6 +455,36 @@ export default class index extends React.Component {
             </SView>
         </SView>;
 
+        const footerAlvaro = this.tipo === "duplicar" ? <SView col={"xs-12"} style={{
+            borderWidth: 1,
+            borderStyle: "dashed",
+            borderColor: STheme.color.lightGray,
+            borderRadius: 12,
+            padding: 12,
+            backgroundColor: STheme.color.background,
+        }}>
+            <Label fontSize={12} bold>{"Información"}</Label>
+            <SHr h={4} />
+            <Label fontSize={11} color={STheme.color.gray}>{"• Se copiarán todos los productos de la factura original."}</Label>
+            <Label fontSize={11} color={STheme.color.gray}>{"• La factura original permanecerá sin modificaciones."}</Label>
+            <Label fontSize={11} color={STheme.color.gray}>{"• Podrá editar cualquier dato antes de emitir la nueva factura."}</Label>
+            <Label fontSize={11} color={STheme.color.gray}>{"• Se generará un nuevo número de factura al momento de la emisión."}</Label>
+        </SView> : <SView col={"xs-12"} style={{
+            borderWidth: 1,
+            borderStyle: "dashed",
+            borderColor: STheme.color.lightGray,
+            borderRadius: 12,
+            padding: 12,
+            backgroundColor: STheme.color.background,
+        }}>
+            <Label fontSize={12} bold>{"Información"}</Label>
+            <SHr h={4} />
+            <Label fontSize={11} color={STheme.color.gray}>{"• Se cargarán todos los datos actuales de la factura."}</Label>
+            <Label fontSize={11} color={STheme.color.gray}>{"• Podrá modificar cualquier información antes de guardar los cambios."}</Label>
+            <Label fontSize={11} color={STheme.color.gray}>{"• La factura conservará su número y su identidad dentro del sistema."}</Label>
+            <Label fontSize={11} color={STheme.color.gray}>{"• Verifique la información antes de guardar las modificaciones."}</Label>
+        </SView>;
+
         if (this.state.loadingDuplicado) {
             return <SPage hidden title={titleText} header={header}>
                 <SView col={"xs-12"} padding={40} center>
@@ -435,10 +492,10 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage disableScroll hidden>
+        return <SPage disableScroll hidden center>
 
             {header}
-            <SView padding={8}>
+            <SView col={"xs-12 md-8"} padding={8} row center>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
                         <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} />
@@ -461,11 +518,10 @@ export default class index extends React.Component {
                 <Detalle factura={this.factura} parametricas={this.parametricas} />
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
+                <SHr h={16} />
             </SView>
-
-
-                        {footerAlvaro}
-
+            {footerAlvaro}
+            {/* <SHr h={10} /> */}
         </SPage>;
     }
 }
