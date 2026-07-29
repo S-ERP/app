@@ -177,6 +177,38 @@ const inputs = (): SInputsCofig => {
             },
 
 
+        },
+        facturaDuplicar: {
+            LabelStyle: {
+                position: "absolute",
+                top: -5,
+                left: 0,
+                fontSize: 10,
+                width: "100%",
+                color: STheme.color.text + "66",
+            },
+            View: {
+                height: 24,
+                borderRadius: 4,
+                marginTop: 18,
+                paddingStart: 0,
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: "#2563eb",
+                backgroundColor: STheme.color.text + "11",
+            },
+            InputText: {
+                paddingLeft: 4,
+                paddingRight: 4,
+                fontSize: 12,
+                color: STheme.color.text,
+                placeholderTextColor: STheme.color.gray,
+                fontFamily: "Roboto",
+            },
+            error: {
+                borderWidth: 1,
+                borderColor: "#FA8081"
+            },
         }
     }
 }
