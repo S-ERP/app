@@ -496,7 +496,7 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage disableScroll hidden center>
+        return <SPage disableScroll hidden  >
 
             {header}
             <SView col={"xs-12 md-8"} padding={8} row center>

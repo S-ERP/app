@@ -94,14 +94,6 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                     </SView>
                 </SView>
             </SView>
-            <SView col={"xs-12"} row center>
-                <Label bold flex>{"AMBIENTE"}</Label>
-                <SView flex center>
-                    <SView backgroundColor={this.props.ambiente === 1 ? STheme.color.success : STheme.color.warning} width={90} height={22} borderRadius={4} center>
-                        <SText fontSize={11} color={"#fff"} bold>{this.props.ambiente === 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
-                    </SView>
-                </SView>
-            </SView>
         </SView>
     }
 }
