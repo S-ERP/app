@@ -357,7 +357,9 @@ export default class index extends React.Component {
                 color: STheme.color.success,
                 time: 5000,
             });
-            MDL.factura.imprimir({ cuf: e.data.cuf })
+
+            // MDL.factura.imprimir({ cuf: e.data.cuf, tipo: "carta" })
+            SNavigation.goBack();
 
         }).catch((e) => {
             SNotification.send({
@@ -561,10 +563,10 @@ export default class index extends React.Component {
                                 onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
                             <SView width={5} />
                             <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>
-                                                <SIcon name={"MessageSend"} fill={STheme.color.text} width={10}/>
+                                <SIcon name={"MessageSend"} fill={STheme.color.text} width={10} />
 
                                 {accionText}
-                                </SButtom>
+                            </SButtom>
                         </SView>
                     </SView>
 
