@@ -23,7 +23,7 @@ export default class Cabecera extends React.Component<CabeceraProps> {
     popupBuscarNit: PopupBuscarNit | undefined;
     render() {
         const { fechaEmision, numeroDocumento, nombreRazonSocial, codigoCliente } = this.props.factura.data
-        return <SView center row>
+        return <SView center row >
             <SView col={"xs-12 sm-5"} row center>
                 <Label bold >{"Feha"}</Label>
                 <SView width={16} />
@@ -112,7 +112,7 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                 <Label bold >{"Nombre/Razón Social"}</Label>
                 <SView width={16} />
                 <SInput ref={ref => this.inprazonsocial = ref ?? undefined} flex customStyle={customStyle} defaultValue={nombreRazonSocial}
-                    style={this.props.mostrarErrores && !nombreRazonSocial ? errorStyle : undefined}
+                    style={!nombreRazonSocial ? errorStyle : undefined}
                     onChangeText={e => {
                         this.props.factura.data.nombreRazonSocial = e
                     }} />

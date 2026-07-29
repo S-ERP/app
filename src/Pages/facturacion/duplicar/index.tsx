@@ -421,29 +421,32 @@ export default class index extends React.Component {
             borderBottomWidth: 1,
             borderColor: STheme.color.lightGray,
             paddingHorizontal: 12,
-        }} row center>
+        }} row center >
 
             <SView width={42} height={42} onPress={() => SNavigation.goBack()} center style={{
                 borderRadius: 21,
                 backgroundColor: STheme.color.card,
                 borderWidth: 1,
                 borderColor: STheme.color.lightGray,
-            }}>
+            }}
+            >
                 <SIconApp name="Back" height={18} width={20} fill={STheme.color.text} />
             </SView>
             <SView width={12} />
-            <SView flex>
+            <SView flex border={"red"}
+            >
                 <SText fontSize={16} bold numberOfLines={1}>{accionText}</SText>
                 <SText fontSize={11} color={STheme.color.gray} numberOfLines={1}>{"Facturación electrónica · SIAT Bolivia"}</SText>
             </SView>
-            <SView row center style={{
-                borderRadius: 999,
-                backgroundColor: ambienteColor + "22",
-                borderWidth: 1,
-                borderColor: ambienteColor,
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-            }}
+            <SView row center
+                style={{
+                    borderRadius: 999,
+                    backgroundColor: ambienteColor + "22",
+                    borderWidth: 1,
+                    borderColor: ambienteColor,
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                }}
                 onPress={() => {
                     MDL.factura.setAmbiente(MDL.factura.ambiente == 1 ? 2 : 1)
                     this.setState({ ambiente: MDL.factura.ambiente }, () => {
@@ -498,49 +501,54 @@ export default class index extends React.Component {
         }
         return <SPage hidden header={header}  >
 
-            <SView col={"xs-12 md-8"} padding={8} center >
-                <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
-                    <SView flex={3} center>
-                        <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
+            <SView col={"xs-12 "} center border={"green"}
+            >
+
+
+                <SView col={"xs-12 md-8"} padding={8} border={"blue"}
+                >
+                    <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
+                        <SView flex={3} center>
+                            <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
+                        </SView>
+                        <SView flex={2} />
+                        <SView flex={3} center style={{ minWidth: 150 }}>
+                            <NitNumero factura={this.factura} estado={this.state.estado} ambiente={this.state.ambiente}
+                                mostrarErrores={this.state.mostrarErrores}
+                                onEstadoChange={(estado) => { this.facturaEstadoOriginal = estado; this.setState({ estado }); }}
+                            />
+                        </SView>
                     </SView>
-                    <SView flex={2} />
-                    <SView flex={3} center style={{ minWidth: 150 }}>
-                        <NitNumero factura={this.factura} estado={this.state.estado} ambiente={this.state.ambiente}
-                            mostrarErrores={this.state.mostrarErrores}
-                            onEstadoChange={(estado) => { this.facturaEstadoOriginal = estado; this.setState({ estado }); }}
-                        />
+                    <SHr h={30} />
+                    <SView center border={"red"}
+                    >
+                        <Label fontSize={30} bold>{"FACTURA"}</Label>
+                        <Label >{"(Con Derecho a Crédito Fiscal)"}</Label>
                     </SView>
-                </SView>
-                <SHr h={30} />
-                <SView center>
-                    <Label fontSize={30} bold>{"FACTURA"}</Label>
-                    <Label >{"(Con Derecho a Crédito Fiscal)"}</Label>
-                </SView>
-                <SHr h={16} />
-                <Cabecera factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
-                <SHr h={16} />
+                    <SHr h={16} />
+                    <Cabecera factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
+                    <SHr h={16} />
 
 
-                <SView col={"md-8"} center  >
+                    <SView col={"md-8"} center border={"red"}
+                    >
 
-                    <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
-                </SView>
-
-
-                <SHr h={16} />
+                        <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
+                    </SView>
 
 
-                <Footer factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} onSend={this.handleEnviar.bind(this)} />
-                <SHr h={16} />
+                    <SHr h={16} />
 
-                <SView row>
-                    <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
-                        SNavigation.goBack()
-                    }}>Cancelar</SButtom>
-                    <SView width={5} />
-                    <SButtom style={{ height: 35, background:"green" }} type={"outline"}  onPress={() => {
-                        this.handleEnviar()
-                    }}>Duplicar Factura</SButtom>
+
+                    <Footer factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} onSend={this.handleEnviar.bind(this)} />
+                    <SHr h={16} />
+
+                    <SView row>
+                        <SButtom style={{ height: 35 }} type={"danger"} onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
+                        <SView width={5} />
+                        <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>Duplicar Factura</SButtom>
+                    </SView>
+
                 </SView>
 
             </SView>

@@ -22,7 +22,7 @@ export default class Footer extends React.Component<FooterProps> {
                     <Label bold>{"Leyenda"}</Label>
                     <SView width={8} />
                     <SInput flex customStyle={customStyle} defaultValue={this.props.factura.data.leyenda}
-                        style={this.props.mostrarErrores && !this.props.factura.data.leyenda ? errorStyle : undefined}
+                        style={!this.props.factura.data.leyenda ? errorStyle : undefined}
                         onChangeText={e => {
                             this.props.factura.data.leyenda = e
                         }} />

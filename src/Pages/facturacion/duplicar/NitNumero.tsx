@@ -72,6 +72,7 @@ export default class NitNumero extends React.Component<NitNumeroProps> {
                 <Label bold flex>{"CÓD. AUTORIZACIÓN"}</Label>
                 <SInput flex customStyle={customStyle}
                     defaultValue={this.props.factura.data.cuf}
+                    style={!this.props.factura.data.cuf ? errorStyle : undefined}
                     onChangeText={e => {
                         this.props.factura.data.cuf = e
                     }} />

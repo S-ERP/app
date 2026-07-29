@@ -108,7 +108,7 @@ export default class SelectSucursalPuntoVenta extends React.Component<SelectSucu
             <SView col={"xs-12"} onPress={(e: any) => e?.stopPropagation?.()}>
                 <SInput
                     customStyle={customStyle}
-                    style={{ textAlign: "center", ...(this.props.mostrarErrores && !direccion ? errorStyle : {}) }}
+                    style={{ textAlign: "center", ...(!direccion ? errorStyle : {}) }}
                     defaultValue={direccion}
                     onChangeText={e => {
                         this.props.factura.data.direccion = e

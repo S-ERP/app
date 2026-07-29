@@ -291,7 +291,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                 <Cell>
                     <SInput
                         customStyle={customStyle}
-                        style={this.props.mostrarErrores && !this.props.factura.data.descuentoAdicional ? errorStyle : undefined}
+                        // style={this.props.mostrarErrores && !this.props.factura.data.descuentoAdicional ? errorStyle : undefined}
                         value={this.props.factura.data.descuentoAdicional ?? ""}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";
