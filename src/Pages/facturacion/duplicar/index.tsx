@@ -496,10 +496,9 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage disableScroll hidden  >
+        return <SPage hidden header={header} center>
 
-            {header}
-            <SView col={"xs-12 md-8"} padding={8} row center>
+            <SView col={"xs-12 md-8"} padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
                         <SelectSucursalPuntoVenta factura={this.factura} onPuntoVentaChange={this.actualizarNumeroFactura.bind(this)} mostrarErrores={this.state.mostrarErrores} />
