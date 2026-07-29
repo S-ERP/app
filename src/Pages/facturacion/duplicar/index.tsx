@@ -12,6 +12,7 @@ import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import SIconApp from "../../../Assets/SIconApp";
+import { Container } from "../../../Components";
 
 const STORAGE_KEY_FACTURA_DUPLICAR = "factura_duplicar_pendiente";
 const STORAGE_KEY_FACTURA_EDITAR_KEY = "factura_editar_key_pendiente";
@@ -476,21 +477,26 @@ export default class index extends React.Component {
             <Label fontSize={11} color={STheme.color.gray}>{"• La factura original permanecerá sin modificaciones."}</Label>
             <Label fontSize={11} color={STheme.color.gray}>{"• Podrá editar cualquier dato antes de emitir la nueva factura."}</Label>
             <Label fontSize={11} color={STheme.color.gray}>{"• Se generará un nuevo número de factura al momento de la emisión."}</Label>
-        </SView> : <SView col={"xs-12 md-10"} style={{
-            borderWidth: 1,
-            borderStyle: "dashed",
-            borderColor: STheme.color.lightGray,
-            borderRadius: 12,
-            padding: 12,
-            backgroundColor: STheme.color.background,
-        }}>
-            <Label fontSize={12} bold>{"Información"}</Label>
-            <SHr h={4} />
-            <Label fontSize={11} color={STheme.color.gray}>{"• Se cargarán todos los datos actuales de la factura."}</Label>
-            <Label fontSize={11} color={STheme.color.gray}>{"• Podrá modificar cualquier información antes de guardar los cambios."}</Label>
-            <Label fontSize={11} color={STheme.color.gray}>{"• La factura conservará su número y su identidad dentro del sistema."}</Label>
-            <Label fontSize={11} color={STheme.color.gray}>{"• Verifique la información antes de guardar las modificaciones."}</Label>
-        </SView>;
+        </SView> : <>
+            <SView col={"xs-12 md-10"} style={{
+                borderWidth: 1,
+                borderStyle: "dashed",
+                borderColor: STheme.color.lightGray,
+                borderRadius: 12,
+                padding: 12,
+                backgroundColor: STheme.color.background,
+            }}>
+                <Label fontSize={12} bold>{"Información"}</Label>
+                <SHr h={4} />
+                <Label fontSize={11} color={STheme.color.gray}>{"• Se cargarán todos los datos actuales de la factura."}</Label>
+                <Label fontSize={11} color={STheme.color.gray}>{"• Podrá modificar cualquier información antes de guardar los cambios."}</Label>
+                <Label fontSize={11} color={STheme.color.gray}>{"• La factura conservará su número y su identidad dentro del sistema."}</Label>
+                <Label fontSize={11} color={STheme.color.gray}>{"• Verifique la información antes de guardar las modificaciones."}</Label>
+            </SView>
+            <SHr h={10} />
+        </>
+
+            ;
 
         if (this.state.loadingDuplicado) {
             return <SPage hidden title={titleText} header={header}>
@@ -499,10 +505,12 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage hidden header={header}  >
+        return <SPage hidden header={header}
 
-            <SView col={"xs-12 "} center border={"green"}
-            >
+        // footer={footerAlvaro}
+        >
+
+            <SView col={"xs-12 "} row center border={"green"}  >
 
 
                 <SView col={"xs-12 md-8"} padding={8} border={"blue"}
@@ -530,7 +538,8 @@ export default class index extends React.Component {
                     <SHr h={16} />
 
 
-                    <SView col={"md-8"} center border={"red"}
+                    <SView col={"md-12"} center border={"pink"}
+                    // flex
                     >
 
                         <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
@@ -552,8 +561,8 @@ export default class index extends React.Component {
                 </SView>
 
             </SView>
-            {footerAlvaro}
-            <SHr h={10} />
+
+            {/* {footerAlvaro} */}
         </SPage>;
     }
 }
