@@ -290,25 +290,39 @@ export default class TablaTransacciones extends Component {
                 content: (
                     <SView col="xs-11 md-4"
                         backgroundColor={STheme.color.background}
-                        padding={24}
                         withoutFeedback
-                        style={{ borderRadius: 16, alignItems: "center" }}>
-                        <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
-                        <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {this.formatMonto(saldo)}</SText>
-                        <SInput2
-                            type="money"
-                            style={{ width: "100%", height: 44 }}
-                            placeholder="Ingrese monto"
-                            onChangeText={(val) => { monto = parseFloat(val) || 0; }}
-                            icon={<SText fontSize={10} padding={2}>{simboloBase}</SText>}
-                        />
-                        <SHr height={16} />
-                        <SView row col="xs-12" style={{ gap: 12 }}>
-                            <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-venta-completada")}> <SText color={STheme.color.background}>Cancelar</SText> </SView>
-                            <SView flex height={40} borderRadius={8} center
-                                backgroundColor={STheme.color.card}
-                                border={STheme.color.success}
-                                onPress={() => {
+                        style={{ borderRadius: 20, overflow: "hidden", alignItems: "center" }}>
+                        <SView col="xs-12" style={{ backgroundColor: STheme.color.success + "22", paddingVertical: 28, alignItems: "center" }}>
+                            <SView style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: STheme.color.success, alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                                <SIconApp name="pagotarjeta" width={26} height={26} fill="#fff" />
+                            </SView>
+                            <SText bold fontSize={20} center color={STheme.color.text}>Amortizar Deuda</SText>
+                        </SView>
+
+                        <SView col="xs-12" padding={24} style={{ alignItems: "center" }}>
+                            <SView row col="xs-12" style={{ backgroundColor: STheme.color.card, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 20, alignItems: "center", justifyContent: "space-between" }}>
+                                <SText fontSize={13} color={STheme.color.lightGray}>Saldo pendiente</SText>
+                                <SText bold fontSize={16} color={STheme.color.text}>{this.formatMonto(saldo)}</SText>
+                            </SView>
+
+                            <SText fontSize={12} color={STheme.color.lightGray} style={{ alignSelf: "flex-start", marginBottom: 6 }}>Monto a pagar</SText>
+                            <SView row col="xs-12" style={{ height: 46, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.lightGray + "40", backgroundColor: STheme.color.card, alignItems: "center", paddingHorizontal: 12 }}>
+                                <SText fontSize={12} color={STheme.color.lightGray} style={{ marginRight: 6 }}>{simboloBase}</SText>
+                                <SView flex height>
+                                    <SInput2
+                                        type="money"
+                                        style={{ width: "100%", textAlign: "right", fontSize: 14 }}
+                                        placeholder="Ingrese monto"
+                                        onChangeText={(val) => { monto = parseFloat(val) || 0; }}
+                                    />
+                                </SView>
+                            </SView>
+                            <SHr height={20} />
+                            <SView row col="xs-12" style={{ gap: 12 }}>
+                                <SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.card} border={STheme.color.lightGray + "55"} onPress={() => SPopup.close("popup-venta-completada")}> <SText color={STheme.color.text}>Cancelar</SText> </SView>
+                                <SView flex height={44} borderRadius={10} center
+                                    backgroundColor={STheme.color.success}
+                                    onPress={() => {
                                     if (monto <= 0) {
                                         SNotification.send({
                                             title: "Monto inválido",
@@ -360,6 +374,7 @@ export default class TablaTransacciones extends Component {
                                 <SText>Confirmar</SText>
                             </SView>
                         </SView>
+                        </SView>
                     </SView>
                 )
             });
@@ -392,6 +407,7 @@ export default class TablaTransacciones extends Component {
                                     this.DinamicTable.loadData();
                                 }}
                             />
+                            {/* ss */}
                         </SView>
                     </SView>
                     <SHr /><SHr height={10} />

@@ -10,6 +10,11 @@ const borderColorProfessional = "#B5B5B5";
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const toUpper = (value, fallback = '') => validarDato(value, fallback).toString().toUpperCase();
+const formatMontoPDF = (moneda, value) => {
+    const sim = (moneda?.observacion || 'Bs').toString();
+    const fmt = SMath.formatMoney(value || 0, 2);
+    return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
+};
 const formatFechaES = (fecha) => {
     if (!fecha) return "";
     return new SDate(fecha).toString("dd/MM/yyyy");
@@ -46,6 +51,7 @@ export default class ComprobanteKardexIndividual extends Component {
             }
 
             const empresa = await MDL.empresa.getFull();
+            const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
 
             let saldoAcumulado = 0;
             const ventasEnriquecidas = ventas.map(v => {
@@ -54,6 +60,7 @@ export default class ComprobanteKardexIndividual extends Component {
                 saldoAcumulado += (debe - haber);
                 return {
                     ...v,
+                    moneda: monedasMap[v?.key_moneda] || {},
                     saldo: saldoAcumulado
                 };
             });
@@ -71,7 +78,7 @@ export default class ComprobanteKardexIndividual extends Component {
                 return fechaItem >= fecha_inicio_real && fechaItem <= fecha_fin_real;
             });
 
-            const moneda = ventasEnriquecidas[0]?.moneda || empresa.monedas[0] || {};
+            const moneda = ventasEnriquecidas[0]?.moneda || null;
             if (saldoAnterior !== 0) {
                 ventasFiltradas = [
                     {
@@ -95,7 +102,7 @@ export default class ComprobanteKardexIndividual extends Component {
             const compraVentaData = {
                 cliente: cliente || {},
                 empresa: empresa || {},
-                moneda: empresa.monedas[0] || {},
+                moneda,
                 detalle: [...ventasFiltradas],
                 fecha_inicio: fecha_inicio_real,
                 fecha_fin: fecha_fin_real
@@ -167,7 +174,7 @@ export default class ComprobanteKardexIndividual extends Component {
             </SPDF.View>
         );
     }
-
+// ss
 
     static proveedor(data) {
         const cliente = data?.cliente || {};
@@ -221,13 +228,14 @@ export default class ComprobanteKardexIndividual extends Component {
 
     static detalleBody(data) {
         const items = data?.detalle || [];
+        const moneda = data?.moneda;
         return items.map((item, i) => {
             const debeValue = toNumber(item?.debe);
             const haberValue = toNumber(item?.haber);
             const saldoValue = toNumber(item?.saldo);
-            const debe = SMath.formatMoney(debeValue);
-            const haber = SMath.formatMoney(haberValue);
-            const saldo = SMath.formatMoney(saldoValue);
+            const debe = formatMontoPDF(moneda, debeValue);
+            const haber = formatMontoPDF(moneda, haberValue);
+            const saldo = formatMontoPDF(moneda, saldoValue);
             const fecha = item?.fecha_on ? new SDate(item.fecha_on).toString("dd/MM/yyyy") : "";
             const isSaldoAnterior = item?.tipo === "saldo";
             const fechaText = isSaldoAnterior ? "" : fecha;
@@ -279,13 +287,13 @@ export default class ComprobanteKardexIndividual extends Component {
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{`TOTALES ${(data?.moneda?.observacion || 'Bs').toUpperCase()}. :`}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
-                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{SMath.formatMoney(totalDebe)}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{formatMontoPDF(data?.moneda, totalDebe)}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
-                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{SMath.formatMoney(totalHaber)}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{formatMontoPDF(data?.moneda, totalHaber)}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
-                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{SMath.formatMoney(saldoFinal)}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{formatMontoPDF(data?.moneda, saldoFinal)}</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         );

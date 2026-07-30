@@ -309,7 +309,7 @@ export default class ListaClientes extends Component {
 					});
 
 					options.push({
-						label: 'Ver trasabilidadd',
+						label: 'Ver trasabilidad cliente',
 						icon: <SIcon name="Eyes" fill={STheme.color.text} />,
 						onPress: () => {
 							SNavigation.navigate("/cliente/transacciones", { key: e.row.key })
