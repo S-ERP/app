@@ -18,7 +18,6 @@ export default class TablaTransacciones extends Component {
             fecha_fin: new SDate().toString("yyyy-MM-dd"),
             moneda: null,
             cliente: null,
-            ventasEnriquecidas: null,
             saldo: 0,
         };
         this.key = SNavigation.getParam("key");
@@ -116,7 +115,6 @@ export default class TablaTransacciones extends Component {
             this.setState({
                 cliente: cliente || {},
                 moneda,
-                ventasEnriquecidas: ventasFiltradas,
                 saldo,
             });
             return ventasFiltradas;
@@ -177,14 +175,11 @@ export default class TablaTransacciones extends Component {
                     />
 
                     <DinamicTable.Col key="detalle" label="Detalle" width={340} data={(e) => e?.row?.descripcion || "-"}
-                        customComponent={(e) => {
-                            const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
-                            return (
-                                <SText color={STheme.color.text}>
-                                    {e?.row?.descripcion || "-"}
-                                </SText>
-                            );
-                        }}
+                        customComponent={(e) => (
+                            <SText color={STheme.color.text}>
+                                {e?.row?.descripcion || "-"}
+                            </SText>
+                        )}
                         cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
                         footerComponent={() => (
                             <SView style={this.footerBarStyle('flex-end')}>
@@ -209,7 +204,6 @@ export default class TablaTransacciones extends Component {
                         }}
                     />
                     <DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => e?.row?.saldo ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
-
                         format={(e) => this.formatMonto(e.data)}
                         footerComponent={(e) => {
                             const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
@@ -360,7 +354,7 @@ export default class TablaTransacciones extends Component {
                                                         SelectTipoPagoVenta.closePopup();
                                                     }
                                                 }).catch(err => {
-                                                    SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                                    SNotification.send({ title: 'Error', body: err?.message || 'Falló el pago.', color: STheme.color.danger });
                                                 });
                                                 SelectTipoPagoVenta.closePopup();
                                                 SPopup.close("popup-venta-completada");
@@ -394,9 +388,9 @@ export default class TablaTransacciones extends Component {
 
 
                 <SView col={'xs-12'} center backgroundColor='transparent' row>
-                    <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} backgroundColor='blue' >
+                    <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} >
                         <SHr height={20} />
-                        <SView col={"xs-12"} row center border={"red"} >
+                        <SView col={"xs-12"} row center >
                             <FechaFullFilter2
                                 label="fecha"
                                 key_opciones="hoy"
@@ -408,26 +402,20 @@ export default class TablaTransacciones extends Component {
                             />
                         </SView>
                         <SHr height={20} />
-                        <SView col={"xs-12"} row style={{ justifyContent: 'center' }} border={"blue"}>
+                        <SView col={"xs-12"} row style={{ justifyContent: 'center' }}>
                             <SText fontSize={15} style={{ textAlign: 'left' }}>CLIENTE: {clienteNombre}</SText>
                         </SView>
                     </SView>
                 </SView>
 
                 <SHr height={10} />
-                {/* <SView col={'xs-12'} center backgroundColor='transparent' row > */}
-
-                {/* <SView col={'xs-12'}   backgroundColor='transparent'  > */}
-                {/* <SView col={'xs-12 md-9'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} backgroundColor='transparent' > */}
                 {this.mostrarTabla()}
-                {/* </SView> */}
-                {/* </SView> */}
 
                 <SHr height={20} />
 
 
                 <SView col={'xs-12'} center backgroundColor='transparent' row>
-                    <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} backgroundColor='blue' >
+                    <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} >
                         <SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
                             <SView
                                 onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
