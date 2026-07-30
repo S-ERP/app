@@ -149,7 +149,7 @@ export default class TablaTransacciones extends Component {
 
     mostrarTabla() {
         return (
-            <SView col={'xs-12'} style={{ width: 1010, alignSelf: 'center' }} flex>
+            <SView col={'xs-12'} style={{ width: 930, alignSelf: 'center' }} flex>
                 <DinamicTable
                     ref={ref => (this.DinamicTable = ref)}
                     loadData={this.loadInitialData.bind(this)}
@@ -294,7 +294,10 @@ export default class TablaTransacciones extends Component {
                         style={{ borderRadius: 16, alignItems: "center" }}>
                         <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
                         <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {this.formatMonto(saldo)}</SText>
-                        <SInput col={"xs-12"} type='money2' placeholder="Ingrese monto" onChangeText={(val) => { monto = parseFloat(val) || 0; }} />
+                        {/* alva */}
+                        <SInput col={"xs-12"} type='money2' placeholder="Ingrese monto" onChangeText={(val) => { monto = parseFloat(val) || 0; }}
+                            icon={<SText fontSize={10} padding={2}>{simboloBase}</SText>}
+                        />
                         <SHr height={16} />
                         <SView row col="xs-12" style={{ gap: 12 }}>
                             <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-venta-completada")}> <SText color={STheme.color.background}>Cancelar</SText> </SView>
