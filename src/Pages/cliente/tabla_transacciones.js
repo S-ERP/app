@@ -150,7 +150,7 @@ export default class TablaTransacciones extends Component {
 
     mostrarTabla() {
         return (
-            <SView col={'xs-12'} style={{ width: 930, alignSelf: 'center' }} flex>
+            <SView col={'xs-12'} style={{ width: 900, alignSelf: 'center' }} flex>
                 <DinamicTable
                     ref={ref => (this.DinamicTable = ref)}
                     loadData={this.loadInitialData.bind(this)}
@@ -323,57 +323,57 @@ export default class TablaTransacciones extends Component {
                                 <SView flex height={44} borderRadius={10} center
                                     backgroundColor={STheme.color.success}
                                     onPress={() => {
-                                    if (monto <= 0) {
-                                        SNotification.send({
-                                            title: "Monto inválido",
-                                            body: "El monto debe ser mayor a 0",
-                                            color: STheme.color.danger,
-                                            time: 4000
-                                        });
-                                        return;
-                                    }
-                                    if (monto > saldo) {
-                                        SNotification.send({
-                                            title: "Monto inválido",
-                                            body: "No puede ser mayor al saldo",
-                                            color: STheme.color.danger,
-                                            time: 4000
-                                        });
-                                        return;
-                                    }
-                                    SelectTipoPagoVenta.openPopup({
-                                        key_punto_venta: activa.key_punto_venta,
-                                        key_moneda: moneda.key,
-                                        montoMaximo: monto,
-                                        monedaSymbol: simboloBase,
-                                        onSelect: (item) => {
-                                            const enviar = { tipos_pago: item, cuotas: cuotas };
-                                            SSocket.sendPromise({
-                                                service: "caja",
-                                                component: "caja_detalle",
-                                                type: "amortizarCuotaCompra",
-                                                data: enviar,
-                                                key_usuario: MDL.usuario.session?.key,
-                                                key_empresa: MDL.empresa.select?.key,
-                                                key_caja: MDL.caja.activa?.key,
-                                            }).then(resp => {
-                                                if (resp?.estado === "exito") {
-                                                    SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                                                    this.DinamicTable.loadData();
-                                                    if (this.props.onSuccess) this.props.onSuccess(resp)
-                                                    SelectTipoPagoVenta.closePopup();
-                                                }
-                                            }).catch(err => {
-                                                SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                        if (monto <= 0) {
+                                            SNotification.send({
+                                                title: "Monto inválido",
+                                                body: "El monto debe ser mayor a 0",
+                                                color: STheme.color.danger,
+                                                time: 4000
                                             });
-                                            SelectTipoPagoVenta.closePopup();
-                                            SPopup.close("popup-venta-completada");
+                                            return;
                                         }
-                                    });
-                                }}>
-                                <SText>Confirmar</SText>
+                                        if (monto > saldo) {
+                                            SNotification.send({
+                                                title: "Monto inválido",
+                                                body: "No puede ser mayor al saldo",
+                                                color: STheme.color.danger,
+                                                time: 4000
+                                            });
+                                            return;
+                                        }
+                                        SelectTipoPagoVenta.openPopup({
+                                            key_punto_venta: activa.key_punto_venta,
+                                            key_moneda: moneda.key,
+                                            montoMaximo: monto,
+                                            monedaSymbol: simboloBase,
+                                            onSelect: (item) => {
+                                                const enviar = { tipos_pago: item, cuotas: cuotas };
+                                                SSocket.sendPromise({
+                                                    service: "caja",
+                                                    component: "caja_detalle",
+                                                    type: "amortizarCuotaCompra",
+                                                    data: enviar,
+                                                    key_usuario: MDL.usuario.session?.key,
+                                                    key_empresa: MDL.empresa.select?.key,
+                                                    key_caja: MDL.caja.activa?.key,
+                                                }).then(resp => {
+                                                    if (resp?.estado === "exito") {
+                                                        SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+                                                        this.DinamicTable.loadData();
+                                                        if (this.props.onSuccess) this.props.onSuccess(resp)
+                                                        SelectTipoPagoVenta.closePopup();
+                                                    }
+                                                }).catch(err => {
+                                                    SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                                });
+                                                SelectTipoPagoVenta.closePopup();
+                                                SPopup.close("popup-venta-completada");
+                                            }
+                                        });
+                                    }}>
+                                    <SText>Confirmar</SText>
+                                </SView>
                             </SView>
-                        </SView>
                         </SView>
                     </SView>
                 )
