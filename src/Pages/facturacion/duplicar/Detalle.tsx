@@ -57,12 +57,12 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
 
     return <SView col={"xs-12"} row>
 
-        <Cell>
+        <Cell style={{ padding: 2 }}>
             <FiltroSelector
                 ref={(ref) => (state.filtroProductoRef = ref)}
-                label="Producto / Servicio"
+                label=""
                 error={mostrarErrores && !item.codigoProducto}
-                defaultOption={item.codigoProducto ? String(item.codigoProducto) : "todos"}
+                defaultOption={item.codigoProducto ? String(item.codigoProducto) : "Seleecionar"}
                 skipInitialOnSelect
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
@@ -115,12 +115,12 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell>
+        <Cell style={{ padding: 2 }}>
             <FiltroSelector
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
-                label="Unidad de Medida"
+                label=""
                 error={mostrarErrores && !item.unidadMedida}
-                defaultOption={item.unidadMedida ? String(item.unidadMedida) : "todos"}
+                defaultOption={item.unidadMedida ? String(item.unidadMedida) : "Seleecionar"}
                 skipInitialOnSelect
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
@@ -164,10 +164,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell>
+        <Cell style={{ padding: 2 }}>
             <SInput2
                 type="money"
-                style={mostrarErrores && !item.precioUnitario ? errorStyle : undefined}
+                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text, ...(mostrarErrores && !item.precioUnitario ? errorStyle : {}) }}
                 defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.precioUnitario = e;
@@ -177,10 +177,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell>
+        <Cell style={{ padding: 2 }}>
             <SInput2
                 type="money"
-                style={mostrarErrores && !item.montoDescuento ? errorStyle : undefined}
+                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text, ...(mostrarErrores && !item.montoDescuento ? errorStyle : {}) }}
                 defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.montoDescuento = e;
@@ -289,9 +289,10 @@ export default class Detalle extends React.Component<DetalleProps> {
             <SView col={"xs-12"} row>
                 <SView flex={6} />
                 <Cell flex={2} label="DESCUENTO" />
-                <Cell>
+                <Cell style={{ padding: 2 }}>
                     <SInput2
                         type="money"
+                        style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text }}
                         defaultValue={(parseFloat(this.props.factura.data.descuentoAdicional ?? "0") || 0).toFixed(2)}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";
