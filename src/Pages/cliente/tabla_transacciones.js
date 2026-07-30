@@ -448,7 +448,7 @@ export default class TablaTransacciones extends Component {
         const { cliente } = this.state;
         const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}` || '-';
         return (
-            <SPage title="Kardex Individual" disableScroll>
+            <SPage title="Kardex Individual Cliente" disableScroll>
 
 
 
