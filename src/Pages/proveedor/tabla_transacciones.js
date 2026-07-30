@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad, SInput } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
 import MDL from '../../MDL';
@@ -7,6 +7,7 @@ import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 import SIconApp from '../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
+import SInput2 from '../../Components/SForm2/SInput2';
 
 export default class TablaTransaccionesProveedor extends Component {
     constructor(props) {
@@ -157,9 +158,30 @@ export default class TablaTransaccionesProveedor extends Component {
         }
     }
 
+    formatMonto(value) {
+        const sim = this.state.moneda?.observacion || 'Bs';
+        const fmt = SMath.formatMoney(value || 0, 2);
+        return fmt.startsWith(sim) ? fmt : `${sim} ${fmt}`;
+    }
+
+    footerBarStyle(align = 'center') {
+        return {
+            flex: 1,
+            width: '100%',
+            height: '100%',
+            paddingVertical: 12,
+            paddingHorizontal: 10,
+            backgroundColor: STheme.color.card,
+            borderTopWidth: 2,
+            borderTopColor: STheme.color.primary || '#1565c0',
+            alignItems: align,
+            justifyContent: 'center',
+        };
+    }
+
     mostrarTabla() {
         return (
-            <SView col={'xs-12'} style={{ width: 950, alignSelf: 'center' }} flex>
+            <SView col={'xs-12'} style={{ width: 930, alignSelf: 'center' }} flex>
 
                 <DinamicTable
                     ref={ref => (this.DinamicTable = ref)}
@@ -171,14 +193,19 @@ export default class TablaTransaccionesProveedor extends Component {
                     selectType="single"
                     keyExtractor={(e) => e?.key}
                 >
-                    <DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}} />
-                    <DinamicTable.Col key="fecha" label="Fecha" width={80} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}} />
+                    <DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
+                        footerComponent={() => <SView style={this.footerBarStyle('center')} />}
+                    />
+                    <DinamicTable.Col key="fecha" label="Fecha" width={80} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
+                        footerComponent={() => <SView style={this.footerBarStyle('center')} />}
+                    />
                     <DinamicTable.Col key="tipo" label="Tipo" width={80} data={(e) => e?.row?.tipo || "-"} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}} customComponent={(e) => {
                         const isSaldoAnterior = e?.row?.tipo === "saldo";
                         return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: isSaldoAnterior ? STheme.color.success + "44" : null, borderWidth: 1, borderColor: isSaldoAnterior ? STheme.color.success : "transparent" }} center >
                             <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
                         </SView>
                     }}
+                        footerComponent={() => <SView style={this.footerBarStyle('center')} />}
                     />
 
                     <DinamicTable.Col key="detalle" label="Detalle" width={340} data={(e) => e?.row?.descripcion || "-"}
@@ -191,36 +218,79 @@ export default class TablaTransaccionesProveedor extends Component {
                         }}
                         cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
                         footerComponent={() => (
-                            <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
-                                <SText bold>Total</SText>
+                            <SView style={this.footerBarStyle('flex-end')}>
+                                <SText bold fontSize={13} color={STheme.color.text}>TOTAL</SText>
                             </SView>
                         )}
                     />
-                    <DinamicTable.Col key="debe" label="Debe" width={100} data={(e) => SMath.formatMoney(e?.row?.debe) ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
-                        format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
+                    <DinamicTable.Col key="debe" label="Debe" width={100} data={(e) => e?.row?.debe ?? 0} cellStyle={(e) => ({ alignItems: "flex-start", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
+                        format={(e) => e.data ? this.formatMonto(e.data) : ""}
                         footerComponent={(e) => {
                             let total = 0;
                             e.dinamicTable.data.map(a => { total += a.debe || 0 });
-                            return <SView ><SText color={STheme.color.lightGray}>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                            return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={13} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
                         }}
                     />
-                    <DinamicTable.Col key="haber" label="Haber" width={100} data={(e) => e?.row?.haber ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
-                        format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
+                    <DinamicTable.Col key="haber" label="Haber" width={100} data={(e) => e?.row?.haber ?? 0} cellStyle={(e) => ({ alignItems: "flex-start", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
+                        format={(e) => e.data ? this.formatMonto(e.data) : ""}
                         footerComponent={(e) => {
                             let total = 0;
                             e.dinamicTable.data.map(a => { total += a.haber || 0 });
-                            return <SView><SText color={STheme.color.lightGray} >{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                            return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={13} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
                         }}
                     />
-                    <DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => SMath.formatMoney(e?.row?.saldo) ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
+                    <DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => e?.row?.saldo ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
                         customComponent={(e) => {
-                            return <SView><SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{`${SMath.formatMoney(e?.data || 0)}`}</SText></SView>
+                            const rows = e?.dinamicTable?.data || [];
+                            const esUltimo = rows.length > 0 && e?.index === rows.length - 1;
+                            const esAmortizacion = Number(e?.row?.haber) > 0;
+                            return <SView style={{ width: '100%' }}>
+                                <SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{this.formatMonto(e?.data)}</SText>
+
+                                {esUltimo && esAmortizacion && (
+                                    <SView
+                                        onPress={() => {
+                                            SPopup.confirm({
+                                                title: 'Anular Amortización',
+                                                message: '¿Estás seguro de anular esta amortización?',
+                                                onPress: () => {
+                                                    SPopup.alert('Trabajando en la función de anulación...');
+                                                },
+                                            });
+                                        }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: -4,
+                                            right: -44,
+                                            width: 34,
+                                            height: 34,
+                                            borderRadius: 17,
+                                            backgroundColor: STheme.color.danger,
+                                            elevation: 4,
+                                            shadowColor: '#000',
+                                            shadowOffset: { width: 0, height: 2 },
+                                            shadowOpacity: 0.3,
+                                            shadowRadius: 4,
+                                        }}
+                                        center
+                                    >
+                                        <SIcon name="Delete" width={16} height={16} fill="#fff" />
+                                    </SView>
+                                )}
+
+                            </SView>
                         }}
-                        format={(e) => `${SMath.formatMoney(e.data || 0)}`}
+                        format={(e) => this.formatMonto(e.data)}
                         footerComponent={(e) => {
                             const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
                             const totalSaldo = lastRow?.saldo || 0;
-                            return <SView style={{ alignItems: "flex-end", paddingRight: 8 }}><SText>{`${SMath.formatMoney(totalSaldo || "0")}`}</SText></SView>
+                            return (<>
+                                <SView style={this.footerBarStyle('flex-end')}>
+                                    <SText bold fontSize={14} color={STheme.color.primary || STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
+                                </SView>
+
+                            </>
+                            );
                         }}
                     />
                 </DinamicTable>
@@ -250,19 +320,39 @@ export default class TablaTransaccionesProveedor extends Component {
                 content: (
                     <SView col="xs-11 md-4"
                         backgroundColor={STheme.color.background}
-                        padding={24}
                         withoutFeedback
-                        style={{ borderRadius: 16, alignItems: "center" }}>
-                        <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
-                        <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {SMath.formatMoney(saldo)}</SText>
-                        <SInput col={"xs-12"} type='money2' placeholder="Ingrese monto" onChangeText={(val) => { monto = parseFloat(val) || 0; }} />
-                        <SHr height={16} />
-                        <SView row col="xs-12" style={{ gap: 12 }}>
-                            <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-compra-completada")}> <SText color={STheme.color.background}>Cancelar</SText> </SView>
-                            <SView flex height={40} borderRadius={8} center
-                                backgroundColor={STheme.color.card}
-                                border={STheme.color.success}
-                                onPress={() => {
+                        style={{ borderRadius: 20, overflow: "hidden", alignItems: "center" }}>
+                        <SView col="xs-12" style={{ backgroundColor: STheme.color.success + "22", paddingVertical: 28, alignItems: "center" }}>
+                            <SView style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: STheme.color.success, alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                                <SIconApp name="pagotarjeta" width={26} height={26} fill="#fff" />
+                            </SView>
+                            <SText bold fontSize={20} center color={STheme.color.text}>Amortizar Deuda</SText>
+                        </SView>
+
+                        <SView col="xs-12" padding={24} style={{ alignItems: "center" }}>
+                            <SView row col="xs-12" style={{ backgroundColor: STheme.color.card, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 20, alignItems: "center", justifyContent: "space-between" }}>
+                                <SText fontSize={13} color={STheme.color.lightGray}>Saldo pendiente</SText>
+                                <SText bold fontSize={16} color={STheme.color.text}>{this.formatMonto(saldo)}</SText>
+                            </SView>
+
+                            <SText fontSize={12} color={STheme.color.lightGray} style={{ alignSelf: "flex-start", marginBottom: 6 }}>Monto a pagar</SText>
+                            <SView row col="xs-12" style={{ height: 46, borderRadius: 10, borderWidth: 1, borderColor: STheme.color.lightGray + "40", backgroundColor: STheme.color.card, alignItems: "center", paddingHorizontal: 12 }}>
+                                <SText fontSize={12} color={STheme.color.lightGray} style={{ marginRight: 6 }}>{simboloBase}</SText>
+                                <SView flex height>
+                                    <SInput2
+                                        type="money"
+                                        style={{ width: "100%", textAlign: "right", fontSize: 14 }}
+                                        placeholder="Ingrese monto"
+                                        onChangeText={(val) => { monto = parseFloat(val) || 0; }}
+                                    />
+                                </SView>
+                            </SView>
+                            <SHr height={20} />
+                            <SView row col="xs-12" style={{ gap: 12 }}>
+                                <SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.card} border={STheme.color.lightGray + "55"} onPress={() => SPopup.close("popup-compra-completada")}> <SText color={STheme.color.text}>Cancelar</SText> </SView>
+                                <SView flex height={44} borderRadius={10} center
+                                    backgroundColor={STheme.color.success}
+                                    onPress={() => {
                                     if (monto <= 0) {
                                         SNotification.send({
                                             title: "Monto inválido",
@@ -313,6 +403,7 @@ export default class TablaTransaccionesProveedor extends Component {
                                 }}>
                                 <SText>Confirmar</SText>
                             </SView>
+                        </SView>
                         </SView>
                     </SView>
                 )
