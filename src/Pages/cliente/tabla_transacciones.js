@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad, SInput } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SIcon, SMath, SNotification, SInput } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
 import MDL from '../../MDL';
 import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 import SIconApp from '../../Assets/SIconApp';
-// import SelectTipoPago from '../caja2/components/SelectTipoPagoVenta';
 import SSocket from 'servisofts-socket';
-import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
 import SelectTipoPagoVenta from '../caja2/components/SelectTipoPagoCompra';
 
@@ -43,12 +41,6 @@ export default class TablaTransacciones extends Component {
             const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, this.key]);
             this.cuotasDetalle = cuotas || [];
             this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
-
-            // 
-            // console.log("%cCUOTAS:", "color: #2ECC40; font-weight: bold;");
-            // console.log(this.cuotasDetalle);
-
-
 
             if (!ventas || ventas.length === 0) {
                 this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
@@ -126,11 +118,6 @@ export default class TablaTransacciones extends Component {
                 ventasEnriquecidas: ventasFiltradas,
                 saldo,
             });
-
-
-            console.clear();
-            console.log(JSON.stringify(ventasFiltradas));
-
             return ventasFiltradas;
         } catch (error) {
             console.error("Error en loadInitialData:", error);
@@ -162,9 +149,7 @@ export default class TablaTransacciones extends Component {
 
     mostrarTabla() {
         return (
-            <SView col={'xs-12'} style={{ width: 950, alignSelf: 'center' }} flex>
-            {/* <SView col={'xs-12'} style={{ width: 1080, alignSelf: 'center' }} flex> */}
-
+            <SView col={'xs-12'} style={{ width: 1010, alignSelf: 'center' }} flex>
                 <DinamicTable
                     ref={ref => (this.DinamicTable = ref)}
                     loadData={this.loadInitialData.bind(this)}
@@ -224,44 +209,59 @@ export default class TablaTransacciones extends Component {
                     />
                     <DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => e?.row?.saldo ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
                         customComponent={(e) => {
-                            return <SView><SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{this.formatMonto(e?.data)}</SText></SView>
+                            const rows = e?.dinamicTable?.data || [];
+                            const esUltimo = rows.length > 0 && e?.index === rows.length - 1;
+                            const esAmortizacion = Number(e?.row?.haber) > 0;
+                            return <SView style={{ width: '100%' }}>
+                                <SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{this.formatMonto(e?.data)}</SText>
+
+                                {esUltimo && esAmortizacion && (
+                                    <SView
+                                        onPress={() => {
+                                            SPopup.confirm({
+                                                title: 'Anular Amortización',
+                                                message: '¿Estás seguro de anular esta amortización?',
+                                                onPress: () => {
+                                                    SPopup.alert('Trabajando en la función de anulación...');
+                                                },
+                                            });
+                                        }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: -4,
+                                            right: -44,
+                                            width: 34,
+                                            height: 34,
+                                            borderRadius: 17,
+                                            backgroundColor: STheme.color.danger,
+                                            elevation: 4,
+                                            shadowColor: '#000',
+                                            shadowOffset: { width: 0, height: 2 },
+                                            shadowOpacity: 0.3,
+                                            shadowRadius: 4,
+                                        }}
+                                        center
+                                    >
+                                        <SIcon name="Girl" width={16} height={16} fill="#fff" />
+                                    </SView>
+                                )}
+
+                            </SView>
                         }}
                         format={(e) => this.formatMonto(e.data)}
                         footerComponent={(e) => {
                             const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
                             const totalSaldo = lastRow?.saldo || 0;
-                            return (
+                            return (<>
                                 <SView style={this.footerBarStyle('flex-end')}>
                                     <SText bold fontSize={14} color={STheme.color.primary || STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
                                 </SView>
+
+                            </>
                             );
                         }}
                     />
-                    {/* <DinamicTable.Col key="acciones" label="" width={130} height={60} data={() => ""}
-                        customComponent={(e) => {
-                            const rows = e?.dinamicTable?.data || [];
-                            const esUltimo = rows.length > 0 && e?.index === rows.length - 1;
-                            const esAmortizacion = Number(e?.row?.haber) > 0;
-                            if (!esUltimo || !esAmortizacion) return null;
-                            return (
-                                <SView
-                                    onPress={() => {
-                                        SPopup.confirm({
-                                            title: 'Anular Amortización',
-                                            message: '¿Estás seguro de anular esta amortización?',
-                                            onPress: () => {
-                                                SPopup.alert('Trabajando en la función de anulación...');
-                                            },
-                                        });
-                                    }}
-                                    style={{ paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6, borderWidth: 1, borderColor: STheme.color.danger }}
-                                    center
-                                >
-                                    <SText color={STheme.color.danger} fontSize={11} bold>Anular amortización</SText>
-                                </SView>
-                            );
-                        }}
-                    /> */}
+
                 </DinamicTable>
             </SView>
         );
