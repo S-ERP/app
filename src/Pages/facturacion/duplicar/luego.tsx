@@ -519,7 +519,7 @@ export default class index extends React.Component {
                 <Label fontSize={11} color={STheme.color.gray}>{"• La factura conservará su número y su identidad dentro del sistema."}</Label>
                 <Label fontSize={11} color={STheme.color.gray}>{"• Verifique la información antes de guardar las modificaciones."}</Label>
             </SView>
-            <SHr h={10} />
+            {/* <SHr h={10} /> */}
         </>
 
             ;
@@ -531,11 +531,11 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage hidden header={header} 
+        return <SPage hidden header={header}  
             // footer={footerAlvaro}
         >
 
-            <SView col={"xs-12 "} row center>
+            <SView col={"xs-12 "} row   border="red" height>
                 <SView col={"xs-12 md-10"} padding={8}   >
                     <SHr h={16} />
 
@@ -575,9 +575,11 @@ export default class index extends React.Component {
 
                     <SHr h={16} />
 
-                    <SView col={"xs-12"}  >
 
-                        <SView style={{ justifyContent: "flex-end", marginBottom:2 }} row>
+                </SView>
+                    <SView col={"xs-12"} backgroundColor="red"  >
+
+                        <SView style={{ justifyContent: "flex-end",  }} row>
 
                             <SButtom
                                 style={{ height: 35, background: STheme.color.danger + "88" }}
@@ -592,8 +594,7 @@ export default class index extends React.Component {
                             </SButtom>
                         </SView>
                     </SView>
-
-                </SView>
+                {/* {footerAlvaro} */}
             </SView>
         </SPage>;
     }

@@ -16,21 +16,21 @@ type DetalleProps = {
 }
 
 const customStyle: any = "facturaDuplicar";
-const errorStyle = { borderWidth: 2, borderColor: STheme.color.danger };
 
 
-const Cell = ({ label = "", flex = 1, children, style = {} }: {
+const Cell = ({ label = "", flex = 1, children, style = {}, error = false }: {
     label?: string,
     flex?: number,
     children?: any,
-    style?: SViewProps["style"]
+    style?: SViewProps["style"],
+    error?: boolean,
 }) => {
     return <SView flex={flex} style={[{
         borderWidth: 0.5,
         padding: 8,
         borderColor: STheme.color.gray,
         overflow: "hidden",
-    }, style]} center>
+    }, style, error ? { borderWidth: 2, borderColor: STheme.color.danger, borderRadius: 4 } : null]} center>
         {children ?? <SText fontSize={10} center>{label}</SText>}
     </SView>
 }
@@ -57,11 +57,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
 
     return <SView col={"xs-12"} row>
 
-        <Cell style={{ padding: 2 }}>
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.codigoProducto}>
             <FiltroSelector
                 ref={(ref) => (state.filtroProductoRef = ref)}
                 label=""
-                error={mostrarErrores && !item.codigoProducto}
                 defaultOption={item.codigoProducto ? String(item.codigoProducto) : "Seleecionar"}
                 skipInitialOnSelect
                 loadData={async () => {
@@ -90,10 +89,9 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell >
+        <Cell error={mostrarErrores && !item.cantidad}>
             <SInput
                 customStyle={customStyle}
-                style={mostrarErrores && !item.cantidad ? errorStyle : undefined}
                 value={item.cantidad ?? ""}
                 onChangeText={e => {
                     item.cantidad = e;
@@ -103,10 +101,9 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell>
+        <Cell error={mostrarErrores && !item.actividadEconomica}>
             <SInput
                 customStyle={customStyle}
-                style={mostrarErrores && !item.actividadEconomica ? errorStyle : undefined}
                 value={item.actividadEconomica ?? ""}
                 onChangeText={e => {
                     item.actividadEconomica = e;
@@ -115,11 +112,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell style={{ padding: 2 }}>
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.unidadMedida}>
             <FiltroSelector
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
                 label=""
-                error={mostrarErrores && !item.unidadMedida}
                 defaultOption={item.unidadMedida ? String(item.unidadMedida) : "Seleecionar"}
                 skipInitialOnSelect
                 loadData={async () => {
@@ -141,12 +137,12 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell flex={3} style={{ padding: 2 }}>
+        <Cell flex={3} style={{ padding: 2 }} error={mostrarErrores && !item.descripcion}>
             <SInput
                 customStyle={customStyle}
                 type="textArea"
                 height={"100%"}
-                style={{ fontSize: 10, ...(mostrarErrores && !item.descripcion ? errorStyle : {}) }}
+                style={{ fontSize: 10 }}
                 value={item.descripcion ?? ""}
                 onChangeText={text => {
                     let value = text.replace(/"/g, "'");
@@ -164,10 +160,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell style={{ padding: 2 }}>
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !((parseFloat(item.precioUnitario ?? "0") || 0) > 0)}>
             <SInput2
                 type="money"
-                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text, ...(mostrarErrores && !((parseFloat(item.precioUnitario ?? "0") || 0) > 0) ? errorStyle : {}) }}
+                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text }}
                 defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.precioUnitario = e;
@@ -177,10 +173,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell style={{ padding: 2 }}>
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.montoDescuento}>
             <SInput2
                 type="money"
-                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text, ...(mostrarErrores && !item.montoDescuento ? errorStyle : {}) }}
+                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text }}
                 defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.montoDescuento = e;
