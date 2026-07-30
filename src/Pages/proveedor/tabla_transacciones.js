@@ -35,30 +35,41 @@ export default class TablaTransaccionesProveedor extends Component {
             const fecha_inicio_total = "2024-01-01";
             const fecha_inicio = this.state.fecha_inicio;
             const fecha_fin = this.state.fecha_fin;
-            console.log("[loadInitialData] this.key (key_proveedor):", this.key);
-            console.log("[loadInitialData] keyEmpresa:", keyEmpresa);
-            console.log("[loadInitialData] fecha_inicio_total:", fecha_inicio_total, "fecha_inicio:", fecha_inicio, "fecha_fin:", fecha_fin);
+            // console.log("[loadInitialData] this.key (key_proveedor):", this.key);
+            // console.log("[loadInitialData] keyEmpresa:", keyEmpresa);
+            // console.log("[loadInitialData] fecha_inicio_total:", fecha_inicio_total, "fecha_inicio:", fecha_inicio, "fecha_fin:", fecha_fin);
             if (!keyEmpresa || !this.key) {
                 console.log("[loadInitialData] ABORTA: falta keyEmpresa o this.key");
                 return;
             }
 
-            console.log("[loadInitialData] llamando execute_function _get_detalles_bycliente4 con params:", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
-            const compras = await MDL.compra_venta.execute_function("_get_detalles_bycliente4", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
-            console.log("[loadInitialData] resultado _get_detalles_bycliente4 (compras):", compras);
+
+            console.clear();
+
+            // console.log("[loadInitialData] llamando execute_function _get_detalles_bycliente4 con params:", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
+            // const compras = await MDL.compra_venta.execute_function("_get_detalles_bycliente4global", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
+            const compras = await MDL.compra_venta.execute_function("_get_detalles_bycliente44", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
+            // console.log("[loadInitialData] resultado _get_detalles_bycliente4 (compras):", compras);
 
             const proveedor = await MDL.crm.cliente.getByKey(this.key);
-            console.log("[loadInitialData] resultado MDL.crm.cliente.getByKey (proveedor):", proveedor);
+            console.clear();
+            // console.log(JSON.stringify(proveedor));
+            // console.log("[loadInitialData] resultado MDL.crm.cliente.getByKey (proveedor):", proveedor);
 
-            console.log("[loadInitialData] llamando execute_function _get_cuotas_pendientes con params:", [keyEmpresa, this.key]);
-            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, this.key]);
-            console.log("[loadInitialData] resultado _get_cuotas_pendientes (cuotas):", cuotas);
+
+            // console.clear();
+            console.log(JSON.stringify(compras));
+
+            // console.log("[loadInitialData] llamando execute_function _get_cuotas_compras con params:", [keyEmpresa, this.key]);
+            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes ", [keyEmpresa, this.key]);
+            // const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_compras ", [keyEmpresa, this.key]);
+            console.log("[loadInitialData] resultado _get_cuotas_compras (cuotas):", cuotas);
             this.cuotasDetalle = cuotas || [];
             this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
             console.log("[loadInitialData] this.keysCuotas:", this.keysCuotas);
 
             if (!compras || compras.length === 0) {
-                console.log("[loadInitialData] SIN COMPRAS: seteando estado vacío y saliendo");
+                // console.log("[loadInitialData] SIN COMPRAS: seteando estado vacío y saliendo");
                 this.setState({ proveedor: proveedor || {}, moneda: null, saldo: 0 });
                 return [];
             }
@@ -69,18 +80,18 @@ export default class TablaTransaccionesProveedor extends Component {
                 MDL.usuario.getByKeys([...new Set(compras.map(v => v?.key_usuario).filter(Boolean))]),
                 MDL.inventario.getAllAlmacen(),
             ]);
-            console.log("[loadInitialData] empresa:", empresa);
-            console.log("[loadInitialData] usuarios:", usuarios);
-            console.log("[loadInitialData] almacenes:", almacenes);
+            // console.log("[loadInitialData] empresa:", empresa);
+            // console.log("[loadInitialData] usuarios:", usuarios);
+            // console.log("[loadInitialData] almacenes:", almacenes);
 
             const sucursalesMap = Object.fromEntries((empresa?.sucursales || []).map(s => [s.key, s]));
             const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
             const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
             const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
-            console.log("[loadInitialData] sucursalesMap:", sucursalesMap);
-            console.log("[loadInitialData] monedasMap:", monedasMap);
-            console.log("[loadInitialData] usuariosMap:", usuariosMap);
-            console.log("[loadInitialData] almacenesMap:", almacenesMap);
+            // console.log("[loadInitialData] sucursalesMap:", sucursalesMap);
+            // console.log("[loadInitialData] monedasMap:", monedasMap);
+            // console.log("[loadInitialData] usuariosMap:", usuariosMap);
+            // console.log("[loadInitialData] almacenesMap:", almacenesMap);
 
             let comprasEnriquecidas = compras.map(v => ({
                 ...v,
@@ -90,10 +101,10 @@ export default class TablaTransaccionesProveedor extends Component {
                 almacen: almacenesMap[v?.key_almacen] || {},
                 proveedor: proveedor || {},
             }));
-            console.log("[loadInitialData] comprasEnriquecidas (antes de saldo):", comprasEnriquecidas);
+            // console.log("[loadInitialData] comprasEnriquecidas (antes de saldo):", comprasEnriquecidas);
 
             const moneda = comprasEnriquecidas[0]?.moneda || null;
-            console.log("[loadInitialData] moneda base tomada de la primera fila:", moneda);
+            // console.log("[loadInitialData] moneda base tomada de la primera fila:", moneda);
             let saldoAcumulado = 0;
             comprasEnriquecidas = comprasEnriquecidas.map((item) => {
                 const debe = item.debe || 0;
@@ -101,7 +112,7 @@ export default class TablaTransaccionesProveedor extends Component {
                 saldoAcumulado += (debe - haber);
                 return { ...item, saldo: saldoAcumulado };
             });
-            console.log("[loadInitialData] comprasEnriquecidas (con saldo acumulado):", comprasEnriquecidas);
+            // console.log("[loadInitialData] comprasEnriquecidas (con saldo acumulado):", comprasEnriquecidas);
 
             let saldoAnterior = 0;
             comprasEnriquecidas.forEach(item => {
@@ -110,13 +121,13 @@ export default class TablaTransaccionesProveedor extends Component {
                     saldoAnterior = item.saldo;
                 }
             });
-            console.log("[loadInitialData] saldoAnterior (previo a fecha_inicio):", saldoAnterior);
+            // console.log("[loadInitialData] saldoAnterior (previo a fecha_inicio):", saldoAnterior);
 
             let comprasFiltradas = comprasEnriquecidas.filter(item => {
                 const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
                 return fechaItem >= fecha_inicio && fechaItem <= fecha_fin;
             });
-            console.log("[loadInitialData] comprasFiltradas (rango de fechas):", comprasFiltradas);
+            // console.log("[loadInitialData] comprasFiltradas (rango de fechas):", comprasFiltradas);
 
             if (saldoAnterior !== 0) {
                 comprasFiltradas = [
@@ -136,12 +147,12 @@ export default class TablaTransaccionesProveedor extends Component {
                     },
                     ...comprasFiltradas
                 ];
-                console.log("[loadInitialData] se insertó fila 'Saldo anterior'. comprasFiltradas final:", comprasFiltradas);
+                // console.log("[loadInitialData] se insertó fila 'Saldo anterior'. comprasFiltradas final:", comprasFiltradas);
             }
 
             const lastRow = comprasFiltradas[comprasFiltradas.length - 1];
             const saldo = lastRow?.saldo || 0;
-            console.log("[loadInitialData] lastRow:", lastRow, "saldo final:", saldo);
+            // console.log("[loadInitialData] lastRow:", lastRow, "saldo final:", saldo);
 
             this.setState({
                 proveedor: proveedor || {},
@@ -149,7 +160,7 @@ export default class TablaTransaccionesProveedor extends Component {
                 comprasEnriquecidas: comprasFiltradas,
                 saldo,
             });
-            console.log("========== [tabla_transacciones proveedor] loadInitialData: FIN OK ==========");
+            // console.log("========== [tabla_transacciones proveedor] loadInitialData: FIN OK ==========");
             return comprasFiltradas;
         } catch (error) {
             console.error("[loadInitialData] ERROR:", error);
@@ -353,57 +364,57 @@ export default class TablaTransaccionesProveedor extends Component {
                                 <SView flex height={44} borderRadius={10} center
                                     backgroundColor={STheme.color.success}
                                     onPress={() => {
-                                    if (monto <= 0) {
-                                        SNotification.send({
-                                            title: "Monto inválido",
-                                            body: "El monto debe ser mayor a 0",
-                                            color: STheme.color.danger,
-                                            time: 4000
-                                        });
-                                        return;
-                                    }
-                                    if (monto > saldo) {
-                                        SNotification.send({
-                                            title: "Monto inválido",
-                                            body: "No puede ser mayor al saldo",
-                                            color: STheme.color.danger,
-                                            time: 4000
-                                        });
-                                        return;
-                                    }
-                                    SelectTipoPagoCompra.openPopup({
-                                        key_punto_venta: activa.key_punto_venta,
-                                        key_moneda: moneda.key,
-                                        montoMaximo: monto,
-                                        monedaSymbol: simboloBase,
-                                        onSelect: (item) => {
-                                            const enviar = { tipos_pago: item, cuotas: cuotas };
-                                            SSocket.sendPromise({
-                                                service: "caja",
-                                                component: "caja_detalle",
-                                                type: "amortizarCuotaCompra",
-                                                data: enviar,
-                                                key_usuario: MDL.usuario.session?.key,
-                                                key_empresa: MDL.empresa.select?.key,
-                                                key_caja: MDL.caja.activa?.key,
-                                            }).then(resp => {
-                                                if (resp?.estado === "exito") {
-                                                    SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                                                    this.DinamicTable.loadData();
-                                                    if (this.props.onSuccess) this.props.onSuccess(resp)
-                                                    SelectTipoPagoCompra.closePopup();
-                                                }
-                                            }).catch(err => {
-                                                SNotification.send({ title: 'Error', body: err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                        if (monto <= 0) {
+                                            SNotification.send({
+                                                title: "Monto inválido",
+                                                body: "El monto debe ser mayor a 0",
+                                                color: STheme.color.danger,
+                                                time: 4000
                                             });
-                                            SelectTipoPagoCompra.closePopup();
-                                            SPopup.close("popup-compra-completada");
+                                            return;
                                         }
-                                    });
-                                }}>
-                                <SText>Confirmar</SText>
+                                        if (monto > saldo) {
+                                            SNotification.send({
+                                                title: "Monto inválido",
+                                                body: "No puede ser mayor al saldo",
+                                                color: STheme.color.danger,
+                                                time: 4000
+                                            });
+                                            return;
+                                        }
+                                        SelectTipoPagoCompra.openPopup({
+                                            key_punto_venta: activa.key_punto_venta,
+                                            key_moneda: moneda.key,
+                                            montoMaximo: monto,
+                                            monedaSymbol: simboloBase,
+                                            onSelect: (item) => {
+                                                const enviar = { tipos_pago: item, cuotas: cuotas };
+                                                SSocket.sendPromise({
+                                                    service: "caja",
+                                                    component: "caja_detalle",
+                                                    type: "amortizarCuotaCompra",
+                                                    data: enviar,
+                                                    key_usuario: MDL.usuario.session?.key,
+                                                    key_empresa: MDL.empresa.select?.key,
+                                                    key_caja: MDL.caja.activa?.key,
+                                                }).then(resp => {
+                                                    if (resp?.estado === "exito") {
+                                                        SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+                                                        this.DinamicTable.loadData();
+                                                        if (this.props.onSuccess) this.props.onSuccess(resp)
+                                                        SelectTipoPagoCompra.closePopup();
+                                                    }
+                                                }).catch(err => {
+                                                    SNotification.send({ title: 'Error', body: err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                                });
+                                                SelectTipoPagoCompra.closePopup();
+                                                SPopup.close("popup-compra-completada");
+                                            }
+                                        });
+                                    }}>
+                                    <SText>Confirmar</SText>
+                                </SView>
                             </SView>
-                        </SView>
                         </SView>
                     </SView>
                 )

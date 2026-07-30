@@ -68,8 +68,9 @@ export default class tabla extends Component {
 			const keysUsuarios = [...new Set(compras.map(v => v.key_usuario).filter(Boolean))];
 			const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
 			const usuariosMap = Array.isArray(usuarios) ? Object.fromEntries(usuarios.map(u => [u.key, u])) : usuarios || {};
-			const [proveedores, resumenCuotasResp] = await Promise.all([
-				MDL.inventario.proveedor.getAllProveedor(),
+			const [  proveedores, resumenCuotasResp] = await Promise.all([
+				
+				MDL.crm.cliente.getAll(),
 				MDL.compra_venta.getCuotasResumenTotal_compras(),
 			]);
 			if (!proveedores) console.warn("No se pudieron obtener proveedores.");
@@ -143,6 +144,9 @@ export default class tabla extends Component {
 					cuotas: { ...cuotas, cantidad_pagada, cantidad_pendiente },
 				};
 			});
+
+			console.clear();
+			console.log(JSON.stringify(comprasEnriquecidas));
 			SNotification.send({
 				key: "load_compras",
 				title: "Datos cargados",
@@ -670,6 +674,7 @@ export default class tabla extends Component {
 				/>
 
 				<DinamicTable.Col key="proveedor" label="Proveedor" width={100} height={60} data={(e) => e.row?.proveedor?.razon_social ?? e.row?.proveedor?.nombres ?? ""}
+				// <DinamicTable.Col key="proveedor" label="Proveedor" width={100} height={60} data={(e) => e.row?.proveedor?.razon_social ?? e.row?.proveedor?.nombres ?? ""}
 					customComponent={e => {
 						const nombre = e.row?.proveedor?.razon_social || e.row?.proveedor?.nombres || "";
 						const avatarSize = e.filterList ? 16 : 21;
@@ -937,7 +942,7 @@ export default class tabla extends Component {
 			</DinamicTable>
 		);
 	}
-
+// sssss
 	render() {
 		return (
 			<SPage title="Tabla Gestión de Compras" disableScroll>
