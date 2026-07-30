@@ -1,12 +1,13 @@
 
 import React from "react";
-import { SHr, SIcon, SInput, SText, STheme, SView, SViewProps } from "servisofts-component";
+import { SHr, SIcon, SInput, SMath, SText, STheme, SView, SViewProps } from "servisofts-component";
 import Label from "./Label";
 import { Factura, FacturaDetalle } from "../../../MDL/factura/type";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import { FlatList } from "react-native";
 import MDL from "../../../MDL";
 import FiltroSelector from "../../productos/modelo/Components/FiltroSelector";
+import SInput2 from "../../../Components/SForm2/SInput2";
 
 type DetalleProps = {
     factura: Factura,
@@ -164,10 +165,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         </Cell>
 
         <Cell>
-            <SInput
-                customStyle={customStyle}
+            <SInput2
+                type="money"
                 style={mostrarErrores && !item.precioUnitario ? errorStyle : undefined}
-                value={item.precioUnitario ?? ""}
+                defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.precioUnitario = e;
                     calcularSubTotal();
@@ -177,10 +178,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         </Cell>
 
         <Cell>
-            <SInput
-                customStyle={customStyle}
+            <SInput2
+                type="money"
                 style={mostrarErrores && !item.montoDescuento ? errorStyle : undefined}
-                value={item.montoDescuento ?? ""}
+                defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.montoDescuento = e;
                     calcularSubTotal();
@@ -190,7 +191,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         </Cell>
 
         <Cell>
-            <Label>{item.subTotal}</Label>
+            <Label>{SMath.formatMoney(parseFloat(item.subTotal ?? "0") || 0)}</Label>
 
             <SView
                 style={{
@@ -282,17 +283,16 @@ export default class Detalle extends React.Component<DetalleProps> {
             <SView col={"xs-12"} row>
                 <SView flex={6} />
                 <Cell flex={2} label="SUBTOTAL" />
-                <Cell label={subTotal.toString()} />
+                <Cell label={SMath.formatMoney(subTotal)} />
             </SView>
 
             <SView col={"xs-12"} row>
                 <SView flex={6} />
                 <Cell flex={2} label="DESCUENTO" />
                 <Cell>
-                    <SInput
-                        customStyle={customStyle}
-                        // style={this.props.mostrarErrores && !this.props.factura.data.descuentoAdicional ? errorStyle : undefined}
-                        value={this.props.factura.data.descuentoAdicional ?? ""}
+                    <SInput2
+                        type="money"
+                        defaultValue={(parseFloat(this.props.factura.data.descuentoAdicional ?? "0") || 0).toFixed(2)}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";
                             this.setState({ ...this.state });
@@ -304,7 +304,7 @@ export default class Detalle extends React.Component<DetalleProps> {
             <SView col={"xs-12"} row>
                 <SView flex={6} />
                 <Cell flex={2} label="TOTAL" />
-                <Cell label={total.toString()} />
+                <Cell label={SMath.formatMoney(total)} />
             </SView>
         </SView>
     }

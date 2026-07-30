@@ -377,23 +377,39 @@ export default class index extends React.Component {
 
         const isEditar = this.tipo === "editar";
         const key = "confirmEnviarFactura";
+        const ambienteColorPopup = this.state.ambiente === 1 ? STheme.color.success : STheme.color.warning;
 
         SPopup.open({
             key: key,
             style: { backgroundColor: STheme.color.text + "AA" },
             content: <SView width={340} style={{ maxWidth: "100%", borderRadius: 14, overflow: "hidden" }} backgroundColor={STheme.color.background} withoutFeedback center>
                 <SView col={"xs-12"} padding={16} center style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray }}>
-                    <SText fontSize={18} bold color={STheme.color.warning}>{isEditar ? "⚠ Confirmar edición" : "⚠ Confirmar emisión"}</SText>
+                    <SText fontSize={18} bold color={STheme.color.warning}>{isEditar ? "⚠ Confirmar edición" : "⚠ Confirmar duplicación"}</SText>
                 </SView>
                 <SView col={"xs-12"} padding={24} center>
                     <SText fontSize={40}>{isEditar ? "📝" : "🧾"}</SText>
+                    {!isEditar && <>
+                        <SHr h={8} />
+                        <SView row center style={{
+                            borderRadius: 999,
+                            backgroundColor: ambienteColorPopup + "22",
+                            borderWidth: 1,
+                            borderColor: ambienteColorPopup,
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                        }}>
+                            <SText fontSize={14}>{this.state.ambiente === 1 ? "✅" : "🛠️"}</SText>
+                            <SView width={6} />
+                            <SText fontSize={11} bold color={ambienteColorPopup}>{this.state.ambiente === 1 ? "AMBIENTE: PRODUCCIÓN" : "AMBIENTE: PRUEBA"}</SText>
+                        </SView>
+                    </>}
                     <SHr h={8} />
-                    <SText fontSize={16} bold center>{isEditar ? "¿Está seguro de editar esta factura?" : "¿Está seguro de emitir esta factura?"}</SText>
+                    <SText fontSize={16} bold center>{isEditar ? "¿Está seguro de editar esta factura?" : "¿Está seguro de duplicar esta factura?"}</SText>
                     <SHr h={8} />
                     <SText fontSize={12} center color={STheme.color.gray}>
                         {isEditar
                             ? "Podrá modificar la información de la factura antes de guardar los cambios."
-                            : "Una vez emitida, la factura será enviada al SIAT y no podrá modificarse."}
+                            : "Se creará y emitirá una nueva factura con los datos copiados. Una vez emitida, será enviada al SIAT y no podrá modificarse."}
                     </SText>
                     <SHr h={8} />
                     <SText fontSize={12} bold center color={STheme.color.danger}>{"Esta acción no se puede deshacer."}</SText>
@@ -407,7 +423,7 @@ export default class index extends React.Component {
                         if (isEditar) this.confirmarEditar();
                         else this.confirmarDuplicar();
                     }} style={{ padding: 12, borderRadius: 8, backgroundColor: STheme.color.success, marginLeft: 6 }}>
-                        <SText center bold color={STheme.color.white}>{isEditar ? "✔ Sí, editar factura" : "✔ Sí, emitir factura"}</SText>
+                        <SText center bold color={STheme.color.white}>{isEditar ? "✔ Sí, editar factura" : "✔ Sí, duplicar factura"}</SText>
                     </SView>
                 </SView>
             </SView>
@@ -510,7 +526,9 @@ export default class index extends React.Component {
                 </SView>
             </SPage>;
         }
-        return <SPage hidden header={header}>
+        return <SPage hidden header={header}
+            footer={footerAlvaro}
+        >
 
             <SView col={"xs-12 "} row center>
                 <SView col={"xs-12 md-8"} padding={8}>
@@ -563,7 +581,7 @@ export default class index extends React.Component {
                                 onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
                             <SView width={5} />
                             <SButtom style={{ height: 35, background: "green" }} type={"outline"} onPress={() => { this.handleEnviar() }}>
-                                <SIcon name={"MessageSend"} fill={STheme.color.text} width={10} />
+                                {/* <SIcon name={"MessageSend"} fill={STheme.color.text} width={10} /> */}
 
                                 {accionText}
                             </SButtom>
