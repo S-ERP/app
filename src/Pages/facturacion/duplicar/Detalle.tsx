@@ -90,7 +90,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell>
+        <Cell >
             <SInput
                 customStyle={customStyle}
                 style={mostrarErrores && !item.cantidad ? errorStyle : undefined}
@@ -167,7 +167,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         <Cell style={{ padding: 2 }}>
             <SInput2
                 type="money"
-                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text, ...(mostrarErrores && !item.precioUnitario ? errorStyle : {}) }}
+                style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text, ...(mostrarErrores && !((parseFloat(item.precioUnitario ?? "0") || 0) > 0) ? errorStyle : {}) }}
                 defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
                 onChangeText={e => {
                     item.precioUnitario = e;
@@ -221,7 +221,7 @@ export default class Detalle extends React.Component<DetalleProps> {
             codigoProductoSin: "",
             actividadEconomica: "",
             cantidad: "1",
-            unidadMedida: "1",
+            unidadMedida: "",
             descripcion: "",
             precioUnitario: "0",
             montoDescuento: "0",
@@ -281,18 +281,18 @@ export default class Detalle extends React.Component<DetalleProps> {
 
         return <SView col={"xs-12"}>
             <SView col={"xs-12"} row>
-                <SView flex={6} />
+                <SView flex={7} />
                 <Cell flex={2} label="SUBTOTAL" />
                 <Cell label={SMath.formatMoney(subTotal)} />
             </SView>
 
             <SView col={"xs-12"} row>
-                <SView flex={6} />
+                <SView flex={7} />
                 <Cell flex={2} label="DESCUENTO" />
                 <Cell style={{ padding: 2 }}>
                     <SInput2
                         type="money"
-                        style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 4, color: STheme.color.text }}
+                        style={{ width: "100%", fontSize: 11, textAlign: "center", color: STheme.color.text }}
                         defaultValue={(parseFloat(this.props.factura.data.descuentoAdicional ?? "0") || 0).toFixed(2)}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";
@@ -303,7 +303,7 @@ export default class Detalle extends React.Component<DetalleProps> {
             </SView>
 
             <SView col={"xs-12"} row>
-                <SView flex={6} />
+                <SView flex={7} />
                 <Cell flex={2} label="TOTAL" />
                 <Cell label={SMath.formatMoney(total)} />
             </SView>

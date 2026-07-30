@@ -285,6 +285,7 @@ export default class index extends React.Component {
             const item = detalle[i];
             const precio = parseFloat(item.precioUnitario);
             if (isNaN(precio) || precio <= 0) {
+                this.setState({ mostrarErrores: true });
                 SNotification.send({
                     title: "Precio inválido",
                     body: `El item ${i + 1} tiene un precio inválido.`,
@@ -527,7 +528,7 @@ export default class index extends React.Component {
             </SPage>;
         }
         return <SPage hidden header={header}
-            footer={footerAlvaro}
+            // footer={footerAlvaro}
         >
 
             <SView col={"xs-12 "} row center>
