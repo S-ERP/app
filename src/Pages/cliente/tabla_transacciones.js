@@ -209,46 +209,7 @@ export default class TablaTransacciones extends Component {
                         }}
                     />
                     <DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => e?.row?.saldo ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
-                        customComponent={(e) => {
-                            const rows = e?.dinamicTable?.data || [];
-                            const esUltimo = rows.length > 0 && e?.index === rows.length - 1;
-                            const esAmortizacion = Number(e?.row?.haber) > 0;
-                            return <SView style={{ width: '100%' }}>
-                                <SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{this.formatMonto(e?.data)}</SText>
 
-                                {esUltimo && esAmortizacion && (
-                                    <SView
-                                        onPress={() => {
-                                            SPopup.confirm({
-                                                title: 'Anular Amortización',
-                                                message: '¿Estás seguro de anular esta amortización?',
-                                                onPress: () => {
-                                                    SPopup.alert('Trabajando en la función de anulación...');
-                                                },
-                                            });
-                                        }}
-                                        style={{
-                                            position: 'absolute',
-                                            top: -4,
-                                            right: -44,
-                                            width: 34,
-                                            height: 34,
-                                            borderRadius: 17,
-                                            backgroundColor: STheme.color.danger,
-                                            elevation: 4,
-                                            shadowColor: '#000',
-                                            shadowOffset: { width: 0, height: 2 },
-                                            shadowOpacity: 0.3,
-                                            shadowRadius: 4,
-                                        }}
-                                        center
-                                    >
-                                        <SIcon name="Girl" width={16} height={16} fill="#fff" />
-                                    </SView>
-                                )}
-
-                            </SView>
-                        }}
                         format={(e) => this.formatMonto(e.data)}
                         footerComponent={(e) => {
                             const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
@@ -259,6 +220,41 @@ export default class TablaTransacciones extends Component {
                                 </SView>
 
                             </>
+                            );
+                        }}
+                    />
+                    <DinamicTable.Col key="accion" label="Accion" width={60} data={() => ""} cellStyle={(e) => ({ alignItems: "center", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
+                        customComponent={(e) => {
+                            const rows = e?.dinamicTable?.data || [];
+                            const esUltimo = rows.length > 0 && e?.index === rows.length - 1;
+                            const esAmortizacion = Number(e?.row?.haber) > 0;
+                            if (!esUltimo || !esAmortizacion) return null;
+                            return (
+                                <SView
+                                    onPress={() => {
+                                        SPopup.confirm({
+                                            title: 'Anular Amortización',
+                                            message: '¿Estás seguro de anular esta amortización?',
+                                            onPress: () => {
+                                                SPopup.alert('Trabajando en la función de anulación...');
+                                            },
+                                        });
+                                    }}
+                                    style={{
+                                        width: 34,
+                                        height: 34,
+                                        borderRadius: 17,
+                                        backgroundColor: STheme.color.danger,
+                                        elevation: 4,
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 4,
+                                    }}
+                                    center
+                                >
+                                    <SIcon name="eliminar" width={16} height={16} fill="#fff" />
+                                </SView>
                             );
                         }}
                     />
@@ -394,10 +390,13 @@ export default class TablaTransacciones extends Component {
         const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}` || '-';
         return (
             <SPage title="Kardex Individual" disableScroll>
-                <SView row col={"xs-12"}>
-                    <SHr /><SHr />
-                    <SView col={"xs-12"} row center style={{ flexWrap: "wrap", gap: 12 }} border={"transparent"} >
-                        <SView col={"xs-12 sm-7.5"} row center>
+
+
+
+                <SView col={'xs-12'} center backgroundColor='transparent' row>
+                    <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} backgroundColor='blue' >
+                        <SHr height={20} />
+                        <SView col={"xs-12"} row center border={"red"} >
                             <FechaFullFilter2
                                 label="fecha"
                                 key_opciones="hoy"
@@ -407,49 +406,61 @@ export default class TablaTransacciones extends Component {
                                     this.DinamicTable.loadData();
                                 }}
                             />
-                            {/* ss */}
                         </SView>
-                    </SView>
-                    <SHr /><SHr height={10} />
-                    <SView col={"xs-12"} row style={{ justifyContent: 'center' }}>
-                        <SText fontSize={15} style={{ textAlign: 'left' }}>CLIENTE: {clienteNombre}</SText>
+                        <SHr height={20} />
+                        <SView col={"xs-12"} row style={{ justifyContent: 'center' }} border={"blue"}>
+                            <SText fontSize={15} style={{ textAlign: 'left' }}>CLIENTE: {clienteNombre}</SText>
+                        </SView>
                     </SView>
                 </SView>
-                <SHr height={10} />
-                {this.mostrarTabla()}
-                <SHr height={20} />
-                <SView col={'xs-12'} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
-                    <SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
-                        <SView
-                            onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
-                            backgroundColor={STheme.color.card}
-                            style={{ paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
-                            center
-                        >
-                            <SView row center>
-                                <SIcon name="File" width={16} height={16} fill={STheme.color.primary || '#1565c0'} />
-                                <SView width={6} />
-                                <SText color={STheme.color.primary || '#1565c0'} bold>DESCARGAR PDF</SText>
-                            </SView>
-                        </SView>
 
-                        {this.state.saldo > 0 && (
+                <SHr height={10} />
+                {/* <SView col={'xs-12'} center backgroundColor='transparent' row > */}
+
+                {/* <SView col={'xs-12'}   backgroundColor='transparent'  > */}
+                {/* <SView col={'xs-12 md-9'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} backgroundColor='transparent' > */}
+                {this.mostrarTabla()}
+                {/* </SView> */}
+                {/* </SView> */}
+
+                <SHr height={20} />
+
+
+                <SView col={'xs-12'} center backgroundColor='transparent' row>
+                    <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} backgroundColor='blue' >
+                        <SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
                             <SView
-                                onPress={() => this.showVentaPopup()}
-                                backgroundColor={STheme.color.lightGray + '66'}
+                                onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
+                                backgroundColor={STheme.color.card}
                                 style={{ paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
                                 center
                             >
                                 <SView row center>
-                                    <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
+                                    <SIcon name="File" width={16} height={16} fill={STheme.color.primary || '#1565c0'} />
                                     <SView width={6} />
-                                    <SText color={STheme.color.text} bold>AMORTIZAR</SText>
+                                    <SText color={STheme.color.primary || '#1565c0'} bold>DESCARGAR PDF</SText>
                                 </SView>
                             </SView>
-                        )}
+
+                            {this.state.saldo > 0 && (
+                                <SView
+                                    onPress={() => this.showVentaPopup()}
+                                    backgroundColor={STheme.color.lightGray + '66'}
+                                    style={{ paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
+                                    center
+                                >
+                                    <SView row center>
+                                        <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
+                                        <SView width={6} />
+                                        <SText color={STheme.color.text} bold>AMORTIZAR</SText>
+                                    </SView>
+                                </SView>
+                            )}
+
+
+                        </SView>
                     </SView>
                 </SView>
-                <SHr height={20} />
             </SPage>
         );
     }
