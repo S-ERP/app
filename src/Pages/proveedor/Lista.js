@@ -316,6 +316,11 @@ export default class Lista extends Component {
 								onPress: () => SNavigation.navigate("/cliente/perfil", { key: e.row.key, tipo: "proveedor" }),
 							},
 							{
+								label: 'Ver trasabilidad proveedor',
+								icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+								onPress: () => SNavigation.navigate("/proveedor/transacciones", { key: e.row.key }),
+							},
+							{
 								icon: <SIconApp name="Edit" />,
 								label: 'Actualizar Proveedor',
 								onPress: () => PopupCrearProveedor.open({
