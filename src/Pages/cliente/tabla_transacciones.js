@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SIcon, SMath, SNotification, SInput } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
 import MDL from '../../MDL';
@@ -8,6 +8,7 @@ import SIconApp from '../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
 import SelectTipoPagoVenta from '../caja2/components/SelectTipoPagoCompra';
+import SInput2 from '../../Components/SForm2/SInput2';
 
 export default class TablaTransacciones extends Component {
     constructor(props) {
@@ -294,8 +295,11 @@ export default class TablaTransacciones extends Component {
                         style={{ borderRadius: 16, alignItems: "center" }}>
                         <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
                         <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {this.formatMonto(saldo)}</SText>
-                        {/* alva */}
-                        <SInput col={"xs-12"} type='money2' placeholder="Ingrese monto" onChangeText={(val) => { monto = parseFloat(val) || 0; }}
+                        <SInput2
+                            type="money"
+                            style={{ width: "100%", height: 44 }}
+                            placeholder="Ingrese monto"
+                            onChangeText={(val) => { monto = parseFloat(val) || 0; }}
                             icon={<SText fontSize={10} padding={2}>{simboloBase}</SText>}
                         />
                         <SHr height={16} />
