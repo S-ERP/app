@@ -30,7 +30,7 @@ export default class ListaClientes extends Component {
 				this.forceUpdate();
 			})
 			.catch(error => {
-				console.error('Error al verificar permisos:', error);
+				console.warn('Error al verificar permisos:', error);
 				SNotification.send({
 					title: 'Error',
 					body: 'No se pudo verificar los permisos.',
@@ -137,7 +137,7 @@ export default class ListaClientes extends Component {
 			}
 			return data;
 		} catch (error) {
-			console.error('Error al cargar los datos iniciales:', error);
+			console.warn('Error al cargar los datos iniciales:', error);
 			SNotification.send({
 				title: 'Error',
 				body: 'No se pudo cargar la lista de clientes.',
@@ -362,7 +362,7 @@ export default class ListaClientes extends Component {
 												this.DinamicTable.loadData();
 											})
 											.catch(err => {
-												console.error('Error al eliminar cliente:', err);
+												console.warn('Error al eliminar cliente:', err);
 												SNotification.send({
 													key: 'eliminar_error',
 													title: 'Error',

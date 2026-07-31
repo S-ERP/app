@@ -38,7 +38,7 @@ export default class tabla extends Component {
 				SNavigation.goBack();
 			}
 		}).catch(e => {
-			console.error(e);
+			console.warn("Error al verificar permisos:", e);
 		});
 	}
 
@@ -69,7 +69,7 @@ export default class tabla extends Component {
 			const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
 			const usuariosMap = Array.isArray(usuarios) ? Object.fromEntries(usuarios.map(u => [u.key, u])) : usuarios || {};
 			const [  proveedores, resumenCuotasResp] = await Promise.all([
-				
+
 				MDL.crm.cliente.getAll(),
 				MDL.compra_venta.getCuotasResumenTotal_compras(),
 			]);
@@ -145,8 +145,6 @@ export default class tabla extends Component {
 				};
 			});
 
-			console.clear();
-			console.log(JSON.stringify(comprasEnriquecidas));
 			SNotification.send({
 				key: "load_compras",
 				title: "Datos cargados",
@@ -156,7 +154,7 @@ export default class tabla extends Component {
 			});
 			return comprasEnriquecidas;
 		} catch (error) {
-			console.error("Error en loadInitialData:", error?.message || error, error);
+			console.warn("Error en loadInitialData:", error);
 			SNotification.send({
 				key: "load_compras",
 				title: "Error al cargar compras",
@@ -337,7 +335,7 @@ export default class tabla extends Component {
 										SNotification.send({ key: notificationKey, title: `${tipoLabel} registrada`, body: isManual ? "Factura manual agregada correctamente." : `NIT: ${nit}, Razón social: ${razon_social}`, color: STheme.color.success, time: 5000, });
 										SPopup.close(`registrar_factura_${tipoFactura}_${compra.key}`);
 									} catch (error) {
-										console.error("Error al editar la compra:", error);
+										console.warn("Error al editar la compra:", error);
 										SNotification.send({ key: notificationKey, title: "Error al registrar factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
 									}
 								}}
@@ -417,7 +415,7 @@ export default class tabla extends Component {
 											await Linking.openURL(row.factura.link_factura);
 											SNotification.send({ key: notificationKey, title: "Archivo abierto", body: "La factura se abrió correctamente.", color: STheme.color.success, time: 3000, });
 										} catch (error) {
-											console.error("Error al abrir PDF:", error);
+											console.warn("Error al abrir PDF:", error);
 											SNotification.send({
 												key: notificationKey,
 												title: "Error al abrir archivo",
@@ -473,7 +471,7 @@ export default class tabla extends Component {
 											SNotification.send({ key: notificationKey, title: "Compra anulada", body: "La compra se anuló correctamente.", color: STheme.color.success, });
 										})
 										.catch((error) => {
-											console.error("Error al anular compra:", error);
+											console.warn("Error al anular compra:", error);
 											SNotification.send({ key: notificationKey, title: "Error Anular Compra", body: error?.error || error?.message || String(error), color: STheme.color.danger, });
 										});
 								},
@@ -501,7 +499,7 @@ export default class tabla extends Component {
 										this.DinamicTable?.loadData();
 										SNotification.send({ key: notificationKey, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
 									} catch (error) {
-										console.error("Error al anular factura:", error);
+										console.warn("Error al anular factura:", error);
 										SNotification.send({ key: notificationKey, title: "Error al anular factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
 									}
 								},
@@ -674,7 +672,6 @@ export default class tabla extends Component {
 				/>
 
 				<DinamicTable.Col key="proveedor" label="Proveedor" width={100} height={60} data={(e) => e.row?.proveedor?.razon_social ?? e.row?.proveedor?.nombres ?? ""}
-				// <DinamicTable.Col key="proveedor" label="Proveedor" width={100} height={60} data={(e) => e.row?.proveedor?.razon_social ?? e.row?.proveedor?.nombres ?? ""}
 					customComponent={e => {
 						const nombre = e.row?.proveedor?.razon_social || e.row?.proveedor?.nombres || "";
 						const avatarSize = e.filterList ? 16 : 21;
@@ -942,7 +939,6 @@ export default class tabla extends Component {
 			</DinamicTable>
 		);
 	}
-// sssss
 	render() {
 		return (
 			<SPage title="Tabla Gestión de Compras" disableScroll>

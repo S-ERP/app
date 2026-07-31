@@ -1,0 +1,417 @@
+:root {
+	--verde: #4CAF50;
+	--verde-oscuro: #388E3C;
+	--verde-claro: #81C784;
+	--gris-oscuro: #1e2126;
+	--gris-medio: #2a2e35;
+	--gris-card: #24272e;
+	--texto-suave: #a0a6b1;
+	--borde-suave: rgba(255, 255, 255, 0.08);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-height: 100vh;
+	font-family: "Segoe UI", Roboto, -apple-system, sans-serif;
+	color: #eef0f3;
+	background: linear-gradient(160deg, #14161a 0%, #1c1f24 45%, #171a1e 100%);
+	position: relative;
+	overflow-x: hidden;
+}
+
+.app-bg {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(circle at 15% 10%, rgba(76, 175, 80, 0.25), transparent 40%),
+		radial-gradient(circle at 85% 90%, rgba(76, 175, 80, 0.15), transparent 45%);
+	filter: blur(60px);
+}
+
+/* ===== HEADER ===== */
+.header-card {
+	background: rgba(36, 39, 46, 0.75);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	border: 1px solid var(--borde-suave);
+	border-radius: 20px;
+	padding: 28px 30px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.header-icon {
+	width: 52px;
+	height: 52px;
+	border-radius: 14px;
+	background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+	color: #fff;
+	box-shadow: 0 6px 16px rgba(76, 175, 80, 0.35);
+	flex-shrink: 0;
+}
+
+.header-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #fff;
+	letter-spacing: 0.2px;
+}
+
+.header-subtitle {
+	font-size: 0.85rem;
+	color: var(--texto-suave);
+}
+
+.header-divider {
+	border-color: var(--borde-suave);
+	margin: 22px 0;
+}
+
+.label-soft {
+	font-size: 0.78rem;
+	color: var(--texto-suave);
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	font-weight: 600;
+}
+
+.input-dark {
+	background-color: var(--gris-medio) !important;
+	border: 1px solid var(--borde-suave) !important;
+	color: #fff !important;
+}
+
+.input-dark:focus {
+	background-color: var(--gris-medio) !important;
+	border-color: var(--verde) !important;
+	box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.25) !important;
+	color: #fff !important;
+}
+
+.input-dark::placeholder {
+	color: #6b7078;
+}
+
+.btn-filtrar {
+	background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+	color: #fff;
+	font-weight: 600;
+	border: none;
+	border-radius: 10px;
+	padding: 9px 16px;
+	transition: all 0.2s ease;
+}
+
+.btn-filtrar:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 18px rgba(76, 175, 80, 0.35);
+	color: #fff;
+}
+
+.proveedor-pill {
+	display: inline-flex;
+	align-items: center;
+	background: rgba(76, 175, 80, 0.12);
+	border: 1px solid rgba(76, 175, 80, 0.35);
+	color: #dff5e0;
+	padding: 10px 18px;
+	border-radius: 30px;
+	font-size: 0.9rem;
+}
+
+/* ===== TABLA ===== */
+.card-modern {
+	background: rgba(36, 39, 46, 0.75);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	border: 1px solid var(--borde-suave);
+	border-radius: 20px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+	overflow: hidden;
+}
+
+.table-kardex {
+	color: #eef0f3;
+	margin-bottom: 0;
+}
+
+.table-kardex thead th {
+	background: rgba(76, 175, 80, 0.1);
+	color: var(--verde-claro);
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-weight: 700;
+	border-bottom: 1px solid var(--borde-suave);
+	padding: 16px 14px;
+	white-space: nowrap;
+}
+
+.table-kardex tbody td {
+	border-color: var(--borde-suave);
+	padding: 14px;
+	font-size: 0.88rem;
+	vertical-align: middle;
+}
+
+.table-kardex tbody tr {
+	transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.table-kardex tbody tr:hover {
+	background-color: rgba(76, 175, 80, 0.08);
+}
+
+.table-kardex tbody tr.fila-saldo-anterior {
+	background-color: rgba(76, 175, 80, 0.06);
+	font-style: italic;
+}
+
+.badge-tipo {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 20px;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	text-transform: uppercase;
+}
+
+.badge-compra {
+	background: rgba(255, 152, 0, 0.15);
+	color: #ffb74d;
+	border: 1px solid rgba(255, 152, 0, 0.35);
+}
+
+.badge-cuota {
+	background: rgba(76, 175, 80, 0.15);
+	color: var(--verde-claro);
+	border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+.badge-saldo {
+	background: rgba(100, 181, 246, 0.15);
+	color: #64b5f6;
+	border: 1px solid rgba(100, 181, 246, 0.35);
+}
+
+.fila-totales td {
+	background: rgba(255, 255, 255, 0.03);
+	border-top: 2px solid var(--verde);
+	font-size: 0.95rem;
+	padding: 16px 14px;
+}
+
+/* ===== BOTON FLOTANTE ===== */
+.btn-amortizar {
+	position: fixed;
+	right: 28px;
+	bottom: 28px;
+	background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+	color: #fff;
+	border: none;
+	border-radius: 50px;
+	padding: 15px 26px;
+	font-weight: 700;
+	letter-spacing: 0.4px;
+	box-shadow: 0 10px 25px rgba(76, 175, 80, 0.45);
+	z-index: 1050;
+	transition: all 0.25s ease;
+}
+
+.btn-amortizar:hover {
+	transform: translateY(-3px) scale(1.03);
+	box-shadow: 0 14px 30px rgba(76, 175, 80, 0.55);
+	color: #fff;
+}
+
+/* ===== MODALES ===== */
+.modal-modern {
+	background: #1c1f24;
+	color: #eef0f3;
+	border: 1px solid var(--borde-suave);
+	border-radius: 20px;
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-modern .modal-title {
+	color: #fff;
+}
+
+.btn-close {
+	filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.saldo-box, .resumen-box {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	background: var(--gris-medio);
+	border: 1px solid var(--borde-suave);
+	border-radius: 14px;
+	padding: 16px 18px;
+}
+
+.saldo-box-monto {
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: var(--verde-claro);
+}
+
+.resumen-box-monto {
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: #fff;
+}
+
+.resumen-box-highlight {
+	border-color: rgba(76, 175, 80, 0.5);
+	background: rgba(76, 175, 80, 0.08);
+}
+
+.btn-cancelar {
+	background: transparent;
+	border: 1px solid var(--borde-suave);
+	color: #dcdfe4;
+	border-radius: 10px;
+	padding: 9px 20px;
+	font-weight: 600;
+	transition: all 0.2s ease;
+}
+
+.btn-cancelar:hover {
+	background: rgba(255, 255, 255, 0.06);
+	color: #fff;
+}
+
+.btn-confirmar {
+	background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+	border: none;
+	color: #fff;
+	border-radius: 10px;
+	padding: 9px 24px;
+	font-weight: 700;
+	transition: all 0.2s ease;
+}
+
+.btn-confirmar:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 18px rgba(76, 175, 80, 0.4);
+	color: #fff;
+}
+
+.btn-confirmar:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* ===== METODOS DE PAGO ===== */
+.grupo-moneda-title {
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--texto-suave);
+	margin: 18px 0 10px;
+}
+
+.grupo-moneda-title:first-child {
+	margin-top: 0;
+}
+
+.metodo-pago-card {
+	background: var(--gris-medio);
+	border: 1.5px solid var(--borde-suave);
+	border-radius: 14px;
+	padding: 14px 16px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	height: 100%;
+}
+
+.metodo-pago-card:hover {
+	transform: translateY(-3px);
+	border-color: rgba(76, 175, 80, 0.5);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.metodo-pago-card.seleccionado {
+	border-color: var(--verde);
+	background: rgba(76, 175, 80, 0.12);
+	box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.metodo-pago-icon {
+	width: 42px;
+	height: 42px;
+	border-radius: 10px;
+	background: rgba(76, 175, 80, 0.15);
+	color: var(--verde-claro);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.2rem;
+	flex-shrink: 0;
+}
+
+.metodo-pago-card.seleccionado .metodo-pago-icon {
+	background: var(--verde);
+	color: #fff;
+}
+
+.metodo-pago-nombre {
+	font-weight: 600;
+	font-size: 0.9rem;
+	color: #fff;
+}
+
+.metodo-pago-moneda {
+	font-size: 0.75rem;
+	color: var(--texto-suave);
+}
+
+.metodo-check {
+	margin-left: auto;
+	color: var(--verde);
+	font-size: 1.1rem;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.metodo-pago-card.seleccionado .metodo-check {
+	opacity: 1;
+}
+
+/* ===== TOAST ===== */
+.toast-exito {
+	background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+	color: #fff;
+	border-radius: 14px;
+	box-shadow: 0 12px 30px rgba(76, 175, 80, 0.4);
+	min-width: 340px;
+}
+
+/* Animaciones */
+@keyframes fadeInRow {
+	from { opacity: 0; transform: translateY(6px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.table-kardex tbody tr {
+	animation: fadeInRow 0.3s ease;
+}
+
+@media (max-width: 576px) {
+	.header-card { padding: 20px; }
+	.btn-amortizar { right: 16px; bottom: 16px; padding: 13px 20px; }
+}
