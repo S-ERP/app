@@ -11,7 +11,7 @@ import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
 import { Linking } from 'react-native';
 import label from '../ajustes/label';
 
-export default class detalle_caja extends Component {
+export default class anuladas_caja extends Component {
 	constructor(props) {
 		super(props);
 		const hoy = new Date();
@@ -161,10 +161,10 @@ export default class detalle_caja extends Component {
 			// const movimientos = await MDL.caja.getAllMovimientosCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
 			let movimientos = [];
 			if (this._periodoListo) {
-				movimientos = await MDL.caja.execute_function("resumen_reporte_ventas2", [MDL.empresa.select.key, fecha_inicio, fecha_fin, null, null, null]);
+				movimientos = await MDL.caja.execute_function("resumen_reporte_anulaciones", [MDL.empresa.select.key, fecha_inicio, fecha_fin, null, null, null]);
 
 			} else {
-				movimientos = await MDL.caja.execute_function("resumen_reporte_ventas2", [MDL.empresa.select.key, "2024-01-01", "2030-09-05", null, null, null]);
+				movimientos = await MDL.caja.execute_function("resumen_reporte_anulaciones", [MDL.empresa.select.key, "2024-01-01", "2030-09-05", null, null, null]);
 
 			}
 
@@ -448,7 +448,7 @@ export default class detalle_caja extends Component {
 				<DinamicTable.Col key="cliente" label="CLIENTE" width={140} height={60} data={(e) => e.row?.cliente?.cliente?.razon_social ?? ""} />
 
 				<DinamicTable.Col key="tipo_pago" label="TIPO PAGO" width={110} height={60} data={(e) => e.row?.tipo_pago ?? ""} />
-				<DinamicTable.Col key="monto" label="MONTO" width={140} height={60} data={(e) => e.row?.monto > 0 ? (e.row?.monto || 0) : 0} 
+				<DinamicTable.Col key="monto" label="MONTO" width={140} height={60} data={(e) => e.row?.monto  ? ((e.row?.monto || 0)) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.monto) || 0), 0);
 						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
@@ -457,7 +457,7 @@ export default class detalle_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					format={e => (e.data ? (e.data) : '')}
 				/>
 				<DinamicTable.Col key="codigo_comprobante" label="COMPROBANTE" width={140} height={60} data={(e) => e.row?.codigo_comprobante ?? ""} />
 				<DinamicTable.Col key="descripcion" label="REFERENCIA" width={140} height={60} data={(e) => e.row?.descripcion ?? ""} />
@@ -535,7 +535,7 @@ export default class detalle_caja extends Component {
 
 	render() {
 		return (
-			<SPage title="Detalle Ventas Caja"  >
+			<SPage title="Ventas anuladas caja"  >
 				<SHr height={8} />
 				<SView width={260} center>
 					<DateTimeBetween

@@ -13,6 +13,7 @@ import recurrente from "./recurrente";
 import misReporteMoviminetos from "./misReporteMoviminetos";
 import ventas_caja from "./ventas_caja";
 import detalle_caja from "./detalle_caja";
+import anuladas_caja from "./anuladas_caja";
 export default SPage.combinePages("caja",
     {
         // "": root,
@@ -27,6 +28,7 @@ export default SPage.combinePages("caja",
         "history2": historyTabla,
         "ventas_caja": ventas_caja,
         "detalle_caja": detalle_caja,
+        "anuladas_caja": anuladas_caja,
         recurrente,
         ...caja,
         ...caja_detalle

@@ -368,7 +368,7 @@ export default class ventas_caja extends Component {
 					dateFormat="yyyy-MM-dd"
 				/>
 				<DinamicTable.Col key="dia" label="DÍA" width={140} height={60} data={(e) => diasEnEspanol[e.row?.dia] ?? ""} />
-				<DinamicTable.Col key="total_efectivo" label="EFECTIVO" width={140} height={60} data={(e) => e.row?.total_efectivo > 0 ? SMath.formatMoney((e.row?.total_efectivo || 0)) : 0}
+				<DinamicTable.Col key="total_efectivo" label="EFECTIVO" width={140} height={60} data={(e) => e.row?.total_efectivo > 0 ? (e.row?.total_efectivo || 0) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.total_efectivo) || 0), 0);
 						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
@@ -376,9 +376,10 @@ export default class ventas_caja extends Component {
 					}}
 					sumExcel
 					excelFormat="#,##0.00"
-					// format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
-				<DinamicTable.Col key="total_qr" label="QR" width={140} height={60} data={(e) => e.row?.total_qr > 0 ? SMath.formatMoney((e.row?.total_qr || 0)) : 0}
+				<DinamicTable.Col key="total_qr" label="QR" width={140} height={60} data={(e) => e.row?.total_qr > 0 ? (e.row?.total_qr || 0) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.total_qr) || 0), 0);
 						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
@@ -386,9 +387,10 @@ export default class ventas_caja extends Component {
 					}}
 					sumExcel
 					excelFormat="#,##0.00"
-				// format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
-				<DinamicTable.Col key="total_credito" label="CRÉDITO" width={140} height={60} data={(e) => e.row?.total_credito ? SMath.formatMoney((e.row?.total_credito || 0)) : 0}
+				<DinamicTable.Col key="total_credito" label="CRÉDITO" width={140} height={60} data={(e) => e.row?.total_credito ? (e.row?.total_credito || 0) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.total_credito) || 0), 0);
 						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
@@ -396,9 +398,10 @@ export default class ventas_caja extends Component {
 					}}
 					sumExcel
 					excelFormat="#,##0.00"
-				// format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
-				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => e.row?.venta_bruta > 0 ? SMath.formatMoney((e.row?.venta_bruta || 0)) : 0}
+				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => e.row?.venta_bruta > 0 ? (e.row?.venta_bruta || 0) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.venta_bruta) || 0), 0);
 						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
@@ -406,18 +409,10 @@ export default class ventas_caja extends Component {
 					}}
 					sumExcel
 					excelFormat="#,##0.00"
-				// format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
-				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => e.row?.anulaciones ? SMath.formatMoney((e.row?.anulaciones || 0)) : 0} sumTotal={rows => {
-					const total = rows.reduce((s, row) => s + ((row.venta_bruta) || 0), 0);
-					// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
-					return total ? ` ${SMath.formatMoney(total)}` : '';
-				}}
-					sumExcel
-					excelFormat="#,##0.00"
-				// format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-				/>
-				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => e.row?.venta_neta > 0 ? SMath.formatMoney((e.row?.venta_neta || 0)) : 0}
+				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => e.row?.anulaciones ? (e.row?.anulaciones || 0) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.venta_bruta) || 0), 0);
 						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
@@ -425,7 +420,19 @@ export default class ventas_caja extends Component {
 					}}
 					sumExcel
 					excelFormat="#,##0.00"
-				// format={e => (e.data ? SMath.formatMoney(e.data) : '')} 
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+				/>
+				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => e.row?.venta_neta > 0 ? (e.row?.venta_neta || 0) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.venta_bruta) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="nro_ventas" label="NRO. VENTAS" width={140} height={60} data={(e) => e.row?.nro_ventas || 0}
 					sumTotal={rows => {
@@ -434,6 +441,7 @@ export default class ventas_caja extends Component {
 						return total ? ` ${(total)}` : '';
 					}}
 					sumExcel
+					dataType="number"
 					format={e => (e.data ? (e.data) : '')}
 				/>
 
@@ -672,13 +680,80 @@ export default class ventas_caja extends Component {
 				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => e.row?.anulaciones > 0 ? SMath.formatMoney((e.row?.anulaciones || 0)) : 0} />
 				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => e.row?.venta_neta > 0 ? SMath.formatMoney((e.row?.venta_neta || 0)) : 0} />
 				<DinamicTable.Col key="nro_ventas" label="NRO. VENTAS" width={140} height={60} data={(e) => e.row?.nro_ventas || 0} /> */}
-				<DinamicTable.Col key="forma_pago" label="FORMA DE PAGO" width={140} height={60} data={(e) => e.row?.forma_pago || 0} />
-				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => SMath.formatMoney(e.row?.venta_bruta || 0)} />
-				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => SMath.formatMoney(e.row?.anulaciones || 0)} />
-				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => SMath.formatMoney(e.row?.venta_neta || 0)} />
-				<DinamicTable.Col key="porcentaje" label="% NETA" width={140} height={60} data={(e) => `${e.row?.porcentaje || 0}%`} />
-				<DinamicTable.Col key="nro_ventas" label="N° VENTAS" width={140} height={60} data={(e) => (e.row?.nro_ventas || 0)} />
-				<DinamicTable.Col key="ticket_promedio" label="TICKET PROMEDIO" width={140} height={60} data={(e) => SMath.formatMoney(e.row?.ticket_promedio || 0)} />
+				<DinamicTable.Col key="forma_pago" label="FORMA DE PAGO" width={140} height={60} data={(e) => e.row?.forma_pago || 0}
+
+				/>
+				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => (e.row?.venta_bruta || 0)}
+					sumTotal={rows => {
+						console.log("AQUI", rows);
+						const total = rows.reduce((s, row) => s + (Number(row.venta_bruta) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+				/>
+				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => (e.row?.anulaciones || 0)}
+					sumTotal={rows => {
+						console.log("AQUI", rows);
+						const total = rows.reduce((s, row) => s + (Number(row.anulaciones) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+				/>
+				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => (e.row?.venta_neta || 0)}
+					sumTotal={rows => {
+						console.log("AQUI", rows);
+						const total = rows.reduce((s, row) => s + (Number(row.venta_neta) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+				/>
+				<DinamicTable.Col key="porcentaje" label="% NETA" width={140} height={60} data={(e) => `${e.row?.porcentaje || 0}%`}
+					// sumTotal={rows => {
+					// 	console.log("AQUI", rows);
+					// 	const total = rows.reduce((s, row) => s + (Number(row.porcentaje) || 0), 0);
+					// 	// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+					// 	return total ? ` ${(total)} %` : '';
+					// }}
+					// sumExcel
+					// excelFormat="#,##0.00"
+					// dataType="number"
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+				/>
+				<DinamicTable.Col key="nro_ventas" label="N° VENTAS" width={140} height={60} data={(e) => (e.row?.nro_ventas || 0)}
+					sumTotal={rows => {
+						console.log("AQUI", rows);
+						const total = rows.reduce((s, row) => s + (Number(row.nro_ventas) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${(total)}` : '';
+					}}
+					sumExcel
+					// excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="ticket_promedio" label="TICKET PROMEDIO" width={140} height={60} data={(e) => (e.row?.ticket_promedio || 0)}
+					sumTotal={rows => {
+						console.log("AQUI", rows);
+						const total = rows.reduce((s, row) => ((s + (Number(row.ticket_promedio)) / rows.length) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${(total)}` : '';
+					}}
+					sumExcel
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
 
 
 
@@ -726,8 +801,8 @@ export default class ventas_caja extends Component {
 							row.venta_bruta += monto;
 							row.venta_neta += monto;
 
-							console.log(venta.tipo )
-							if(venta.tipo === "anulacion_venta") row.anulaciones += monto;
+							console.log(venta.tipo)
+							if (venta.tipo === "anulacion_venta") row.anulaciones += monto;
 
 							switch (venta.key_tipo_pago) {
 
@@ -919,13 +994,83 @@ export default class ventas_caja extends Component {
 				<DinamicTable.Col key="nro_ventas" label="N° VENTAS" width={140} height={60} data={(e) => SMath.formatMoney(e.row?.nro_ventas || 0)} />
 				<DinamicTable.Col key="ticket_promedio" label="TICKET PROMEDIO" width={140} height={60} data={(e) => SMath.formatMoney(e.row?.ticket_promedio || 0)} /> */}
 
-				<DinamicTable.Col key="total_efectivo" label="EFECTIVO" width={140} height={60} data={(e) => e.row?.total_efectivo > 0 ? SMath.formatMoney((e.row?.total_efectivo || 0)) : 0} />
-				<DinamicTable.Col key="total_qr" label="QR" width={140} height={60} data={(e) => e.row?.total_qr > 0 ? SMath.formatMoney((e.row?.total_qr || 0)) : 0} />
-				<DinamicTable.Col key="total_credito" label="CRÉDITO" width={140} height={60} data={(e) => e.row?.total_credito > 0 ? SMath.formatMoney((e.row?.total_credito || 0)) : 0} />
-				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => e.row?.venta_bruta > 0 ? SMath.formatMoney((e.row?.venta_bruta || 0)) : 0} />
-				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => e.row?.anulaciones  ? SMath.formatMoney((e.row?.anulaciones || 0)) : 0} />
-				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => e.row?.venta_neta > 0 ? SMath.formatMoney((e.row?.venta_neta || 0)) : 0} />
-				<DinamicTable.Col key="nro_ventas" label="NRO. VENTAS" width={140} height={60} data={(e) => e.row?.nro_ventas || 0} />
+				<DinamicTable.Col key="total_efectivo" label="EFECTIVO" width={140} height={60} data={(e) => e.row?.total_efectivo > 0 ? ((e.row?.total_efectivo || 0)) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.total_efectivo) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="total_qr" label="QR" width={140} height={60} data={(e) => e.row?.total_qr > 0 ? ((e.row?.total_qr || 0)) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.total_qr) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="total_credito" label="CRÉDITO" width={140} height={60} data={(e) => e.row?.total_credito > 0 ? ((e.row?.total_credito || 0)) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.total_credito) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => e.row?.venta_bruta > 0 ? ((e.row?.venta_bruta || 0)) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.venta_bruta) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => e.row?.anulaciones ? ((e.row?.anulaciones || 0)) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.anulaciones) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => e.row?.venta_neta > 0 ? ((e.row?.venta_neta || 0)) : 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.venta_neta) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${SMath.formatMoney(total)}` : '';
+					}}
+					sumExcel
+					excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
+				<DinamicTable.Col key="nro_ventas" label="NRO. VENTAS" width={140} height={60} data={(e) => e.row?.nro_ventas || 0}
+					sumTotal={rows => {
+						const total = rows.reduce((s, row) => s + ((row.nro_ventas) || 0), 0);
+						// const baseSim = rows[0]?.moneda?.observacion || 'Bs';
+						return total ? ` ${(total)}` : '';
+					}}
+					sumExcel
+					// excelFormat="#,##0.00"
+					dataType="number"
+					format={e => (e.data ? (e.data) : '')}
+				/>
 
 
 

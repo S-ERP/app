@@ -127,6 +127,7 @@ export default class Barra extends React.Component {
                         <Page label={"Movimientos de Cajas"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Informe Caja"} url={"/caja/ventas_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
                         <Page label={"Detalle Caja"} url={"/caja/detalle_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
+                        <Page label={"Ventas anuladas caja"} url={"/caja/anuladas_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
 
 
                         <Page label={"Pagos QR"} url={"/solicitud_qr/table"} permiso="pagosqr" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
