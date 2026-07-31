@@ -43,6 +43,10 @@ export default class TablaTransacciones extends Component {
             this.cuotasDetalle = cuotas || [];
             this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
 
+         console.clear();
+            console.log("alvvvvv");
+            console.log(JSON.stringify(cuotas));
+
             if (!ventas || ventas.length === 0) {
                 this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
                 return [];
@@ -329,7 +333,11 @@ export default class TablaTransacciones extends Component {
             let monto = 0;
             const moneda = this.state.moneda || {};
             const simboloBase = moneda?.observacion || 'BOB';
+
+            // alvaro lo raro
             const cuotas = this.keysCuotas || [];
+
+
             if (!activa) {
                 SNotification.send({
                     title: 'Caja no aperturada',
@@ -376,7 +384,15 @@ export default class TablaTransacciones extends Component {
                                 <SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.card} border={STheme.color.lightGray + "55"} onPress={() => SPopup.close("popup-venta-completada")}> <SText color={STheme.color.text}>Cancelar</SText> </SView>
                                 <SView flex height={44} borderRadius={10} center
                                     backgroundColor={STheme.color.success}
-                                    onPress={() => {
+                                    onPress={async () => {
+
+
+                                        const activa = await MDL.caja.getActiva();
+                                        if (!activa) {
+                                            SNotification.send({ title: 'Caja no aperturada', body: 'Abre la caja primero.', color: STheme.color.danger, time: 5000 });
+                                            return;
+                                        }
+
                                         if (monto <= 0) {
                                             SNotification.send({
                                                 title: "Monto inválido",
@@ -395,13 +411,22 @@ export default class TablaTransacciones extends Component {
                                             });
                                             return;
                                         }
+
+
                                         SelectTipoPagoVenta.openPopup({
                                             key_punto_venta: activa.key_punto_venta,
                                             key_moneda: moneda.key,
                                             montoMaximo: monto,
                                             monedaSymbol: simboloBase,
                                             onSelect: (item) => {
+
+
+                                                // alvaro lo raro
+                                                // alvaro lo raro
+
                                                 const enviar = { tipos_pago: item, cuotas: cuotas };
+
+
                                                 SSocket.sendPromise({
                                                     service: "caja",
                                                     component: "caja_detalle",
@@ -500,7 +525,7 @@ export default class TablaTransacciones extends Component {
                                     <SView row center>
                                         <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
                                         <SView width={6} />
-                                        <SText color={STheme.color.text} bold>AMORTIZAR</SText>
+                                        <SText color={STheme.color.text} bold>AMORTIZARv</SText>
                                     </SView>
                                 </SView>
                             )}

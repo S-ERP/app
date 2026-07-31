@@ -38,8 +38,11 @@ export default class TablaTransaccionesProveedor extends Component {
             const compras = await MDL.compra_venta.execute_function("_get_detalles_bycliente44", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
             const proveedor = await MDL.crm.cliente.getByKey(this.key);
 
-            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, this.key]);
+            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes2", [keyEmpresa, this.key]);
             this.cuotasDetalle = cuotas || [];
+            console.clear();
+            console.log("alvvvvv");
+            console.log(JSON.stringify(cuotas));
             this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
 
             if (!compras || compras.length === 0) {
@@ -118,6 +121,9 @@ export default class TablaTransaccionesProveedor extends Component {
                 moneda,
                 saldo,
             });
+
+            // console.clear();
+            // console.log(JSON.stringify(comprasFiltradas));
             return comprasFiltradas;
         } catch (error) {
             console.error("Error en loadInitialData:", error);
@@ -375,7 +381,16 @@ export default class TablaTransaccionesProveedor extends Component {
                                 <SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.card} border={STheme.color.lightGray + "55"} onPress={() => SPopup.close("popup-compra-completada")}> <SText color={STheme.color.text}>Cancelar</SText> </SView>
                                 <SView flex height={44} borderRadius={10} center
                                     backgroundColor={STheme.color.success}
-                                    onPress={() => {
+                                    onPress={async () => {
+
+
+                                        const activa = await MDL.caja.getActiva();
+                                        if (!activa) {
+                                            SNotification.send({ title: 'Caja no aperturada', body: 'Abre la caja primero.', color: STheme.color.danger, time: 5000 });
+                                            return;
+                                        }
+
+
                                         if (monto <= 0) {
                                             SNotification.send({
                                                 title: "Monto inválido",
@@ -394,6 +409,16 @@ export default class TablaTransaccionesProveedor extends Component {
                                             });
                                             return;
                                         }
+                                        // if (cuotas.length === 0) {
+                                        //     SNotification.send({
+                                        //         title: "Sin cuotas pendientes",
+                                        //         body: "Este proveedor no tiene cuotas registradas para amortizar.",
+                                        //         color: STheme.color.danger,
+                                        //         time: 4000
+                                        //     });
+                                        //     return;
+                                        // }
+
                                         SelectTipoPagoCompra.openPopup({
                                             key_punto_venta: activa.key_punto_venta,
                                             key_moneda: moneda.key,
@@ -487,7 +512,7 @@ export default class TablaTransaccionesProveedor extends Component {
                                     <SView row center>
                                         <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
                                         <SView width={6} />
-                                        <SText color={STheme.color.text} bold>AMORTIZAR</SText>
+                                        <SText color={STheme.color.text} bold>AMORTIZssAR</SText>
                                     </SView>
                                 </SView>
                             )}
