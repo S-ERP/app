@@ -140,7 +140,6 @@ export default class TablaTransacciones extends Component {
             height: '100%',
             paddingVertical: 12,
             paddingHorizontal: 10,
-            // backgroundColor: STheme.color.card,
             borderTopWidth: 2,
             borderTopColor: STheme.color.primary || '#1565c0',
             alignItems: align,
@@ -449,9 +448,6 @@ export default class TablaTransacciones extends Component {
         const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}` || '-';
         return (
             <SPage title="Kardex Individual Cliente" disableScroll>
-
-
-
                 <SView col={'xs-12'} center backgroundColor='transparent' row>
                     <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} >
                         <SHr height={20} />
@@ -477,7 +473,6 @@ export default class TablaTransacciones extends Component {
                 {this.mostrarTabla()}
 
                 <SHr height={20} />
-
 
                 <SView col={'xs-12'} center backgroundColor='transparent' row>
                     <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }} >
@@ -509,8 +504,6 @@ export default class TablaTransacciones extends Component {
                                     </SView>
                                 </SView>
                             )}
-
-
                         </SView>
                     </SView>
                 </SView>
