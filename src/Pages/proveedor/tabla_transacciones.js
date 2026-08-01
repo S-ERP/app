@@ -408,9 +408,14 @@ export default class TablaTransaccionesProveedor extends Component {
 						key="id"
 						language="es"
 						center
-						{...Config.table.applyTheme({ colors: { text: DARK.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border } })}
+						{...Config.table.applyTheme({
+							colors: {
+								text: DARK.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border,
+
+							}
+						})}
 						keyExtractor={(e) => e?.key}
-						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, color: DARK.greenLight, letterSpacing: 0.5 }}
+						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
 						style={{ flex: 1 }}
 						iconSize={22}
 						padding={8}
@@ -477,7 +482,8 @@ export default class TablaTransaccionesProveedor extends Component {
 								const totalSaldo = lastRow?.saldo || 0;
 								return (
 									<SView style={this.footerBarStyle('flex-end')}>
-										<SText bold fontSize={14} color={STheme.color.blue}>{this.formatMonto(totalSaldo)}</SText>
+										<SText bold fontSize={14} color={STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
+										{/* <SText bold fontSize={14} color={DARK.principal}>{this.formatMonto(totalSaldo)}</SText> */}
 									</SView>
 								);
 							}}
@@ -585,9 +591,10 @@ export default class TablaTransaccionesProveedor extends Component {
 				<SView col={'xs-12'} flex style={{ padding: 16 }}>
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12 md-7'} style={{
+						<SView col={'xs-12'} style={{
+							width: 920,
 							backgroundColor: DARK.cardAlt,
-							borderRadius: 20,
+							borderRadius: 16,
 							borderWidth: 1,
 							borderColor: DARK.border,
 							padding: 20,
@@ -654,14 +661,12 @@ export default class TablaTransaccionesProveedor extends Component {
 
 					<SHr height={10} />
 
-
-					<SView col={'xs-12'} center backgroundColor='transparent' row>
+					{/* <SView col={'xs-12'} center backgroundColor='transparent' row>
 						<SView width={80} height={80} backgroundColor={DARK.cardAlt1} />
 						<SView width={80} height={80} backgroundColor={DARK.cardAlt2} />
 						<SView width={80} height={80} backgroundColor={DARK.cardAlt} />
 						<SView width={80} height={80} backgroundColor={DARK.cardAlt3} />
-
-					</SView>
+					</SView> */}
 
 					<SHr height={10} />
 					{this.mostrarTabla()}
@@ -669,8 +674,7 @@ export default class TablaTransaccionesProveedor extends Component {
 					<SHr height={20} />
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12 md-7'}   >
-							{/* <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: DARK.border }} > */}
+						<SView col={'xs-12 md-7'}>
 							<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
 								{this.state.saldo > 0 && (
 									<SView
