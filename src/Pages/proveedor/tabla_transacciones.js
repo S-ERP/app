@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import { Dimensions } from 'react-native';
@@ -27,81 +27,92 @@ const DARK = {
 	orange: '#ffb74d',
 };
 
-function AmortizarModalContent({ saldo, simboloBase, formatMonto, onCancel, onConfirm }) {
-	const [monto, setMonto] = useState(0);
-	const [error, setError] = useState("");
+class AmortizarModalContent extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			monto: 0,
+			error: "",
+		};
+	}
 
-	const handleConfirm = () => {
+	handleConfirm() {
+		const { saldo, onConfirm } = this.props;
+		const { monto } = this.state;
 		if (monto <= 0) {
-			setError("El monto debe ser mayor a 0.");
+			this.setState({ error: "El monto debe ser mayor a 0." });
 			return;
 		}
 		if (monto > saldo) {
-			setError("El monto no puede ser mayor al saldo pendiente.");
+			this.setState({ error: "El monto no puede ser mayor al saldo pendiente." });
 			return;
 		}
-		setError("");
+		this.setState({ error: "" });
 		onConfirm(monto);
-	};
+	}
 
-	return (
-		<SView col="xs-11 md-4"
-			backgroundColor={DARK.card}
-			withoutFeedback
-			style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: DARK.border, shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24 }}>
+	render() {
+		const { saldo, simboloBase, formatMonto, onCancel } = this.props;
+		const { error } = this.state;
+		return (
+			<SView col="xs-11 md-4"
+				backgroundColor={DARK.card}
+				withoutFeedback
+				style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: DARK.border, shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24 }}>
 
-			<SView row col="xs-12" style={{ alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderColor: DARK.border }}>
-				<SView row style={{ alignItems: "center" }}>
-					<SView width={36} height={36} center style={{ borderRadius: 10, backgroundColor: DARK.green + "22" }}>
-						<SIconApp name="pagotarjeta" width={18} height={18} fill={DARK.greenLight} />
+				<SView row col="xs-12" style={{ alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderColor: DARK.border }}>
+					<SView row style={{ alignItems: "center" }}>
+						<SView width={36} height={36} center style={{ borderRadius: 10, backgroundColor: DARK.green + "22" }}>
+							<SIconApp name="pagotarjeta" width={18} height={18} fill={DARK.greenLight} />
+						</SView>
+						<SView width={10} />
+						<SText bold fontSize={17} color={DARK.text}>Amortizar Deuda</SText>
 					</SView>
-					<SView width={10} />
-					<SText bold fontSize={17} color={DARK.text}>Amortizar Deuda</SText>
+					<SView width={28} height={28} center style={{ borderRadius: 14, backgroundColor: DARK.cardSoft }} onPress={onCancel}>
+						<SIconApp name="Close" width={12} height={12} fill={DARK.textMuted} />
+					</SView>
 				</SView>
-				<SView width={28} height={28} center style={{ borderRadius: 14, backgroundColor: DARK.cardSoft }} onPress={onCancel}>
-					<SIconApp name="Close" width={12} height={12} fill={DARK.textMuted} />
+
+				<SView col="xs-12" padding={20}>
+					<SView col="xs-12" style={{ backgroundColor: DARK.cardSoft, borderRadius: 12, borderWidth: 1, borderColor: DARK.border, paddingVertical: 14, paddingHorizontal: 16, marginBottom: 20, alignItems: "center" }}>
+						<SText fontSize={12} color={DARK.textMuted}>Saldo pendiente</SText>
+						<SHr height={4} />
+						<SText bold fontSize={22} color={DARK.greenLight}>{formatMonto(saldo)}</SText>
+					</SView>
+
+					<SText fontSize={12} color={DARK.textMuted} style={{ marginBottom: 6 }}>Monto a pagar</SText>
+					<SView row col="xs-12" style={{ height: 48, borderRadius: 10, borderWidth: 1, borderColor: error ? DARK.danger : DARK.border, backgroundColor: DARK.cardSoft, alignItems: "center", paddingHorizontal: 12 }}>
+						<SText fontSize={13} bold color={DARK.textMuted} style={{ marginRight: 8 }}>{simboloBase}</SText>
+						<SView flex height center>
+							<SInput2
+								type="money"
+								style={{ width: "100%", textAlign: "right", fontSize: 15, color: DARK.text }}
+								placeholder="0.00"
+								onChangeText={(val) => { this.setState({ monto: parseFloat(val) || 0, error: "" }); }}
+							/>
+						</SView>
+					</SView>
+					{!!error && (
+						<SView row style={{ alignItems: "center", marginTop: 8 }}>
+							<SIconApp name="Alert" width={13} height={13} fill={DARK.danger} />
+							<SView width={6} />
+							<SText fontSize={12} color={DARK.danger}>{error}</SText>
+						</SView>
+					)}
+
+					<SHr height={20} />
+					<SView row col="xs-12" style={{ gap: 12 }}>
+						<SView flex height={44} borderRadius={10} center backgroundColor={DARK.cardSoft + "44"} border={DARK.border} onPress={onCancel}>
+							<SText color={DARK.text}>Cancelar</SText>
+						</SView>
+						<SView flex height={44} borderRadius={10} center backgroundColor={DARK.green} onPress={() => this.handleConfirm()}>
+							<SText color={"#fff"}>Confirmar</SText>
+						</SView>
+					</SView>
 				</SView>
 			</SView>
-
-			<SView col="xs-12" padding={20}>
-				<SView col="xs-12" style={{ backgroundColor: DARK.cardSoft, borderRadius: 12, borderWidth: 1, borderColor: DARK.border, paddingVertical: 14, paddingHorizontal: 16, marginBottom: 20, alignItems: "center" }}>
-					<SText fontSize={12} color={DARK.textMuted}>Saldo pendiente</SText>
-					<SHr height={4} />
-					<SText bold fontSize={22} color={DARK.greenLight}>{formatMonto(saldo)}</SText>
-				</SView>
-
-				<SText fontSize={12} color={DARK.textMuted} style={{ marginBottom: 6 }}>Monto a pagar</SText>
-				<SView row col="xs-12" style={{ height: 48, borderRadius: 10, borderWidth: 1, borderColor: error ? DARK.danger : DARK.border, backgroundColor: DARK.cardSoft, alignItems: "center", paddingHorizontal: 12 }}>
-					<SText fontSize={13} bold color={DARK.textMuted} style={{ marginRight: 8 }}>{simboloBase}</SText>
-					<SView flex height center>
-						<SInput2
-							type="money"
-							style={{ width: "100%", textAlign: "right", fontSize: 15, color: DARK.text }}
-							placeholder="0.00"
-							onChangeText={(val) => { setMonto(parseFloat(val) || 0); setError(""); }}
-						/>
-					</SView>
-				</SView>
-				{!!error && (
-					<SView row style={{ alignItems: "center", marginTop: 8 }}>
-						<SIconApp name="Alert" width={13} height={13} fill={DARK.danger} />
-						<SView width={6} />
-						<SText fontSize={12} color={DARK.danger}>{error}</SText>
-					</SView>
-				)}
-
-				<SHr height={20} />
-				<SView row col="xs-12" style={{ gap: 12 }}>
-					<SView flex height={44} borderRadius={10} center backgroundColor={DARK.cardSoft+"44"} border={DARK.border} onPress={onCancel}>
-						<SText color={DARK.text}>Cancelar</SText>
-					</SView>
-					<SView flex height={44} borderRadius={10} center backgroundColor={DARK.green} onPress={handleConfirm}>
-						<SText color={"#fff"}>Confirmar</SText>
-					</SView>
-				</SView>
-			</SView>
-		</SView>
-	);
+		);
+	}
 }
 
 function ConfirmarAnularModalContent({ montoLabel, onCancel, onConfirm }) {
@@ -117,8 +128,13 @@ function ConfirmarAnularModalContent({ montoLabel, onCancel, onConfirm }) {
 					<SView width={8} />
 					<SText bold fontSize={17} color={DARK.danger}>Anular Amortización</SText>
 				</SView>
-				<SView width={28} height={28} center   onPress={onCancel}>
-					<SIconApp name="addFoto" width={20} height={20} fill={DARK.textMuted} />
+				<SView width={28} height={28} center onPress={onCancel} style={{
+					transform: [{ rotate: "45deg" }],
+				}}
+
+				>
+					<SIconApp name="addFoto" width={20} height={20} fill={DARK.textMuted}
+					/>
 				</SView>
 			</SView>
 
@@ -567,7 +583,7 @@ export default class TablaTransaccionesProveedor extends Component {
 		const { proveedor } = this.state;
 		const proveedorNombre = `${proveedor?.nombres || ''} ${proveedor?.apellidos || ''}` || '-';
 		return (
-			<SPage title="Kardex Individual Proveedor" disableScroll>
+			<SPage title="Kardex Proveedor" disableScroll>
 				<SView col={'xs-12'} flex style={{ backgroundColor: DARK.bg, padding: 16 }}>
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
