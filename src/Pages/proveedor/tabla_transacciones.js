@@ -584,7 +584,8 @@ export default class TablaTransaccionesProveedor extends Component {
 		const proveedorNombre = `${proveedor?.nombres || ''} ${proveedor?.apellidos || ''}` || '-';
 		return (
 			<SPage title="Kardex Proveedor" disableScroll>
-				<SView col={'xs-12'} flex style={{ backgroundColor: DARK.bg, padding: 16 }}>
+				<SView col={'xs-12'} flex style={{  padding: 16 }}>
+				{/* <SView col={'xs-12'} flex style={{ backgroundColor: STheme, padding: 16 }}> */}
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
 						<SView col={'xs-12 md-7'} style={{
