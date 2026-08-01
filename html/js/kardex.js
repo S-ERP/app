@@ -310,6 +310,110 @@
 		toast.show();
 	}
 
+	// ===================== EXPORTAR PDF =====================
+	function exportarPDF() {
+		if (!window.jspdf || !window.jspdf.jsPDF) {
+			mostrarToast("No se pudo cargar el generador de PDF. Verifica tu conexión.");
+			return;
+		}
+
+		const { jsPDF } = window.jspdf;
+		const doc = new jsPDF({ unit: "pt", format: "a4" });
+		const pageWidth = doc.internal.pageSize.getWidth();
+		const pageHeight = doc.internal.pageSize.getHeight();
+
+		const verde = [76, 175, 80];
+		const verdeOscuro = [56, 142, 60];
+		const grisTexto = [50, 54, 60];
+		const grisSuave = [120, 125, 132];
+
+		// ---- Banda superior con marca ----
+		doc.setFillColor(...verde);
+		doc.rect(0, 0, pageWidth, 74, "F");
+
+		doc.setTextColor(255, 255, 255);
+		doc.setFont("helvetica", "bold");
+		doc.setFontSize(17);
+		doc.text("KARDEX INDIVIDUAL DEL PROVEEDOR", 40, 32);
+
+		doc.setFont("helvetica", "normal");
+		doc.setFontSize(9.5);
+		doc.text("Trazabilidad financiera de compras, pagos y saldos", 40, 50);
+
+		// ---- Datos de contexto ----
+		const filtroFecha = document.getElementById("inputFecha")?.value;
+		const fechaGeneracion = new Date().toLocaleString("es-BO");
+
+		doc.setTextColor(...grisTexto);
+		doc.setFont("helvetica", "bold");
+		doc.setFontSize(11);
+		doc.text(`Proveedor: ${proveedor.nombre}`, 40, 100);
+
+		doc.setFont("helvetica", "normal");
+		doc.setFontSize(9);
+		doc.setTextColor(...grisSuave);
+		doc.text(`Generado: ${fechaGeneracion}`, pageWidth - 40, 96, { align: "right" });
+		if (filtroFecha) {
+			doc.text(`Filtro de fecha: ${filtroFecha}`, pageWidth - 40, 110, { align: "right" });
+		}
+
+		// ---- Tabla ----
+		let totalDebe = 0;
+		let totalHaber = 0;
+		const body = kardex.map((row, idx) => {
+			totalDebe += row.debe || 0;
+			totalHaber += row.haber || 0;
+			return [
+				idx + 1,
+				row.fecha,
+				row.tipo,
+				row.detalle,
+				row.debe ? formatMoney(row.debe) : "",
+				row.haber ? formatMoney(row.haber) : "",
+				formatMoney(row.saldoCalculado ?? 0),
+			];
+		});
+
+		doc.autoTable({
+			startY: 126,
+			margin: { left: 40, right: 40 },
+			head: [["N°", "Fecha", "Tipo", "Detalle", "Debe", "Haber", "Saldo"]],
+			body,
+			foot: [["", "", "", "TOTALES", formatMoney(totalDebe), formatMoney(totalHaber), formatMoney(saldoActual)]],
+			theme: "grid",
+			styles: { font: "helvetica", fontSize: 9, cellPadding: 7, textColor: grisTexto, lineColor: [225, 228, 232], lineWidth: 0.6 },
+			headStyles: { fillColor: verde, textColor: 255, fontStyle: "bold", halign: "center", fontSize: 9 },
+			footStyles: { fillColor: [232, 245, 233], textColor: verdeOscuro, fontStyle: "bold", lineColor: verde, lineWidth: 0.8 },
+			alternateRowStyles: { fillColor: [247, 249, 248] },
+			columnStyles: {
+				0: { halign: "center", cellWidth: 28 },
+				1: { cellWidth: 62 },
+				2: { halign: "center", cellWidth: 55 },
+				4: { halign: "right", cellWidth: 68 },
+				5: { halign: "right", cellWidth: 68 },
+				6: { halign: "right", cellWidth: 78 },
+			},
+		});
+
+		// ---- Pie de página (numeración total correcta) ----
+		const totalPaginas = doc.internal.getNumberOfPages();
+		for (let i = 1; i <= totalPaginas; i++) {
+			doc.setPage(i);
+			doc.setDrawColor(...verde);
+			doc.setLineWidth(0.8);
+			doc.line(40, pageHeight - 32, pageWidth - 40, pageHeight - 32);
+
+			doc.setFont("helvetica", "normal");
+			doc.setFontSize(8);
+			doc.setTextColor(...grisSuave);
+			doc.text("Sistema ERP · Kardex de Proveedores", 40, pageHeight - 18);
+			doc.text(`Página ${i} de ${totalPaginas}`, pageWidth - 40, pageHeight - 18, { align: "right" });
+		}
+
+		const nombreArchivo = `Kardex_${proveedor.nombre.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0, 10)}.pdf`;
+		doc.save(nombreArchivo);
+	}
+
 	// ===================== EVENTOS =====================
 	document.addEventListener("DOMContentLoaded", () => {
 		document.getElementById("nombreProveedor").textContent = proveedor.nombre;
@@ -322,6 +426,7 @@
 		const btnConfirmarMonto = document.getElementById("btnConfirmarMonto");
 		const btnAceptarPago = document.getElementById("btnAceptarPago");
 		const btnConfirmarAnular = document.getElementById("btnConfirmarAnular");
+		const btnExportarPdf = document.getElementById("btnExportarPdf");
 		const modalAmortizarEl = document.getElementById("modalAmortizar");
 		const modalTipoPagoEl = document.getElementById("modalTipoPago");
 		const modalAmortizar = new bootstrap.Modal(modalAmortizarEl);
@@ -330,6 +435,11 @@
 		// Filtrar (demo: solo re-renderiza la tabla actual)
 		btnFiltrar.addEventListener("click", () => {
 			renderTabla();
+		});
+
+		// Exportar PDF
+		btnExportarPdf.addEventListener("click", () => {
+			exportarPDF();
 		});
 
 		// Delegación de clicks para el botón de menú de cada fila

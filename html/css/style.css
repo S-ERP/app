@@ -115,6 +115,25 @@ body {
 	color: #fff;
 }
 
+.btn-pdf {
+	background: transparent;
+	border: 1.5px solid rgba(229, 57, 53, 0.55);
+	color: #ff6b6b;
+	font-weight: 600;
+	border-radius: 10px;
+	padding: 9px 16px;
+	display: inline-flex;
+	align-items: center;
+	transition: all 0.2s ease;
+}
+
+.btn-pdf:hover {
+	background: rgba(229, 57, 53, 0.12);
+	border-color: #e53935;
+	color: #ff8a80;
+	transform: translateY(-2px);
+}
+
 .proveedor-pill {
 	display: inline-flex;
 	align-items: center;
@@ -155,7 +174,7 @@ body {
 }
 
 .table-kardex tbody td {
-	border-color: var(--borde-suave);
+	border-bottom: 1px solid var(--borde-suave);
 	padding: 14px;
 	font-size: 0.88rem;
 	vertical-align: middle;
