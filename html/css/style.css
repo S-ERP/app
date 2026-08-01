@@ -209,6 +209,117 @@ body {
 	padding: 16px 14px;
 }
 
+/* ===== ACCIONES DE FILA ===== */
+.btn-fila-menu {
+	width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--texto-suave);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.btn-fila-menu:hover {
+	background: rgba(76, 175, 80, 0.12);
+	border-color: rgba(76, 175, 80, 0.35);
+	color: var(--verde-claro);
+}
+
+.row-action-menu {
+	position: fixed;
+	z-index: 1080;
+	min-width: 220px;
+	background: #23262c;
+	border: 1px solid var(--borde-suave);
+	border-radius: 12px;
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+	padding: 6px;
+	animation: fadeInRow 0.15s ease;
+}
+
+.row-action-menu .menu-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	font-size: 0.85rem;
+	color: #e8eaed;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.row-action-menu .menu-item:hover {
+	background: rgba(76, 175, 80, 0.12);
+}
+
+.row-action-menu .menu-item.item-danger {
+	color: #ff8a80;
+}
+
+.row-action-menu .menu-item.item-danger:hover {
+	background: rgba(244, 67, 54, 0.14);
+}
+
+.row-action-menu .menu-item.item-disabled {
+	color: #5c616a;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.row-action-menu .menu-empty {
+	padding: 10px 12px;
+	font-size: 0.8rem;
+	color: #5c616a;
+}
+
+.row-action-menu .menu-divider {
+	height: 1px;
+	background: var(--borde-suave);
+	margin: 4px 2px;
+}
+
+.btn-anular {
+	background: linear-gradient(135deg, #e53935, #b71c1c);
+	border: none;
+	color: #fff;
+	border-radius: 10px;
+	padding: 9px 24px;
+	font-weight: 700;
+	transition: all 0.2s ease;
+}
+
+.btn-anular:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 18px rgba(229, 57, 53, 0.4);
+	color: #fff;
+}
+
+.detalle-compra-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 10px 0;
+	border-bottom: 1px solid var(--borde-suave);
+	font-size: 0.88rem;
+}
+
+.detalle-compra-row:last-child {
+	border-bottom: none;
+}
+
+.detalle-compra-row span:first-child {
+	color: var(--texto-suave);
+}
+
+.detalle-compra-row span:last-child {
+	font-weight: 600;
+	color: #fff;
+}
+
 /* ===== BOTON FLOTANTE ===== */
 .btn-amortizar {
 	position: fixed;

@@ -66,6 +66,7 @@
 						<th class="text-end" style="width:120px;">Debe</th>
 						<th class="text-end" style="width:120px;">Haber</th>
 						<th class="text-end" style="width:130px;">Saldo</th>
+						<th class="text-center" style="width:60px;">Acciones</th>
 					</tr>
 				</thead>
 				<tbody id="kardexBody">
@@ -77,12 +78,18 @@
 						<td class="text-end fw-bold text-danger" id="totalDebe">0.00</td>
 						<td class="text-end fw-bold text-success" id="totalHaber">0.00</td>
 						<td class="text-end fw-bold" id="saldoFinal">0.00</td>
+						<td></td>
 					</tr>
 				</tfoot>
 			</table>
 		</div>
 	</div>
 
+</div>
+
+<!-- MENÚ CONTEXTUAL DE FILA (posicionado por JS) -->
+<div id="rowActionMenu" class="row-action-menu d-none">
+	<!-- items generados por JS -->
 </div>
 
 <!-- BOTÓN FLOTANTE AMORTIZAR -->
@@ -96,7 +103,7 @@
 		<div class="d-flex">
 			<div class="toast-body d-flex align-items-center">
 				<i class="bi bi-check-circle-fill fs-4 me-2 text-white"></i>
-				<span>Se amortizó correctamente la deuda del proveedor.</span>
+				<span id="toastMensaje">Se amortizó correctamente la deuda del proveedor.</span>
 			</div>
 			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
 		</div>
@@ -168,6 +175,43 @@
 			<div class="modal-footer border-0">
 				<button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
 				<button type="button" id="btnAceptarPago" class="btn btn-confirmar" disabled>Aceptar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL 3: DETALLE DE COMPRA -->
+<div class="modal fade" id="modalDetalleCompra" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content modal-modern">
+			<div class="modal-header border-0">
+				<h5 class="modal-title fw-bold"><i class="bi bi-receipt me-2"></i>Detalle de Compra</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body" id="detalleCompraBody">
+				<!-- generado por JS -->
+			</div>
+			<div class="modal-footer border-0">
+				<button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL 4: CONFIRMAR ANULACIÓN -->
+<div class="modal fade" id="modalConfirmarAnular" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content modal-modern">
+			<div class="modal-header border-0">
+				<h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Anular Amortización</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p class="mb-0">¿Estás seguro de anular la última amortización de <strong id="anularMontoLabel">Gs 0.00</strong>? El saldo del proveedor volverá a incrementarse.</p>
+			</div>
+			<div class="modal-footer border-0">
+				<button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
+				<button type="button" id="btnConfirmarAnular" class="btn btn-anular">Sí, anular</button>
 			</div>
 		</div>
 	</div>

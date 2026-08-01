@@ -513,7 +513,7 @@ export default class TablaTransacciones extends Component {
 									<SView row center>
 										<SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
 										<SView width={6} />
-										<SText color={STheme.color.text} bold>AMORTIZARv</SText>
+										<SText color={STheme.color.text} bold>AMORTIZAR</SText>
 									</SView>
 								</SView>
 							)}

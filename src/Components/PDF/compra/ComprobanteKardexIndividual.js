@@ -33,7 +33,7 @@ export default class ComprobanteKardexIndividual extends Component {
 		try {
 			const keyEmpresa = MDL?.empresa?.select?.key;
 			if (!keyEmpresa || !keyCliente) {
-				SPopup.alert("NO SE ENCONTRO LA EMPRESA O EL CLIENTE.");
+				SPopup.alert("NO SE ENCONTRÓ LA EMPRESA O EL CLIENTE.");
 				return;
 			}
 
