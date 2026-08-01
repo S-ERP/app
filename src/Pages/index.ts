@@ -57,6 +57,7 @@ import drive from "./drive";
 import drive2 from "./drive2";
 import qr_reader from "./qr_reader";
 import pasarela from "./pasarela";
+import tipo_cliente from "./tipo_cliente";
 import tableros from "./tableros";
 import cotizacion from "./cotizacion";
 // Three js
@@ -182,6 +183,7 @@ export default SPage.combinePages("/", {
   alvaro,
   ...social_media,
   ...pasarela,
+  ...tipo_cliente,
   ...contactos,
   ...tableros,
   ...asistencia,

@@ -9,6 +9,7 @@ import edit from "./edit";
 import _delete from "./delete";
 import moneda from "./moneda";
 import punto_venta from "./punto_venta";
+// import tipo_cliente from "../tipo_cliente";
 import init from "./init"
 import start from "./start"
 import paso1 from "./paso1"
@@ -47,6 +48,8 @@ export default SPage.combinePages(Parent.name, {
     "delete": _delete,
     ...moneda,
     ...punto_venta,
+    // "tipo_cliente": tipo_cliente,
+  
     "paso1": paso1,
     "paso2": paso2,
     "paso3": paso3,
@@ -57,5 +60,6 @@ export default SPage.combinePages(Parent.name, {
     configIcon,
     "moneda":MonedaTabla,
     "moneda/historial":MonedaTablaHistorial,
-    tipo_pago
+    tipo_pago,
+    // ...tipo_cliente
 })
