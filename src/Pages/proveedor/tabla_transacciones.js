@@ -12,26 +12,18 @@ import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
 import SInput2 from '../../Components/SForm2/SInput2';
 
 const DARK = {
-	// bg: '#14161a',
 	card: '#1c1f24',
-	// card: STheme.color.lightGray,
-	cardAlt: '#24272e',
+	cardAlt: '#1c1f24' + "CC",
+	cardAlt1: '#1c1f24' + "40",
+	cardAlt2: '#1c1f24' + "80",
+	cardAlt3: '#1c1f24' + "FF",
 	cardSoft: '#2a2e35',
-	// border: 'pink',
-	border: STheme.color.gray+"66",
-	// border: '#ffffff17',
+	border: STheme.color.gray + "66",
 	text: STheme.color.text,
 	textMuted: STheme.color.lightGray,
-	// textMuted: '#a0a6b1',
-	// green: 'pink',
 	green: '#1a3c66',
-	greenDark: '#0f2a4a',
 	greenLight: '#4a7ab5',
 	danger: STheme.color.danger,
-	blue: '#64b5f6',
-	// orange: STheme.color.warning,
-	// orange: '#4eee0e',
-	// orange: '#ffb74d',
 };
 
 class AmortizarModalContent extends Component {
@@ -417,9 +409,13 @@ export default class TablaTransaccionesProveedor extends Component {
 						key="id"
 						language="es"
 						center
+						// {...Config.table.applyTheme()}
+
+						// {...Config.table.applyTheme()}
 						{...Config.table.applyTheme({ colors: { text: DARK.text, background: DARK.cardAlt, header: DARK.green, border: DARK.border, card: DARK.border } })}
 						keyExtractor={(e) => e?.key}
-						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, color: DARK.greenLight, letterSpacing: 0.5 }}
+						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
+						// textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, color: DARK.greenLight, letterSpacing: 0.5 }}
 						style={{ flex: 1 }}
 						iconSize={22}
 						padding={8}
@@ -591,8 +587,7 @@ export default class TablaTransaccionesProveedor extends Component {
 		const proveedorNombre = `${proveedor?.nombres || ''} ${proveedor?.apellidos || ''}` || '-';
 		return (
 			<SPage title="Kardex Proveedor" disableScroll>
-				<SView col={'xs-12'} flex style={{  padding: 16 }}>
-				{/* <SView col={'xs-12'} flex style={{ backgroundColor: STheme, padding: 16 }}> */}
+				<SView col={'xs-12'} flex style={{ padding: 16 }}>
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
 						<SView col={'xs-12 md-7'} style={{
@@ -657,6 +652,19 @@ export default class TablaTransaccionesProveedor extends Component {
 								</SView>
 							</SView>
 						</SView>
+					</SView>
+
+
+
+					<SHr height={10} />
+
+
+					<SView col={'xs-12'} center backgroundColor='transparent' row>
+						<SView width={80} height={80} backgroundColor={DARK.cardAlt1} />
+						<SView width={80} height={80} backgroundColor={DARK.cardAlt2} />
+						<SView width={80} height={80} backgroundColor={DARK.cardAlt} />
+						<SView width={80} height={80} backgroundColor={DARK.cardAlt3} />
+
 					</SView>
 
 					<SHr height={10} />
