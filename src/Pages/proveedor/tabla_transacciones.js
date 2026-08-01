@@ -593,6 +593,7 @@ export default class TablaTransaccionesProveedor extends Component {
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
 						<SView col={'xs-12'} style={{
 							width: 920,
+							alignSelf: 'center',
 							backgroundColor: DARK.cardAlt,
 							borderRadius: 16,
 							borderWidth: 1,
@@ -674,7 +675,7 @@ export default class TablaTransaccionesProveedor extends Component {
 					<SHr height={20} />
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12 md-7'}>
+						<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center' }}>
 							<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
 								{this.state.saldo > 0 && (
 									<SView
