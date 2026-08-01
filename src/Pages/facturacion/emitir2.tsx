@@ -60,7 +60,7 @@ export default class emitir2 extends Component {
 
         return <SView center row>
             <SView col={"xs-12 sm-5"} row center>
-                <Label bold >{"Feha"}</Label>
+                <Label bold >{"Fecha"}</Label>
                 <SView width={16} />
                 <SInput flex customStyle={customStyle} />
                 <SHr />
