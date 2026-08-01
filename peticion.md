@@ -12,6 +12,12 @@ Necesito que limpies código de estos archivos:
 - Borrar comentarios.
 - Borrar todos los console.*.
 - Solo deja los console dentro de catch y en el caso de que venga vacía la variable, ten en cuenta que sea console.warning y el mensaje que corresponda.
+- Quitar imports no usados.
+- Quitar variables y código muerto (código que nunca se ejecuta o ya no se usa).
+- Unificar el estilo de comillas (un solo tipo por archivo).
+- Revisar y corregir errores ortográficos en los textos visibles (labels, títulos, mensajes).
+- Verificar que el archivo siga compilando/parseando sin errores después de la limpieza.
+- Si detectas código duplicado con otro archivo del proyecto, avisar antes de tocarlo (no refactorizar solo por tu cuenta).
 - Déjalo limpio como un profesional de 5 años de experiencia.
 ```
 
@@ -21,7 +27,12 @@ Necesito que limpies código de estos archivos:
 - Normalizar la indentación a tabs (una sola tabulación consistente).
 - Borrar todos los `console.log` / `console.clear` / dumps de debug.
 - Dejar solo los `console.*` dentro de `catch` o en checks de "variable vacía", convertidos todos a `console.warn` con mensaje descriptivo.
+- Quitar imports no usados.
+- Quitar variables, funciones y bloques de código muerto (sin referencias en el archivo).
+- Unificar el estilo de comillas (un solo tipo, simples o dobles, por archivo).
 - Revisar errores ortográficos en textos visibles (labels, títulos, mensajes).
+- Validar el archivo con el parser de TypeScript (0 diagnósticos) para confirmar que no se rompió la sintaxis.
+- Si dos archivos comparten lógica casi idéntica (copy-paste), señalarlo como nota aparte en vez de fusionarlos sin permiso.
 
 ## Referencia: última limpieza aplicada
 
