@@ -134,7 +134,7 @@ export default class FechaFullFilter2 extends Component {
     }
 
     render() {
-        const { label } = this.props;
+        const { label, color } = this.props;
         const filtroLabel = label ? label.toUpperCase() : "FILTRO TIEMPO";
 
         return (
@@ -142,10 +142,6 @@ export default class FechaFullFilter2 extends Component {
                 <SView
                     col="xs-12"
                     style={{
-                        // backgroundColor: STheme.color.card,
-                        // borderRadius: 4,
-                        // borderWidth: 1,
-                        // borderColor: STheme.color.lightGray + "40",
                         padding: 8,
                     }}
                 >
@@ -158,13 +154,8 @@ export default class FechaFullFilter2 extends Component {
                                 width={"100%"}
                                 height={30}
                                 style={{
-                                    backgroundColor: STheme.color.card,
-                                    borderRadius: 2,
-                                    borderWidth: 1,
-                                    borderColor: STheme.color.lightGray + "40",
                                     overflow: "hidden",
                                     elevation: 1,
-                                    shadowColor: "#000",
                                     shadowOffset: { width: 0, height: 1 },
                                     shadowOpacity: 0.05,
                                     shadowRadius: 1.5,
@@ -176,7 +167,7 @@ export default class FechaFullFilter2 extends Component {
                                     value={this.state.key_opciones}
                                     defaultValue={this.state.key_opciones}
                                     style={{
-                                        fontSize: 13, color: STheme.color.text, paddingHorizontal: 10, backgroundColor: STheme.color.card,
+                                        fontSize: 13, color: STheme.color.text, paddingHorizontal: 10, backgroundColor: color,
                                         opacity: 0.6,
                                         height: 40,
                                         width: '100%'
@@ -220,19 +211,15 @@ export default class FechaFullFilter2 extends Component {
 
                         <SView
                             style={{
-                                borderRadius: 2,
-                                borderWidth: 1,
-                                borderColor: STheme.color.lightGray + "40",
                                 width: 80,
                                 height: 28,
                                 justifyContent: 'center',
                             }}
-                            card
-                            backgroundColor="#fff"
+                            backgroundColor={color || "#fff"}
                             center
                             onPress={this.callOnChange}
                         >
-                            <SText center>FILTRAR</SText>
+                            <SText center color={color ? "#fff" : undefined}>FILTRAR</SText>
                         </SView>
                     </SView>
                 </SView>
