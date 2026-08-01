@@ -181,10 +181,10 @@ export default class TablaTransaccionesProveedor extends Component {
 			const fecha_inicio = this.state.fecha_inicio;
 			const fecha_fin = this.state.fecha_fin;
 			if (!keyEmpresa || !this.key) return;
-			const compras = await MDL.compra_venta.execute_function("_get_detalles_bycliente44", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
+			const compras = await MDL.compra_venta.execute_function("_get_detalles_proveedor", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
 			const proveedor = await MDL.crm.cliente.getByKey(this.key);
 
-			const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes2", [keyEmpresa, this.key]);
+			const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes_compras", [keyEmpresa, this.key]);
 			this.cuotasDetalle = cuotas || [];
 			this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
 			if (this.cuotasDetalle.length === 0) console.warn("No se encontraron cuotas pendientes para el proveedor.");
@@ -410,7 +410,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						center
 						{...Config.table.applyTheme({
 							colors: {
-								text: DARK.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border,
+								text: STheme.color.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border,
 
 							}
 						})}
