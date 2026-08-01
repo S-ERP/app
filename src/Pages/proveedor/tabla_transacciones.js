@@ -21,7 +21,7 @@ const DARK = {
 	border: STheme.color.gray + "66",
 	text: STheme.color.text,
 	textMuted: STheme.color.lightGray,
-	green: '#1a3c66',
+	principal: '#1a3c66',
 	greenLight: '#4a7ab5',
 	danger: STheme.color.danger,
 };
@@ -61,7 +61,7 @@ class AmortizarModalContent extends Component {
 
 				<SView row col="xs-12" style={{ alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderColor: DARK.border }}>
 					<SView row style={{ alignItems: "center" }}>
-						<SView width={36} height={36} center style={{ borderRadius: 10, backgroundColor: DARK.green + "22" }}>
+						<SView width={36} height={36} center style={{ borderRadius: 10, backgroundColor: DARK.principal + "22" }}>
 							<SIconApp name="pagotarjeta" width={18} height={18} fill={DARK.greenLight} />
 						</SView>
 						<SView width={10} />
@@ -104,7 +104,7 @@ class AmortizarModalContent extends Component {
 						<SView flex height={44} borderRadius={10} center backgroundColor={DARK.cardSoft + "44"} border={DARK.border} onPress={onCancel}>
 							<SText color={DARK.text}>Cancelar</SText>
 						</SView>
-						<SView flex height={44} borderRadius={10} center backgroundColor={DARK.green} onPress={() => this.handleConfirm()}>
+						<SView flex height={44} borderRadius={10} center backgroundColor={DARK.principal} onPress={() => this.handleConfirm()}>
 							<SText color={"#fff"}>Confirmar</SText>
 						</SView>
 					</SView>
@@ -286,10 +286,9 @@ export default class TablaTransaccionesProveedor extends Component {
 			width: '100%',
 			height: '100%',
 			paddingVertical: 12,
-			paddingHorizontal: 10,
 			borderTopWidth: 2,
-			borderTopColor: STheme.color.success,
-			backgroundColor: STheme.color.success + '0D',
+			borderTopColor: DARK.principal,
+			backgroundColor: DARK.principal + '0D',
 			alignItems: align,
 			justifyContent: 'center',
 		};
@@ -409,21 +408,17 @@ export default class TablaTransaccionesProveedor extends Component {
 						key="id"
 						language="es"
 						center
-						// {...Config.table.applyTheme()}
-
-						// {...Config.table.applyTheme()}
-						{...Config.table.applyTheme({ colors: { text: DARK.text, background: DARK.cardAlt, header: DARK.green, border: DARK.border, card: DARK.border } })}
+						{...Config.table.applyTheme({ colors: { text: DARK.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border } })}
 						keyExtractor={(e) => e?.key}
-						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
-						// textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, color: DARK.greenLight, letterSpacing: 0.5 }}
+						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, color: DARK.greenLight, letterSpacing: 0.5 }}
 						style={{ flex: 1 }}
 						iconSize={22}
 						padding={8}
 						adjustColumnWidth
 						listFooterComponent={() => <SHr height={60} />}
 
-						hoverStyle={{ backgroundColor: DARK.green + "1F" }}
-						buildRowStyle={({ item }) => item?.__original?.descripcion === "Saldo anterior" ? { backgroundColor: DARK.green + '14' } : {}}
+						hoverStyle={{ backgroundColor: DARK.principal + "1F" }}
+						buildRowStyle={({ item }) => item?.__original?.descripcion === "Saldo anterior" ? { backgroundColor: DARK.principal + '14' } : {}}
 						renderHeaderActions={() => null}
 						renderNoResults={() => (
 							<SView col={"xs-12"} center padding={24}>
@@ -602,7 +597,7 @@ export default class TablaTransaccionesProveedor extends Component {
 							shadowRadius: 30,
 						}}>
 							<SView row center>
-								<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: DARK.green }}>
+								<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: DARK.principal }}>
 									<SIconApp name="heading" width={24} height={24} fill={"#fff"} />
 								</SView>
 								<SView width={12} />
@@ -620,6 +615,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								<FechaFullFilter2
 									label="fecha"
 									key_opciones="hoy"
+									color={DARK.principal}
 									onChange={e => {
 										this.state.fecha_inicio = e.fecha_inicio;
 										this.state.fecha_fin = e.fecha_fin;
@@ -627,9 +623,9 @@ export default class TablaTransaccionesProveedor extends Component {
 									}}
 								/>
 								<SView row center style={{
-									backgroundColor: DARK.green + '20',
+									backgroundColor: DARK.principal + '20',
 									borderWidth: 1,
-									borderColor: DARK.green + '55',
+									borderColor: DARK.principal + '55',
 									borderRadius: 30,
 									paddingVertical: 8,
 									paddingHorizontal: 16,
@@ -673,17 +669,18 @@ export default class TablaTransaccionesProveedor extends Component {
 					<SHr height={20} />
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: DARK.border }} >
+						<SView col={'xs-12 md-7'}   >
+							{/* <SView col={'xs-12 md-7'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: DARK.border }} > */}
 							<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
 								{this.state.saldo > 0 && (
 									<SView
 										onPress={() => this.showPagoPopup()}
-										backgroundColor={DARK.green}
+										backgroundColor={DARK.principal}
 										style={{
 											paddingVertical: 14,
 											paddingHorizontal: 24,
 											borderRadius: 30,
-											shadowColor: DARK.green,
+											shadowColor: DARK.principal,
 											shadowOffset: { width: 0, height: 8 },
 											shadowOpacity: 0.5,
 											shadowRadius: 16,
