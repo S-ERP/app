@@ -12,19 +12,26 @@ import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
 import SInput2 from '../../Components/SForm2/SInput2';
 
 const DARK = {
-	bg: '#14161a',
+	// bg: '#14161a',
 	card: '#1c1f24',
+	// card: STheme.color.lightGray,
 	cardAlt: '#24272e',
 	cardSoft: '#2a2e35',
-	border: '#ffffff17',
-	text: '#eef0f3',
-	textMuted: '#a0a6b1',
-	green: '#4CAF50',
-	greenDark: '#388E3C',
-	greenLight: '#81C784',
-	danger: '#e53935',
+	// border: 'pink',
+	border: STheme.color.gray+"66",
+	// border: '#ffffff17',
+	text: STheme.color.text,
+	textMuted: STheme.color.lightGray,
+	// textMuted: '#a0a6b1',
+	// green: 'pink',
+	green: '#1a3c66',
+	greenDark: '#0f2a4a',
+	greenLight: '#4a7ab5',
+	danger: STheme.color.danger,
 	blue: '#64b5f6',
-	orange: '#ffb74d',
+	// orange: STheme.color.warning,
+	// orange: '#4eee0e',
+	// orange: '#ffb74d',
 };
 
 class AmortizarModalContent extends Component {
@@ -479,7 +486,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								const totalSaldo = lastRow?.saldo || 0;
 								return (
 									<SView style={this.footerBarStyle('flex-end')}>
-										<SText bold fontSize={14} color={DARK.blue}>{this.formatMonto(totalSaldo)}</SText>
+										<SText bold fontSize={14} color={STheme.color.blue}>{this.formatMonto(totalSaldo)}</SText>
 									</SView>
 								);
 							}}
