@@ -14,9 +14,6 @@ import SInput2 from '../../Components/SForm2/SInput2';
 const DARK = {
 	card: '#1c1f24',
 	cardAlt: '#1c1f24' + "CC",
-	cardAlt1: '#1c1f24' + "40",
-	cardAlt2: '#1c1f24' + "80",
-	cardAlt3: '#1c1f24' + "FF",
 	cardSoft: '#2a2e35',
 	border: STheme.color.gray + "66",
 	text: STheme.color.text,
@@ -25,6 +22,8 @@ const DARK = {
 	greenLight: '#4a7ab5',
 	danger: STheme.color.danger,
 };
+
+const color_principal = '#1a3c66';
 
 class AmortizarModalContent extends Component {
 	constructor(props) {
@@ -410,8 +409,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						center
 						{...Config.table.applyTheme({
 							colors: {
-								text: STheme.color.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border,
-
+								text: DARK.text, background: DARK.cardAlt, header: DARK.principal, border: DARK.border, card: DARK.border,
 							}
 						})}
 						keyExtractor={(e) => e?.key}
@@ -483,7 +481,6 @@ export default class TablaTransaccionesProveedor extends Component {
 								return (
 									<SView style={this.footerBarStyle('flex-end')}>
 										<SText bold fontSize={14} color={STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
-										{/* <SText bold fontSize={14} color={DARK.principal}>{this.formatMonto(totalSaldo)}</SText> */}
 									</SView>
 								);
 							}}
@@ -657,17 +654,6 @@ export default class TablaTransaccionesProveedor extends Component {
 							</SView>
 						</SView>
 					</SView>
-
-
-
-					<SHr height={10} />
-
-					{/* <SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView width={80} height={80} backgroundColor={DARK.cardAlt1} />
-						<SView width={80} height={80} backgroundColor={DARK.cardAlt2} />
-						<SView width={80} height={80} backgroundColor={DARK.cardAlt} />
-						<SView width={80} height={80} backgroundColor={DARK.cardAlt3} />
-					</SView> */}
 
 					<SHr height={10} />
 					{this.mostrarTabla()}

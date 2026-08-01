@@ -14,9 +14,6 @@ import SInput2 from '../../Components/SForm2/SInput2';
 const DARK = {
 	card: '#1c1f24',
 	cardAlt: '#1c1f24' + "CC",
-	cardAlt1: '#1c1f24' + "40",
-	cardAlt2: '#1c1f24' + "80",
-	cardAlt3: '#1c1f24' + "FF",
 	cardSoft: '#2a2e35',
 	border: STheme.color.gray + "66",
 	text: STheme.color.text,
