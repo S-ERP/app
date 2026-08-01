@@ -330,10 +330,31 @@ import transferir, { ReactComponent as transferirW } from "./svg/transferir.svg"
 
 
 
+import anular, { ReactComponent as anularW } from "./svg/anular.svg";
+import heading, { ReactComponent as headingW } from "./svg/heading.svg";
+import pdf, { ReactComponent as pdfW } from "./svg/pdf.svg";
+import personBadge, { ReactComponent as personBadgeW } from "./svg/personBadge.svg";
+import receipt, { ReactComponent as receiptW } from "./svg/receipt.svg";
+import threeDotsVertical, { ReactComponent as threeDotsVerticalW } from "./svg/threeDotsVertical.svg";
+
+
+
 
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
+
+
+  anular: { Native: anular, Web: anularW },
+
+  heading: { Native: heading, Web: headingW },
+  pdf: { Native: pdf, Web: pdfW },
+  personBadge: { Native: personBadge, Web: personBadgeW },
+  receipt: { Native: receipt, Web: receiptW },
+  threeDotsVertical: { Native: threeDotsVertical, Web: threeDotsVerticalW },
+
+
+
   pregunta1: { Native: pregunta1, Web: pregunta1W },
   logoCompleto: { Native: logoCompleto, Web: logoCompletoW },
   profile2: { Native: profile2, Web: profile2W },

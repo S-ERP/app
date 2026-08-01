@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import { Dimensions } from 'react-native';
@@ -202,12 +202,12 @@ export default class TablaTransaccionesProveedor extends Component {
 				items: [
 					row?.key_compra_venta && {
 						label: "Ver detalle compra",
-						icon: "compraCarro",
+						icon: "receipt",
 						onPress: () => { SNavigation.navigate("/venta/profile2", { pk: row.key_compra_venta }); },
 					},
 					keyProveedor && {
 						label: "Ver proveedor",
-						icon: "profile2",
+						icon: "personBadge",
 						onPress: () => { SNavigation.navigate("/cliente/perfil", { key: keyProveedor, tipo: "proveedor" }); },
 					},
 				].filter(Boolean),
@@ -217,7 +217,7 @@ export default class TablaTransaccionesProveedor extends Component {
 				items: [
 					this.esAmortizacionAnulable(row, dinamicTable) && {
 						label: "Anular Amortización",
-						icon: "eliminar",
+						icon: "anular",
 						iconProps: { fill: STheme.color.danger, stroke: STheme.color.danger },
 						onPress: () => {
 							SPopup.confirm({
@@ -249,21 +249,24 @@ export default class TablaTransaccionesProveedor extends Component {
 
 	mostrarTabla() {
 		return (
-			<SView col={'xs-12'} center backgroundColor='transparent' row flex>
-				<SView col={'xs-12 md-7'} style={{
+			<SView col={'xs-12'} flex border="blue" >
+				<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center' }} flex border="pink" >
+
+					{/* <SView col={'xs-12 md-7'} style={{
 					backgroundColor: STheme.color.card,
 					borderRadius: 20,
 					borderWidth: 1,
 					borderColor: STheme.color.lightGray + '30',
 					overflow: 'hidden',
-				}} flex>
+				}} flex> */}
 					<DinamicTable
 						ref={ref => (this.DinamicTable = ref)}
 						loadData={this.loadInitialData.bind(this)}
 						key="id"
 						language="es"
 						center
-						{...Config.table.applyTheme({ colors: { header: STheme.color.success + '1A' } })}
+						{...Config.table.applyTheme()}
+						// {...Config.table.applyTheme({ colors: { header: STheme.color.success + '1A' } })}
 						keyExtractor={(e) => e?.key}
 						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, color: STheme.color.success, letterSpacing: 0.5 }}
 						style={{ flex: 1 }}
@@ -337,7 +340,8 @@ export default class TablaTransaccionesProveedor extends Component {
 								);
 							}}
 						/>
-						<DinamicTable.Col key="acciones" label="Acciones" width={60} data={() => ""} cellStyle={{ alignItems: "center" }}
+						<DinamicTable.Col key="acciones" label="" width={40} data={() => ""} cellStyle={{ alignItems: "center" }}
+							// <DinamicTable.Col key="acciones" label="Acciones" width={60} data={() => ""} cellStyle={{ alignItems: "center" }}
 							customComponent={(e) => (
 								<SView
 									onPress={(evt) => this.openRowMenu(evt, e.row, e.dinamicTable)}
@@ -346,7 +350,7 @@ export default class TablaTransaccionesProveedor extends Component {
 									center
 									style={{ borderRadius: 8 }}
 								>
-									<SIconApp name="DotsVertical" width={18} height={18} fill={STheme.color.lightGray} />
+									<SIconApp name="threeDotsVertical" width={18} height={18} fill={STheme.color.lightGray} />
 								</SView>
 							)}
 							footerComponent={() => <SView style={this.footerBarStyle('center')} />}
@@ -455,7 +459,7 @@ export default class TablaTransaccionesProveedor extends Component {
 													key_caja: MDL.caja.activa?.key,
 												}).then(resp => {
 													if (resp?.estado === "exito") {
-														SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+														SNotification.send({ title: "Éxito", body: "Se amortizó correctamente la deuda del proveedor.", color: STheme.color.success, time: 3000 });
 														this.DinamicTable.loadData();
 														if (this.props.onSuccess) this.props.onSuccess(resp)
 														SelectTipoPagoCompra.closePopup();
@@ -502,7 +506,7 @@ export default class TablaTransaccionesProveedor extends Component {
 					}}>
 						<SView row center>
 							<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: STheme.color.success }}>
-								<SIconApp name="compraCarro" width={24} height={24} fill={STheme.color.white} />
+								<SIconApp name="heading" width={24} height={24} fill={STheme.color.white} />
 							</SView>
 							<SView width={12} />
 							<SView flex>
@@ -533,7 +537,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								paddingVertical: 8,
 								paddingHorizontal: 16,
 							}}>
-								<SIconApp name="profile2" width={14} height={14} fill={STheme.color.success} />
+								<SIconApp name="personBadge" width={14} height={14} fill={STheme.color.success} />
 								<SView width={8} />
 								<SText fontSize={13} color={STheme.color.text}>Proveedor: <SText bold>{proveedorNombre}</SText></SText>
 							</SView>
@@ -544,7 +548,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								center
 							>
 								<SView row center>
-									<SIconApp name="iconPdf" width={14} height={14} fill={STheme.color.primary || '#1565c0'} />
+									<SIconApp name="pdf" width={14} height={14} fill={STheme.color.primary || '#1565c0'} />
 									<SView width={8} />
 									<SText fontSize={13} color={STheme.color.primary || '#1565c0'} bold>DESCARGAR PDF</SText>
 								</SView>
