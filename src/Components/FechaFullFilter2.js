@@ -167,7 +167,8 @@ export default class FechaFullFilter2 extends Component {
                                     value={this.state.key_opciones}
                                     defaultValue={this.state.key_opciones}
                                     style={{
-                                        fontSize: 13, color: STheme.color.text, paddingHorizontal: 10, backgroundColor: color,
+                                        fontSize: 13, color: STheme.color.text, paddingHorizontal: 10,
+                                         backgroundColor: color,
                                         opacity: 0.6,
                                         height: 40,
                                         width: '100%'
@@ -215,11 +216,11 @@ export default class FechaFullFilter2 extends Component {
                                 height: 28,
                                 justifyContent: 'center',
                             }}
-                            backgroundColor={color || "#fff"}
+                            backgroundColor={color || STheme.color.card}
                             center
                             onPress={this.callOnChange}
                         >
-                            <SText center color={color ? "#fff" : undefined}>FILTRAR</SText>
+                            <SText center color={color ? STheme.color.text : undefined}>FILTRAR</SText>
                         </SView>
                     </SView>
                 </SView>
