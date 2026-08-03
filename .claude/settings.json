@@ -11,7 +11,11 @@
       "Bash(node -e \"require\\('@babel/core'\\)\")",
       "Bash(npx --no-install babel src/Pages/proveedor/tabla_transacciones.js --presets @babel/preset-react)",
       "Bash(npx --no-install babel src/Pages/cliente/tabla_transacciones.js --presets @babel/preset-react)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(curl -sk -o /dev/null -w \"HTTP %{http_code}\\\\n\" --max-time 8 https://spdf.servisofts.com/http/api)",
+      "Bash(curl -sk -o /dev/null -w \"HTTP %{http_code}\\\\n\" --max-time 8 https://spdf.servisofts.com)",
+      "Bash(curl -sk -v --max-time 10 -X POST -H \"Content-Type: application/json\" -d '{\"component\":\"pdf\",\"type\":\"registro\",\"data\":{}}' https://spdf.servisofts.com/http/api)",
+      "Bash(curl -sk -v --max-time 10 -X OPTIONS -H \"Origin: http://localhost:3000\" -H \"Access-Control-Request-Method: POST\" -H \"Access-Control-Request-Headers: content-type\" https://spdf.servisofts.com/http/api)"
     ],
     "additionalDirectories": [
       "/Users/rickypazd/Documents/GitHub/servisofts-table/src/DinamicTable",
