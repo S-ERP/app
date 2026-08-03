@@ -22,14 +22,6 @@ const formatFechaES = (fecha) => {
 	if (!fecha) return "";
 	return new SDate(fecha).toString("dd/MM/yyyy");
 };
-const tableCols = {
-	fecha: 60,
-	tipo: 40,
-	detalle: 238,
-	debe: 60,
-	haber: 60,
-	saldo: 60,
-};
 
 export default class ComprobanteKardexIndividual extends Component {
 	static async imprimir({ cliente, moneda, detalle, fecha_inicio, fecha_fin, tipo }) {
@@ -86,8 +78,8 @@ export default class ComprobanteKardexIndividual extends Component {
 				<SPDF.View style={{ flex: 3, alignItems: "center" }}>
 					<SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 100, height: 50 }} />
 					<SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>EMPRESA: {toUpper(data?.empresa?.razon_social, 'MI EMPRESA')}</SPDF.Text>
-					<SPDF.Text style={{ ...textStyle }}>SUCURSAL: {toUpper(data?.sucursal?.descripcion, 'MI SUCURSAL')}</SPDF.Text>
-					<SPDF.Text style={{ ...textStyle }}>TELEFONO: {toUpper(data?.sucursal?.telefono, 'TEL: (123) 00000000')}</SPDF.Text>
+					<SPDF.Text style={{ ...textStyle, color: colorTextMuted }}>SUCURSAL: {toUpper(data?.sucursal?.descripcion, 'MI SUCURSAL')}</SPDF.Text>
+					<SPDF.Text style={{ ...textStyle, color: colorTextMuted }}>TELEFONO: {toUpper(data?.sucursal?.telefono, 'TEL: (123) 00000000')}</SPDF.Text>
 				</SPDF.View>
 				<SPDF.View style={{ flex: 2 }} />
 				<SPDF.View style={{ flex: 3, height: "100%" }}>
@@ -97,9 +89,9 @@ export default class ComprobanteKardexIndividual extends Component {
 						<SPDF.Text style={{ ...textStyle, width: 90 }}>{toUpper(data?.empresa?.nit, 'S/N')}</SPDF.Text>
 					</SPDF.View>
 					<SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-						<SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"ORDEN NRO."}</SPDF.Text>
+						<SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{data?.tipo === "compra" ? "NIT PROVEEDOR" : "NIT CLIENTE"}</SPDF.Text>
 						<SPDF.View style={{ flex: 1 }} />
-						<SPDF.Text style={{ ...textStyle, width: 90 }}>{toUpper(data?.numero_recibo, '001-001-000001')}</SPDF.Text>
+						<SPDF.Text style={{ ...textStyle, width: 90 }}>{toUpper(data?.cliente?.nit, 'S/N')}</SPDF.Text>
 					</SPDF.View>
 				</SPDF.View>
 			</SPDF.View>
@@ -112,28 +104,28 @@ export default class ComprobanteKardexIndividual extends Component {
 		return (
 			<SPDF.View style={{ width: "100%", alignItems: "center" }}>
 				<SPDF.Text style={{ ...headerStyle }}>KARDEX INDIVIDUAL</SPDF.Text>
-				<SPDF.Text style={{ ...textStyle, fontSize: 9 }}>DEL {fechaInicio} AL {fechaFin}</SPDF.Text>
-				<SPDF.Text style={{ ...textStyle, fontSize: 9 }}>EXPRESADO EN {toUpper(data?.moneda?.descripcion, 'BS.')}</SPDF.Text>
+				<SPDF.Text style={{ ...textStyle, fontSize: 9, color: colorTextMuted }}>DEL {fechaInicio} AL {fechaFin}</SPDF.Text>
+				<SPDF.Text style={{ ...textStyle, fontSize: 9, color: colorTextMuted }}>EXPRESADO EN {toUpper(data?.moneda?.descripcion, 'BS.')}</SPDF.Text>
 			</SPDF.View>
 		);
 	}
 
 	static proveedor(data) {
 		const cliente = data?.cliente || {};
-		const etiqueta = data?.tipo === "compra" ? "PROVEEDOR: " : "DEUDOR: ";
+		const etiqueta = data?.tipo === "compra" ? "PROVEEDOR: " : "CLIENTE: ";
 		return (
 			<SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
 				<SPDF.View style={{ flexDirection: "row" }}>
 					<SPDF.Text style={{ ...textStyle, fontSize: 10, fontWeight: "bold" }}>{etiqueta}</SPDF.Text>
 					<SPDF.Text style={{ ...textStyle, fontSize: 10 }}> {toUpper(cliente?.nombres, '')} {toUpper(cliente?.apellidos, '')} </SPDF.Text>
 				</SPDF.View>
-				<SPDF.Text style={{ ...textStyle, fontSize: 8, color: "#787D84" }}>{`Generado: ${new SDate().toString("dd/MM/yyyy HH:mm")}`}</SPDF.Text>
+				<SPDF.Text style={{ ...textStyle, fontSize: 8, color: colorTextMuted }}>{`Generado: ${new SDate().toString("dd/MM/yyyy HH:mm")}`}</SPDF.Text>
 			</SPDF.View>
 		);
 	}
 
 	static detalleHeader() {
-		const cellStyle = { height: "100%", justifyContent: "center", paddingVertical: 6, paddingHorizontal: 8, borderWidth: 1, borderColor: "#33587F" };
+		const cellStyle = { height: "100%", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderWidth: 1, borderColor: "#33587F" };
 		const labelStyle = { ...textStyle, width: "100%", fontSize: 8.5, fontWeight: "bold", color: "#FFFFFF" };
 		return (
 			<SPDF.View style={{ width: "100%", height: 26, flexDirection: "row", backgroundColor: colorPrincipal, borderRadius: 6 }}>
@@ -182,7 +174,7 @@ export default class ComprobanteKardexIndividual extends Component {
 			const debeText = isSaldoAnterior ? "" : debe;
 			const haberText = isSaldoAnterior ? "" : haber;
 			const cellTextStyle = { ...textStyle, width: "100%", fontSize: 8, color: "#22262B", fontStyle: isSaldoAnterior ? "italic" : "normal" };
-			const bodyCellStyle = { height: "100%", justifyContent: "center", paddingVertical: 6, paddingHorizontal: 8, borderWidth: 1, borderColor: colorBorderLight };
+			const bodyCellStyle = { height: "100%", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderWidth: 1, borderColor: colorBorderLight };
 			return (
 				<SPDF.View key={i} style={{ width: "100%", height: 26, flexDirection: "row" }}>
 
@@ -247,9 +239,9 @@ export default class ComprobanteKardexIndividual extends Component {
 			<SPDF.View style={{ width: "100%", height: 16, padding: 2 }}>
 				<SPDF.View style={{ width: "100%", height: "100%", borderWidth: 1, borderColor: borderColorProfessional, flexDirection: "row", alignItems: "center", paddingHorizontal: 8 }}>
 					<SPDF.View style={{ width: 8, height: "100%" }} />
-					<SPDF.Text style={{ ...textStyle, fontSize: 7, }}> {fechaPie} </SPDF.Text>
+					<SPDF.Text style={{ ...textStyle, fontSize: 7, color: colorTextMuted }}> {fechaPie} </SPDF.Text>
 					<SPDF.View style={{ flex: 1 }} />
-					<SPDF.Text style={{ ...textStyle, fontSize: 7, paddingRight: -20 }}>{"${current_page}/${cant_page}"}</SPDF.Text>
+					<SPDF.Text style={{ ...textStyle, fontSize: 7, color: colorTextMuted, paddingRight: -20 }}>{"${current_page}/${cant_page}"}</SPDF.Text>
 				</SPDF.View>
 			</SPDF.View>
 		);
