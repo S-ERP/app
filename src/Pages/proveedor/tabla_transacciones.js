@@ -634,6 +634,7 @@ export default class TablaTransaccionesProveedor extends Component {
 										detalle: (this.DinamicTable?.dataFiltrada || []).map(d => d.__original),
 										fecha_inicio: this.state.fecha_inicio,
 										fecha_fin: this.state.fecha_fin,
+										tipo: "compra",
 									})}
 									backgroundColor={"transparent"}
 									style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
