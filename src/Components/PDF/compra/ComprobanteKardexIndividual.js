@@ -225,16 +225,16 @@ export default class ComprobanteKardexIndividual extends Component {
 
 		return (
 			<SPDF.View style={{ width: "100%", height: 28, flexDirection: "row", }}>
-				<SPDF.View style={{ width: "59%", height: "100%", justifyContent: "center", alignItems: "flex-end", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "63%", height: "100%", justifyContent: "center", alignItems: "flex-end", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold", color: colorPrincipal, textAlign: "right", padding: 4 }}>{`TOTALES ${(data?.moneda?.observacion || 'Bs').toUpperCase()}. :`}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ width: "13%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "12%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold", color: colorPrincipal, textAlign: "right", padding: 4 }}>{formatMontoPDF(data?.moneda, totalDebe)}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ width: "13%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "12%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold", color: colorPrincipal, textAlign: "right", padding: 4 }}>{formatMontoPDF(data?.moneda, totalHaber)}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ width: "15%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "13%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9.5, fontWeight: "bold", color: colorPrincipal, textAlign: "right", padding: 4 }}>{formatMontoPDF(data?.moneda, saldoFinal)}</SPDF.Text>
 				</SPDF.View>
 			</SPDF.View>
