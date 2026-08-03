@@ -7,7 +7,11 @@
       "Bash(grep -n \"react-window\\\\|react-virtual\" /Users/rickypazd/Documents/GitHub/servisofts-table/package.json 2>/dev/null; grep -n \"react-window\\\\|react-virtual\" /Users/rickypazd/Documents/GitHub/S-ERP/app/package.json 2>/dev/null)",
       "Read(//Users/rickypazd/Documents/GitHub/servisofts-table/**)",
       "Bash(npx tsc *)",
-      "Read(//Users/rickypazd/.dbclient/query/1768615853137@@192.168.5.39@5432@servisofts.inventario@public/**)"
+      "Read(//Users/rickypazd/.dbclient/query/1768615853137@@192.168.5.39@5432@servisofts.inventario@public/**)",
+      "Bash(node -e \"require\\('@babel/core'\\)\")",
+      "Bash(npx --no-install babel src/Pages/proveedor/tabla_transacciones.js --presets @babel/preset-react)",
+      "Bash(npx --no-install babel src/Pages/cliente/tabla_transacciones.js --presets @babel/preset-react)",
+      "Bash(node -e ' *)"
     ],
     "additionalDirectories": [
       "/Users/rickypazd/Documents/GitHub/servisofts-table/src/DinamicTable",

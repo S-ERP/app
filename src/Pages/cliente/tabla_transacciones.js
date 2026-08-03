@@ -629,7 +629,13 @@ export default class TablaTransacciones extends Component {
 									<SText fontSize={13} color={STheme.color.text}>Cliente: <SText bold>{clienteNombre}</SText></SText>
 								</SView>
 								<SView
-									onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
+									onPress={() => ComprobanteKardexIndividual.imprimir({
+										cliente: this.state.cliente,
+										moneda: this.state.moneda,
+										detalle: (this.DinamicTable?.dataFiltrada || []).map(d => d.__original),
+										fecha_inicio: this.state.fecha_inicio,
+										fecha_fin: this.state.fecha_fin,
+									})}
 									backgroundColor={"transparent"}
 									style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
 									center
