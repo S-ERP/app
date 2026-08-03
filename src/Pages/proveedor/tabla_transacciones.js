@@ -387,7 +387,12 @@ export default class TablaTransaccionesProveedor extends Component {
 	mostrarTabla() {
 		return (
 			<SView col={'xs-12'} flex>
-				<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center', backgroundColor: '#1c1f24CC', borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30 }} flex >
+				<SView col={'xs-12'} style={{
+					width: 920, alignSelf: 'center',
+					// backgroundColor: '#1c1f24CC', 
+					backgroundColor: STheme.color.background,
+					borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30
+				}} flex >
 
 					<DinamicTable
 						ref={ref => (this.DinamicTable = ref)}
@@ -397,7 +402,12 @@ export default class TablaTransaccionesProveedor extends Component {
 						center
 						{...Config.table.applyTheme({
 							colors: {
-								text: STheme.color.text, background: '#1c1f24CC', header: color_principal, border: STheme.color.gray + "66", card: STheme.color.gray + "66",
+								// text: STheme.color.background,
+								text: STheme.color.text,
+								background: color_principal + "80",
+								header: color_principal,
+								border: STheme.color.gray + "66",
+								card: STheme.color.gray + "66",
 							}
 						})}
 						keyExtractor={(e) => e?.key}
@@ -579,7 +589,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						<SView col={'xs-12'} style={{
 							width: 920,
 							alignSelf: 'center',
-							backgroundColor: '#1c1f24CC',
+							backgroundColor: STheme.color.background,
 							borderRadius: 16,
 							borderWidth: 1,
 							borderColor: STheme.color.gray + "66",
@@ -595,6 +605,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								</SView>
 								<SView width={12} />
 								<SView flex>
+									{/* <SText fontSize={18} bold color={"red"}>Karssssssssdex Individual del Proveedor</SText> */}
 									<SText fontSize={18} bold color={STheme.color.text}>Kardex Individual del Proveedor</SText>
 									<SText fontSize={12} color={STheme.color.lightGray}>Trazabilidad financiera de compras, pagos y saldos</SText>
 								</SView>
@@ -616,7 +627,7 @@ export default class TablaTransaccionesProveedor extends Component {
 									}}
 								/>
 								<SView row center style={{
-									backgroundColor: color_principal + '20',
+									backgroundColor: color_principal + '60',
 									borderWidth: 1,
 									borderColor: color_principal + '55',
 									borderRadius: 30,
@@ -636,7 +647,8 @@ export default class TablaTransaccionesProveedor extends Component {
 										fecha_fin: this.state.fecha_fin,
 										tipo: "compra",
 									})}
-									backgroundColor={"transparent"}
+									backgroundColor={STheme.color.danger + '20'}
+
 									style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
 									center
 								>
