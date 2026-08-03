@@ -125,7 +125,7 @@ export default class ComprobanteKardexIndividual extends Component {
 	}
 
 	static detalleHeader() {
-		const cellStyle = { height: "100%", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderWidth: 1, borderColor: "#33587F" };
+		const cellStyle = { height: "100%", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8 };
 		const labelStyle = { ...textStyle, width: "100%", fontSize: 8.5, fontWeight: "bold", color: "#FFFFFF" };
 		return (
 			<SPDF.View style={{ width: "100%", height: 26, flexDirection: "row", backgroundColor: colorPrincipal, borderRadius: 6 }}>
@@ -174,10 +174,9 @@ export default class ComprobanteKardexIndividual extends Component {
 			const debeText = isSaldoAnterior ? "" : debe;
 			const haberText = isSaldoAnterior ? "" : haber;
 			const cellTextStyle = { ...textStyle, width: "100%", fontSize: 8, color: "#22262B", fontStyle: isSaldoAnterior ? "italic" : "normal" };
-			const bodyCellStyle = { height: "100%", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderWidth: 1, borderColor: colorBorderLight };
+			const bodyCellStyle = { height: "100%", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderBottomWidth: 1, borderColor: colorBorderLight };
 			return (
 				<SPDF.View key={i} style={{ width: "100%", height: 26, flexDirection: "row" }}>
-
 
 					<SPDF.View style={{ ...bodyCellStyle, width: "4%" }}><SPDF.Text style={{ ...cellTextStyle, color: colorTextMuted, textAlign: "center", padding: 4 }}>{i + 1}</SPDF.Text></SPDF.View>
 					<SPDF.View style={{ ...bodyCellStyle, width: "11%" }}> {fechaText ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "left", padding: 4 }}>{fechaText}</SPDF.Text> : null} </SPDF.View>
@@ -237,11 +236,11 @@ export default class ComprobanteKardexIndividual extends Component {
 		const fechaPie = data?.fecha_fin ? new SDate(data.fecha_fin).toString("dd/MM/yyyy") : new SDate().toString("dd/MM/yyyy");
 		return (
 			<SPDF.View style={{ width: "100%", height: 16, padding: 2 }}>
-				<SPDF.View style={{ width: "100%", height: "100%", borderWidth: 1, borderColor: borderColorProfessional, flexDirection: "row", alignItems: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "100%", height: "100%", flexDirection: "row", alignItems: "center", paddingHorizontal: 8 }}>
 					<SPDF.View style={{ width: 8, height: "100%" }} />
 					<SPDF.Text style={{ ...textStyle, fontSize: 7, color: colorTextMuted }}> {fechaPie} </SPDF.Text>
 					<SPDF.View style={{ flex: 1 }} />
-					<SPDF.Text style={{ ...textStyle, fontSize: 7, color: colorTextMuted, paddingRight: -20 }}>{"${current_page}/${cant_page}"}</SPDF.Text>
+					<SPDF.Text style={{ ...textStyle, fontSize: 7, color: colorTextMuted, paddingRight: -20, textAlign: "right", }}>{"${current_page}/${cant_page}"}</SPDF.Text>
 				</SPDF.View>
 			</SPDF.View>
 		);
