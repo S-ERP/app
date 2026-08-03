@@ -387,8 +387,10 @@ export default class TablaTransacciones extends Component {
 	mostrarTabla() {
 		return (
 			<SView col={'xs-12'} flex>
-				<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center', backgroundColor: '#1c1f24CC', borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30 }} flex >
-
+				<SView col={'xs-12'} style={{
+					width: 920, alignSelf: 'center', paddingLeft: 14,
+					paddingTop: 8,
+					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30 }} flex >
 					<DinamicTable
 						ref={ref => (this.DinamicTable = ref)}
 						loadData={this.loadInitialData.bind(this)}
@@ -397,8 +399,12 @@ export default class TablaTransacciones extends Component {
 						center
 						{...Config.table.applyTheme({
 							colors: {
-								text: STheme.color.text, background: '#1c1f24CC', header: color_principal, border: STheme.color.gray + "66", card: STheme.color.gray + "66",
-
+								// text: STheme.color.background,
+								text: STheme.color.text,
+								background: color_principal + "80",
+								header: color_principal,
+								border: STheme.color.gray + "66",
+								card: STheme.color.gray + "66",
 							}
 						})}
 						keyExtractor={(e) => e?.key}
@@ -442,7 +448,7 @@ export default class TablaTransacciones extends Component {
 							)}
 							footerComponent={() => (
 								<SView style={this.footerBarStyle('flex-end')}>
-									<SText bold fontSize={13} color={STheme.color.text}>TOTAL</SText>
+									<SText bold fontSize={13} color={STheme.color.text}>TOTAL   </SText>
 								</SView>
 							)}
 						/>
@@ -451,7 +457,7 @@ export default class TablaTransacciones extends Component {
 							footerComponent={(e) => {
 								let total = 0;
 								e.dinamicTable.data.map(a => { total += a.debe || 0 });
-								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={13} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
+								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={12} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
 							}}
 						/>
 						<DinamicTable.Col key="haber" label="Haber" width={100} data={(e) => e?.row?.haber ?? 0} cellStyle={{ alignItems: "flex-start" }}
@@ -459,7 +465,7 @@ export default class TablaTransacciones extends Component {
 							footerComponent={(e) => {
 								let total = 0;
 								e.dinamicTable.data.map(a => { total += a.haber || 0 });
-								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={13} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
+								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={12} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
 							}}
 						/>
 						<DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => e?.row?.saldo ?? 0} cellStyle={{ alignItems: "flex-end" }}
@@ -469,7 +475,7 @@ export default class TablaTransacciones extends Component {
 								const totalSaldo = lastRow?.saldo || 0;
 								return (
 									<SView style={this.footerBarStyle('flex-end')}>
-										<SText bold fontSize={14} color={STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
+										<SText bold fontSize={12} color={STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
 									</SView>
 								);
 							}}
@@ -580,7 +586,7 @@ export default class TablaTransacciones extends Component {
 						<SView col={'xs-12'} style={{
 							width: 920,
 							alignSelf: 'center',
-							backgroundColor: '#1c1f24CC',
+							backgroundColor: STheme.color.background,
 							borderRadius: 16,
 							borderWidth: 1,
 							borderColor: STheme.color.gray + "66",
@@ -617,7 +623,7 @@ export default class TablaTransacciones extends Component {
 									}}
 								/>
 								<SView row center style={{
-									backgroundColor: color_principal + '20',
+									backgroundColor: color_principal + '60',
 									borderWidth: 1,
 									borderColor: color_principal + '55',
 									borderRadius: 30,
@@ -636,7 +642,7 @@ export default class TablaTransacciones extends Component {
 										fecha_inicio: this.state.fecha_inicio,
 										fecha_fin: this.state.fecha_fin,
 									})}
-									backgroundColor={"transparent"}
+									backgroundColor={STheme.color.danger + '20'}
 									style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
 									center
 								>
