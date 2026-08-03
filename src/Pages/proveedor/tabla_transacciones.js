@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SMath, SNotification } from 'servisofts-component';
-import { DinamicTable } from 'servisofts-table';
+
 import { Dimensions } from 'react-native';
+import { SDate, SHr, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
+import { DinamicTable } from 'servisofts-table';
+
+import SIconApp from '../../Assets/SIconApp';
+import FechaFullFilter2 from '../../Components/FechaFullFilter2';
+import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
+import SInput2 from '../../Components/SForm2/SInput2';
 import Config from '../../Config';
 import MDL from '../../MDL';
-import FechaFullFilter2 from '../../Components/FechaFullFilter2';
-import SIconApp from '../../Assets/SIconApp';
-import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
-import SSocket from 'servisofts-socket';
 import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
-import SInput2 from '../../Components/SForm2/SInput2';
-
 const color_principal = '#1a3c66';
 
 class AmortizarModalContent extends Component {
@@ -27,10 +28,12 @@ class AmortizarModalContent extends Component {
 		const { monto } = this.state;
 		if (monto <= 0) {
 			this.setState({ error: "El monto debe ser mayor a 0." });
+			console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 			return;
 		}
 		if (monto > saldo) {
 			this.setState({ error: "El monto no puede ser mayor al saldo pendiente." });
+			console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 			return;
 		}
 		this.setState({ error: "" });
@@ -167,6 +170,7 @@ export default class TablaTransaccionesProveedor extends Component {
 			const fecha_inicio_total = "2024-01-01";
 			const fecha_inicio = this.state.fecha_inicio;
 			const fecha_fin = this.state.fecha_fin;
+			console.warn("[ProKeybindings] archivo: if (!keyEmpresa || !this.key) sin motivo indicado.");
 			if (!keyEmpresa || !this.key) return;
 			const compras = await MDL.compra_venta.execute_function("_get_detalles_proveedor", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
 			const proveedor = await MDL.crm.cliente.getByKey(this.key);
@@ -255,6 +259,7 @@ export default class TablaTransaccionesProveedor extends Component {
 
 			return comprasFiltradas;
 		} catch (error) {
+			console.error("[ProKeybindings] archivo: error.", error);
 			console.warn("Error en loadInitialData:", error);
 			SPopup.alert("Error al cargar los datos.");
 			return [];
@@ -387,13 +392,9 @@ export default class TablaTransaccionesProveedor extends Component {
 	mostrarTabla() {
 		return (
 			<SView col={'xs-12'} flex>
-				<SView col={'xs-12'} style={{
-					width: 920, alignSelf: 'center',
-					// backgroundColor: '#1c1f24CC', 
-					backgroundColor: STheme.color.background,
-					borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30
-				}} flex >
-
+				<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center', paddingLeft: 14,
+					paddingTop:8,
+					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30 }} flex >
 					<DinamicTable
 						ref={ref => (this.DinamicTable = ref)}
 						loadData={this.loadInitialData.bind(this)}
@@ -451,7 +452,7 @@ export default class TablaTransaccionesProveedor extends Component {
 							)}
 							footerComponent={() => (
 								<SView style={this.footerBarStyle('flex-end')}>
-									<SText bold fontSize={13} color={STheme.color.text}>TOTAL</SText>
+									<SText bold fontSize={13} color={STheme.color.text}>TOTAL   </SText>
 								</SView>
 							)}
 						/>
@@ -460,7 +461,7 @@ export default class TablaTransaccionesProveedor extends Component {
 							footerComponent={(e) => {
 								let total = 0;
 								e.dinamicTable.data.map(a => { total += a.debe || 0 });
-								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={13} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
+								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={12} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
 							}}
 						/>
 						<DinamicTable.Col key="haber" label="Haber" width={100} data={(e) => e?.row?.haber ?? 0} cellStyle={{ alignItems: "flex-start" }}
@@ -468,7 +469,7 @@ export default class TablaTransaccionesProveedor extends Component {
 							footerComponent={(e) => {
 								let total = 0;
 								e.dinamicTable.data.map(a => { total += a.haber || 0 });
-								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={13} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
+								return <SView style={this.footerBarStyle('flex-start')}><SText bold fontSize={12} color={STheme.color.text}>{this.formatMonto(total)}</SText></SView>
 							}}
 						/>
 						<DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => e?.row?.saldo ?? 0} cellStyle={{ alignItems: "flex-end" }}
@@ -478,7 +479,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								const totalSaldo = lastRow?.saldo || 0;
 								return (
 									<SView style={this.footerBarStyle('flex-end')}>
-										<SText bold fontSize={14} color={STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
+										<SText bold fontSize={12} color={STheme.color.text}>{this.formatMonto(totalSaldo)}</SText>
 									</SView>
 								);
 							}}
@@ -517,6 +518,7 @@ export default class TablaTransaccionesProveedor extends Component {
 					color: STheme.color.danger,
 					time: 5000
 				});
+				console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 				return;
 			}
 			SPopup.open({
@@ -531,6 +533,7 @@ export default class TablaTransaccionesProveedor extends Component {
 							const activa = await MDL.caja.getActiva();
 							if (!activa) {
 								SNotification.send({ title: 'Caja no aperturada', body: 'Abre la caja primero.', color: STheme.color.danger, time: 5000 });
+								console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 								return;
 							}
 
@@ -568,6 +571,7 @@ export default class TablaTransaccionesProveedor extends Component {
 				)
 			});
 		} catch (e) {
+			console.error("[ProKeybindings] archivo: error.", e);
 			console.warn("No se pudo verificar la caja:", e);
 			SNotification.send({
 				title: 'Error',
