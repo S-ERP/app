@@ -42,7 +42,7 @@ class AmortizarModalContent extends Component {
 		const { error } = this.state;
 		return (
 			<SView col="xs-11 md-4"
-				backgroundColor={'#1c1f24'}
+				backgroundColor={'#1c241c'}
 				withoutFeedback
 				style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66", shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24 }}>
 
@@ -399,7 +399,6 @@ export default class TablaTransacciones extends Component {
 						center
 						{...Config.table.applyTheme({
 							colors: {
-								// text: STheme.color.background,
 								text: STheme.color.text,
 								background: color_principal + "80",
 								header: color_principal,

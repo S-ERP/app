@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+
 import { Dimensions } from 'react-native';
 import { SDate, SHr, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
@@ -13,6 +14,7 @@ import Config from '../../Config';
 import MDL from '../../MDL';
 import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
 const color_principal = '#1a3c66';
+const color_modal = '#1c1f24';
 
 class AmortizarModalContent extends Component {
 	constructor(props) {
@@ -28,12 +30,10 @@ class AmortizarModalContent extends Component {
 		const { monto } = this.state;
 		if (monto <= 0) {
 			this.setState({ error: "El monto debe ser mayor a 0." });
-			console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 			return;
 		}
 		if (monto > saldo) {
 			this.setState({ error: "El monto no puede ser mayor al saldo pendiente." });
-			console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 			return;
 		}
 		this.setState({ error: "" });
@@ -45,20 +45,31 @@ class AmortizarModalContent extends Component {
 		const { error } = this.state;
 		return (
 			<SView col="xs-11 md-4"
-				backgroundColor={'#1c1f24'}
+				backgroundColor={color_modal}
 				withoutFeedback
-				style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66", shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24 }}>
+				style={{
+					borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66",
+					shadowColor: STheme.color.darkGray,
+					shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24
+				}}>
 
-				<SView row col="xs-12" style={{ alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderColor: STheme.color.gray + "66" }}>
+				<SView row col="xs-12" style={{
+					alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1,
+					borderColor: STheme.color.gray + "66"
+				}}>
 					<SView row style={{ alignItems: "center" }}>
+
 						<SView width={36} height={36} center style={{ borderRadius: 10, backgroundColor: color_principal + "22" }}>
-							<SIconApp name="pagotarjeta" width={18} height={18} fill={'#4a7ab5'} />
+							<SIconApp name="pagotarjeta" width={18} height={18}
+								fill={color_principal}
+							/>
 						</SView>
 						<SView width={10} />
 						<SText bold fontSize={17} color={STheme.color.text}>Amortizar Deuda</SText>
 					</SView>
-					<SView width={28} height={28} center style={{ borderRadius: 14, backgroundColor: '#2a2e35' }} onPress={onCancel}>
-						<SIconApp name="Close" width={12} height={12} fill={STheme.color.lightGray} />
+
+					<SView width={28} height={28} center onPress={onCancel} style={{ transform: [{ rotate: "45deg" }], }} >
+						<SIconApp name="addFoto" width={20} height={20} fill={STheme.color.lightGray} />
 					</SView>
 				</SView>
 
@@ -66,7 +77,7 @@ class AmortizarModalContent extends Component {
 					<SView col="xs-12" style={{ backgroundColor: '#2a2e35', borderRadius: 12, borderWidth: 1, borderColor: STheme.color.gray + "66", paddingVertical: 14, paddingHorizontal: 16, marginBottom: 20, alignItems: "center" }}>
 						<SText fontSize={12} color={STheme.color.lightGray}>Saldo pendiente</SText>
 						<SHr height={4} />
-						<SText bold fontSize={22} color={'#4a7ab5'}>{formatMonto(saldo)}</SText>
+						<SText bold fontSize={22} color={STheme.color.white}>{formatMonto(saldo)}</SText>
 					</SView>
 
 					<SText fontSize={12} color={STheme.color.lightGray} style={{ marginBottom: 6 }}>Monto a pagar</SText>
@@ -83,7 +94,7 @@ class AmortizarModalContent extends Component {
 					</SView>
 					{!!error && (
 						<SView row style={{ alignItems: "center", marginTop: 8 }}>
-							<SIconApp name="Alert" width={13} height={13} fill={STheme.color.danger} />
+							<SIconApp name="AlertOutline" width={13} height={13} fill={STheme.color.danger} />
 							<SView width={6} />
 							<SText fontSize={12} color={STheme.color.danger}>{error}</SText>
 						</SView>
@@ -91,11 +102,11 @@ class AmortizarModalContent extends Component {
 
 					<SHr height={20} />
 					<SView row col="xs-12" style={{ gap: 12 }}>
-						<SView flex height={44} borderRadius={10} center backgroundColor={'#2a2e35' + "44"} border={STheme.color.gray + "66"} onPress={onCancel}>
+						<SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.background + "0D"} border={STheme.color.gray} onPress={onCancel}>
 							<SText color={STheme.color.text}>Cancelar</SText>
 						</SView>
 						<SView flex height={44} borderRadius={10} center backgroundColor={color_principal} onPress={() => this.handleConfirm()}>
-							<SText color={"#fff"}>Confirmar</SText>
+							<SText color={STheme.color.white}>Confirmar</SText>
 						</SView>
 					</SView>
 				</SView>
@@ -109,7 +120,11 @@ function ConfirmarAnularModalContent({ montoLabel, onCancel, onConfirm }) {
 		<SView col="xs-11 md-4"
 			backgroundColor={'#1c1f24'}
 			withoutFeedback
-			style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66", shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24 }}>
+			style={{
+				borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66",
+				shadowColor: STheme.color.darkGray,
+				shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24
+			}}>
 
 			<SView row col="xs-12" style={{ alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderColor: STheme.color.gray + "66" }}>
 				<SView row style={{ alignItems: "center" }}>
@@ -117,13 +132,8 @@ function ConfirmarAnularModalContent({ montoLabel, onCancel, onConfirm }) {
 					<SView width={8} />
 					<SText bold fontSize={17} color={STheme.color.danger}>Anular Amortización</SText>
 				</SView>
-				<SView width={28} height={28} center onPress={onCancel} style={{
-					transform: [{ rotate: "45deg" }],
-				}}
-
-				>
-					<SIconApp name="addFoto" width={20} height={20} fill={STheme.color.lightGray}
-					/>
+				<SView width={28} height={28} center onPress={onCancel} style={{ transform: [{ rotate: "45deg" }], }} >
+					<SIconApp name="addFoto" width={20} height={20} fill={STheme.color.lightGray} />
 				</SView>
 			</SView>
 
@@ -134,11 +144,11 @@ function ConfirmarAnularModalContent({ montoLabel, onCancel, onConfirm }) {
 
 				<SHr height={20} />
 				<SView row col="xs-12" style={{ gap: 12 }}>
-					<SView flex height={44} borderRadius={10} center backgroundColor={'#2a2e35'} border={STheme.color.gray + "66"} onPress={onCancel}>
+					<SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.background + "0D"} border={STheme.color.gray + "66"} onPress={onCancel}>
 						<SText color={STheme.color.text}>Cancelar</SText>
 					</SView>
 					<SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.danger} onPress={onConfirm}>
-						<SText color={"#fff"}>Sí, anular</SText>
+						<SText color={STheme.color.white}>Sí, anular</SText>
 					</SView>
 				</SView>
 			</SView>
@@ -170,7 +180,6 @@ export default class TablaTransaccionesProveedor extends Component {
 			const fecha_inicio_total = "2024-01-01";
 			const fecha_inicio = this.state.fecha_inicio;
 			const fecha_fin = this.state.fecha_fin;
-			console.warn("[ProKeybindings] archivo: if (!keyEmpresa || !this.key) sin motivo indicado.");
 			if (!keyEmpresa || !this.key) return;
 			const compras = await MDL.compra_venta.execute_function("_get_detalles_proveedor", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
 			const proveedor = await MDL.crm.cliente.getByKey(this.key);
@@ -259,7 +268,6 @@ export default class TablaTransaccionesProveedor extends Component {
 
 			return comprasFiltradas;
 		} catch (error) {
-			console.error("[ProKeybindings] archivo: error.", error);
 			console.warn("Error en loadInitialData:", error);
 			SPopup.alert("Error al cargar los datos.");
 			return [];
@@ -375,7 +383,11 @@ export default class TablaTransaccionesProveedor extends Component {
 			},
 		].filter(group => group && group.items.length > 0);
 		return (
-			<SView col={"xs-12"} backgroundColor={'#1c1f24CC'} style={{ borderRadius: 12, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66", shadowColor: "#000", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 20 }}>
+			<SView col={"xs-12"} backgroundColor={'#1c1f24CC'} style={{
+				borderRadius: 12, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66",
+				shadowColor: STheme.color.darkGray,
+				shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 20
+			}}>
 				{groups.map((group, gi) => (
 					<SView key={gi} col={"xs-12"}>
 						<SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }}>
@@ -392,9 +404,13 @@ export default class TablaTransaccionesProveedor extends Component {
 	mostrarTabla() {
 		return (
 			<SView col={'xs-12'} flex>
-				<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center', paddingLeft: 14,
-					paddingTop:8,
-					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30 }} flex >
+				<SView col={'xs-12'} style={{
+					width: 920, alignSelf: 'center', paddingLeft: 14,
+					paddingTop: 8,
+					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden',
+					shadowColor: STheme.color.darkGray,
+					shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30
+				}} flex >
 					<DinamicTable
 						ref={ref => (this.DinamicTable = ref)}
 						loadData={this.loadInitialData.bind(this)}
@@ -403,14 +419,20 @@ export default class TablaTransaccionesProveedor extends Component {
 						center
 						{...Config.table.applyTheme({
 							colors: {
-								// text: STheme.color.background,
-								text: STheme.color.text,
 								background: color_principal + "80",
 								header: color_principal,
 								border: STheme.color.gray + "66",
 								card: STheme.color.gray + "66",
 							}
 						})}
+
+						headerTextStyle={{
+							color: STheme.color.white,
+						}}
+						textStyle={{
+							color: STheme.color.lightGray,
+						}}
+
 						keyExtractor={(e) => e?.key}
 						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
 						style={{ flex: 1 }}
@@ -518,7 +540,6 @@ export default class TablaTransaccionesProveedor extends Component {
 					color: STheme.color.danger,
 					time: 5000
 				});
-				console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 				return;
 			}
 			SPopup.open({
@@ -533,7 +554,6 @@ export default class TablaTransaccionesProveedor extends Component {
 							const activa = await MDL.caja.getActiva();
 							if (!activa) {
 								SNotification.send({ title: 'Caja no aperturada', body: 'Abre la caja primero.', color: STheme.color.danger, time: 5000 });
-								console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 								return;
 							}
 
@@ -571,7 +591,6 @@ export default class TablaTransaccionesProveedor extends Component {
 				)
 			});
 		} catch (e) {
-			console.error("[ProKeybindings] archivo: error.", e);
 			console.warn("No se pudo verificar la caja:", e);
 			SNotification.send({
 				title: 'Error',
@@ -598,18 +617,17 @@ export default class TablaTransaccionesProveedor extends Component {
 							borderWidth: 1,
 							borderColor: STheme.color.gray + "66",
 							padding: 20,
-							shadowColor: "#000",
+							shadowColor: STheme.color.darkGray,
 							shadowOffset: { width: 0, height: 10 },
 							shadowOpacity: 0.35,
 							shadowRadius: 30,
 						}}>
 							<SView row center>
 								<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: color_principal }}>
-									<SIconApp name="heading" width={24} height={24} fill={"#fff"} />
+									<SIconApp name="heading" width={24} height={24} fill={STheme.color.white} />
 								</SView>
 								<SView width={12} />
 								<SView flex>
-									{/* <SText fontSize={18} bold color={"red"}>Karssssssssdex Individual del Proveedor</SText> */}
 									<SText fontSize={18} bold color={STheme.color.text}>Kardex Individual del Proveedor</SText>
 									<SText fontSize={12} color={STheme.color.lightGray}>Trazabilidad financiera de compras, pagos y saldos</SText>
 								</SView>
@@ -682,7 +700,7 @@ export default class TablaTransaccionesProveedor extends Component {
 											paddingVertical: 14,
 											paddingHorizontal: 24,
 											borderRadius: 30,
-											shadowColor: color_principal,
+											shadowColor: STheme.color.darkGray,
 											shadowOffset: { width: 0, height: 8 },
 											shadowOpacity: 0.5,
 											shadowRadius: 16,
@@ -690,9 +708,9 @@ export default class TablaTransaccionesProveedor extends Component {
 										center
 									>
 										<SView row center>
-											<SIconApp name="pagotarjeta" width={16} height={16} fill={"#fff"} />
+											<SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.white} />
 											<SView width={6} />
-											<SText color={"#fff"} bold>AMORTIZAR</SText>
+											<SText color={STheme.color.white} bold>AMORTIZAR</SText>
 										</SView>
 									</SView>
 								)}
