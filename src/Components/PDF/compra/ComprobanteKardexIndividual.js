@@ -138,27 +138,27 @@ export default class ComprobanteKardexIndividual extends Component {
 		return (
 			<SPDF.View style={{ width: "100%", height: 26, flexDirection: "row", backgroundColor: colorPrincipal, borderRadius: 6 }}>
 
-				<SPDF.View style={{ ...cellStyle, flex: 1 }}>
+				<SPDF.View style={{ ...cellStyle, width: "4%" }}>
 					<SPDF.Text style={{ ...labelStyle, textAlign: "center" }}>{"NRO"}</SPDF.Text>
 				</SPDF.View>
 
-				<SPDF.View style={{ ...cellStyle, flex: 1.2 }}>
+				<SPDF.View style={{ ...cellStyle, width: "11%" }}>
 					<SPDF.Text style={{ ...labelStyle, textAlign: "left" }}>{"FECHA"}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ ...cellStyle, flex: 1.2 }}>
+				<SPDF.View style={{ ...cellStyle, width: "11%" }}>
 					<SPDF.Text style={{ ...labelStyle, textAlign: "left" }}>{"TIPO"}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ ...cellStyle, flex: 2 }}>
+				<SPDF.View style={{ ...cellStyle, width: "37%" }}>
 					<SPDF.Text style={labelStyle}>{"DETALLE"}</SPDF.Text>
 				</SPDF.View>
 
-				<SPDF.View style={{ ...cellStyle, flex: 1.3 }}>
+				<SPDF.View style={{ ...cellStyle, width: "12%" }}>
 					<SPDF.Text style={{ ...labelStyle, textAlign: "right" }}>{"DEBE"}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ ...cellStyle, flex: 1.3 }}>
+				<SPDF.View style={{ ...cellStyle, width: "12%" }}>
 					<SPDF.Text style={{ ...labelStyle, textAlign: "right" }}>{"HABER"}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ ...cellStyle, flex: 1.4 }}>
+				<SPDF.View style={{ ...cellStyle, width: "13%" }}>
 					<SPDF.Text style={{ ...labelStyle, textAlign: "right" }}>{"SALDO"}</SPDF.Text>
 				</SPDF.View>
 			</SPDF.View>
@@ -185,15 +185,15 @@ export default class ComprobanteKardexIndividual extends Component {
 			const bodyCellStyle = { height: "100%", justifyContent: "center", paddingVertical: 6, paddingHorizontal: 8, borderWidth: 1, borderColor: colorBorderLight };
 			return (
 				<SPDF.View key={i} style={{ width: "100%", height: 26, flexDirection: "row" }}>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 1 }}>
+					<SPDF.View style={{ ...bodyCellStyle, width: "4%" }}>
 						<SPDF.Text style={{ ...cellTextStyle, color: colorTextMuted, textAlign: "center" }}>{i + 1}</SPDF.Text>
 					</SPDF.View>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 1.2 }}> {fechaText ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "left" }}>{fechaText}</SPDF.Text> : null} </SPDF.View>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 1.2 }}> {tipoText ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "left" }}>{tipoText}</SPDF.Text> : null} </SPDF.View>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 2 }}> <SPDF.Text style={cellTextStyle}>{toUpper(item?.descripcion || (isSaldoAnterior ? "SALDO ANTERIOR" : ""), "")}</SPDF.Text> </SPDF.View>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 1.3 }}> {debeValue >= 1 ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "right" }}>{debeText}</SPDF.Text> : null} </SPDF.View>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 1.3 }}> {haberValue >= 1 ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "right" }}>{haberText}</SPDF.Text> : null} </SPDF.View>
-					<SPDF.View style={{ ...bodyCellStyle, flex: 1.4 }}><SPDF.Text style={{ ...cellTextStyle, fontWeight: "bold", textAlign: "right" }}>{saldo}</SPDF.Text></SPDF.View>
+					<SPDF.View style={{ ...bodyCellStyle, width: "11%" }}> {fechaText ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "left" }}>{fechaText}</SPDF.Text> : null} </SPDF.View>
+					<SPDF.View style={{ ...bodyCellStyle, width: "11%" }}> {tipoText ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "left" }}>{tipoText}</SPDF.Text> : null} </SPDF.View>
+					<SPDF.View style={{ ...bodyCellStyle, width: "37%" }}> <SPDF.Text style={cellTextStyle}>{toUpper(item?.descripcion || (isSaldoAnterior ? "SALDO ANTERIOR" : ""), "")}</SPDF.Text> </SPDF.View>
+					<SPDF.View style={{ ...bodyCellStyle, width: "12%" }}> {debeValue >= 1 ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "right" }}>{debeText}</SPDF.Text> : null} </SPDF.View>
+					<SPDF.View style={{ ...bodyCellStyle, width: "12%" }}> {haberValue >= 1 ? <SPDF.Text style={{ ...cellTextStyle, textAlign: "right" }}>{haberText}</SPDF.Text> : null} </SPDF.View>
+					<SPDF.View style={{ ...bodyCellStyle, width: "13%" }}><SPDF.Text style={{ ...cellTextStyle, fontWeight: "bold", textAlign: "right" }}>{saldo}</SPDF.Text></SPDF.View>
 				</SPDF.View>
 			);
 		});
@@ -225,19 +225,16 @@ export default class ComprobanteKardexIndividual extends Component {
 
 		return (
 			<SPDF.View style={{ width: "100%", height: 28, flexDirection: "row", }}>
-				<SPDF.View style={{ flex: 0.9, height: "100%" }} />
-				<SPDF.View style={{ flex: 1.3, height: "100%" }} />
-				<SPDF.View style={{ flex: 1.1, height: "100%" }} />
-				<SPDF.View style={{ flex: 3.4, height: "100%", justifyContent: "center", alignItems: "flex-end", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "59%", height: "100%", justifyContent: "center", alignItems: "flex-end", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold", color: colorPrincipal, textAlign: "right" }}>{`TOTALES ${(data?.moneda?.observacion || 'Bs').toUpperCase()}. :`}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ flex: 1.3, height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "13%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold", color: colorPrincipal, textAlign: "right" }}>{formatMontoPDF(data?.moneda, totalDebe)}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ flex: 1.3, height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "13%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold", color: colorPrincipal, textAlign: "right" }}>{formatMontoPDF(data?.moneda, totalHaber)}</SPDF.Text>
 				</SPDF.View>
-				<SPDF.View style={{ flex: 1.5, height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
+				<SPDF.View style={{ width: "15%", height: "100%", justifyContent: "center", paddingHorizontal: 8 }}>
 					<SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9.5, fontWeight: "bold", color: colorPrincipal, textAlign: "right" }}>{formatMontoPDF(data?.moneda, saldoFinal)}</SPDF.Text>
 				</SPDF.View>
 			</SPDF.View>
