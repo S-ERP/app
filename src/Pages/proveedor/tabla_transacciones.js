@@ -15,107 +15,11 @@ import MDL from '../../MDL';
 import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
 const color_principal = '#1a3c66';
 const color_modal = '#1c1f24';
-// const color_modal_surface = '#2a2e35';
 const color_modal_surface = 'slategray';
-// const color_badge_pago = '#4a7ab5';
 const color_badge_pago = 'steelblue';
-// const color_badge_saldo = 'lightBlue';
-// const color_badge_saldo = 'skyBlue';
 const color_badge_saldo = 'deepskyblue';
-// const color_badge_saldo = '#42A5F5';
 const color_badge_compra = 'orange';
-
 const color_badge_cuota = 'lime';
-
-
-// const color_badge_ssssss = 'green';
-// const color_badge_compra = '#FB8C00';
-
-// '#008000' // Verde clásico (green)
-// '#00FF00' // Verde brillante (lime)
-// '#32CD32' // Verde lima (limegreen)
-// '#228B22' // Verde bosque (forestgreen)
-// '#2E8B57' // Verde mar (seagreen)
-// '#3CB371' // Verde medio mar (mediumseagreen)
-// '#00FA9A' // Verde primavera (mediumspringgreen)
-// '#90EE90' // Verde claro (lightgreen)
-// '#006400' // Verde oscuro (darkgreen)
-// '#808000' // Verde oliva (olive)
-// '#6B8E23' // Verde oliva oscuro (olivedrab)
-// '#9ACD32' // Verde amarillo (yellowgreen)
-// '#7CFC00' // Verde césped (lawngreen)
-// '#98FB98' // Verde pálido (palegreen)
-// '#00FF7F' // Verde primavera (springgreen)
-// '#008080' // Verde azulado (teal)
-
-// '#87CEEB' // Celeste cielo (skyblue)
-// '#00BFFF' // Celeste intenso (deepskyblue)
-// '#1E90FF' // Azul celeste fuerte (dodgerblue)
-// '#40E0D0' // Turquesa (turquoise)
-// '#48D1CC' // Turquesa medio (mediumturquoise)
-// '#00CED1' // Turquesa oscuro (darkturquoise)
-// '#AFEEEE' // Celeste pálido (paleturquoise)
-// '#B0E0E6' // Azul polvo (powderblue)
-// '#ADD8E6' // Azul claro (lightblue)
-// '#87CEFA' // Celeste claro (lightskyblue)
-
-// '#FFA500' // Naranja clásico (orange)
-// '#FF8C00' // Naranja oscuro (darkorange)
-// '#FF7F00' // Naranja intenso
-// '#FF6600' // Naranja fuerte
-// '#FF4500' // Rojo naranja (orangered)
-// '#FF6347' // Tomate (tomato)
-// '#FFB347' // Naranja pastel
-// '#FF9966' // Naranja suave
-// '#F97316' // Naranja moderno
-// '#FB923C' // Naranja claro
-// '#EA580C' // Naranja profundo
-// '#C2410C' // Naranja oscuro fuerte
-// '#D97706' // Ámbar oscuro
-// '#F59E0B' // Ámbar moderno
-// '#FBBF24' // Amarillo naranja
-
-// '#FF0000' // Rojo clásico (red)
-// '#DC143C' // Carmesí (crimson)
-// '#B22222' // Rojo ladrillo (firebrick)
-// '#8B0000' // Rojo oscuro (darkred)
-// '#FF6347' // Tomate (tomato)
-// '#FF4500' // Rojo naranja (orangered)
-// '#CD5C5C' // Rojo indio (indianred)
-// '#E11D48' // Rojo moderno (rose)
-// '#EF4444' // Rojo moderno brillante
-// '#F87171' // Rojo claro
-// '#991B1B' // Rojo profundo
-// '#BE123C' // Rojo cereza oscuro
-// '#C2410C' // Rojo anaranjado oscuro
-// '#7F1D1D' // Rojo vino oscuro
-// '#9F1239' // Rojo frambuesa
-
-// '#0000FF' // Azul clásico (blue)
-// '#000080' // Azul marino (navy)
-// '#191970' // Azul medianoche (midnightblue)
-// '#1E3A8A' // Azul profundo (deepblue)
-// '#1A3C66' // Azul corporativo oscuro
-// '#2563EB' // Azul moderno
-// '#3B82F6' // Azul brillante
-// '#4169E1' // Azul real (royalblue)
-// '#4682B4' // Azul acero (steelblue)
-// '#5B9BD5' // Azul suave
-// '#6495ED' // Azul aciano (cornflowerblue)
-// '#6A5ACD' // Azul pizarra (slateblue)
-
-// '#808080' // Gris clásico (gray)
-// '#A9A9A9' // Gris oscuro (darkgray)
-// '#D3D3D3' // Gris claro (lightgray)
-// '#696969' // Gris tenue (dimgray)
-// '#708090' // Gris pizarra (slategray)
-// '#778899' // Gris azulado claro (lightslategray)
-// '#2F4F4F' // Gris pizarra oscuro (darkslategray)
-// '#36454F' // Gris carbón (charcoal)
-// '#4B5563' // Gris moderno
-// '#6B7280' // Gris neutro
-// '#9CA3AF' // Gris suave
-// '#E5E7EB' // Gris muy claro
 
 class AmortizarModalContent extends Component {
 	constructor(props) {
@@ -560,7 +464,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						/>
 						<DinamicTable.Col key="tipo" label="Tipo" width={80} data={(e) => e?.row?.tipo || "-"} customComponent={(e) => {
 							const color = this.tipoBadgeColor(e?.row?.tipo);
-							return <SView style={{ paddingVertical: 3, paddingHorizontal: 10, borderRadius: 20, backgroundColor: color + "26", borderWidth: 1, borderColor: color  }} center >
+							return <SView style={{ paddingVertical: 3, paddingHorizontal: 10, borderRadius: 20, backgroundColor: color + "26", borderWidth: 1, borderColor: color }} center >
 								<SText fontSize={10} bold color={color} style={{ textTransform: "uppercase", letterSpacing: 0.3 }} >{e.data}</SText>
 							</SView>
 						}}
