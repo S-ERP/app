@@ -409,7 +409,7 @@ export default class TablaTransaccionesProveedor extends Component {
 		return (
 			<SView col={'xs-12'} flex>
 				<SView col={'xs-12'} style={{
-					width: 920, alignSelf: 'center', paddingLeft: 14,
+					width: 1180, alignSelf: 'center', paddingLeft: 14,
 					paddingTop: 8,
 					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden',
 					shadowColor: STheme.color.darkGray,
@@ -442,6 +442,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						style={{ flex: 1 }}
 						iconSize={22}
 						padding={8}
+						cellStyle={{ paddingHorizontal: 14, paddingVertical: 10 }}
 						adjustColumnWidth
 						listFooterComponent={() => <SHr height={60} />}
 
@@ -455,13 +456,13 @@ export default class TablaTransaccionesProveedor extends Component {
 						)}
 						onSelect={(e) => this.openRowMenu(e.evt, e.row, e.dinamicTable)}
 					>
-						<DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1}
+						<DinamicTable.Col key="index" label="N°" width={45} data={(e) => (e?.index ?? 0) + 1}
 							footerComponent={() => <SView style={this.footerBarStyle('center')} />}
 						/>
-						<DinamicTable.Col key="fecha" label="Fecha" width={80} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""}
+						<DinamicTable.Col key="fecha" label="Fecha" width={95} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""}
 							footerComponent={() => <SView style={this.footerBarStyle('center')} />}
 						/>
-						<DinamicTable.Col key="tipo" label="Tipo" width={80} data={(e) => e?.row?.tipo || "-"} customComponent={(e) => {
+						<DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e?.row?.tipo || "-"} customComponent={(e) => {
 							const color = this.tipoBadgeColor(e?.row?.tipo);
 							return <SView style={{ paddingVertical: 3, paddingHorizontal: 10, borderRadius: 20, backgroundColor: color + "26", borderWidth: 1, borderColor: color }} center >
 								<SText fontSize={10} bold color={color} style={{ textTransform: "uppercase", letterSpacing: 0.3 }} >{e.data}</SText>
@@ -510,7 +511,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								);
 							}}
 						/>
-						<DinamicTable.Col key="acciones" label="" width={40} data={() => ""} cellStyle={{ alignItems: "center" }}
+						<DinamicTable.Col key="acciones" label="" width={50} data={() => ""} cellStyle={{ alignItems: "center" }}
 							customComponent={(e) => (
 								<SView
 									onPress={(evt) => this.openRowMenu(evt, e.row, e.dinamicTable)}
@@ -614,7 +615,7 @@ export default class TablaTransaccionesProveedor extends Component {
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
 						<SView col={'xs-12'} style={{
-							width: 920,
+							width: 1180,
 							alignSelf: 'center',
 							backgroundColor: STheme.color.background,
 							borderRadius: 16,
@@ -694,7 +695,7 @@ export default class TablaTransaccionesProveedor extends Component {
 					<SHr height={20} />
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12'} style={{ width: 920, alignSelf: 'center' }}>
+						<SView col={'xs-12'} style={{ width: 1180, alignSelf: 'center' }}>
 							<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
 								{this.state.saldo > 0 && (
 									<SView
