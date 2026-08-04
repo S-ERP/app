@@ -643,6 +643,7 @@ export default class TablaTransaccionesProveedor extends Component {
 									label="fecha"
 									key_opciones="hoy"
 									color={color_principal}
+									colorText={STheme.color.white}
 									onChange={e => {
 										this.state.fecha_inicio = e.fecha_inicio;
 										this.state.fecha_fin = e.fecha_fin;
