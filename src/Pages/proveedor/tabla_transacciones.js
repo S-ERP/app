@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-
 import { Dimensions } from 'react-native';
 import { SDate, SHr, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
@@ -303,7 +302,7 @@ export default class TablaTransaccionesProveedor extends Component {
 		if (t.includes('saldo')) return color_badge_saldo;
 		if (t.includes('compra')) return color_badge_compra;
 		if (t.includes('cuota') || t.includes('pago') || t.includes('amortiz')) return color_badge_cuota;
-		return STheme.color.lightGray;
+		return STheme.color.text;
 	}
 
 	openRowMenu(evt, row, dinamicTable) {
@@ -433,9 +432,6 @@ export default class TablaTransaccionesProveedor extends Component {
 						headerTextStyle={{
 							color: STheme.color.white,
 						}}
-						textStyle={{
-							color: STheme.color.lightGray,
-						}}
 
 						keyExtractor={(e) => e?.key}
 						textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
@@ -451,7 +447,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						renderHeaderActions={() => null}
 						renderNoResults={() => (
 							<SView col={"xs-12"} center padding={24}>
-								<SText fontSize={13} color={STheme.color.lightGray}>No se encontraron transacciones en el rango seleccionado.</SText>
+								<SText fontSize={13} color={STheme.color.text + "99"}>No se encontraron transacciones en el rango seleccionado.</SText>
 							</SView>
 						)}
 						onSelect={(e) => this.openRowMenu(e.evt, e.row, e.dinamicTable)}
@@ -520,7 +516,7 @@ export default class TablaTransaccionesProveedor extends Component {
 									center
 									style={{ borderRadius: 8 }}
 								>
-									<SIconApp name="threeDotsVertical" width={18} height={18} fill={STheme.color.lightGray} />
+									<SIconApp name="threeDotsVertical" width={18} height={18} fill={STheme.color.text + "99"} />
 								</SView>
 							)}
 							footerComponent={() => <SView style={this.footerBarStyle('center')} />}
@@ -634,7 +630,7 @@ export default class TablaTransaccionesProveedor extends Component {
 								<SView width={12} />
 								<SView flex>
 									<SText fontSize={18} bold color={STheme.color.text}>Kardex Individual del Proveedor</SText>
-									<SText fontSize={12} color={STheme.color.lightGray}>Trazabilidad financiera de compras, pagos y saldos</SText>
+									<SText fontSize={12} color={STheme.color.text + "99"}>Trazabilidad financiera de compras, pagos y saldos</SText>
 								</SView>
 							</SView>
 
