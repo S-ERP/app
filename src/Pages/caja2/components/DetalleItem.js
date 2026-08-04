@@ -114,6 +114,11 @@ export default class DetalleItem extends Component {
     const puedeAnular = !esAnulacion && !anulado && (esVenta
       ? MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })
       : MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" }));
+    const esAmortizacion = item.tipo === "amortizacion_compra" || item.tipo === "amortizacion_venta";
+    const puedeAnularAmortizacion = esAmortizacion && !anulado && (
+      MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })
+      || MDL.rolesPermisos.getPermiso({ url: "/compra", permiso: "anular_compra" })
+    );
     const fechaStr = item.fecha_on
       ? new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")
       : "—";
@@ -213,6 +218,36 @@ export default class DetalleItem extends Component {
               </SView>
               <SView width={8} />
             </>}
+            {puedeAnularAmortizacion && <>
+              <SView row style={{ borderWidth: 1, borderColor: STheme.color.danger, padding: 2, borderRadius: 4, opacity: this.state.anulando ? 0.5 : 1 }}
+                backgroundColor={STheme.color.danger + "30"}
+                onPress={() => {
+                  if (this.state.anulando) return;
+                  SPopup.confirm({
+                    title: "Anular amortización",
+                    message: "¿Está seguro de que desea anular esta amortización? El saldo pendiente volverá a incrementarse. Esta acción no se puede deshacer.",
+                    onPress: () => {
+                      const notificationKey = `anular_amortizacion_${item.key}`;
+                      this.setState({ anulando: true });
+                      SNotification.send({ key: notificationKey, title: "Anulando amortización...", type: "loading" });
+                      MDL.caja.anular_amortizacion({ key_caja_detalle: item.key })
+                        .then(() => {
+                          this.setState({ anulando: false });
+                          SNotification.send({ key: notificationKey, title: "Amortización anulada", body: "La amortización se anuló correctamente.", color: STheme.color.success });
+                        })
+                        .catch((error) => {
+                          this.setState({ anulando: false });
+                          SNotification.send({ key: notificationKey, title: "Error al anular", body: error?.error || error?.message || String(error), color: STheme.color.danger });
+                        });
+                    }
+                  });
+                }}>
+                <SIconApp width={13} height={13} name={"cancelado"} fill={STheme.color.danger} />
+                <SView width={3} />
+                <SText fontSize={10} color={STheme.color.danger}>Anular amortización</SText>
+              </SView>
+              <SView width={8} />
+            </>}
             {item.tipo === "compra" && <>
               <SView row style={{
                 borderWidth: 1,
@@ -263,7 +298,7 @@ export default class DetalleItem extends Component {
               }}>
                 <SIconApp name='upImgNube' fill={STheme.color.text} width={12} />
                 <SView width={4} />
-                <SText fontSize={10} color={STheme.color.text}>Subir Vouchers</SText>
+                <SText fontSize={10} color={STheme.color.text}>Subir Vosuchers</SText>
               </SView>
               <SView width={4} />
             </SView>

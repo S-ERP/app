@@ -364,7 +364,22 @@ export default class TablaTransacciones extends Component {
 										onCancel={() => SPopup.close("popup-confirmar-anular-amortizacion")}
 										onConfirm={() => {
 											SPopup.close("popup-confirmar-anular-amortizacion");
-											SPopup.alert('Trabajando en la función de anulación...');
+											SSocket.sendPromise({
+												service: "caja",
+												component: "caja_detalle",
+												type: "anularAmortizacion",
+												data: { key_cuota_amortizacion: row?.key_cuota_amortizacion },
+												key_usuario: MDL.usuario.session?.key,
+												key_empresa: MDL.empresa.select?.key,
+												key_caja: MDL.caja.activa?.key,
+											}).then(resp => {
+												if (resp?.estado === "exito") {
+													SNotification.send({ title: "Éxito", body: "Amortización anulada correctamente.", color: STheme.color.success, time: 3000 });
+													this.DinamicTable.loadData();
+												}
+											}).catch(err => {
+												SNotification.send({ title: 'Error', body: err?.message || 'No se pudo anular la amortización.', color: STheme.color.danger });
+											});
 										}}
 									/>
 								)
@@ -699,3 +714,4 @@ export default class TablaTransacciones extends Component {
 		);
 	}
 }
+
