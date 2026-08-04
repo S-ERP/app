@@ -1,6 +1,6 @@
 {
   "name": "servisofts_erp_app",
-  "version": "1.0.14",
+  "version": "1.0.16",
   "description": "servisofts_erp_app",
   "scripts": {
     "start": "react-native start",
