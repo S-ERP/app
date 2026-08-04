@@ -15,7 +15,6 @@ import MDL from '../../MDL';
 import SelectTipoPagoCompra from '../caja2/components/SelectTipoPagoCompra';
 const color_principal = '#1a3c66';
 const color_modal = '#1c1f24';
-const color_modal_surface = 'slategray';
 const color_badge_pago = 'steelblue';
 const color_badge_saldo = 'deepskyblue';
 const color_badge_compra = 'orange';
@@ -70,7 +69,7 @@ class AmortizarModalContent extends Component {
 							/>
 						</SView>
 						<SView width={10} />
-						<SText bold fontSize={17} color={STheme.color.text}>Amortizar Deuda</SText>
+						<SText bold fontSize={17} color={STheme.color.white}>Amortizar Deuda</SText>
 					</SView>
 
 					<SView width={28} height={28} center onPress={onCancel} style={{ transform: [{ rotate: "45deg" }], }} >
@@ -79,14 +78,14 @@ class AmortizarModalContent extends Component {
 				</SView>
 
 				<SView col="xs-12" padding={20}>
-					<SView col="xs-12" style={{ backgroundColor: color_modal_surface, borderRadius: 12, borderWidth: 1, borderColor: STheme.color.gray + "66", paddingVertical: 14, paddingHorizontal: 16, marginBottom: 20, alignItems: "center" }}>
+					<SView col="xs-12" style={{ backgroundColor: STheme.color.darkGray, borderRadius: 12, borderWidth: 1, borderColor: STheme.color.gray + "66", paddingVertical: 14, paddingHorizontal: 16, marginBottom: 20, alignItems: "center" }}>
 						<SText fontSize={12} color={STheme.color.lightGray}>Saldo pendiente</SText>
 						<SHr height={4} />
 						<SText bold fontSize={22} color={STheme.color.white}>{formatMonto(saldo)}</SText>
 					</SView>
 
 					<SText fontSize={12} color={STheme.color.lightGray} style={{ marginBottom: 6 }}>Monto a pagar</SText>
-					<SView row col="xs-12" style={{ height: 48, borderRadius: 10, borderWidth: 1, borderColor: error ? STheme.color.danger : STheme.color.gray + "66", backgroundColor: color_modal_surface, alignItems: "center", paddingHorizontal: 12 }}>
+					<SView row col="xs-12" style={{ height: 48, borderRadius: 10, borderWidth: 1, borderColor: error ? STheme.color.danger : STheme.color.gray + "66", backgroundColor: STheme.color.darkGray, alignItems: "center", paddingHorizontal: 12 }}>
 						<SText fontSize={13} bold color={STheme.color.lightGray} style={{ marginRight: 8 }}>{simboloBase}</SText>
 						<SView flex height center>
 							<SInput2
@@ -108,7 +107,7 @@ class AmortizarModalContent extends Component {
 					<SHr height={20} />
 					<SView row col="xs-12" style={{ gap: 12 }}>
 						<SView flex height={44} borderRadius={10} center backgroundColor={STheme.color.background + "0D"} border={STheme.color.gray} onPress={onCancel}>
-							<SText color={STheme.color.text}>Cancelar</SText>
+							<SText color={STheme.color.lightGray}>Cancelar</SText>
 						</SView>
 						<SView flex height={44} borderRadius={10} center backgroundColor={color_principal} onPress={() => this.handleConfirm()}>
 							<SText color={STheme.color.white}>Confirmar</SText>
