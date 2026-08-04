@@ -438,7 +438,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						style={{ flex: 1 }}
 						iconSize={22}
 						padding={8}
-						cellStyle={{ paddingHorizontal: 14, paddingVertical: 10 }}
+						cellStyle={{ paddingHorizontal: 14 }}
 						adjustColumnWidth
 						listFooterComponent={() => <SHr height={60} />}
 
@@ -460,7 +460,7 @@ export default class TablaTransaccionesProveedor extends Component {
 						/>
 						<DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e?.row?.tipo || "-"} customComponent={(e) => {
 							const color = this.tipoBadgeColor(e?.row?.tipo);
-							return <SView style={{ paddingVertical: 3, paddingHorizontal: 10, borderRadius: 20, backgroundColor: color + "26", borderWidth: 1, borderColor: color }} center >
+							return <SView style={{ paddingVertical: 2, paddingHorizontal: 10, borderRadius: 20, backgroundColor: color + "26", borderWidth: 1, borderColor: color }} center >
 								<SText fontSize={10} bold color={color} style={{ textTransform: "uppercase", letterSpacing: 0.3 }} >{e.data}</SText>
 							</SView>
 						}}
@@ -507,16 +507,16 @@ export default class TablaTransaccionesProveedor extends Component {
 								);
 							}}
 						/>
-						<DinamicTable.Col key="acciones" label="" width={50} data={() => ""} cellStyle={{ alignItems: "center" }}
+						<DinamicTable.Col key="acciones" label="" width={50} data={() => ""} cellStyle={{ alignItems: "center", paddingVertical: 2 }}
 							customComponent={(e) => (
 								<SView
 									onPress={(evt) => this.openRowMenu(evt, e.row, e.dinamicTable)}
-									width={32}
-									height={32}
+									width={22}
+									height={22}
 									center
-									style={{ borderRadius: 8 }}
+									style={{ borderRadius: 6 }}
 								>
-									<SIconApp name="threeDotsVertical" width={18} height={18} fill={STheme.color.text + "99"} />
+									<SIconApp name="threeDotsVertical" width={16} height={16} fill={STheme.color.text + "99"} />
 								</SView>
 							)}
 							footerComponent={() => <SView style={this.footerBarStyle('center')} />}
