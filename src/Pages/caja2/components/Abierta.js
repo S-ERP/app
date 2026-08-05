@@ -400,7 +400,8 @@ export default class Abierta extends Component {
         const cajaCerrada = !!this.getCaja()?.fecha_cierre;
         const soloLectura = esCajaAjena || cajaCerrada;
         const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
-        console.log("DATA", data)
+        // console.log("DATA")
+        // console.dir(data)
         return (
             <SView col={"xs-12"} center flex>
                 <FlatList
@@ -410,10 +411,11 @@ export default class Abierta extends Component {
                     // ItemSeparatorComponent={a => <SHr h={8} />}
                     renderItem={opcionSeleccionada === "movimientos"
                         ? ({ item, index }) => {
-                            const anulado = !!item.key_compra_venta && this.state.movimientos.some(m =>
-                                m.key_compra_venta === item.key_compra_venta &&
-                                (m.tipo === "anulacion_venta" || m.tipo === "anulacion_compra")
-                            );
+                            const esAmortizacion = item.tipo === "amortizacion_compra" || item.tipo === "amortizacion_venta";
+                            const anulado = esAmortizacion ? 
+                            
+                            this.state.movimientos.some(m => m.tipo === "amortizacion_anulada" && m.key_caja_detalle_original === item.key )
+                                : !!item.key_compra_venta && this.state.movimientos.some(m => m.key_compra_venta === item.key_compra_venta && (m.tipo === "anulacion_venta" || m.tipo === "anulacion_compra") );
                             return (
                                 <SView col={"xs-12"} center >
                                     <SView col={"xs-11 sm-10 md-8 lg-6"} padding={5}>
