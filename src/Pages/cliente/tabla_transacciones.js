@@ -557,7 +557,7 @@ export default class TablaTransacciones extends Component {
 								montoMaximo: monto,
 								monedaSymbol: simboloBase,
 								onSelect: (item) => {
-									const enviar = { tipos_pago: item, cuotas: cuotas };
+									const enviar = { tipos_pago: item, cuotas: cuotas, tipo: "venta" };
 									SSocket.sendPromise({
 										service: "caja",
 										component: "caja_detalle",
