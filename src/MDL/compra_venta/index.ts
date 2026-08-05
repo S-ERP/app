@@ -205,7 +205,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 			type: "execute_function",
 			func: "_get_compras_ventas_alvarito",
 			params: ["'" + key_empresa + "'", "'" + fecha_inicio_ + "'", "'" + fecha_fin_ + "'", "'" + _tipo + "'"],
-		});
+		}, 60000);
 		return resp.data || [];
 	}
 
@@ -230,7 +230,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 			type: "execute_function",
 			func: "_reporte_suscritos",
 			params: ["'" + key_empresa + "'"],
-		});
+		}, 60000);
 		return resp.data || [];
 	}
 
@@ -313,7 +313,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 			type: "execute_function",
 			func: "_get_cuotas_resumen_total_ventas",
 			params: ["'" + Model.empresa.Action.getKey() + "'"],
-		});
+		}, 60000);
 		return resp.data || [];
 	}
 	async execute_function(func: string, params: string[]) {

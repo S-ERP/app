@@ -134,7 +134,7 @@ export default class FechaFullFilter2 extends Component {
     }
 
     render() {
-        const { label, color } = this.props;
+        const { label, color, colorText } = this.props;
         const filtroLabel = label ? label.toUpperCase() : "FILTRO TIEMPO";
 
         return (
@@ -167,8 +167,8 @@ export default class FechaFullFilter2 extends Component {
                                     value={this.state.key_opciones}
                                     defaultValue={this.state.key_opciones}
                                     style={{
-                                        fontSize: 13, color: STheme.color.text, paddingHorizontal: 10, backgroundColor: color,
-                                        opacity: 0.6,
+                                        fontSize: 13, color: colorText || (color ? STheme.color.white : STheme.color.text), paddingHorizontal: 10,
+                                        backgroundColor: color ? color + "99" : undefined,
                                         height: 40,
                                         width: '100%'
                                     }}
@@ -215,11 +215,11 @@ export default class FechaFullFilter2 extends Component {
                                 height: 28,
                                 justifyContent: 'center',
                             }}
-                            backgroundColor={color || "#fff"}
+                            backgroundColor={color || STheme.color.card}
                             center
                             onPress={this.callOnChange}
                         >
-                            <SText center color={color ? "#fff" : undefined}>FILTRAR</SText>
+                            <SText center color={colorText || (color ? STheme.color.white : undefined)}>FILTRAR</SText>
                         </SView>
                     </SView>
                 </SView>
