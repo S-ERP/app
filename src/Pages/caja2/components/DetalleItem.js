@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { View, Linking } from 'react-native';
+
+import { Linking, View } from 'react-native';
 import {
-  SDate, SHr, SIcon, SMath, SNavigation, SNotification, SPopup, SText,
+  SDate, SHr,
+  SMath, SNavigation, SNotification, SPopup, SText,
   STheme, SView
 } from 'servisofts-component';
-import MDL from '../../../MDL';
-import SIconApp from '../../../Assets/SIconApp';
-import PopupUploadVoucher from './PopupUploadVoucher';
 import SSocket from 'servisofts-socket';
+import SIconApp from '../../../Assets/SIconApp';
 import { ColorCompraVenta } from '../../../Config/theme';
+import MDL from '../../../MDL';
+import PopupUploadVoucher from './PopupUploadVoucher';
 
 export default class DetalleItem extends Component {
 
@@ -109,8 +111,7 @@ export default class DetalleItem extends Component {
     const color = monto < 0 ? STheme.color.danger : STheme.color.success;
     const moneda = empresa?.monedas?.find(e => e.key === item.key_moneda);
     const detalleTipo = MDL.caja.detalle_types?.[item.tipo];
-    const esAnulacion = item.tipo === "anulacion_venta" || item.tipo === "anulacion_compra" || item.tipo === "amortizacion_anulada"|| item.tipo === "reversion_amortizacion";
-    // const esAnulacion = item.tipo === "anulacion_venta" || item.tipo === "anulacion_compra";
+    const esAnulacion = item.tipo === "anulacion_venta" || item.tipo === "anulacion_compra" || item.tipo === "amortizacion_anulada" || item.tipo === "reversion_amortizacion";
     const esVenta = item.tipo === "venta";
     const puedeAnular = !esAnulacion && !anulado && (esVenta
       ? MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" })
@@ -123,7 +124,6 @@ export default class DetalleItem extends Component {
     const fechaStr = item.fecha_on
       ? new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")
       : "—";
-
 
     return (<>
       <SView key={index} row padding={4} style={{
@@ -308,7 +308,7 @@ export default class DetalleItem extends Component {
         </SView>
       </SView>
 
-      <SView center style={{ position: "absolute", right: 0, top: 4, opacity: anulado ? 0.45 : 1, backgroundColor:anulado?"red":"blue" }}>
+      <SView center style={{ position: "absolute", right: 0, top: 4, opacity: anulado ? 0.45 : 1 }}>
         <SView center>
           <SText fontSize={18} bold color={color}>
             {moneda?.observacion} {SMath.formatMoney(monto)}

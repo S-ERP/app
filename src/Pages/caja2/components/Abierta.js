@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
+
 import { FlatList } from 'react-native';
 import { SDate, SHr, SIcon, SNavigation, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
-import MDL from '../../../MDL';
-import TotalTipoPago from './TotalTipoPago';
-import DetalleItem from './DetalleItem';
-import MenuAcciones from './MenuAcciones';
-import Model from '../../../Model';
-import DetalleItemVenta from './DetalleItemVenta';
 
+import MDL from '../../../MDL';
+import Model from '../../../Model';
+import DetalleItem from './DetalleItem';
+import DetalleItemVenta from './DetalleItemVenta';
+import MenuAcciones from './MenuAcciones';
+import TotalTipoPago from './TotalTipoPago';
 export default class Abierta extends Component {
     state = {
         movimientos: [],
@@ -45,7 +46,6 @@ export default class Abierta extends Component {
 
     async loadCaja() {
 
-
         try {
             const _key_caja = SNavigation.getParam("key");
 
@@ -54,10 +54,7 @@ export default class Abierta extends Component {
             const cajaCargada = await MDL.caja.getByKey(_key_caja);
             if (cajaCargada && this._mounted) {
                 this.setState({ caja: cajaCargada });
-
             }
-
-
         } catch (e) { }
     }
 
@@ -83,7 +80,6 @@ export default class Abierta extends Component {
                 m.empresa_tipo_pago = empresa_tipo_pago?.[m.key_empresa_tipo_pago];
             });
 
-            // Agrupar cada anulación justo debajo de su venta/compra original para que se entienda mejor.
             const ANULACION_TIPOS = ["anulacion_venta", "anulacion_compra"];
             const anulaciones = movimientos.filter(m => ANULACION_TIPOS.includes(m.tipo));
             const originales = movimientos.filter(m => !ANULACION_TIPOS.includes(m.tipo));
@@ -102,7 +98,6 @@ export default class Abierta extends Component {
                 if (!anulacionesUsadas.has(anu)) movimientosAgrupados.push(anu);
             });
 
-            //DETALLE COMPRA VENTA
             const rawDetalle = await MDL.compra_venta.getCompraVentaDetalleCaja("venta", "2025-01-01", "2030-09-05", caja?.key);
             const detalle = Array.isArray(rawDetalle) ? rawDetalle : Object.values(rawDetalle ?? {});
             if (this._mounted) this.setState({ movimientos: movimientosAgrupados, tipo_pago, ready: true, detalle });
@@ -175,7 +170,6 @@ export default class Abierta extends Component {
                     return (
                         <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", paddingVertical: 4 }}>
                             <SText bold fontSize={14} color={STheme.color.text}>ESTADO CAJA</SText>
-                            {/* <SText bold fontSize={14} color={STheme.color.success}>🟢 MI CAJA</SText> */}
                             <SText fontSize={11} color={STheme.color.lightGray}>Caja Abierta 🟢</SText>
                         </SView>
                     );
@@ -355,9 +349,6 @@ export default class Abierta extends Component {
                     <SText bold={opcionSeleccionada === "ventas"} color={opcionSeleccionada === "ventas" ? STheme.color.text : STheme.color.lightGray}>Ventas en caja</SText>
                 </SView>
             </SView>
-            {/* <SHr h={10} /> 
-            en cada iten que haya anular venta
-            */}
         </SView>;
     }
 
@@ -373,7 +364,6 @@ export default class Abierta extends Component {
         };
 
         const agrupado = this.state.movimientos.reduce((acc, item) => {
-            console.log(item)
             const key = item.key_compra_venta;
             const fecha_on = item.fecha_on;
             if (!key) return acc;
@@ -384,13 +374,9 @@ export default class Abierta extends Component {
                 detalle: (this.state.detalle ?? []).find(det => det.key === key),
             };
 
-
             const campo = tiposMap[item.tipo];
             if (campo) acc[key][campo] = 1;
 
-            // if (!item.items?.some(i => i.tipo === "venta")) {
-            //     return acc;
-            // }
             acc[key].items.push(item);
             return acc;
         }, {});
@@ -400,15 +386,12 @@ export default class Abierta extends Component {
         const cajaCerrada = !!this.getCaja()?.fecha_cierre;
         const soloLectura = esCajaAjena || cajaCerrada;
         const data = opcionSeleccionada === "movimientos" ? this.state.movimientos : Object.values(agrupado);
-        console.log("DATA")
-        console.dir(data)
         return (
             <SView col={"xs-12"} center flex>
                 <FlatList
                     style={{ flex: 1, width: "100%" }}
                     data={data}
                     ListHeaderComponent={this.renderHeader}
-                    // ItemSeparatorComponent={a => <SHr h={8} />}
                     renderItem={opcionSeleccionada === "movimientos"
                         ? ({ item, index }) => {
                             const REVERSION_AMORTIZACION_TIPOS = ["amortizacion_anulada", "reversion_amortizacion"];
