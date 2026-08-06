@@ -9,6 +9,7 @@ import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
 import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
+import AdministrarTipo from '../cliente/Components/AdministrarTipo';
 
 export default class Lista extends Component {
 	onSelect = SNavigation.getParam('onSelect');
@@ -271,8 +272,8 @@ export default class Lista extends Component {
 				hoverStyle={{ backgroundColor: STheme.color.card + "30" }}
 				buildRowStyle={({ item }) => Number(item?.__original?.estado) === 0 ? { opacity: 0.45 } : {}}
 				listFooterComponent={() => <SHr height={60} />}
-				onEvent={(e) => { if (e.evt === "render") {  } }}
-				onSelectionChange={() => {  }}
+				onEvent={(e) => { if (e.evt === "render") { } }}
+				onSelectionChange={() => { }}
 				renderHeaderActions={() => null}
 				renderLoading={() => (
 					<SView col={"xs-12"} center padding={24}>
@@ -316,9 +317,21 @@ export default class Lista extends Component {
 								onPress: () => SNavigation.navigate("/cliente/perfil", { key: e.row.key, tipo: "proveedor" }),
 							},
 							{
-								label: 'Ver trasabilidad proveedor',
-								icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+								label: 'Detalle de Deuda',
+								icon: <SIcon name="payMoney" fill={STheme.color.text} />,
 								onPress: () => SNavigation.navigate("/proveedor/transacciones", { key: e.row.key }),
+							},
+							{
+								label: 'Administrar Tipo',
+								icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
+								onPress: () => {
+									AdministrarTipo.open({
+										contacto: e.row,
+										onSuccess: () => {
+											this.DinamicTable.loadData();
+										}
+									});
+								},
 							},
 							{
 								icon: <SIconApp name="Edit" />,
@@ -357,7 +370,7 @@ export default class Lista extends Component {
 				}}
 				loadData={() => this.loadInitialData()}
 			>
-				{}
+				{ }
 				<DinamicTable.Col key="nombre_completo"
 					label="Proveedor" width={200} height={60} data={e => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e)} />
 
