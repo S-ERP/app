@@ -305,6 +305,8 @@ export default class DetalleItem extends Component {
               <SView width={4} />
             </SView>
           </SView>
+          {/* <SText>{item.key}</SText> */}
+
         </SView>
       </SView>
 
