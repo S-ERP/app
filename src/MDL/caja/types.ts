@@ -22,6 +22,14 @@ export type CajaDetalle = {
   key_cuenta_banco?: string,
 }
 
+export type datosAnulacion = {
+  key_compra_venta?: string,
+  fecha?: string,
+  motivo_anulacion?: string,
+  nombre_solicitante?: string,
+  key_usuario?: string,
+}
+
 
 export type CajaTypeAbstract = {
   key: string,

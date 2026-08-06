@@ -1,4 +1,4 @@
-import { EventListener, Caja, CajaDetalle } from "./types";
+import { EventListener, Caja, CajaDetalle, datosAnulacion } from "./types";
 
 import MDLAbstract from "../MDLAbstract";
 import SSocket from "servisofts-socket";
@@ -137,7 +137,7 @@ export default class caja extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "onDetalleChange" })
     return resp.data
   }
-  async anular_venta({ key_compra_venta = "", motivo_anulacion = "", nombre_solicitante = "", nombre_anulador = "" }) {
+  async anular_venta({ key_compra_venta = "" }) {
 
     const resp: any = await SSocket.sendPromise({
       service: "caja",
@@ -147,9 +147,23 @@ export default class caja extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key_compra_venta: key_compra_venta,
       key_caja: MDL.caja.activa?.key,
-      motivo_anulacion: motivo_anulacion,
-      nombre_solicitante: nombre_solicitante,
-      nombre_anulador: nombre_anulador,
+    })
+    this.dispatchEvent({ type: "onDetalleChange" })
+    return resp.data
+  }
+
+  async anular_venta2(key_compra_venta = "", anulacion: datosAnulacion) {
+
+    console.log("anular_venta2", key_compra_venta, anulacion);
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja_detalle",
+      type: "anularVenta",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+      key_compra_venta: key_compra_venta,
+      key_caja: MDL.caja.activa?.key,
+      datos_anulacion: anulacion
     })
     this.dispatchEvent({ type: "onDetalleChange" })
     return resp.data

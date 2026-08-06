@@ -461,6 +461,8 @@ export default class anuladas_caja extends Component {
 				/>
 				<DinamicTable.Col key="codigo_comprobante" label="COMPROBANTE" width={140} height={60} data={(e) => e.row?.codigo_comprobante ?? ""} />
 				<DinamicTable.Col key="descripcion" label="REFERENCIA" width={140} height={60} data={(e) => e.row?.descripcion ?? ""} />
+					<DinamicTable.Col key="motivo" label="MOTIVO" width={140} height={60} data={(e) => e.row?.datos_anulacion?.motivo_anulacion ?? ""} />
+					<DinamicTable.Col key="solicitante" label="SOLICITANTE" width={140} height={60} data={(e) => e.row?.datos_anulacion?.nombre_solicitante ?? ""} />
 				{/* <DinamicTable.Col key="total_efectivo" label="EFECTIVO" width={140} height={60} data={(e) => e.row?.total_efectivo > 0 ? SMath.formatMoney((e.row?.total_efectivo || 0)) : 0}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((row.total_efectivo) || 0), 0);

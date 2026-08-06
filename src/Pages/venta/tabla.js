@@ -497,11 +497,11 @@ export default class tabla extends Component {
 							const ejecutarAnulacion = () => {
 								const notificationKey = `anular_v_${row.key}`;
 								SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading", });
-								MDL.caja.anular_venta({
+								MDL.caja.anular_venta2(row.key, {
 									key_compra_venta: row.key,
 									motivo_anulacion,
 									nombre_solicitante,
-									nombre_anulador,
+									key_usuario: Model.usuario.Action.getKey(),
 								})
 									.then(() => {
 										this.DinamicTable?.loadData();
@@ -529,11 +529,11 @@ export default class tabla extends Component {
 											onChangeText={val => nombre_solicitante = val}
 										// style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} 
 										/>
-										<SHr height={10} />
+										{/* <SHr height={10} />
 										<SInput label="Nombre de quien anula" placeholder="Ingrese el nombre de la persona que anula"
 											onChangeText={val => nombre_anulador = val}
 										// style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} 
-										/>
+										/> */}
 										<SHr height={16} />
 										<SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
 											<PButtom type='danger' flex style={{ marginRight: 8 }} onPress={() => SPopup.close(popupKey)}>
@@ -541,8 +541,8 @@ export default class tabla extends Component {
 											</PButtom>
 											<PButtom flex type="primary"
 												onPress={() => {
-													if (!motivo_anulacion.trim() || !nombre_solicitante.trim() || !nombre_anulador.trim()) {
-														SNotification.send({ key: `anular_v_form_${row.key}`, title: "Complete los datos", body: "Debe ingresar el motivo, el solicitante y quién anula.", color: STheme.color.danger, time: 4000, });
+													if (!motivo_anulacion.trim() || !nombre_solicitante.trim()) {
+														SNotification.send({ key: `anular_v_form_${row.key}`, title: "Complete los datos", body: "Debe ingresar el motivo y el solicitante.", color: STheme.color.danger, time: 4000, });
 														return;
 													}
 													SPopup.close(popupKey);
