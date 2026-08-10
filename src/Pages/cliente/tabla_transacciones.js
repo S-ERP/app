@@ -14,7 +14,8 @@ import SInput2 from '../../Components/SForm2/SInput2';
 const color_principal = '#1a3c66';
 const color_modal = '#1c1f24';
 const color_badge_pago = 'steelblue';
-const color_badge_saldo = 'deepskyblue';
+const color_badge_saldo = 'orange';
+// const color_badge_saldo = 'deepskyblue';
 const color_badge_venta = 'orange';
 const color_badge_cuota = 'lime';
 
