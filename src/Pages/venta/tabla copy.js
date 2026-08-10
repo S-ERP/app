@@ -12,7 +12,6 @@ import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import PopupUploadFactura from './Components/PopupUploadFactura';
 import { Linking } from 'react-native'
 import FechaFullFilter from '../../Components/FechaFullFilter';
-import PButtom from '../../Components/PButtom';
 
 const TIPO_PRODUCTO_MAP = {
 	servicio: { color: "#2563eb", label: "Servicio" },
@@ -490,76 +489,24 @@ export default class tabla extends Component {
 					(MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "anular_venta" }) && Number(row?.estado) !== 0) ? {
 						label: "Anular venta", icon: "cancelado", iconProps: { fill: "#db0606ff", stroke: "#db0606ff", },
 						onPress: () => {
-							const popupKey = `anular_venta_form_${row.key}`;
-							let motivo_anulacion = "";
-							let nombre_solicitante = "";
-							let nombre_anulador = "";
-							const ejecutarAnulacion = () => {
-								const notificationKey = `anular_v_${row.key}`;
-								SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading", });
-								MDL.caja.anular_venta2(row.key, {
-									key_compra_venta: row.key,
-									motivo_anulacion,
-									nombre_solicitante,
-									key_usuario: Model.usuario.Action.getKey(),
-								})
-									.then(() => {
-										this.DinamicTable?.loadData();
-										SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success, });
-									})
-									.catch((error) => {
-										console.error("Error al anular venta:", error);
-										SNotification.send({ key: notificationKey, title: "Error Anular Venta", body: error?.message || String(error), color: STheme.color.danger, });
-									});
-							};
-							SPopup.open({
-								key: popupKey,
-								content: (
-									<SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
-										<SText fontSize={18}  col={"xs-12"} center bold>Anular venta</SText>
-										<SHr height={12} />
-										<SText fontSize={13} color={STheme.color.text + "99"}>Complete los siguientes datos para continuar con la anulación de la venta.</SText>
-										<SHr height={16} />
-										<SInput label="Motivo de anulación" placeholder="Ingrese el motivo de la anulación"
-											onChangeText={val => motivo_anulacion = val}
-										// style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} 
-										/>
-										<SHr height={10} />
-										<SInput label="Nombre del solicitante" placeholder="Ingrese el nombre del solicitante"
-											onChangeText={val => nombre_solicitante = val}
-										// style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} 
-										/>
-										{/* <SHr height={10} />
-										<SInput label="Nombre de quien anula" placeholder="Ingrese el nombre de la persona que anula"
-											onChangeText={val => nombre_anulador = val}
-										// style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} 
-										/> */}
-										<SHr height={16} />
-										<SView row col={"xs-12"} style={{ justifyContent: "flex-end" }}>
-											<PButtom type='danger' flex style={{ marginRight: 8 }} onPress={() => SPopup.close(popupKey)}>
-												<SText color={STheme.color.text}>CANCELAR</SText>
-											</PButtom>
-											<PButtom flex type="primary"
-												onPress={() => {
-													if (!motivo_anulacion.trim() || !nombre_solicitante.trim()) {
-														SNotification.send({ key: `anular_v_form_${row.key}`, title: "Complete los datos", body: "Debe ingresar el motivo y el solicitante.", color: STheme.color.danger, time: 4000, });
-														return;
-													}
-													SPopup.close(popupKey);
-													SPopup.confirm({
-														icon: "cancelado",
-														title: "Anular venta",
-														message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
-														cancel: { label: "Cancelar", color: STheme.color.lightGray, },
-														onPress: ejecutarAnulacion,
-													});
-												}}
-											>
-												<SText >CONTINUAR</SText>
-											</PButtom>
-										</SView>
-									</SView>
-								),
+							SPopup.confirm({
+								icon: "cancelado",
+								title: "Anular venta",
+								message: "¿Está seguro de que desea anular esta venta? Esta acción no se puede deshacer.",
+								cancel: { label: "Cancelar", color: STheme.color.lightGray, },
+								onPress: () => {
+									const notificationKey = `anular_v_${row.key}`;
+									SNotification.send({ key: notificationKey, title: "Anulando venta...", type: "loading", });
+									MDL.caja.anular_venta({ key_compra_venta: row.key, })
+										.then(() => {
+											this.DinamicTable?.loadData();
+											SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success, });
+										})
+										.catch((error) => {
+											console.error("Error al anular venta:", error);
+											SNotification.send({ key: notificationKey, title: "Error Anular Venta", body: error?.message || String(error), color: STheme.color.danger, });
+										});
+								},
 							});
 						},
 					} : null,

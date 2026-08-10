@@ -336,6 +336,7 @@ import pdf, { ReactComponent as pdfW } from "./svg/pdf.svg";
 import personBadge, { ReactComponent as personBadgeW } from "./svg/personBadge.svg";
 import receipt, { ReactComponent as receiptW } from "./svg/receipt.svg";
 import threeDotsVertical, { ReactComponent as threeDotsVerticalW } from "./svg/threeDotsVertical.svg";
+import payMoney, { ReactComponent as payMoneyW } from "./svg/payMoney.svg";
 
 
 
@@ -566,6 +567,7 @@ export const svg = {
 
   arrowRight: { Native: arrowRight, Web: arrowRightW },
   arrowDown: { Native: arrowDown, Web: arrowDownW },
+  payMoney: { Native: payMoney, Web: payMoneyW },
 
 
   ...blender,

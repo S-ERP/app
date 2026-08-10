@@ -10,6 +10,7 @@ import PopupCrearCliente from './Components/PopupCrearCliente';
 import SIconApp from '../../Assets/SIconApp';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
 import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
+import AdministrarTipo from './Components/AdministrarTipo';
 const URL = "/crm/cliente";
 export default class ListaClientes extends Component {
 	onSelect = SNavigation.getParam("onSelect");
@@ -268,8 +269,8 @@ export default class ListaClientes extends Component {
 				hoverStyle={{ backgroundColor: STheme.color.card + "30" }}
 				buildRowStyle={({ item }) => Number(item?.__original?.estado) === 0 ? { opacity: 0.45 } : {}}
 				listFooterComponent={() => <SHr height={60} />}
-				onEvent={(e) => { if (e.evt === "render") {  } }}
-				onSelectionChange={(rows) => {  }}
+				onEvent={(e) => { if (e.evt === "render") { } }}
+				onSelectionChange={(rows) => { }}
 				renderHeaderActions={() => null}
 				renderLoading={() => (
 					<SView col={"xs-12"} center padding={24}>
@@ -309,12 +310,26 @@ export default class ListaClientes extends Component {
 					});
 
 					options.push({
-						label: 'Ver trazabilidad cliente',
-						icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+						label: 'Detalle de Deuda',
+						icon: <SIcon name="payMoney" fill={STheme.color.text} />,
 						onPress: () => {
 							SNavigation.navigate("/cliente/transacciones", { key: e.row.key })
 						},
 					});
+
+					options.push({
+						label: 'Administrar Tipo',
+						icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
+						onPress: () => {
+							AdministrarTipo.open({
+								contacto: e.row,
+								onSuccess: () => {
+									this.DinamicTable.loadData();
+								}
+							});
+						},
+					});
+
 					if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
 						options.push({
 							label: 'Editar',
@@ -404,7 +419,7 @@ export default class ListaClientes extends Component {
 					});
 				}}
 			>
-				{}
+				{ }
 				<DinamicTable.Col key="nombre_completo"
 					headerStyle={{ paddingLeft: 4 }}
 					label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
