@@ -52,6 +52,6 @@ rsync -avz --delete build/ "$SSH_HOST:$BUILD_DIR/"
 echo "Reiniciando servidor en $SSH_HOST ($REMOTE_DIR)..."
 
 printf '1\n%s\n' "$SUDO_PASS" | ssh -tt "$SSH_HOST" "cd $REMOTE_DIR && ./servisofts.sh down"
-printf '1\n%s\n' "$SUDO_PASS" | ssh -tt "$SSH_HOST" "cd $REMOTE_DIR && ./servisofts.sh up"
+printf '1\n%s\n' "$SUDO_PASS" | ssh -tt "$SSH_HOST" "cd $REMOTE_DIR && ./servisofts.sh up -d"
 
 echo "Servidor reiniciado."
