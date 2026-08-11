@@ -68,6 +68,7 @@ export default class table extends Component {
 			const tipoCostoByKey = Object.fromEntries((tipo_costos ?? []).map(tc => [tc?.key, tc]));
 			const modelosByKey = Object.fromEntries((modelos ?? []).map(m => [m?.key, m]));
 			this.modelosByKey = modelosByKey;
+			const ingredientesByModelo = Object.fromEntries((ingredientes ?? []).map(a => [a?.key_modelo, a?.ingredientes ?? []]));
 
 			let data_mejorada = (modelos ?? []).map(e => ({
 				...e,
@@ -86,13 +87,7 @@ export default class table extends Component {
 				marca: e?.marca || {},
 				tags: e?.tags ?? [],
 				stock: Number(e?.stock ?? 0),
-				ingredientes: (ingredientes ?? []).filter(i => i?.key_modelo === e?.key).map(i => ({
-					...i,
-					modelo_ingrediente: (i?.modelo_ingrediente ?? []).map(mi => ({
-						...mi,
-						modelo: modelosByKey[mi?.key_modelo] || {},
-					})),
-				})),
+				ingredientes: ingredientesByModelo[e?.key] ?? [],
 			}));
 
 			if (this.state.selectedStock?.key === "con_stock") {
@@ -477,20 +472,16 @@ export default class table extends Component {
 					wrap
 					textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
 					data={(e) => (e.row?.ingredientes ?? [])
-						.flatMap(g => (g.modelo_ingrediente ?? []).map(mi => `${mi.cantidad}x ${mi.modelo?.descripcion ?? ""}`))
+						.map(i => `${i.cantidad}x ${i.modelo_requerido}`)
 						.join(", ")}
 					customComponent={e => {
-						const grupos = e.row?.ingredientes ?? [];
-						if (!grupos.length) return null;
+						const items = e.row?.ingredientes ?? [];
+						if (!items.length) return null;
 						return (
 							<SView col={"xs-12"}>
-								{grupos.map(grupo => (
-									<SText key={grupo.key} fontSize={10} numberOfLines={0} style={{ color: STheme.color.lightGray }}>
-										{(grupo.modelo_ingrediente ?? [])
-											.map(mi => `${mi.cantidad}x ${mi.modelo?.descripcion ?? "?"}`)
-											.join(", ")}
-									</SText>
-								))}
+								<SText fontSize={10} numberOfLines={0} style={{ color: STheme.color.lightGray }}>
+									{items.map(i => `${i.cantidad}x ${i.modelo_requerido}`).join(", ")}
+								</SText>
 							</SView>
 						);
 					}}
