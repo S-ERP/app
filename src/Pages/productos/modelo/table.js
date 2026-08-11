@@ -378,24 +378,23 @@ export default class table extends Component {
 						);
 					}}
 				/>
-				{/* alvaro */}
-				<DinamicTable.Col key="ingrediente" label="ingrediente" width={100} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
-					customComponent={e => (
-						<SView row>
-							{(e.row?.tags ?? []).map(item => (
-								<SView key={item?.key} center row style={{ marginRight: 4, marginBottom: 4 }}
-									onPress={() =>
-										PopupTag.open({
-											editObject: { ...item, quitar: true },
-											onSuccess: () => this.table?.loadData(),
-										})
-									}
-								>
-									{this.renderColorPreview(item?.nombre, item?.color)}
-								</SView>
-							))}
-						</SView>
-					)}
+				<DinamicTable.Col key="ingrediente" label="Ingrediente" width={180}
+					wrap
+					textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
+					data={(e) => (e.row?.ingredientes ?? [])
+						.map(i => `${i.cantidad}x ${i.modelo_requerido}`)
+						.join(", ")}
+					customComponent={e => {
+						const items = e.row?.ingredientes ?? [];
+						if (!items.length) return null;
+						return (
+							<SView col={"xs-12"}>
+								<SText fontSize={10} numberOfLines={0} style={{ color: STheme.color.lightGray }}>
+									{items.map(i => `${i.cantidad}x ${i.modelo_requerido}`).join(", ")}
+								</SText>
+							</SView>
+						);
+					}}
 				/>
 
 
@@ -468,25 +467,6 @@ export default class table extends Component {
 					}
 					}
 				/>
-				<DinamicTable.Col key="ingrediente" label="Ingrediente" width={180}
-					wrap
-					textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
-					data={(e) => (e.row?.ingredientes ?? [])
-						.map(i => `${i.cantidad}x ${i.modelo_requerido}`)
-						.join(", ")}
-					customComponent={e => {
-						const items = e.row?.ingredientes ?? [];
-						if (!items.length) return null;
-						return (
-							<SView col={"xs-12"}>
-								<SText fontSize={10} numberOfLines={0} style={{ color: STheme.color.lightGray }}>
-									{items.map(i => `${i.cantidad}x ${i.modelo_requerido}`).join(", ")}
-								</SText>
-							</SView>
-						);
-					}}
-				/>
-
 				<DinamicTable.Col key={"observacion"} label='Observación' width={150}
 					textStyle={{
 						fontSize: 12,
