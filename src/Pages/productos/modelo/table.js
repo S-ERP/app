@@ -22,15 +22,11 @@ export default class table extends Component {
 		super(props);
 		this.state = {
 			time: new Date().getTime(),
-			allTags: [],
-			selectedTags: props.selectedTags || [],
-			search: "",
 			selectedAlmacen: null,
 			selectedSucursal: null,
 			selectedStock: null,
 			selectedTipoCuenta: null,
 			selectedTipoModelo: null,
-
 		};
 		this.modelos = null;
 	}
@@ -66,8 +62,6 @@ export default class table extends Component {
 			const monedasByKey = Object.fromEntries((monedas ?? []).map(m => [m?.key, m]));
 			const clientesByKey = Object.fromEntries((clientes ?? []).map(c => [c?.key, c]));
 			const tipoCostoByKey = Object.fromEntries((tipo_costos ?? []).map(tc => [tc?.key, tc]));
-			const modelosByKey = Object.fromEntries((modelos ?? []).map(m => [m?.key, m]));
-			this.modelosByKey = modelosByKey;
 			const ingredientesByModelo = Object.fromEntries((ingredientes ?? []).map(a => [a?.key_modelo, a?.ingredientes ?? []]));
 
 			let data_mejorada = (modelos ?? []).map(e => ({
@@ -108,8 +102,6 @@ export default class table extends Component {
 				);
 			}
 			this.modelos = data_mejorada;
-			console.clear();
-			console.log(JSON.stringify(data_mejorada));
 
 			return data_mejorada;
 		} catch (error) {
@@ -133,7 +125,7 @@ export default class table extends Component {
 		);
 	}
 	render() {
-		return <SPage title={"Modelos"} disableScroll >
+		return <SPage title={"Modelos"} disableScroll>
 			<SView row col={"xs-12"} style={{
 				backgroundColor: "transparent",
 				borderBottomWidth: 1,
@@ -354,8 +346,7 @@ export default class table extends Component {
 
 				<DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
 
-
-				<DinamicTable.Col key="nombre" label="Nombreww" headerStyle={{ paddingLeft: 4 }} width={150} height={60}
+				<DinamicTable.Col key="nombre" label="Nombre" headerStyle={{ paddingLeft: 4 }} width={190} height={60}
 					data={(e) => e.row.descripcion ?? ""}
 					customComponent={e => {
 						const esVenta = (e.row?.key);
@@ -396,7 +387,6 @@ export default class table extends Component {
 						);
 					}}
 				/>
-
 
 				<DinamicTable.Col key={"marca"} label='Marca' width={130} data={(e) => e.row?.marca?.descripcion} wrap textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
 					customComponent={e => {
@@ -556,7 +546,7 @@ export default class table extends Component {
 					}}
 				/>
 
-				{/* <DinamicTable.Col key={"duracion_medida"} label='Vigencia' width={85}
+				<DinamicTable.Col key={"duracion_medida"} label='Vigencia' width={85}
 					data={(e) => e.row?.duracion_medida}
 					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
 					customComponent={e => {
@@ -565,9 +555,9 @@ export default class table extends Component {
 							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.row?.duracion} {e.data}</SText>
 						</SView>
 					}}
-				/> */}
+				/>
 
-				{/* <DinamicTable.Col key={"cantidad_suscriptores"} label='Personas' width={85}
+				<DinamicTable.Col key={"cantidad_suscriptores"} label='Personas' width={85}
 					data={(e) => e.row?.cantidad_suscriptores}
 					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
 					customComponent={e => {
@@ -576,7 +566,7 @@ export default class table extends Component {
 							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
 						</SView>
 					}}
-				/> */}
+				/>
 
 				<DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
 
@@ -592,8 +582,7 @@ export default class table extends Component {
 					}}
 				/>
 
-
-				{/* <DinamicTable.Col
+				<DinamicTable.Col
 					key={"contactos_"}
 					label='Contactos'
 					width={300}
@@ -610,9 +599,9 @@ export default class table extends Component {
 							})}
 						</SView>
 					)}
-				/> */}
+				/>
 
-				{/* <DinamicTable.Col
+				<DinamicTable.Col
 					key={"contactos2_"}
 					label='Contactos'
 					width={350}
@@ -629,8 +618,7 @@ export default class table extends Component {
 							})}
 						</SView>
 					)}
-				/> */}
-
+				/>
 			</DinamicTable>
 			<FloatButtom onPress={() => {
 				PopupDetalleModelo.open({
@@ -644,6 +632,6 @@ export default class table extends Component {
 					}
 				});
 			}} />
-		</SPage >
+		</SPage>
 	}
 }
