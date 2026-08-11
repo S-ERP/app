@@ -120,3 +120,6 @@ yarn-error.log*
 # END
 .eslintcache
 android/.settings/org.eclipse.buildship.core.prefs
+
+# local deploy credentials, never commit
+.siles.env
