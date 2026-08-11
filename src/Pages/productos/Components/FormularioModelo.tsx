@@ -118,7 +118,6 @@ export default class FormularioModelo extends Component<Props> {
                         labelStyle: { top: -10, },
                         inputStyle: { paddingStart: 8 },
                         icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                            { }
                             <InputFoto
                                 ref={ref => this._ref.image_marca = ref}
                                 src={(SSocket.api as any).inventario + "marca/.128_" + this.props.editObject?.key_marca}
@@ -189,7 +188,6 @@ export default class FormularioModelo extends Component<Props> {
                         labelStyle: { top: -10, },
                         inputStyle: { paddingStart: 8 },
                         icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                            { }
                             <InputFoto
                                 ref={ref => this._ref.image_tipo_producto = ref}
                                 src={(SSocket.api as any).inventario + "tipo_producto/.128_" + this.props.editObject?.key_tipo_producto}
@@ -224,7 +222,6 @@ export default class FormularioModelo extends Component<Props> {
                                 }
                             }
                         },
-                        // defaultValue: this.props.editObject?.descripcion,
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("descripcion");
                         },
@@ -239,8 +236,6 @@ export default class FormularioModelo extends Component<Props> {
                             }).then((resp: any) => {
                                 this.state.key_tipo_producto = resp.key;
                                 this.state.tipo_productos.push(resp as never);
-                                // this._ref.image_marca.setValue((SSocket.api as any).inventario + "marca/" + resp.key);
-                                // this._ref.image_marca.forceUpdate();
                                 this.forceUpdate();
                                 SNotification.send({
                                     title: "Tipo de producto guardado",
@@ -261,11 +256,8 @@ export default class FormularioModelo extends Component<Props> {
                             <SIconApp name='adicional' fill={STheme.color.warning} />
                         </SView> : null,
                         onBlur: () => {
-                            if (this.state.key_tipo_producto) {
-                                console.log("Tipo produco seleccionada:", this.state.key_tipo_producto);
-                            } else {
+                            if (!this.state.key_tipo_producto) {
                                 this.forceUpdate();
-                                console.log("No se ha seleccionado una marca válida.");
                             }
                         }
                     },
@@ -334,7 +326,6 @@ export default class FormularioModelo extends Component<Props> {
                     },
 
                     ...(this.state.tipoSeleccionado === 'servicio' && {
-                        // ...(this.props.editObject?.alvaro === 'servicio' && {
                         "duracion": {
                             col: "xs-1.5",
                             type: "number",
@@ -366,11 +357,7 @@ export default class FormularioModelo extends Component<Props> {
                                 if (this.form) this.form.focus("observacion");
                             }
                         },
-
-
                     }),
-
-
 
                     "observacion": {
                         col: "xs-12",
@@ -422,20 +409,6 @@ export default class FormularioModelo extends Component<Props> {
                         icon: <SIconApp name='Ingreso' width={20} />,
                         defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
                         label: "Precio venta", placeholder: "0,00", type: "money",
-                        // iconR: <SView style={{
-                        //width: 80, height: 40,
-                        //backgroundColor: STheme.color.card
-                        // }} >
-                        //<InputSelector type='custom'
-                        //customStyle={"erp"}
-                        //label={"moneda:"}
-                        //options={this.state.monedas?.map((m: any) => {
-                        //return { label: m.observacion, value: m.key }
-                        //}) || []}
-                        //defaultValue={(!this.props.editObject?.precio_venta_moneda ? "" : this.props.editObject?.precio_venta_moneda)}
-                        ///>
-                        // </SView>
-                        // ,
                     },
                     "precio_venta_moneda": {
                         col: "xs-12 sm-2.5",
@@ -457,13 +430,8 @@ export default class FormularioModelo extends Component<Props> {
                         onPress: () => {
                             CuentasAnidadas.open({
                                 select: (cuentaSelec: any) => {
-                                    console.log("SELECCIONADO:", cuentaSelec)
                                     CuentasAnidadas.close();
                                     this.setState({ key_cuenta_contable_inventario: cuentaSelec.key });
-                                    // this.setState({
-                                    //     cuentaSeleccionadaG: cuentaSelec
-                                    // });
-                                    // SPopup.close("popup-cuentas");
                                 }
                             })
                         }
@@ -537,7 +505,6 @@ export default class FormularioModelo extends Component<Props> {
                                 await Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/tipo_producto/" + resp.key_tipo_producto)
                             }
                         }
-                        console.log("Modelo guardado:", resp);
                         if (this.props.onSuccess) {
                             this.props.onSuccess(resp);
                         }

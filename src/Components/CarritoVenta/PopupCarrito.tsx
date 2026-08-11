@@ -136,7 +136,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     <SGradient colors={[colorVenta, "#1b5e20"]} deg={120} />
                     <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center", }}>
                         <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}> <SText fontSize={UI.font.icon}>🛒</SText> </SView>
-                        <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrito de Ventas"}</SText>
+                        <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrsito de Ventas"}</SText>
                         <SView flex />
                         <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center", }} onPress={() => SPopup.close("PopupCarrito")} > <SText fontSize={UI.font.tiny} bold color={STheme.color.white}>{"✕"}</SText> </SView>
                     </SView>
@@ -422,6 +422,57 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             </SView>
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
+            <ListaIngredientes item={item} />
+        </SView>
+    );
+};
+
+const ListaIngredientes = ({ item }: any) => {
+    const [isOpen, setIsOpen] = React.useState(true);
+    const [ingredientes, setIngredientes] = React.useState<any[] | null>(
+        Array.isArray(item.modelo.ingredientes) ? item.modelo.ingredientes : null
+    );
+
+    React.useEffect(() => {
+        if (Array.isArray(item.modelo.ingredientes)) return;
+        let mounted = true;
+        MDL.inventario.getalvaro()
+            .then((resp: any) => {
+                if (!mounted) return;
+                const propio = (resp ?? []).find((a: any) => a?.key_modelo === item.modelo.key);
+                const list = propio?.ingredientes ?? [];
+                item.modelo.ingredientes = list;
+                setIngredientes(list);
+            })
+            .catch((err: any) => {
+                console.error("Error cargando ingredientes:", err);
+                if (mounted) setIngredientes([]);
+            });
+        return () => { mounted = false; };
+    }, []);
+
+    if (!ingredientes?.length) return null;
+    return (
+        <SView style={{ marginTop: 10 }}>
+            <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
+                <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Ingredientes"}</SText>
+                <SView flex />
+                <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{ingredientes.length}{")"}</SText>
+                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
+                    <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
+                        style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+                </SView>
+            </SView>
+            {isOpen && (
+                <SView col={"xs-12"}>
+                    {ingredientes.map((ing: any, idx: number) => (
+                        <SView key={ing.key_ingrediente ?? idx} row style={{ justifyContent: "space-between", paddingVertical: 2 }}>
+                            <SText fontSize={UI.font.tiny} color={STheme.color.text}>{ing.modelo_requerido}</SText>
+                            <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{"x "}{ing.cantidad}</SText>
+                        </SView>
+                    ))}
+                </SView>
+            )}
         </SView>
     );
 };
