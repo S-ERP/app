@@ -55,16 +55,19 @@ export default class table extends Component {
 
 	async loadData() {
 		try {
-			const [monedas, clientes, tipo_costos, modelos] = await Promise.all([
+			const [monedas, clientes, tipo_costos, modelos, ingredientes] = await Promise.all([
 				MDL.empresa.getMonedas().catch(() => []),
 				MDL.crm.cliente.getAll().catch(() => []),
 				MDL.inventario.getAllTipoCosto().catch(() => []),
 				MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "", this.state?.selectedSucursal?.key ?? ""
-				).catch(() => [])
+				).catch(() => []),
+				MDL.inventario.getalvaro().catch(() => [])
 			]);
 			const monedasByKey = Object.fromEntries((monedas ?? []).map(m => [m?.key, m]));
 			const clientesByKey = Object.fromEntries((clientes ?? []).map(c => [c?.key, c]));
 			const tipoCostoByKey = Object.fromEntries((tipo_costos ?? []).map(tc => [tc?.key, tc]));
+			const modelosByKey = Object.fromEntries((modelos ?? []).map(m => [m?.key, m]));
+			this.modelosByKey = modelosByKey;
 
 			let data_mejorada = (modelos ?? []).map(e => ({
 				...e,
@@ -83,6 +86,13 @@ export default class table extends Component {
 				marca: e?.marca || {},
 				tags: e?.tags ?? [],
 				stock: Number(e?.stock ?? 0),
+				ingredientes: (ingredientes ?? []).filter(i => i?.key_modelo === e?.key).map(i => ({
+					...i,
+					modelo_ingrediente: (i?.modelo_ingrediente ?? []).map(mi => ({
+						...mi,
+						modelo: modelosByKey[mi?.key_modelo] || {},
+					})),
+				})),
 			}));
 
 			if (this.state.selectedStock?.key === "con_stock") {
@@ -103,6 +113,8 @@ export default class table extends Component {
 				);
 			}
 			this.modelos = data_mejorada;
+			console.clear();
+			console.log(JSON.stringify(data_mejorada));
 
 			return data_mejorada;
 		} catch (error) {
@@ -348,7 +360,7 @@ export default class table extends Component {
 				<DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
 
 
-				<DinamicTable.Col key="nombre" label="Nombre" headerStyle={{ paddingLeft: 4 }} width={150} height={60}
+				<DinamicTable.Col key="nombre" label="Nombreww" headerStyle={{ paddingLeft: 4 }} width={150} height={60}
 					data={(e) => e.row.descripcion ?? ""}
 					customComponent={e => {
 						const esVenta = (e.row?.key);
@@ -371,6 +383,26 @@ export default class table extends Component {
 						);
 					}}
 				/>
+				{/* alvaro */}
+				<DinamicTable.Col key="ingrediente" label="ingrediente" width={100} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
+					customComponent={e => (
+						<SView row>
+							{(e.row?.tags ?? []).map(item => (
+								<SView key={item?.key} center row style={{ marginRight: 4, marginBottom: 4 }}
+									onPress={() =>
+										PopupTag.open({
+											editObject: { ...item, quitar: true },
+											onSuccess: () => this.table?.loadData(),
+										})
+									}
+								>
+									{this.renderColorPreview(item?.nombre, item?.color)}
+								</SView>
+							))}
+						</SView>
+					)}
+				/>
+
 
 				<DinamicTable.Col key={"marca"} label='Marca' width={130} data={(e) => e.row?.marca?.descripcion} wrap textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
 					customComponent={e => {
@@ -441,6 +473,29 @@ export default class table extends Component {
 					}
 					}
 				/>
+				<DinamicTable.Col key="ingrediente" label="Ingrediente" width={180}
+					wrap
+					textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
+					data={(e) => (e.row?.ingredientes ?? [])
+						.flatMap(g => (g.modelo_ingrediente ?? []).map(mi => `${mi.cantidad}x ${mi.modelo?.descripcion ?? ""}`))
+						.join(", ")}
+					customComponent={e => {
+						const grupos = e.row?.ingredientes ?? [];
+						if (!grupos.length) return null;
+						return (
+							<SView col={"xs-12"}>
+								{grupos.map(grupo => (
+									<SText key={grupo.key} fontSize={10} numberOfLines={0} style={{ color: STheme.color.lightGray }}>
+										{(grupo.modelo_ingrediente ?? [])
+											.map(mi => `${mi.cantidad}x ${mi.modelo?.descripcion ?? "?"}`)
+											.join(", ")}
+									</SText>
+								))}
+							</SView>
+						);
+					}}
+				/>
+
 				<DinamicTable.Col key={"observacion"} label='Observación' width={150}
 					textStyle={{
 						fontSize: 12,

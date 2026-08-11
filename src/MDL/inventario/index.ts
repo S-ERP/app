@@ -95,6 +95,21 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data || {});
   }
+
+ async getalvaro() {
+    const key_empresa = MDL.empresa.select?.key;
+
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "reporte",
+      type: "execute_function",
+      func: "_alvaro_get_modelo_ingredientes",
+      params: ["'" + key_empresa + "'"],
+    });
+    return Object.values(resp.data || {});
+}
+
+
   async getAllAsistencias() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -272,6 +287,19 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
+  async getIngrediente(key_ingrediente: string) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "ingrediente",
+      type: "getByKey",
+      key: key_ingrediente,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
+  }
+
   async saveIngrediente(ingrediente: any) {
     if (ingrediente.key) {
       const resp: any = await SSocket.sendPromise({
