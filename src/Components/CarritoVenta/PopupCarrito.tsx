@@ -10,7 +10,7 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 
 const colorVenta = "#2e7d32";
-
+const cambios =1;
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -422,60 +422,152 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             </SView>
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
-            <ListaIngredientes item={item} />
+            {cambios === 1 && <ListaIngredientes item={item} />}
         </SView>
     );
 };
 
-const ListaIngredientes = ({ item }: any) => {
-    const [isOpen, setIsOpen] = React.useState(true);
-    const [ingredientes, setIngredientes] = React.useState<any[] | null>(
-        Array.isArray(item.modelo.ingredientes) ? item.modelo.ingredientes : null
-    );
+class ListaIngredientes extends React.Component<{ item: any }> {
+    mounted = true;
+    state: { isOpen: boolean; ingredientes: any[] | null; nombresGrupo: Record<string, string> } = {
+        isOpen: true,
+        ingredientes: Array.isArray(this.props.item.modelo.ingredientes) ? this.props.item.modelo.ingredientes : null,
+        nombresGrupo: this.props.item.modelo.nombresIngredienteGrupo || {},
+    };
 
-    React.useEffect(() => {
-        if (Array.isArray(item.modelo.ingredientes)) return;
-        let mounted = true;
-        MDL.inventario.getalvaro()
-            .then((resp: any) => {
-                if (!mounted) return;
+    componentDidMount() {
+        const { item } = this.props;
+        if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) return;
+        Promise.all([
+            MDL.inventario.getalvaro(),
+            MDL.inventario.getPizarraIngrediente(),
+        ])
+            .then(([resp, pizarra]: [any, any]) => {
+                if (!this.mounted) return;
                 const propio = (resp ?? []).find((a: any) => a?.key_modelo === item.modelo.key);
                 const list = propio?.ingredientes ?? [];
+                const nombresGrupo = Object.fromEntries((pizarra ?? []).map((i: any) => [i.key, i.descripcion]));
                 item.modelo.ingredientes = list;
-                setIngredientes(list);
+                item.modelo.nombresIngredienteGrupo = nombresGrupo;
+                this.setState({ ingredientes: list, nombresGrupo });
             })
             .catch((err: any) => {
                 console.error("Error cargando ingredientes:", err);
-                if (mounted) setIngredientes([]);
+                if (this.mounted) this.setState({ ingredientes: [] });
             });
-        return () => { mounted = false; };
-    }, []);
+    }
 
-    if (!ingredientes?.length) return null;
-    return (
-        <SView style={{ marginTop: 10 }}>
-            <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
-                <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Ingredientes"}</SText>
-                <SView flex />
-                <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{ingredientes.length}{")"}</SText>
-                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
-                    <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
-                        style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    // Cada "key_ingrediente" es un requerimiento del combo. Si tiene más de una
+    // opción candidata (modelo_ingrediente), el cajero debe elegir cuál usar.
+    agrupar(ingredientes: any[]) {
+        const porGrupo: Record<string, any[]> = {};
+        ingredientes.forEach((ing: any) => {
+            const key = ing.key_ingrediente ?? ing.key_modelo_requerido;
+            if (!porGrupo[key]) porGrupo[key] = [];
+            porGrupo[key].push(ing);
+        });
+        return Object.entries(porGrupo).map(([key_ingrediente, opciones]) => ({ key_ingrediente, opciones }));
+    }
+
+    render() {
+        const { item } = this.props;
+        const { isOpen, ingredientes, nombresGrupo } = this.state;
+        const grupos = this.agrupar(ingredientes ?? []);
+        if (!grupos.length) return null;
+        return (
+            <SView style={{ marginTop: 10 }}>
+                <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => this.setState({ isOpen: !isOpen })}>
+                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Ingredientes"}</SText>
+                    <SView flex />
+                    <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{grupos.length}{")"}</SText>
+                    <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
+                        <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
+                            style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+                    </SView>
                 </SView>
+                {isOpen && (
+                    <SView col={"xs-12"}>
+                        {grupos.map((grupo) => (
+                            <GrupoIngrediente key={grupo.key_ingrediente} item={item} grupo={grupo}
+                                titulo={nombresGrupo[grupo.key_ingrediente] || "Ingrediente"} />
+                        ))}
+                    </SView>
+                )}
             </SView>
-            {isOpen && (
-                <SView col={"xs-12"}>
-                    {ingredientes.map((ing: any, idx: number) => (
-                        <SView key={ing.key_ingrediente ?? idx} row style={{ justifyContent: "space-between", paddingVertical: 2 }}>
-                            <SText fontSize={UI.font.tiny} color={STheme.color.text}>{ing.modelo_requerido}</SText>
-                            <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{"x "}{ing.cantidad}</SText>
-                        </SView>
-                    ))}
-                </SView>
-            )}
-        </SView>
-    );
-};
+        );
+    }
+}
+
+class GrupoIngrediente extends React.Component<{ item: any; grupo: any; titulo: string }> {
+    render() {
+        const { item, grupo, titulo } = this.props;
+        const { key_ingrediente, opciones } = grupo;
+        // "cantidad" es una propiedad del grupo (viene repetida en cada opción candidata):
+        // cuántas unidades hay que elegir en total entre las opciones conectadas.
+        const cantidadRequerida = Math.max(1, Number(opciones[0]?.cantidad ?? 1));
+        const slots = Array.from({ length: cantidadRequerida }, (_, i) => i);
+        return (
+            <SView style={{ marginBottom: 6, marginTop: 2 }}>
+                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray} style={{ marginBottom: 2 }}>
+                    {titulo}{cantidadRequerida > 1 ? ` (elegí ${cantidadRequerida})` : ""}
+                </SText>
+                {slots.map((slot) => (
+                    <SlotIngrediente key={slot} item={item} keyIngrediente={key_ingrediente} opciones={opciones} slot={slot} />
+                ))}
+            </SView>
+        );
+    }
+}
+
+class SlotIngrediente extends React.Component<{ item: any; keyIngrediente: string; opciones: any[]; slot: number }> {
+    state = {
+        seleccion: (this.props.item.modelo.ingredientesSeleccionados?.[this.props.keyIngrediente] || [])[this.props.slot]
+            || (this.props.opciones.length === 1 ? this.props.opciones[0] : null),
+    };
+
+    componentDidMount() {
+        // Si solo hay una opción candidata no hay nada que elegir: se deja preseleccionada.
+        const { item, keyIngrediente, opciones, slot } = this.props;
+        if (opciones.length !== 1) return;
+        if (!item.modelo.ingredientesSeleccionados) item.modelo.ingredientesSeleccionados = {};
+        if (!item.modelo.ingredientesSeleccionados[keyIngrediente]) item.modelo.ingredientesSeleccionados[keyIngrediente] = [];
+        item.modelo.ingredientesSeleccionados[keyIngrediente][slot] = opciones[0];
+    }
+
+    render() {
+        const { item, keyIngrediente, opciones, slot } = this.props;
+        const { seleccion } = this.state;
+        const options = opciones.map((op: any) => ({
+            label: op.modelo_requerido,
+            value: op.key_modelo_requerido,
+            data: op,
+        }));
+        return (
+            <SView style={{
+                height: 22, borderRadius: 6, marginBottom: 4,
+                backgroundColor: !seleccion ? STheme.color.danger + "18" : STheme.color.lightGray + "15",
+                borderWidth: 1, borderColor: !seleccion ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
+            }}>
+                <InputSelector
+                    customStyle="erp"
+                    placeholder="Elegí una opción"
+                    options={options}
+                    defaultValue={seleccion?.key_modelo_requerido || null}
+                    onSelect={(selected: any) => {
+                        if (!item.modelo.ingredientesSeleccionados) item.modelo.ingredientesSeleccionados = {};
+                        if (!item.modelo.ingredientesSeleccionados[keyIngrediente]) item.modelo.ingredientesSeleccionados[keyIngrediente] = [];
+                        item.modelo.ingredientesSeleccionados[keyIngrediente][slot] = selected.data;
+                        this.setState({ seleccion: selected.data });
+                    }}
+                />
+            </SView>
+        );
+    }
+}
 
 const ListaCostos = ({ item, moneda, totalItem }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
