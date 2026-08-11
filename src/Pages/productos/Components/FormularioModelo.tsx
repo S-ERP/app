@@ -9,7 +9,6 @@ import InputFoto from '../../../Components/InputFoto';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
 import InputSelector from '../../../Components/Selectores/InputSelector';
-import Cuentas_anidadas from '../../conta/cuentas_anidadas';
 import CuentasAnidadas from '../../conta/cuentas_anidadas';
 import SForm2 from '../../../Components/SForm2';
 import ToolTips from '../../../Components/ToolTips';
@@ -28,7 +27,6 @@ export default class FormularioModelo extends Component<Props> {
                 width: "100%",
                 maxHeight: "100%",
                 maxWidth: 500,
-                // height: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,
@@ -56,10 +54,8 @@ export default class FormularioModelo extends Component<Props> {
         descripcion_marca: "",
         tipoSeleccionado: this.props.editObject?.tipo_producto?.tipo || "",
         key_cuenta_contable_inventario: this.props.editObject?.key_cuenta_contable_inventario || null,
-
+        ingredientesModelo: null as any[] | null,
     }
-    qr_reader_listener: any;
-    // qr_reader_listener_picture: any;
     componentDidMount(): void {
         // Cargar monedas
         MDL.empresa.getFull().then((resp: any) => {
@@ -89,6 +85,15 @@ export default class FormularioModelo extends Component<Props> {
         }).catch((e: any) => {
             console.error("Error al cargar marcas", e);
         })
+        if (this.props.editObject?.key) {
+            MDL.inventario.getalvaro().then((resp: any) => {
+                const propio = (resp ?? []).find((a: any) => a?.key_modelo === this.props.editObject?.key);
+                this.setState({ ingredientesModelo: propio?.ingredientes ?? [] });
+            }).catch((e: any) => {
+                console.error("Error al cargar ingredientes", e);
+                this.setState({ ingredientesModelo: [] });
+            })
+        }
     }
     buildCustmomInputs() {
     }
@@ -129,7 +134,6 @@ export default class FormularioModelo extends Component<Props> {
                             const key_marca = (this.state.marcas as any).find((item: any) => item.descripcion == text)?.key;
                             this.state.key_marca = key_marca;
                             this.state.descripcion_marca = text;
-                            console.log("entro al onchange", key_marca, text);
                             if (key_marca) {
                                 this._ref.image_marca.setValue((SSocket.api as any).inventario + "marca/.128_" + key_marca);
                                 this._ref.image_marca.forceUpdate();
@@ -140,7 +144,6 @@ export default class FormularioModelo extends Component<Props> {
                                 }
                             }
                         },
-                        // defaultValue: this.props.editObject?.descripcion,
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("tipo");
                         },
@@ -155,8 +158,6 @@ export default class FormularioModelo extends Component<Props> {
                             }).then((resp: any) => {
                                 this.state.key_marca = resp.key;
                                 this.state.marcas.push(resp as never);
-                                // this._ref.image_marca.setValue((SSocket.api as any).inventario + "marca/" + resp.key);
-                                // this._ref.image_marca.forceUpdate();
                                 this.forceUpdate();
                                 SNotification.send({
                                     title: "Marca guardada",
@@ -177,10 +178,7 @@ export default class FormularioModelo extends Component<Props> {
                             <SIconApp name='adicional' fill={STheme.color.warning} />
                         </SView> : null,
                         onBlur: () => {
-                            if (this.state.key_marca) {
-                                console.log("Marca seleccionada:", this.state.key_marca);
-                            } else {
-                                console.log("No se ha seleccionado una marca válida.");
+                            if (!this.state.key_marca) {
                                 this.forceUpdate();
                             }
                         }
@@ -199,55 +197,22 @@ export default class FormularioModelo extends Component<Props> {
                                     width: 50,
                                     height: 50,
                                 }} />
-
-                            {/* <SView style={{ position: "absolute", right: 10 }}>
-                                <SText>ddd</SText>
-                            </SView> */}
-
                         </SView>,
                         label: "Tipo", placeholder: "Ingresa el tipo", isRequired: true,
                         type: "select2",
                         options: this.state.tipo_productos.map((item: any) => item.descripcion),
                         onChangeText: (text: string) => {
-                            // const tipoObj = this.state.tipo_productos.find((item: any) => item.descripcion == text);
-                            // const key_tipo_producto = tipoObj?.key;
-                            // const tipo = tipoObj?.tipo;
-
-                            // this.setState({
-                            //     key_tipo_producto,
-                            //     descripcion_tipo_producto: text,
-                            //     tipoSeleccionado: tipo, // <-- actualizar el estado
-                            // });
-
-                            // if (key_tipo_producto) {
-                            //     this._ref.image_tipo_producto.setValue((SSocket.api as any).inventario + "tipo_producto/.128_" + key_tipo_producto);
-                            //     this._ref.image_tipo_producto.forceUpdate();
-                            // } else {
-                            //     if (this._ref.image_tipo_producto.getValue() != "") {
-                            //         this._ref.image_tipo_producto.setValue("");
-                            //         this._ref.image_tipo_producto.forceUpdate();
-                            //     }
-                            // }
-
-
                             const key_tipo_producto = (this.state.tipo_productos as any).find((item: any) => item.descripcion == text)?.key;
-                            // const tipo = (this.state.tipo_productos as any).find((item: any) => item.descripcion == text)?.tipo;
                             const tipoObj = this.state.tipo_productos.find((item: any) => item.descripcion == text);
                             const tipo = tipoObj?.tipo;
-
 
                             this.setState({
                                 key_tipo_producto,
                                 descripcion_tipo_producto: text,
-                                tipoSeleccionado: tipo, // <-- actualizar el estado
+                                tipoSeleccionado: tipo,
                             });
-                            // tipoSeleccionado: this.props.editObject?.tipo_producto?.tipo || "",
-
-                            // this.props.editObject?.alvaro = tipo;
                             this.state.key_tipo_producto = key_tipo_producto;
                             this.state.descripcion_tipo_producto = text;
-                            // console.log("%c" + key_tipo_producto, `color: #2ECC40; font-weight: bold;`);
-                            // console.log("%c" + tipo, `color: #2ECC40; font-weight: bold;`);
 
                             if (key_tipo_producto) {
                                 this._ref.image_tipo_producto.setValue((SSocket.api as any).inventario + "tipo_producto/.128_" + key_tipo_producto);
@@ -589,6 +554,30 @@ export default class FormularioModelo extends Component<Props> {
                     })
                 }}
             />
+            {!!this.props.editObject?.key && (
+                <SView style={{ width: "100%", paddingHorizontal: 16, marginTop: 8 }}>
+                    <SText fontSize={14} bold>Ingredientes</SText>
+                    <SHr h={8} />
+                    {!this.state.ingredientesModelo ? (
+                        <SLoad />
+                    ) : this.state.ingredientesModelo.length === 0 ? (
+                        <SText fontSize={12} color={STheme.color.lightGray}>Este modelo no tiene ingredientes.</SText>
+                    ) : (
+                        <SView style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4, overflow: "hidden" }}>
+                            <SView row style={{ backgroundColor: STheme.color.card, padding: 6 }}>
+                                <SText flex={2} fontSize={11} bold>Producto</SText>
+                                <SText flex={1} fontSize={11} bold style={{ textAlign: "right" }}>Cantidad</SText>
+                            </SView>
+                            {this.state.ingredientesModelo.map((i: any, idx: number) => (
+                                <SView row key={i.key_ingrediente ?? idx} style={{ padding: 6, borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: STheme.color.card + "66" }}>
+                                    <SText flex={2} fontSize={12}>{i.modelo_requerido}</SText>
+                                    <SText flex={1} fontSize={12} style={{ textAlign: "right" }}>{i.cantidad}</SText>
+                                </SView>
+                            ))}
+                        </SView>
+                    )}
+                </SView>
+            )}
             </ScrollView>
             <SView style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
                 <SHr h={16} />
