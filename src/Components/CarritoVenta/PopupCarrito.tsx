@@ -10,7 +10,7 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 
 const colorVenta = "#2e7d32";
-const cambios =1;
+const cambios =0;
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -300,7 +300,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         inputPrecioRef.current?.setValue(str);
     }, [moneda, item.modelo.precio_venta]);
 
-    // console.log()
     const precioFormateado = (precio ?? 0).toFixed(2);
     const puedeEditarPrecio = MDL.rolesPermisos.getPermiso({ url: "/empresa/punto_venta", permiso: "carrito_editar_precio" });
     const subtotalStr = SMath.formatMoney(precio * item.cantidad);
@@ -332,7 +331,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     }}>
                         {imgError ? (
                             <SText fontSize={10} color={STheme.color.lightGray}>IMG</SText>
-                            // <SText fontSize={11} color={STheme.color.lightGray}>{(item.modelo.descripcion?.trim()?.charAt(0) || "?").toUpperCase()}</SText>
                         ) : (
                             <Image
                                 source={{ uri: (SSocket.api as any).inventario + "modelo/" + item.modelo.key }}
@@ -451,8 +449,7 @@ class ListaIngredientes extends React.Component<{ item: any }> {
                 item.modelo.nombresIngredienteGrupo = nombresGrupo;
                 this.setState({ ingredientes: list, nombresGrupo });
             })
-            .catch((err: any) => {
-                console.error("Error cargando ingredientes:", err);
+            .catch(() => {
                 if (this.mounted) this.setState({ ingredientes: [] });
             });
     }
@@ -461,8 +458,6 @@ class ListaIngredientes extends React.Component<{ item: any }> {
         this.mounted = false;
     }
 
-    // Cada "key_ingrediente" es un requerimiento del combo. Si tiene más de una
-    // opción candidata (modelo_ingrediente), el cajero debe elegir cuál usar.
     agrupar(ingredientes: any[]) {
         const porGrupo: Record<string, any[]> = {};
         ingredientes.forEach((ing: any) => {
@@ -506,8 +501,6 @@ class GrupoIngrediente extends React.Component<{ item: any; grupo: any; titulo: 
     render() {
         const { item, grupo, titulo } = this.props;
         const { key_ingrediente, opciones } = grupo;
-        // "cantidad" es una propiedad del grupo (viene repetida en cada opción candidata):
-        // cuántas unidades hay que elegir en total entre las opciones conectadas.
         const cantidadRequerida = Math.max(1, Number(opciones[0]?.cantidad ?? 1));
         const slots = Array.from({ length: cantidadRequerida }, (_, i) => i);
         return (
@@ -530,7 +523,6 @@ class SlotIngrediente extends React.Component<{ item: any; keyIngrediente: strin
     };
 
     componentDidMount() {
-        // Si solo hay una opción candidata no hay nada que elegir: se deja preseleccionada.
         const { item, keyIngrediente, opciones, slot } = this.props;
         if (opciones.length !== 1) return;
         if (!item.modelo.ingredientesSeleccionados) item.modelo.ingredientesSeleccionados = {};
@@ -621,7 +613,7 @@ const ListaSuscripciones = ({ item }: any) => {
                 setClientes(all);
                 item.modelo.clientes = all;
             })
-            .catch((err: any) => { console.error("Error cargando clientes:", err); })
+            .catch(() => {})
             .finally(() => { if (mounted) setLoadingClientes(false); });
         return () => { mounted = false; };
     }, []);
