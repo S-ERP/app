@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-
+// siles
 import { Dimensions } from 'react-native';
 import { SDate, SHr, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 
 import SIconApp from '../../Assets/SIconApp';
+import { Container } from '../../Components';
 import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
 import SInput2 from '../../Components/SForm2/SInput2';
@@ -54,23 +55,16 @@ class AmortizarModalContent extends Component {
 				withoutFeedback
 				style={{ borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.gray + "66", shadowColor: STheme.color.darkGray, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 24 }}>
 
-				<SView row col="xs-12" style={{
-					alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1,
-					borderColor: STheme.color.gray + "66"
-				}}>
+				<SView row col="xs-12" style={{ alignItems: "center", justifyContent: "space-between", paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderColor: STheme.color.gray + "66" }}>
 					<SView row style={{ alignItems: "center" }}>
-
 						<SView width={36} height={36} center style={{ borderRadius: 10, backgroundColor: color_principal + "22" }}>
-							<SIconApp name="pagotarjeta" width={18} height={18}
-								fill={color_principal}
-							/>
+							<SIconApp name="pagotarjeta" width={18} height={18} fill={color_badge_pago} />
 						</SView>
 						<SView width={10} />
 						<SText bold fontSize={17} color={STheme.color.white}>Amortizar Deuda</SText>
 					</SView>
-
-					<SView width={28} height={28} center onPress={onCancel} style={{ transform: [{ rotate: "45deg" }], }} >
-						<SIconApp name="addFoto" width={20} height={20} fill={STheme.color.lightGray} />
+					<SView width={28} height={28} center style={{ borderRadius: 14, backgroundColor: STheme.color.darkGray }} onPress={onCancel}>
+						<SIconApp name="Close" width={12} height={12} fill={STheme.color.lightGray} />
 					</SView>
 				</SView>
 
@@ -418,28 +412,28 @@ export default class TablaTransacciones extends Component {
 
 	mostrarTabla() {
 		return (
-			<SView col={'xs-12'} flex>
-				<SView col={'xs-12'} style={{
-					width: 1180, maxWidth: '100%', alignSelf: 'center', paddingLeft: 14,
-					paddingTop: 8,
-					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden',
-					shadowColor: STheme.color.darkGray,
-					shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30
-				}} flex >
-					<DinamicTable
-						ref={ref => (this.DinamicTable = ref)}
-						loadData={this.loadInitialData.bind(this)}
-						key="id"
-						language="es"
-						center
-						{...Config.table.applyTheme({
-							colors: {
-								background: color_principal + "80",
-								header: color_principal,
-								border: STheme.color.gray + "66",
-								card: STheme.color.gray + "66",
-							}
-						})}
+			<SView col={'xs-12'} style={{
+				paddingLeft: 14,
+				paddingTop: 8,
+				backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1,
+				borderColor: STheme.color.gray + "66", overflow: 'hidden',
+				shadowColor: STheme.color.darkGray, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30
+			}} flex >
+				<DinamicTable
+					ref={ref => (this.DinamicTable = ref)}
+					loadData={this.loadInitialData.bind(this)}
+					key="id"
+					language="es"
+					center
+					{...Config.table.applyTheme({
+						colors: {
+							text: STheme.color.text,
+							background: color_principal + "80",
+							header: color_principal,
+							border: STheme.color.gray + "66",
+							card: STheme.color.gray + "66",
+						}
+					})}
 					keyExtractor={(e) => e?.key}
 					textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
 					style={{
@@ -531,7 +525,6 @@ export default class TablaTransacciones extends Component {
 						footerComponent={() => <SView style={this.footerBarStyle('center')} />}
 					/>
 				</DinamicTable>
-				</SView>
 			</SView>
 		);
 	}
@@ -616,120 +609,108 @@ export default class TablaTransacciones extends Component {
 		const { cliente } = this.state;
 		const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}` || '-';
 		return (
-			<SPage title="Kardex Cliente" disableScroll>
-				<SView col={'xs-12'} flex style={{ padding: 16 }}>
-
-					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12'} style={{
-							width: 1180,
-							maxWidth: '100%',
-							alignSelf: 'center',
-							backgroundColor: STheme.color.background,
-							borderRadius: 16,
-							borderWidth: 1,
-							borderColor: STheme.color.gray + "66",
-							padding: 20,
-							shadowColor: STheme.color.darkGray,
-							shadowOffset: { width: 0, height: 10 },
-							shadowOpacity: 0.35,
-							shadowRadius: 30,
-						}}>
-							<SView row center>
-								<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: color_principal }}>
-									<SIconApp name="heading" width={24} height={24} fill={STheme.color.white} />
-								</SView>
-								<SView width={12} />
-								<SView flex>
-									<SText fontSize={18} bold color={STheme.color.text}>Kardex Individual del Cliente</SText>
-									<SText fontSize={12} color={STheme.color.text + "99"}>Trazabilidad financiera de ventas, pagos y saldos</SText>
-								</SView>
+			<SPage title="Kardex" disableScroll>
+				<Container col={"xs-11 xxl-7"}>
+					<SHr height={16} />
+					<SView col={'xs-12'} style={{
+						backgroundColor: STheme.color.background,
+						borderRadius: 16,
+						borderWidth: 1,
+						borderColor: STheme.color.gray + "66",
+						padding: 14,
+						shadowColor: STheme.color.darkGray,
+						shadowOffset: { width: 0, height: 10 },
+						shadowOpacity: 0.35,
+						shadowRadius: 30,
+					}}>
+						<SView row center>
+							<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: color_principal }}>
+								<SIconApp name="heading" width={24} height={24} fill={STheme.color.white} />
 							</SView>
+							<SView width={12} />
+							<SView flex>
+								<SText fontSize={18} bold color={STheme.color.text}>Kardex Individual del Cliente</SText>
+								<SText fontSize={12} color={STheme.color.text + "99"}>Trazabilidad financiera de ventas, pagos y saldos</SText>
+							</SView>
+						</SView>
 
-							<SHr height={16} />
-							<SHr height={1} color={STheme.color.gray + "66"} />
-							<SHr height={16} />
+						<SHr height={16} />
+						<SHr height={1} color={STheme.color.gray + "66"} />
+						<SHr height={16} />
 
-							<SView row style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-								<FechaFullFilter2
-									label="fecha"
-									key_opciones="hoy"
-									color={color_principal}
-									colorText={STheme.color.white}
-									onChange={e => {
-										this.state.fecha_inicio = e.fecha_inicio;
-										this.state.fecha_fin = e.fecha_fin;
-										this.DinamicTable.loadData();
-									}}
-								/>
-								<SView row center style={{
-									backgroundColor: color_principal + '60',
-									borderWidth: 1,
-									borderColor: color_principal + '55',
-									borderRadius: 30,
-									paddingVertical: 8,
-									paddingHorizontal: 16,
-								}}>
-									<SIconApp name="profile2" width={14} height={14} fill={color_badge_pago} />
+						<SView row style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+							<FechaFullFilter2
+								label="fecha"
+								key_opciones="hoy"
+								color={color_principal}
+								onChange={e => {
+									this.state.fecha_inicio = e.fecha_inicio;
+									this.state.fecha_fin = e.fecha_fin;
+									this.DinamicTable.loadData();
+								}}
+							/>
+							<SView row center style={{
+								backgroundColor: color_principal + '60',
+								borderWidth: 1,
+								borderColor: color_principal + '55',
+								borderRadius: 30,
+								paddingVertical: 8,
+								paddingHorizontal: 16,
+							}}>
+								<SIconApp name="profile2" width={14} height={14} fill={color_badge_pago} />
+								<SView width={8} />
+								<SText fontSize={13} color={STheme.color.text}>Cliente: <SText bold>{clienteNombre}</SText></SText>
+							</SView>
+							<SView
+								onPress={() => ComprobanteKardexIndividual.imprimir({
+									cliente: this.state.cliente,
+									moneda: this.state.moneda,
+									detalle: (this.DinamicTable?.dataFiltrada || []).map(d => d.__original),
+									fecha_inicio: this.state.fecha_inicio,
+									fecha_fin: this.state.fecha_fin,
+								})}
+								backgroundColor={STheme.color.danger + '20'}
+								style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
+								center
+							>
+								<SView row center>
+									<SIconApp name="pdf" width={14} height={14} fill={STheme.color.danger} />
 									<SView width={8} />
-									<SText fontSize={13} color={STheme.color.text}>Cliente: <SText bold>{clienteNombre}</SText></SText>
-								</SView>
-								<SView
-									onPress={() => ComprobanteKardexIndividual.imprimir({
-										cliente: this.state.cliente,
-										moneda: this.state.moneda,
-										detalle: (this.DinamicTable?.dataFiltrada || []).map(d => d.__original),
-										fecha_inicio: this.state.fecha_inicio,
-										fecha_fin: this.state.fecha_fin,
-									})}
-									backgroundColor={STheme.color.danger + '20'}
-
-									style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
-									center
-								>
-									<SView row center>
-										<SIconApp name="pdf" width={14} height={14} fill={STheme.color.danger} />
-										<SView width={8} />
-										<SText fontSize={13} color={STheme.color.danger} bold>DESCARGAR PDF</SText>
-									</SView>
+									<SText fontSize={13} color={STheme.color.danger} bold>DESCARGAR PDF</SText>
 								</SView>
 							</SView>
 						</SView>
 					</SView>
-
 					<SHr height={10} />
 					{this.mostrarTabla()}
+					<SHr height={10} />
 
-					<SHr height={20} />
-
-					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12'} style={{ width: 1180, maxWidth: '100%', alignSelf: 'center' }}>
-							<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
-								{this.state.saldo > 0 && (
-									<SView
-										onPress={() => this.showVentaPopup()}
-										backgroundColor={color_principal}
-										style={{
-											paddingVertical: 14,
-											paddingHorizontal: 24,
-											borderRadius: 30,
-											shadowColor: STheme.color.darkGray,
-											shadowOffset: { width: 0, height: 8 },
-											shadowOpacity: 0.5,
-											shadowRadius: 16,
-										}}
-										center
-									>
-										<SView row center>
-											<SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.white} />
-											<SView width={6} />
-											<SText color={STheme.color.white} bold>AMORTIZAR</SText>
-										</SView>
-									</SView>
-								)}
+					<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
+						{this.state.saldo > 0 && (
+							<SView
+								onPress={() => this.showVentaPopup()}
+								backgroundColor={color_principal}
+								style={{
+									paddingVertical: 14,
+									paddingHorizontal: 24,
+									borderRadius: 30,
+									shadowColor: STheme.color.darkGray,
+									shadowOffset: { width: 0, height: 8 },
+									shadowOpacity: 0.5,
+									shadowRadius: 16,
+								}}
+								center
+							>
+								<SView row center>
+									<SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.white} />
+									<SView width={6} />
+									<SText color={STheme.color.white} bold>AMORTIZAR</SText>
+								</SView>
 							</SView>
-						</SView>
+						)}
 					</SView>
-				</SView>
+					<SHr height={16} />
+				</Container>
 			</SPage>
 		);
 	}
