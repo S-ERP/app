@@ -446,7 +446,7 @@ class ListaIngredientes extends React.Component<{ item: any }> {
         console.warn("[ProKeybindings] archivo: if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) sin motivo indicado.");
         if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) return;
         Promise.all([
-            MDL.inventario.getalvaro(),
+            MDL.inventario.getReceta_ByModelo(),
             MDL.inventario.getPizarraIngrediente(),
         ])
             .then(([resp, pizarra]: [any, any]) => {

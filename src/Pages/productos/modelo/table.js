@@ -57,7 +57,7 @@ export default class table extends Component {
 				MDL.inventario.getAllTipoCosto().catch(() => []),
 				MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "", this.state?.selectedSucursal?.key ?? ""
 				).catch(() => []),
-				MDL.inventario.getalvaro().catch(() => [])
+				MDL.inventario.getReceta_ByModelo().catch(() => [])
 			]);
 			const monedasByKey = Object.fromEntries((monedas ?? []).map(m => [m?.key, m]));
 			const clientesByKey = Object.fromEntries((clientes ?? []).map(c => [c?.key, c]));

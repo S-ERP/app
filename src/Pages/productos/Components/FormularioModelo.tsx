@@ -86,7 +86,7 @@ export default class FormularioModelo extends Component<Props> {
             console.error("Error al cargar marcas", e);
         })
         if (this.props.editObject?.key) {
-            MDL.inventario.getalvaro().then((resp: any) => {
+            MDL.inventario.getReceta_ByModelo().then((resp: any) => {
                 const propio = (resp ?? []).find((a: any) => a?.key_modelo === this.props.editObject?.key);
                 this.setState({ ingredientesModelo: propio?.ingredientes ?? [] });
             }).catch((e: any) => {

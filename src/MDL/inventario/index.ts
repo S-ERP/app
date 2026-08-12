@@ -96,14 +96,14 @@ export default class inventario extends MDLAbstract<EventListener> {
     return Object.values(resp.data || {});
   }
 
- async getalvaro() {
+ async getReceta_ByModelo() {
     const key_empresa = MDL.empresa.select?.key;
 
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "reporte",
       type: "execute_function",
-      func: "_alvaro_get_modelo_ingredientes",
+      func: "_get_receta_bymodelo",
       params: ["'" + key_empresa + "'"],
     });
     return Object.values(resp.data || {});
