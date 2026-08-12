@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SNavigation, SDate, SMath, SNotification } from 'servisofts-component';
-import { DinamicTable } from 'servisofts-table';
+
 import { Dimensions } from 'react-native';
+import { SDate, SHr, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
+import { DinamicTable } from 'servisofts-table';
+
+import SIconApp from '../../Assets/SIconApp';
+import { Container } from '../../Components';
+import FechaFullFilter2 from '../../Components/FechaFullFilter2';
+import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
+import SInput2 from '../../Components/SForm2/SInput2';
 import Config from '../../Config';
 import MDL from '../../MDL';
-import FechaFullFilter2 from '../../Components/FechaFullFilter2';
-import SIconApp from '../../Assets/SIconApp';
-import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
-import SSocket from 'servisofts-socket';
 import SelectTipoPagoVenta from '../caja2/components/SelectTipoPagoCompra';
-import SInput2 from '../../Components/SForm2/SInput2';
-import { Container } from '../../Components';
-
 const color_principal = '#1a3c66';
 const color_modal = '#1c1f24';
 const color_badge_pago = 'steelblue';
@@ -33,10 +34,12 @@ class AmortizarModalContent extends Component {
 		const { monto } = this.state;
 		if (monto <= 0) {
 			this.setState({ error: "El monto debe ser mayor a 0." });
+			console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 			return;
 		}
 		if (monto > saldo) {
 			this.setState({ error: "El monto no puede ser mayor al saldo pendiente." });
+			console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 			return;
 		}
 		this.setState({ error: "" });
@@ -173,6 +176,7 @@ export default class TablaTransacciones extends Component {
 			const fecha_inicio_total = "2024-01-01";
 			const fecha_inicio = this.state.fecha_inicio;
 			const fecha_fin = this.state.fecha_fin;
+			console.warn("[ProKeybindings] archivo: if (!keyEmpresa || !this.key) sin motivo indicado.");
 			if (!keyEmpresa || !this.key) return;
 			const ventas = await MDL.compra_venta.execute_function("_get_detalles_cliente", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
 			const cliente = await MDL.crm.cliente.getByKey(this.key);
@@ -262,6 +266,7 @@ export default class TablaTransacciones extends Component {
 
 			return ventasFiltradas;
 		} catch (error) {
+			console.error("[ProKeybindings] archivo: error.", error);
 			SPopup.alert("Error al cargar los datos.");
 			return [];
 		}
@@ -534,6 +539,7 @@ export default class TablaTransacciones extends Component {
 					color: STheme.color.danger,
 					time: 5000
 				});
+				console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 				return;
 			}
 			const saldo = this.state.saldo || 0;
@@ -552,6 +558,7 @@ export default class TablaTransacciones extends Component {
 							const activa = await MDL.caja.getActiva();
 							if (!activa) {
 								SNotification.send({ title: 'Caja no aperturada', body: 'Abre la caja primero.', color: STheme.color.danger, time: 5000 });
+								console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
 								return;
 							}
 							SelectTipoPagoVenta.openPopup({
@@ -588,6 +595,7 @@ export default class TablaTransacciones extends Component {
 				)
 			});
 		} catch (e) {
+			console.error("[ProKeybindings] archivo: error.", e);
 			SNotification.send({
 				title: 'Error',
 				body: 'No se pudo verificar la caja.',
@@ -604,7 +612,6 @@ export default class TablaTransacciones extends Component {
 			<SPage title="Kardex" disableScroll>
 				<Container col={"xs-11 xxl-7"}>
 					<SHr height={16} />
-
 					<SView col={'xs-12'} style={{
 						backgroundColor: STheme.color.background,
 						borderRadius: 16,
@@ -674,13 +681,9 @@ export default class TablaTransacciones extends Component {
 							</SView>
 						</SView>
 					</SView>
-
 					<SHr height={10} />
-
 					{this.mostrarTabla()}
-
 					<SHr height={10} />
-
 					<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
 						{this.state.saldo > 0 && (
 							<SView
@@ -711,4 +714,3 @@ export default class TablaTransacciones extends Component {
 		);
 	}
 }
-
