@@ -10,10 +10,15 @@ export default class Container extends Component<{ loading: boolean, flex: any, 
 
     render() {
         if (this.props.loading) return <SLoad />
+        const { col, flex, center, children, ...rest } = this.props;
+        const innerCol = col || "xs-11 sm-10 md-8 lg-6 xl-4";
+        const containerFlex = flex !== undefined ? flex : 1;
+        const innerFlex = flex !== undefined ? flex : 1;
+
         return (
-            <SView col={"xs-12"} center {...this.props}>
-                <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} center flex={this.props.flex}>
-                    {this.props.children}
+            <SView col={"xs-12"} center flex={containerFlex} {...rest}>
+                <SView col={innerCol} center={center} flex={innerFlex}>
+                    {children}
                 </SView>
             </SView>
         );
