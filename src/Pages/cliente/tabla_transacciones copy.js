@@ -180,7 +180,6 @@ export default class TablaTransacciones extends Component {
 			const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes_ventas", [keyEmpresa, this.key]);
 			this.cuotasDetalle = cuotas || [];
 			this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
-			if (this.cuotasDetalle.length === 0) console.warn("No se encontraron cuotas pendientes para el cliente.");
 
 			if (!ventas || ventas.length === 0) {
 				this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
@@ -263,7 +262,6 @@ export default class TablaTransacciones extends Component {
 
 			return ventasFiltradas;
 		} catch (error) {
-			console.warn("Error en loadInitialData:", error);
 			SPopup.alert("Error al cargar los datos.");
 			return [];
 		}
@@ -409,12 +407,11 @@ export default class TablaTransacciones extends Component {
 
 	mostrarTabla() {
 		return (
-			// <SView col={'xs-12'} flex>
 			<SView col={'xs-12'} style={{
 				paddingLeft: 14,
 				paddingTop: 8,
-				backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, 
-				borderColor: STheme.color.gray + "66", overflow: 'hidden', 
+				backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1,
+				borderColor: STheme.color.gray + "66", overflow: 'hidden',
 				shadowColor: STheme.color.darkGray, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30
 			}} flex >
 				<DinamicTable
@@ -436,9 +433,6 @@ export default class TablaTransacciones extends Component {
 					textTitleStyle={{ fontWeight: "bold", textTransform: "uppercase", fontSize: 11, letterSpacing: 0.5 }}
 					style={{
 						flex: 1,
-
-						// background
-
 					}}
 					iconSize={22}
 					padding={8}
@@ -527,17 +521,12 @@ export default class TablaTransacciones extends Component {
 					/>
 				</DinamicTable>
 			</SView>
-			// </SView>
 		);
 	}
 
 	async showVentaPopup() {
 		try {
 			const activa = await MDL.caja.getActiva();
-			const saldo = this.state.saldo || 0;
-			const moneda = this.state.moneda || {};
-			const simboloBase = moneda?.observacion || 'BOB';
-			const cuotas = this.keysCuotas || [];
 			if (!activa) {
 				SNotification.send({
 					title: 'Caja no aperturada',
@@ -547,6 +536,10 @@ export default class TablaTransacciones extends Component {
 				});
 				return;
 			}
+			const saldo = this.state.saldo || 0;
+			const moneda = this.state.moneda || {};
+			const simboloBase = moneda?.observacion || 'BOB';
+			const cuotas = this.keysCuotas || [];
 			SPopup.open({
 				key: "popup-venta-completada",
 				content: (
@@ -595,7 +588,6 @@ export default class TablaTransacciones extends Component {
 				)
 			});
 		} catch (e) {
-			console.warn("No se pudo verificar la caja:", e);
 			SNotification.send({
 				title: 'Error',
 				body: 'No se pudo verificar la caja.',
@@ -611,11 +603,106 @@ export default class TablaTransacciones extends Component {
 		return (
 			<SPage title="Kardex Individual Cliente" disableScroll>
 				<Container col={"xs-11 sm-11 md-8"}>
-				 
+					<SView col={'xs-12'} style={{
+						backgroundColor: STheme.color.background,
+						borderRadius: 16,
+						borderWidth: 1,
+						borderColor: STheme.color.gray + "66",
+						padding: 14,
+						shadowColor: STheme.color.darkGray,
+						shadowOffset: { width: 0, height: 10 },
+						shadowOpacity: 0.35,
+						shadowRadius: 30,
+					}}>
+						<SView row center>
+							<SView width={48} height={48} center style={{ borderRadius: 14, backgroundColor: color_principal }}>
+								<SIconApp name="heading" width={24} height={24} fill={STheme.color.white} />
+							</SView>
+							<SView width={12} />
+							<SView flex>
+								<SText fontSize={18} bold color={STheme.color.text}>Kardex Individual del Cliente</SText>
+								<SText fontSize={12} color={STheme.color.text + "99"}>Trazabilidad financiera de ventas, pagos y saldos</SText>
+							</SView>
+						</SView>
 
+						<SHr height={16} />
+						<SHr height={1} color={STheme.color.gray + "66"} />
+						<SHr height={16} />
+
+						<SView row style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+							<FechaFullFilter2
+								label="fecha"
+								key_opciones="hoy"
+								color={color_principal}
+								onChange={e => {
+									this.state.fecha_inicio = e.fecha_inicio;
+									this.state.fecha_fin = e.fecha_fin;
+									this.DinamicTable.loadData();
+								}}
+							/>
+							<SView row center style={{
+								backgroundColor: color_principal + '60',
+								borderWidth: 1,
+								borderColor: color_principal + '55',
+								borderRadius: 30,
+								paddingVertical: 8,
+								paddingHorizontal: 16,
+							}}>
+								<SIconApp name="profile2" width={14} height={14} fill={color_badge_pago} />
+								<SView width={8} />
+								<SText fontSize={13} color={STheme.color.text}>Cliente: <SText bold>{clienteNombre}</SText></SText>
+							</SView>
+							<SView
+								onPress={() => ComprobanteKardexIndividual.imprimir({
+									cliente: this.state.cliente,
+									moneda: this.state.moneda,
+									detalle: (this.DinamicTable?.dataFiltrada || []).map(d => d.__original),
+									fecha_inicio: this.state.fecha_inicio,
+									fecha_fin: this.state.fecha_fin,
+								})}
+								backgroundColor={STheme.color.danger + '20'}
+								style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 30, borderWidth: 1.5, borderColor: STheme.color.danger + '8C' }}
+								center
+							>
+								<SView row center>
+									<SIconApp name="pdf" width={14} height={14} fill={STheme.color.danger} />
+									<SView width={8} />
+									<SText fontSize={13} color={STheme.color.danger} bold>DESCARGAR PDF</SText>
+								</SView>
+							</SView>
+						</SView>
+					</SView>
+
+					<SHr height={10} />
 
 					{this.mostrarTabla()}
 
+					<SHr height={20} />
+
+					<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
+						{this.state.saldo > 0 && (
+							<SView
+								onPress={() => this.showVentaPopup()}
+								backgroundColor={color_principal}
+								style={{
+									paddingVertical: 14,
+									paddingHorizontal: 24,
+									borderRadius: 30,
+									shadowColor: STheme.color.darkGray,
+									shadowOffset: { width: 0, height: 8 },
+									shadowOpacity: 0.5,
+									shadowRadius: 16,
+								}}
+								center
+							>
+								<SView row center>
+									<SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.white} />
+									<SView width={6} />
+									<SText color={STheme.color.white} bold>AMORTIZAR</SText>
+								</SView>
+							</SView>
+						)}
+					</SView>
 
 				</Container>
 			</SPage>
