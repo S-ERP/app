@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+// alvaro
 import { Dimensions } from 'react-native';
 import { SDate, SHr, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
