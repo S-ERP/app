@@ -408,7 +408,7 @@ export default class TablaTransacciones extends Component {
 		return (
 			<SView col={'xs-12'} flex>
 				<SView col={'xs-12'} style={{
-					width: 1180, alignSelf: 'center', paddingLeft: 14,
+					width: 1180, maxWidth: '100%', alignSelf: 'center', paddingLeft: 14,
 					paddingTop: 8,
 					backgroundColor: STheme.color.background, borderRadius: 20, borderWidth: 1, borderColor: STheme.color.gray + "66", overflow: 'hidden', shadowColor: STheme.color.darkGray, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 30 }} flex >
 					<DinamicTable
@@ -605,6 +605,7 @@ export default class TablaTransacciones extends Component {
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
 						<SView col={'xs-12'} style={{
 							width: 1180,
+							maxWidth: '100%',
 							alignSelf: 'center',
 							backgroundColor: STheme.color.background,
 							borderRadius: 16,
@@ -682,7 +683,7 @@ export default class TablaTransacciones extends Component {
 					<SHr height={20} />
 
 					<SView col={'xs-12'} center backgroundColor='transparent' row>
-						<SView col={'xs-12'} style={{ width: 1180, alignSelf: 'center' }}>
+						<SView col={'xs-12'} style={{ width: 1180, maxWidth: '100%', alignSelf: 'center' }}>
 							<SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
 								{this.state.saldo > 0 && (
 									<SView
