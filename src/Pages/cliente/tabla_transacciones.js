@@ -217,10 +217,12 @@ export default class TablaTransacciones extends Component {
 			});
 
 			let saldoAnterior = 0;
+			let fechaSaldoAnterior = "";
 			ventasEnriquecidas.forEach(item => {
 				const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
 				if (fechaItem < fecha_inicio) {
 					saldoAnterior = item.saldo;
+					fechaSaldoAnterior = item.fecha_on;
 				}
 			});
 
@@ -233,10 +235,10 @@ export default class TablaTransacciones extends Component {
 				ventasFiltradas = [
 					{
 						key: `saldo_anterior_${new Date().getTime()}`,
-						fecha_on: "",
+						fecha_on: fechaSaldoAnterior,
 						tipo: "saldo",
 						descripcion: "Saldo anterior",
-						debe: 0,
+						debe: saldoAnterior,
 						haber: 0,
 						saldo: saldoAnterior,
 						moneda,
