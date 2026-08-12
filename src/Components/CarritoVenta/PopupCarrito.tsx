@@ -1,16 +1,17 @@
 import React from "react";
-import { SDate, SGradient, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
-import MDL from "../../MDL";
-import SSocket from "servisofts-socket";
-import SIconApp from "../../Assets/SIconApp";
-import { FlatList, Image } from "react-native";
-import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
-import InputSelector from "../Selectores/InputSelector";
-import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-import SInput2, { SInput2Class } from "../SForm2/SInput2";
 
+import { FlatList, Image } from "react-native";
+import { SDate, SGradient, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import SSocket from "servisofts-socket";
+
+import SIconApp from "../../Assets/SIconApp";
+import MDL from "../../MDL";
+import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+import InputSelector from "../Selectores/InputSelector";
+import SInput2, { SInput2Class } from "../SForm2/SInput2";
+import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
-const cambios =0;
+const cambios = 0;
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -199,6 +200,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     body: `El producto "${itemConPrecioInvalido.modelo?.descripcion ?? "desconocido"}" no tiene precio registrado.`,
                                     color: STheme.color.danger,
                                 });
+                                console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                 return;
                             }
                             const itemConCantidadInvalida = items.find(it => {
@@ -211,6 +213,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     body: `El producto "${itemConCantidadInvalida.modelo?.descripcion ?? "desconocido"}" tiene cantidad 0.`,
                                     color: STheme.color.danger,
                                 });
+                                console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                 return;
                             }
 
@@ -228,6 +231,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     color: STheme.color.danger,
                                     time: 5000,
                                 });
+                                console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                 return;
                             }
 
@@ -239,6 +243,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     color: STheme.color.danger,
                                     time: 6000,
                                 });
+                                console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                 return;
                             }
 
@@ -254,6 +259,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                             color: STheme.color.danger,
                                             time: 6000,
                                         });
+                                        console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                         return;
                                     }
                                     if (!tieneCliente && tieneMonto) {
@@ -263,6 +269,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                             color: STheme.color.danger,
                                             time: 6000,
                                         });
+                                        console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                         return;
                                     }
                                 }
@@ -392,6 +399,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             body: "No tiene permiso para editar el precio de venta.",
                                             color: STheme.color.warning,
                                         });
+                                        console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
                                         return
                                     }}
                                 />
@@ -435,12 +443,14 @@ class ListaIngredientes extends React.Component<{ item: any }> {
 
     componentDidMount() {
         const { item } = this.props;
+        console.warn("[ProKeybindings] archivo: if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) sin motivo indicado.");
         if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) return;
         Promise.all([
             MDL.inventario.getalvaro(),
             MDL.inventario.getPizarraIngrediente(),
         ])
             .then(([resp, pizarra]: [any, any]) => {
+                console.warn("[ProKeybindings] archivo: if (!this.mounted) sin motivo indicado.");
                 if (!this.mounted) return;
                 const propio = (resp ?? []).find((a: any) => a?.key_modelo === item.modelo.key);
                 const list = propio?.ingredientes ?? [];
@@ -524,6 +534,7 @@ class SlotIngrediente extends React.Component<{ item: any; keyIngrediente: strin
 
     componentDidMount() {
         const { item, keyIngrediente, opciones, slot } = this.props;
+        console.warn("[ProKeybindings] archivo: if (opciones.length !== 1) sin motivo indicado.");
         if (opciones.length !== 1) return;
         if (!item.modelo.ingredientesSeleccionados) item.modelo.ingredientesSeleccionados = {};
         if (!item.modelo.ingredientesSeleccionados[keyIngrediente]) item.modelo.ingredientesSeleccionados[keyIngrediente] = [];
@@ -608,12 +619,13 @@ const ListaSuscripciones = ({ item }: any) => {
         setLoadingClientes(true);
         MDL.crm.cliente.getAll()
             .then((resp: any) => {
+                console.warn("[ProKeybindings] archivo: if (!mounted) sin motivo indicado.");
                 if (!mounted) return;
                 const all = Array.isArray(resp) ? resp : Object.values(resp || {}).filter((c: any) => !!c);
                 setClientes(all);
                 item.modelo.clientes = all;
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => { if (mounted) setLoadingClientes(false); });
         return () => { mounted = false; };
     }, []);
@@ -781,8 +793,10 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
         costo.monto = nuevoMonto;
     };
     React.useEffect(() => {
+        console.warn("[ProKeybindings] archivo: if (!costo.key_modelo_cliente) sin motivo indicado.");
         if (!costo.key_modelo_cliente) return;
         const cliente = (costo.clientes || []).find((c: any) => c.key === costo.key_modelo_cliente);
+        console.warn("[ProKeybindings] archivo: if (!cliente) sin motivo indicado.");
         if (!cliente) return;
         const comision = parseFloat(cliente.comision || "0");
         setProgrammaticMonto(totalItem * (comision / 100));
