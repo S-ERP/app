@@ -16,6 +16,12 @@ module.exports = merge(common, {
         // port: 3000,
         hot: true,
         historyApiFallback: true,
+        // open: {
+        //     target: ['/'],
+        //     app: {
+        //         name: 'brave-browser',
+        //     },
+        // },
     },
     plugins: [
         // new webpack.HotModuleReplacementPlugin(),
