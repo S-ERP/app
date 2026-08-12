@@ -124,11 +124,11 @@ export default class Barra extends React.Component {
                     <Page label={"Mis Movimientos de Cajas"} url={"/caja/mis_reporte_movimientos"} permiso="mis_reporte_movimientos" permiso_url="/caja" icon={<SIconApp name="pagopagare" fill={STheme.color.text} />} />
 
                     <Page label={"Administrar Cajas"} permiso="page" permiso_url="/reporte_cajas" icon={<SIconApp name="menuAll" fill={STheme.color.text} />} >
-                        <Page label={"Historial de Cajas"} url={"/caja/reporte_cajas"} permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Historial de Cajas"} url={"/caja/reporte_cajas"} permiso="reporteHistorial" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Movimientos de Cajas"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-                        <Page label={"Informe Caja"} url={"/caja/ventas_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
-                        <Page label={"Detalle Caja"} url={"/caja/detalle_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
-                        <Page label={"Ventas anuladas caja"} url={"/caja/anuladas_caja"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
+                        <Page label={"Informe Caja"} url={"/caja/ventas_caja"} permiso="reporteInforme" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
+                        <Page label={"Detalle Caja"} url={"/caja/detalle_caja"} permiso="reporteDetalle" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
+                        <Page label={"Ventas anuladas caja"} url={"/caja/anuladas_caja"} permiso="reporteAnuladas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
 
 
                         <Page label={"Pagos QR"} url={"/solicitud_qr/table"} permiso="pagosqr" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
