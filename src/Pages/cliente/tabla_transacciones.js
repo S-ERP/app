@@ -601,12 +601,8 @@ export default class TablaTransacciones extends Component {
 		const { cliente } = this.state;
 		const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}` || '-';
 		return (
-			<SPage title="Kardex Individual Cliente" disableScroll>
-				<Container col={"xs-11 sm-11 xxl-6.5"}>
-
-					{/* type TColKey = "xxs" | "xs" | "sm" | "md" | "lg" | "xl" | "xxl"; */}
-
-					{/* <Container col={"xs-11 sm-11 md-8"}> */}
+			<SPage title="Kardex" disableScroll>
+				<Container col={"xs-11 xxl-7"}>
 					<SHr height={16} />
 
 					<SView col={'xs-12'} style={{
@@ -710,7 +706,6 @@ export default class TablaTransacciones extends Component {
 						)}
 					</SView>
 					<SHr height={16} />
-
 				</Container>
 			</SPage>
 		);
