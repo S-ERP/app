@@ -1,6 +1,5 @@
-
 import React from "react";
-import { SHr, SIcon, SInput, SNotification, SText, STheme, SView, SViewProps } from "servisofts-component";
+import { SHr, SIcon, SInput, SText, STheme, SView, SViewProps } from "servisofts-component";
 import Label from "./Label";
 import { Factura, FacturaDetalle } from "../../../MDL/factura/type";
 import { FlatList } from "react-native";
@@ -12,16 +11,13 @@ type DetalleProps = {
 }
 
 const customStyle: any = "factura";
-
-
-// CELDA
 const Cell = ({ label = "", flex = 1, children, style = {} }: {
     label?: string,
     flex?: number,
     children?: any,
     style?: SViewProps["style"]
-}) => {
-    return <SView flex={flex} style={[{
+}) => (
+    <SView flex={flex} style={[{
         borderWidth: 0.5,
         padding: 8,
         borderColor: STheme.color.gray,
@@ -29,16 +25,13 @@ const Cell = ({ label = "", flex = 1, children, style = {} }: {
     }, style]} center>
         {children ?? <SText fontSize={10} center>{label}</SText>}
     </SView>
-}
-
-// ITEM
+)
 const Item = ({ item, reload, onDelete, state }: {
     item: FacturaDetalle,
     reload: () => void,
     onDelete: any,
     state: any
 }) => {
-
     const calcularSubTotal = () => {
         const cantidad = parseFloat(item.cantidad ?? "0");
         const precioUnitario = parseFloat(item.precioUnitario ?? "0");
@@ -65,7 +58,7 @@ const Item = ({ item, reload, onDelete, state }: {
                     });
                     return Array.isArray(data) ? data : [];
                 }}
-                mapOption={(a) => ({
+                mapOption={a => ({
                     key: String(a?.codigoProducto ?? ""),
                     nombre: `${a?.codigoProducto ?? ""} - ${a?.descripcionProducto ?? ""}`,
                     data: a
@@ -113,12 +106,9 @@ const Item = ({ item, reload, onDelete, state }: {
                     });
                     return Array.isArray(data) ? data : [];
                 }}
-                mapOption={(a) => ({
+                mapOption={a => ({
                     key: String(a?.codigoClasificador ?? ""),
-
                     nombre: `${a?.codigoClasificador ?? ""} - ${a?.descripcion ?? ""}`,
-
-                    // nombre: a?.descripcion ?? "",
                     data: a
                 })}
                 onSelect={(um) => {
@@ -136,25 +126,17 @@ const Item = ({ item, reload, onDelete, state }: {
                 height={"100%"}
                 style={{ fontSize: 10 }}
                 value={item.descripcion ?? ""}
-                // onChangeText={text => {
-                //     item.descripcion = text.replace(/"/g, "'");
-                //     reload();
-                // }}
                 onChangeText={text => {
                     let value = text.trim().replace(/"/g, "'");
-
-                    // Mantener solo la primera comilla simple
                     const firstIndex = value.indexOf("'");
                     if (firstIndex !== -1) {
                         value =
                             value.substring(0, firstIndex + 1) +
                             value.substring(firstIndex + 1).replace(/'/g, "");
                     }
-
                     item.descripcion = value;
                     reload();
                 }}
-
             />
         </Cell>
 
@@ -203,7 +185,6 @@ const Item = ({ item, reload, onDelete, state }: {
     </SView>
 }
 
-// MAIN COMPONENT
 export default class Detalle extends React.Component<DetalleProps> {
 
     state = {
