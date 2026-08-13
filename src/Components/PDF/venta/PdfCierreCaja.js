@@ -199,31 +199,78 @@ export default class PdfCierreCaja {
         );
     }
 
-    static VentasCaja(lista = []) {
+    static VentasCaja(lista) {
+        return lista.map((item, i) => (
+            < SPDF.View
+                key={i}
+                style={{
+                    width: "100%",
+                    // minHeight: 22,
+                    flexDirection: "row",
+                    paddingBottom: 15
+                }}>
+                <SPDF.View style={{ flex: 1, justifyContent: "center" }}>
+                    <SPDF.Text style={{ ...text, fontSize: 8, textTransform: "uppercase" }}>
+                        {new SDate(item.fecha_on).toString("HH:mm")} | {item.detalle?.tipo_pago ?? "-"}
+                    </SPDF.Text>
+                    <SPDF.Text style={{ ...text, fontSize: 8 }}>
+                        {item.detalle?.cliente?.razon_social ?? "-"}
+                    </SPDF.Text>
+                    <SPDF.Text style={{ ...text, fontSize: 8 }}>
+                        {item.detalle?.observacion ?? "-"}
+                    </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ flex: 1, justifyContent: "center", paddingRight: 3 }}>
+                    {(item?.detalle?.detalles ?? []).map((d, index) => (
+                        <SPDF.Text style={{ ...text, fontSize: 8 }}>
+                            • {d.descripcion} {d.precio_unitario_base} {item?.moneda_base?.observacion} x{d.cantidad}
+                        </SPDF.Text>))}
+                </SPDF.View>
+                <SPDF.View style={{ flex: 1, alignItems: "flex-end", paddingRight: 3 }}>
+                    {(item?.items ?? []).map((d, index) => (
+                        <SPDF.View key={index} style={{ alignItems: "flex-end", width: "100%" }} >
+                            <SPDF.Text style={{ ...text, fontSize: 8, width: "100%" }} >
+                                {d?.tipo}
+                            </SPDF.Text>
+                            <SPDF.View style={{ width: 8 }} />
+                            <SPDF.Text style={{ ...text, fontSize: 9, width: "100%", fontWeight: "bold", textAlign: "right" }} >
+                                {formatCurrency(d?.monto, d.moneda?.observacion)}
+                            </SPDF.Text>
+                        </SPDF.View>
+                    ))}
+                    <SPDF.View style={{ width: "100%", borderTopWidth: 1, marginBottom: 5, marginTop: 5, borderColor: "#cec9c9" }} />
+                    <SPDF.View style={{ width: "100%", alignItems: "end" }}>
+                        <SPDF.Text style={{ ...text, fontSize: 11, width: "100%", fontWeight: "bold", textAlign: "right" }}>
+                            {formatCurrency(item?.detalle?.cuotas?.total_base, item?.moneda_base?.observacion)}
+                        </SPDF.Text>
+                    </SPDF.View>
+                </SPDF.View>
+            </SPDF.View>
+        ));
+    }
+
+    static VentasCaja_(lista = []) {
         console.log("LISTA PDF", lista);
         // if (!lista?.detalle) return null;
-        if (!Array.isArray(lista) || lista.length === 0) return null;
+        // if (!Array.isArray(lista) || lista.length === 0) return null;
         return (
             <SPDF.View style={{ width: "100%" }}>
                 <SPDF.View style={{ height: 20 }} />
                 <SPDF.Text style={{ ...label, fontSize: 12 }}>
                     Ventas en Caja
                 </SPDF.Text>
-
                 {PdfCierreCaja.espacio(10)}
-
                 {lista
-                    .filter(item => item.detalle != null)
+                    // .filter(item => item.detalle != null)
                     .map((item, i) => (
                         < SPDF.View
                             key={i}
                             style={{
                                 width: "100%",
-                                minHeight: 22,
+                                // minHeight: 22,
                                 flexDirection: "row",
                                 paddingBottom: 15
                             }}>
-
                             <SPDF.View style={{ flex: 1, justifyContent: "center" }}>
                                 <SPDF.Text style={{ ...text, fontSize: 8, textTransform: "uppercase" }}>
                                     {new SDate(item.fecha_on).toString("HH:mm")} | {item.detalle?.tipo_pago ?? "-"}
@@ -235,14 +282,12 @@ export default class PdfCierreCaja {
                                     {item.detalle?.observacion ?? "-"}
                                 </SPDF.Text>
                             </SPDF.View>
-
                             <SPDF.View style={{ flex: 1, justifyContent: "center", paddingRight: 3 }}>
                                 {(item?.detalle?.detalles ?? []).map((d, index) => (
                                     <SPDF.Text style={{ ...text, fontSize: 8 }}>
                                         • {d.descripcion} {d.precio_unitario_base} {item?.moneda_base?.observacion} x{d.cantidad}
                                     </SPDF.Text>))}
                             </SPDF.View>
-
                             <SPDF.View style={{ flex: 1, alignItems: "flex-end", paddingRight: 3 }}>
                                 {(item?.items ?? []).map((d, index) => (
                                     <SPDF.View key={index} style={{ alignItems: "flex-end", width: "100%" }} >
@@ -263,10 +308,8 @@ export default class PdfCierreCaja {
                                 </SPDF.View>
                             </SPDF.View>
                         </SPDF.View>
-
                     ))
                 }
-
             </SPDF.View>
         );
     }
@@ -470,21 +513,30 @@ export default class PdfCierreCaja {
             >
                 {PdfCierreCaja.Cajero(caja)}
                 {PdfCierreCaja.espacio(8)}
-                <SPDF.View style={{ width: "100%", alignItems: "center" }}> <SPDF.Text style={text}> Detalle de Transacciones </SPDF.Text> </SPDF.View>
+                <SPDF.View style={{ width: "100%", alignItems: "center" }}> <SPDF.Text style={{ ...label, fontSize: 12 }}> Detalle de Transacciones </SPDF.Text> </SPDF.View>
                 {PdfCierreCaja.espacio(8)}
                 {PdfCierreCaja.linea()}
                 {PdfCierreCaja.espacio(8)}
                 {PdfCierreCaja.detalleMovimientos(movimientos)}
                 {PdfCierreCaja.espacio(8)}
                 {PdfCierreCaja.linea()}
+                {PdfCierreCaja.espacio(20)}
+                <SPDF.View style={{ width: "100%", alignItems: "center" }}><SPDF.Text style={{ ...label, fontSize: 12 }}>
+                    Ventas en Caja
+                </SPDF.Text></SPDF.View>
+                {PdfCierreCaja.espacio(10)}
+                {PdfCierreCaja.linea()}
+                {PdfCierreCaja.espacio(10)}
+                {PdfCierreCaja.VentasCaja(listaVentas)}
+                {PdfCierreCaja.espacio(20)}
                 {PdfCierreCaja.espacio()}
                 {PdfCierreCaja.Resumen(resumen)}
                 {PdfCierreCaja.espacio()}
                 {PdfCierreCaja.TablaPagos(empresa_tipo_pago_pv)}
                 {PdfCierreCaja.espacio(20)}
-                {PdfCierreCaja.linea()}
-                {PdfCierreCaja.VentasCaja(listaVentas)}
-                {PdfCierreCaja.espacio(20)}
+                {/* {PdfCierreCaja.linea()} */}
+                {/* {PdfCierreCaja.VentasCaja(listaVentas)}
+                {PdfCierreCaja.espacio(20)} */}
                 {PdfCierreCaja.linea()}
                 {PdfCierreCaja.espacio(100)}
                 {/* {PdfCierreCaja.linea()} */}
