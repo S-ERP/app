@@ -1,37 +1,46 @@
 import React from "react";
-import { SHr, SIcon, SInput, SText, STheme, SView, SViewProps } from "servisofts-component";
+import { SHr, SIcon, SInput, SMath, SText, STheme, SView, SViewProps } from "servisofts-component";
 import Label from "./Label";
 import { Factura, FacturaDetalle } from "../../../MDL/factura/type";
+import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import { FlatList } from "react-native";
 import MDL from "../../../MDL";
 import FiltroSelector from "../../productos/modelo/Components/FiltroSelector";
+import SInput2 from "../../../Components/SForm2/SInput2";
 
 type DetalleProps = {
     factura: Factura,
+    parametricas?: Parametricas,
+    mostrarErrores?: boolean,
 }
 
-const customStyle: any = "factura";
-const Cell = ({ label = "", flex = 1, children, style = {} }: {
+const customStyle: any = "facturaDuplicar";
+
+
+const Cell = ({ label = "", flex = 1, children, style = {}, error = false }: {
     label?: string,
     flex?: number,
     children?: any,
-    style?: SViewProps["style"]
-}) => (
-    <SView flex={flex} style={[{
+    style?: SViewProps["style"],
+    error?: boolean,
+}) => {
+    return <SView flex={flex} style={[{
         borderWidth: 0.5,
         padding: 8,
         borderColor: STheme.color.gray,
         overflow: "hidden",
-    }, style]} center>
+    }, style, error ? { borderWidth: 2, borderColor: STheme.color.danger, borderRadius: 4 } : null]} center>
         {children ?? <SText fontSize={10} center>{label}</SText>}
     </SView>
-)
-const Item = ({ item, reload, onDelete, state }: {
+}
+const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
     item: FacturaDetalle,
     reload: () => void,
     onDelete: any,
-    state: any
+    state: any,
+    mostrarErrores?: boolean
 }) => {
+
     const calcularSubTotal = () => {
         const cantidad = parseFloat(item.cantidad ?? "0");
         const precioUnitario = parseFloat(item.precioUnitario ?? "0");
@@ -46,11 +55,12 @@ const Item = ({ item, reload, onDelete, state }: {
 
     return <SView col={"xs-12"} row>
 
-        {/* PRODUCTO */}
-        <Cell>
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.codigoProducto}>
             <FiltroSelector
                 ref={(ref) => (state.filtroProductoRef = ref)}
-                label="Producto / Servicio"
+                label=""
+                defaultOption={item.codigoProducto ? String(item.codigoProducto) : "Seleecionar"}
+                skipInitialOnSelect
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
                         ambiente: MDL.factura.ambiente,
@@ -58,7 +68,7 @@ const Item = ({ item, reload, onDelete, state }: {
                     });
                     return Array.isArray(data) ? data : [];
                 }}
-                mapOption={a => ({
+                mapOption={(a) => ({
                     key: String(a?.codigoProducto ?? ""),
                     nombre: `${a?.codigoProducto ?? ""} - ${a?.descripcionProducto ?? ""}`,
                     data: a
@@ -71,18 +81,13 @@ const Item = ({ item, reload, onDelete, state }: {
                     item.descripcion = data?.descripcionProducto ?? "";
                     item.actividadEconomica = data?.codigoActividad?.toString() ?? "";
 
-                    // opcional si tienes estos campos
-                    // item.precioUnitario = data?.precio ?? "0";
-                    // item.unidadMedida = data?.unidadMedida ?? "1";
-
                     calcularSubTotal();
                     reload();
                 }}
             />
         </Cell>
 
-        {/* CANTIDAD */}
-        <Cell>
+        <Cell error={mostrarErrores && !item.cantidad}>
             <SInput
                 customStyle={customStyle}
                 value={item.cantidad ?? ""}
@@ -93,12 +98,13 @@ const Item = ({ item, reload, onDelete, state }: {
                 }}
             />
         </Cell>
-
-        {/* UNIDAD */}
-        <Cell>
+        
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.unidadMedida}>
             <FiltroSelector
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
-                label="Unidad de Medida"
+                label=""
+                defaultOption={item.unidadMedida ? String(item.unidadMedida) : "Seleecionar"}
+                skipInitialOnSelect
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
                         ambiente: MDL.factura.ambiente,
@@ -106,7 +112,7 @@ const Item = ({ item, reload, onDelete, state }: {
                     });
                     return Array.isArray(data) ? data : [];
                 }}
-                mapOption={a => ({
+                mapOption={(a) => ({
                     key: String(a?.codigoClasificador ?? ""),
                     nombre: `${a?.codigoClasificador ?? ""} - ${a?.descripcion ?? ""}`,
                     data: a
@@ -118,8 +124,7 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-        {/* DESCRIPCIÓN */}
-        <Cell flex={3} style={{ padding: 2 }}>
+        <Cell flex={3} style={{ padding: 2 }} error={mostrarErrores && !item.descripcion}>
             <SInput
                 customStyle={customStyle}
                 type="textArea"
@@ -127,48 +132,53 @@ const Item = ({ item, reload, onDelete, state }: {
                 style={{ fontSize: 10 }}
                 value={item.descripcion ?? ""}
                 onChangeText={text => {
-                    let value = text.trim().replace(/"/g, "'");
+                    let value = text.replace(/"/g, "'");
+
                     const firstIndex = value.indexOf("'");
                     if (firstIndex !== -1) {
                         value =
                             value.substring(0, firstIndex + 1) +
                             value.substring(firstIndex + 1).replace(/'/g, "");
                     }
+
                     item.descripcion = value;
                     reload();
                 }}
             />
         </Cell>
 
-        {/* PRECIO */}
-        <Cell>
-            <SInput
-                customStyle={customStyle}
-                value={item.precioUnitario ?? ""}
-                onChangeText={e => {
-                    item.precioUnitario = e;
-                    calcularSubTotal();
-                    reload();
-                }}
-            />
+        <Cell style={{ padding: 8 }} error={mostrarErrores && !((parseFloat(item.precioUnitario ?? "0") || 0) > 0)}>
+            <SView style={{ width: "100%", borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4, paddingHorizontal: 2, paddingVertical: 3.5, backgroundColor:STheme.color.card }}>
+                <SInput2
+                    type="money"
+                    style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
+                    defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
+                    onChangeText={e => {
+                        item.precioUnitario = e;
+                        calcularSubTotal();
+                        reload();
+                    }}
+                />
+            </SView>
         </Cell>
 
-        {/* DESCUENTO */}
-        <Cell>
-            <SInput
-                customStyle={customStyle}
-                value={item.montoDescuento ?? ""}
-                onChangeText={e => {
-                    item.montoDescuento = e;
-                    calcularSubTotal();
-                    reload();
-                }}
-            />
+        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.montoDescuento}>
+            <SView style={{ width: "100%", borderWidth: 1, borderColor: "black", borderRadius: 4, paddingHorizontal: 4, paddingVertical: 2 }}>
+                <SInput2
+                    type="money"
+                    style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
+                    defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
+                    onChangeText={e => {
+                        item.montoDescuento = e;
+                        calcularSubTotal();
+                        reload();
+                    }}
+                />
+            </SView>
         </Cell>
 
-        {/* SUBTOTAL */}
         <Cell>
-            <Label>{item.subTotal}</Label>
+            <Label>{SMath.formatMoney(parseFloat(item.subTotal ?? "0") || 0)}</Label>
 
             <SView
                 style={{
@@ -257,18 +267,19 @@ export default class Detalle extends React.Component<DetalleProps> {
 
         return <SView col={"xs-12"}>
             <SView col={"xs-12"} row>
-                <SView flex={6} />
+                <SView flex={7} />
                 <Cell flex={2} label="SUBTOTAL" />
-                <Cell label={subTotal.toString()} />
+                <Cell label={SMath.formatMoney(subTotal)} />
             </SView>
 
             <SView col={"xs-12"} row>
-                <SView flex={6} />
+                <SView flex={7} />
                 <Cell flex={2} label="DESCUENTO" />
-                <Cell>
-                    <SInput
-                        customStyle={customStyle}
-                        value={this.props.factura.data.descuentoAdicional ?? ""}
+                <Cell style={{ padding: 2 }}>
+                    <SInput2
+                        type="money"
+                        style={{ width: "100%", fontSize: 11, textAlign: "center", color: STheme.color.text }}
+                        defaultValue={(parseFloat(this.props.factura.data.descuentoAdicional ?? "0") || 0).toFixed(2)}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";
                             this.setState({ ...this.state });
@@ -278,9 +289,9 @@ export default class Detalle extends React.Component<DetalleProps> {
             </SView>
 
             <SView col={"xs-12"} row>
-                <SView flex={6} />
+                <SView flex={7} />
                 <Cell flex={2} label="TOTAL" />
-                <Cell label={total.toString()} />
+                <Cell label={SMath.formatMoney(total)} />
             </SView>
         </SView>
     }
@@ -317,6 +328,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                         reload={() => this.setState({ ...this.state })}
                         onDelete={() => this.handleDeleteItem(index)}
                         state={this.state}
+                        mostrarErrores={this.props.mostrarErrores}
                     />
                 )}
             />
