@@ -186,7 +186,17 @@ export default class factura extends MDLAbstract<EventListener> {
             // this.componentDidMount()
             SNotification.send({ key: "imprimirFactura" + cuf, title: "Factura impresa con éxito", body: cuf, color: STheme.color.success, time: 5000, })
         }).catch(e => {
-            SNotification.send({ key: "imprimirFactura" + cuf, title: "No se pudo imprimir la factura.", body: e.error, color: STheme.color.error, time: 5000, })
+            let errorMsg = "Error desconocido";
+            if (typeof e.error === 'string') {
+                errorMsg = e.error;
+            } else if (e.error?.message) {
+                errorMsg = e.error.message;
+            } else if (typeof e.data === 'string') {
+                errorMsg = e.data;
+            } else if (e.message) {
+                errorMsg = e.message;
+            }
+            SNotification.send({ key: "imprimirFactura" + cuf, title: "❌ Error al imprimir la factura", body: errorMsg, color: STheme.color.error, time: 8000, })
         })
     }
     verificarEstado({ cuf = "" }) {
@@ -217,12 +227,23 @@ export default class factura extends MDLAbstract<EventListener> {
                 })
                 resolve(e)
             }).catch(e => {
+                let errorMsg = "Error desconocido";
+                if (typeof e.error === 'string') {
+                    errorMsg = e.error;
+                } else if (e.error?.message) {
+                    errorMsg = e.error.message;
+                } else if (typeof e.data === 'string') {
+                    errorMsg = e.data;
+                } else if (e.message) {
+                    errorMsg = e.message;
+                }
+
                 SNotification.send({
                     key: "verificarEstado" + cuf,
-                    title: "No se pudo verificar estado.",
-                    body: cuf,
+                    title: "❌ Error al verificar estado",
+                    body: errorMsg,
                     color: STheme.color.error,
-                    time: 5000,
+                    time: 8000,
                 })
                 reject(e)
             })
@@ -264,12 +285,23 @@ export default class factura extends MDLAbstract<EventListener> {
                         })
                         resolve(e)
                     }).catch(e => {
+                        let errorMsg = "Error desconocido";
+                        if (typeof e.error === 'string') {
+                            errorMsg = e.error;
+                        } else if (e.error?.message) {
+                            errorMsg = e.error.message;
+                        } else if (typeof e.data === 'string') {
+                            errorMsg = e.data;
+                        } else if (e.message) {
+                            errorMsg = e.message;
+                        }
+
                         SNotification.send({
                             key: "reenviar" + cuf,
-                            title: "No se pudo reenviar la factura.",
-                            body: JSON.stringify(e?.error),
+                            title: "❌ Error al reenviar la factura",
+                            body: errorMsg,
                             color: STheme.color.error,
-                            time: 5000,
+                            time: 8000,
                         })
                         reject(e)
                     })
@@ -312,12 +344,25 @@ export default class factura extends MDLAbstract<EventListener> {
                         resolve(e)
                         return e;
                     }).catch(e => {
+                        console.log("Error completo:", e);
+                        let errorMsg = "Error desconocido";
+
+                        if (typeof e.error === 'string') {
+                            errorMsg = e.error;
+                        } else if (e.error?.message) {
+                            errorMsg = e.error.message;
+                        } else if (typeof e.data === 'string') {
+                            errorMsg = e.data;
+                        } else if (e.message) {
+                            errorMsg = e.message;
+                        }
+
                         SNotification.send({
                             key: "reconstruir" + cuf,
-                            title: "No se pudo reconstruir la factura.",
-                            body: e.error,
+                            title: "❌ Error al reconstruir la factura",
+                            body: errorMsg,
                             color: STheme.color.error,
-                            time: 5000,
+                            time: 8000,
                         })
                         reject(e)
                     })
@@ -353,12 +398,23 @@ export default class factura extends MDLAbstract<EventListener> {
                         time: 5000,
                     })
                 }).catch(e => {
+                    let errorMsg = "Error desconocido";
+                    if (typeof e.error === 'string') {
+                        errorMsg = e.error;
+                    } else if (e.error?.message) {
+                        errorMsg = e.error.message;
+                    } else if (typeof e.data === 'string') {
+                        errorMsg = e.data;
+                    } else if (e.message) {
+                        errorMsg = e.message;
+                    }
+
                     SNotification.send({
                         key: "revertir" + cuf,
-                        title: "No se pudo revertir la factura.",
-                        body: e.error,
+                        title: "❌ Error al revertir la factura",
+                        body: errorMsg,
                         color: STheme.color.error,
-                        time: 5000,
+                        time: 8000,
                     })
                 })
             }
