@@ -40,7 +40,7 @@ echo -e "${GREEN}Build completado.${NC}"
 
 # --- Credenciales/datos del servidor ---
 # Se leen de .siles.env (no versionado en git) o se piden por consola si no existe
-ENV_FILE=".siles.env"
+ENV_FILE=".alvaro.env"
 if [ -f "$ENV_FILE" ]; then
     # shellcheck disable=SC1090
     source "$ENV_FILE"
