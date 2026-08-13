@@ -94,7 +94,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 customStyle={customStyle}
                 value={item.cantidad ?? ""}
                 onChangeText={e => {
-                    item.cantidad = e.trim();
+                    item.cantidad = e;
                     calcularSubTotal();
                     reload();
                 }}
@@ -164,7 +164,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 customStyle={customStyle}
                 value={item.precioUnitario ?? ""}
                 onChangeText={e => {
-                    item.precioUnitario = e.trim();
+                    item.precioUnitario = e;
                     calcularSubTotal();
                     reload();
                 }}
@@ -177,7 +177,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 customStyle={customStyle}
                 value={item.montoDescuento ?? ""}
                 onChangeText={e => {
-                    item.montoDescuento = e.trim();
+                    item.montoDescuento = e;
                     calcularSubTotal();
                     reload();
                 }}
@@ -289,7 +289,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                         customStyle={customStyle}
                         value={this.props.factura.data.descuentoAdicional ?? ""}
                         onChangeText={e => {
-                            this.props.factura.data.descuentoAdicional = (e ?? "0").trim();
+                            this.props.factura.data.descuentoAdicional = e ?? "0";
                             this.setState({ ...this.state });
                         }}
                     />

@@ -51,7 +51,7 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                             })}
                             onChangeText={e => {
                                 // console.log(e);
-                                this.props.factura.data.codigoTipoDocumentoIdentidad = e.trim()
+                                this.props.factura.data.codigoTipoDocumentoIdentidad = e
                                 this.setState({ ...this.state })
                             }} />
                     </>}
