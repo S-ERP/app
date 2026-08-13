@@ -98,7 +98,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
                 }}
             />
         </Cell>
-        
+
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.unidadMedida}>
             <FiltroSelector
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
@@ -148,7 +148,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
         </Cell>
 
         <Cell style={{ padding: 8 }} error={mostrarErrores && !((parseFloat(item.precioUnitario ?? "0") || 0) > 0)}>
-            <SView style={{ width: "100%", borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4, paddingHorizontal: 2, paddingVertical: 3.5, backgroundColor:STheme.color.card }}>
+            <SView style={{ width: "100%", borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4, paddingHorizontal: 2, paddingVertical: 3.5, backgroundColor: STheme.color.card }}>
                 <SInput2
                     type="money"
                     style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
@@ -162,11 +162,11 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
             </SView>
         </Cell>
 
-        <Cell style={{ padding: 2 }} error={mostrarErrores && !item.montoDescuento}>
-            <SView style={{ width: "100%", borderWidth: 1, borderColor: "black", borderRadius: 4, paddingHorizontal: 4, paddingVertical: 2 }}>
+        <Cell style={{ padding: 8 }} error={mostrarErrores && !item.montoDescuento}>
+            <SView style={{ width: "100%", borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4, paddingHorizontal: 2, paddingVertical: 3.5, backgroundColor: STheme.color.card }}>
                 <SInput2
                     type="money"
-                    style={{ width: "100%", fontSize: 11, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
+                    style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
                     defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
                     onChangeText={e => {
                         item.montoDescuento = e;
@@ -208,7 +208,7 @@ export default class Detalle extends React.Component<DetalleProps> {
             codigoProductoSin: "",
             actividadEconomica: "",
             cantidad: "1",
-            unidadMedida: "1",
+            unidadMedida: "",
             descripcion: "",
             precioUnitario: "0",
             montoDescuento: "0",
