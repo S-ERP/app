@@ -8,6 +8,7 @@ import fraccionar from "./fraccionar";
 import history from "./history";
 import historyTabla from "./historyTabla";
 import reporteCajas from "./reporteCajas";
+import reporteMisCajas from "./reporteMisCajas";
 import reporteMoviminetos from "./reporteMoviminetos";
 import recurrente from "./recurrente";
 import misReporteMoviminetos from "./misReporteMoviminetos";
@@ -22,6 +23,7 @@ export default SPage.combinePages("caja",
         "fraccionar": fraccionar,
         "history": history,
         "reporte_cajas": reporteCajas,
+        "reporte_mis_cajas": reporteMisCajas,
         "reporte_movimientos": reporteMoviminetos,
         "mis_reporte_movimientos": misReporteMoviminetos,
 
