@@ -7,8 +7,8 @@ export default class FiltroSelector extends Component {
         super(props);
         this.state = {
             options: [],
-            // defaultOption: 'todos' o undefined
-            selectedKey: props.defaultOption ?? "todos",
+            // defaultOption: 'todos', '', o undefined
+            selectedKey: props.defaultOption !== undefined ? props.defaultOption : "todos",
         };
         this.selectorRef = createRef();
     }
@@ -20,16 +20,19 @@ export default class FiltroSelector extends Component {
     async loadData() {
         try {
             const data = await this.props.loadData();
-            const options = [{ key: "todos", nombre: "Todos" }, ...data.map(this.props.mapOption)];
+            const firstOption = this.props.defaultOption === ""
+                ? { key: "", nombre: "Seleccionar" }
+                : { key: "todos", nombre: "Todos" };
+            const options = [firstOption, ...data.map(this.props.mapOption)];
             this.setState({ options }, () => {
                 const previousKey = this.state.selectedKey;
                 const found = options.find(o => o.key === previousKey);
                 // Si ya traía un código propio (ej. al duplicar/editar una factura) pero no aparece
                 // en el catálogo recién cargado (puede diferir entre ambientes Producción/Prueba),
                 // conservamos el código original visible en vez de resetear a "Todos".
-                const keepOriginal = !found && !!previousKey && previousKey !== "todos";
-                const resolvedKey = found ? found.key : (keepOriginal ? previousKey : "todos");
-                const payload = resolvedKey === "todos" ? { key: null, nombre: "Todos" } : found;
+                const keepOriginal = !found && !!previousKey && previousKey !== "todos" && previousKey !== "";
+                const resolvedKey = found ? found.key : (keepOriginal ? previousKey : (this.props.defaultOption === "" ? "" : "todos"));
+                const payload = resolvedKey === "todos" ? { key: null, nombre: "Todos" } : (resolvedKey === "" ? { key: "", nombre: "Seleccionar" } : found);
                 this.setState({ selectedKey: resolvedKey }, () => {
                     // Asegurar que el input muestre el valor por defecto correcto
                     this.selectorRef.current?.setValue(resolvedKey);

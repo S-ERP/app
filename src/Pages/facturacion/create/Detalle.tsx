@@ -33,11 +33,10 @@ const Cell = ({ label = "", flex = 1, children, style = {}, error = false }: {
         {children ?? <SText fontSize={10} center>{label}</SText>}
     </SView>
 }
-const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
+const Item = ({ item, reload, onDelete, mostrarErrores }: {
     item: FacturaDetalle,
     reload: () => void,
     onDelete: any,
-    state: any,
     mostrarErrores?: boolean
 }) => {
 
@@ -57,9 +56,8 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
 
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.codigoProducto}>
             <FiltroSelector
-                ref={(ref) => (state.filtroProductoRef = ref)}
                 label=""
-                defaultOption={item.codigoProducto ? String(item.codigoProducto) : "Seleecionar"}
+                defaultOption={item.codigoProducto ? String(item.codigoProducto) : ""}
                 skipInitialOnSelect
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
@@ -101,9 +99,9 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
 
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.unidadMedida}>
             <FiltroSelector
-                ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
                 label=""
-                defaultOption={item.unidadMedida ? String(item.unidadMedida) : "Seleecionar"}
+                defaultOption={item.unidadMedida ?? ""}
+                skipInitialOnSelect
 
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
@@ -135,16 +133,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
                 style={{ fontSize: 10 }}
                 value={item.descripcion ?? ""}
                 onChangeText={text => {
-                    let value = text.replace(/"/g, "'");
-
-                    const firstIndex = value.indexOf("'");
-                    if (firstIndex !== -1) {
-                        value =
-                            value.substring(0, firstIndex + 1) +
-                            value.substring(firstIndex + 1).replace(/'/g, "");
-                    }
-
-                    item.descripcion = value;
+                    item.descripcion = text.replace(/"/g, "'");
                     reload();
                 }}
             />
@@ -200,10 +189,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
 
 export default class Detalle extends React.Component<DetalleProps> {
 
-    state = {
-        filtroProductoRef: null,
-        filtroUnidadMedidaRef: null,
-    }
+    state = {}
 
     handleAddItem() {
         this.props.factura.data.detalle.push({
@@ -325,12 +311,12 @@ export default class Detalle extends React.Component<DetalleProps> {
             <FlatList
                 scrollEnabled={false}
                 data={this.props.factura.data.detalle}
+                keyExtractor={(_, index) => String(index)}
                 renderItem={({ item, index }) => (
                     <Item
                         item={item}
                         reload={() => this.setState({ ...this.state })}
                         onDelete={() => this.handleDeleteItem(index)}
-                        state={this.state}
                         mostrarErrores={this.props.mostrarErrores}
                     />
                 )}
