@@ -104,7 +104,7 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
                 label=""
                 defaultOption={item.unidadMedida ? String(item.unidadMedida) : "Seleecionar"}
-                skipInitialOnSelect
+
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
                         ambiente: MDL.factura.ambiente,
@@ -114,7 +114,10 @@ const Item = ({ item, reload, onDelete, state, mostrarErrores }: {
                 }}
                 mapOption={(a) => ({
                     key: String(a?.codigoClasificador ?? ""),
+
                     nombre: `${a?.codigoClasificador ?? ""} - ${a?.descripcion ?? ""}`,
+
+                    // nombre: a?.descripcion ?? "",
                     data: a
                 })}
                 onSelect={(um) => {
