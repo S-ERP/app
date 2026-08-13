@@ -94,7 +94,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 customStyle={customStyle}
                 value={item.cantidad ?? ""}
                 onChangeText={e => {
-                    item.cantidad = e;
+                    item.cantidad = e.trim();
                     calcularSubTotal();
                     reload();
                 }}
@@ -141,7 +141,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 //     reload();
                 // }}
                 onChangeText={text => {
-                    let value = text.replace(/"/g, "'");
+                    let value = text.trim().replace(/"/g, "'");
 
                     // Mantener solo la primera comilla simple
                     const firstIndex = value.indexOf("'");
@@ -164,7 +164,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 customStyle={customStyle}
                 value={item.precioUnitario ?? ""}
                 onChangeText={e => {
-                    item.precioUnitario = e;
+                    item.precioUnitario = e.trim();
                     calcularSubTotal();
                     reload();
                 }}
@@ -177,7 +177,7 @@ const Item = ({ item, reload, onDelete, state }: {
                 customStyle={customStyle}
                 value={item.montoDescuento ?? ""}
                 onChangeText={e => {
-                    item.montoDescuento = e;
+                    item.montoDescuento = e.trim();
                     calcularSubTotal();
                     reload();
                 }}
@@ -289,7 +289,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                         customStyle={customStyle}
                         value={this.props.factura.data.descuentoAdicional ?? ""}
                         onChangeText={e => {
-                            this.props.factura.data.descuentoAdicional = e ?? "0";
+                            this.props.factura.data.descuentoAdicional = (e ?? "0").trim();
                             this.setState({ ...this.state });
                         }}
                     />
