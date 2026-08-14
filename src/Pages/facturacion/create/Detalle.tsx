@@ -140,7 +140,8 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
                 <SInput2
                     type="money"
                     style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
-                    value={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
+                    // value={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
+                    defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
                     onChangeText={e => {
                         item.precioUnitario = e;
                         calcularSubTotal();
@@ -155,7 +156,7 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
                 <SInput2
                     type="money"
                     style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
-                    value={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
+                    defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
                     onChangeText={e => {
                         item.montoDescuento = e;
                         calcularSubTotal();
