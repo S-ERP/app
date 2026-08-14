@@ -21,6 +21,7 @@ export default class index extends React.Component {
     state = {
         siat: null,
         ambiente: MDL.factura.ambiente,
+        mostrarErrores: false,
     }
     constructor(props: any) {
         super(props); this.factura = {
@@ -166,7 +167,24 @@ export default class index extends React.Component {
     }
 
     validarAntesDeEmitir() {
-        const detalle = this.factura.data.detalle; for (let i = 0; i < detalle.length; i++) {
+        const detalle = this.factura.data.detalle;
+        const hayCamposVaciosDetalle = detalle.some((item) => {
+            return !item.codigoProducto || item.codigoProducto.trim() === ""
+                || !item.unidadMedida || item.unidadMedida.trim() === ""
+                || !item.precioUnitario || item.precioUnitario.trim() === ""
+                || !item.cantidad || item.cantidad.trim() === ""
+                || !item.actividadEconomica || item.actividadEconomica.trim() === ""
+                || !item.descripcion || item.descripcion.trim() === ""
+                || item.montoDescuento == null || item.montoDescuento.trim() === "";
+        });
+
+        if (hayCamposVaciosDetalle) {
+            this.setState({ mostrarErrores: true });
+            return false;
+        }
+        this.setState({ mostrarErrores: false });
+
+        for (let i = 0; i < detalle.length; i++) {
             const item = detalle[i];
             // 🔴 codigoProducto
             if (!item.codigoProducto || item.codigoProducto.trim() === "") {
@@ -332,7 +350,7 @@ export default class index extends React.Component {
                 <SHr h={16} />
                 <Cabecera factura={this.factura} parametricas={this.parametricas} />
                 <SHr h={16} />
-                <Detalle factura={this.factura} parametricas={this.parametricas} />
+                <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
             </SView>
