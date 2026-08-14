@@ -43,9 +43,9 @@ export default class index extends React.Component {
                 direccion: "",
                 telefono: "",
                 fechaEmision: new SDate().toString() + "",
-                nombreRazonSocial: "Servisofts SRL",
+                nombreRazonSocial: "",
                 codigoTipoDocumentoIdentidad: "5",
-                numeroDocumento: "454561021",
+                numeroDocumento: "",
                 complemento: "",
                 codigoCliente: "1",
                 codigoMetodoPago: "1",
@@ -264,6 +264,26 @@ export default class index extends React.Component {
                 time: 5000,
             });
             MDL.factura.imprimir({ cuf: e.data.cuf })
+
+            this.factura.data.numeroDocumento = "";
+            this.factura.data.nombreRazonSocial = "";
+            this.factura.data.complemento = "";
+            this.factura.data.detalle = [
+                {
+                    codigoProducto: "",
+                    codigoProductoSin: "",
+                    actividadEconomica: "",
+                    cantidad: "1",
+                    unidadMedida: "1",
+                    descripcion: "",
+                    precioUnitario: "0",
+                    montoDescuento: "0",
+                    subTotal: "0",
+                    numeroImei: "",
+                    numeroSerie: ""
+                }
+            ];
+            this.setState({ ...this.state });
 
         }).catch((e) => {
             SNotification.send({
