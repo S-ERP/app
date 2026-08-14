@@ -18,6 +18,16 @@ export default class Cabecera extends React.Component<CabeceraProps> {
     inputdocumento: SInput | undefined;
     inprazonsocial: SInput | undefined;
     popupBuscarNit: PopupBuscarNit | undefined;
+
+    componentDidUpdate(prevProps: CabeceraProps) {
+        if (prevProps.factura.data.numeroDocumento !== this.props.factura.data.numeroDocumento) {
+            if (this.inputdocumento) this.inputdocumento.setValue(this.props.factura.data.numeroDocumento);
+        }
+        if (prevProps.factura.data.nombreRazonSocial !== this.props.factura.data.nombreRazonSocial) {
+            if (this.inprazonsocial) this.inprazonsocial.setValue(this.props.factura.data.nombreRazonSocial);
+        }
+    }
+
     render() {
         const { fechaEmision, numeroDocumento, nombreRazonSocial, codigoCliente } = this.props.factura.data
         return <SView center row>
@@ -52,6 +62,7 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                 </SView>
                 <SView width={8} />
                 <SInput ref={ref => this.inputdocumento = ref ?? undefined} flex customStyle={customStyle} defaultValue={numeroDocumento}
+                    key={numeroDocumento}
                     style={this.props.mostrarErrores && !numeroDocumento ? errorStyle : undefined}
                     onFocus={(e) => {
                         PopupBuscarNit.open({
@@ -102,6 +113,7 @@ export default class Cabecera extends React.Component<CabeceraProps> {
                 <Label bold >{"Nombre/Razón Social"}</Label>
                 <SView width={16} />
                 <SInput ref={ref => this.inprazonsocial = ref ?? undefined} flex customStyle={customStyle} defaultValue={nombreRazonSocial}
+                    key={nombreRazonSocial}
                     style={this.props.mostrarErrores && !nombreRazonSocial ? errorStyle : undefined}
                     onChangeText={e => {
                     this.props.factura.data.nombreRazonSocial = e.trim()
