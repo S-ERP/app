@@ -121,9 +121,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     componentWillUnmount(): void {
-        MDL.carrito.removeEventListener(this.handleChange);
+        MDL.carrito.removeEventListener("handleChange", this.handleChange);
         if (this.evento) {
-            MDL.compra_venta.removeEventListener(this.evento);
+            MDL.compra_venta.removeEventListener("moneda_seleccionada", this.evento);
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
@@ -287,13 +287,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const calcularPrecio = () => {
-        if (!moneda) return item.modelo.precio_venta;
+        if (!moneda || !item?.modelo) return item?.modelo?.precio_venta || 0;
         if (item.modelo.venta_moneda?.key === moneda?.key) {
             return item.modelo.precio_venta;
         }
         const tipoCambioVenta = item.modelo.venta_moneda?.tipo_cambio || 1;
         const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
-        return item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
+        if (tipoCambioSeleccionada === 0) return item.modelo.precio_venta || 0;
+        return (item.modelo.precio_venta || 0) * (tipoCambioVenta / tipoCambioSeleccionada);
     };
     const [precio, setPrecio] = React.useState(calcularPrecio);
     const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
@@ -376,10 +377,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             style={{ width: "100%", fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: STheme.color.text }}
                                             defaultValue={precioFormateado.toString()}
                                             onChangeText={(e) => {
+                                                if (!e || typeof e !== 'string') return;
                                                 setPrecioStr(e);
-                                                const n = parseFloat(e) || 0;
+                                                const n = parseFloat(e);
+                                                if (isNaN(n)) return;
                                                 setPrecio(n);
-                                                item.modelo.precio_venta_moneda = n * (moneda?.tipo_cambio || 1);
+                                                if (item?.modelo && moneda?.tipo_cambio) {
+                                                    item.modelo.precio_venta_moneda = n * moneda.tipo_cambio;
+                                                }
                                                 MDL.carrito.calcularValoresCarritDeVentas();
                                             }}
                                         />
@@ -413,10 +418,15 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: STheme.color.text, fontWeight: "bold" }}
                                 type="money2"
                                 icon={<SText fontSize={10} color={STheme.color.text}>{"x"}</SText>}
-                                value={item.cantidad.toString()}
+                                value={(item?.cantidad || 0).toString()}
                                 onChangeText={(e) => {
-                                    item.cantidad = e;
-                                    MDL.carrito.calcularValoresCarritDeVentas();
+                                    if (!e || typeof e !== 'string') return;
+                                    const cantidad = parseFloat(e);
+                                    if (isNaN(cantidad) || cantidad < 0) return;
+                                    if (item?.modelo) {
+                                        item.cantidad = cantidad;
+                                        MDL.carrito.calcularValoresCarritDeVentas();
+                                    }
                                 }}
                             />
                         </SView>
@@ -486,22 +496,26 @@ const ListaSuscripciones = ({ item }: any) => {
 
     React.useEffect(() => {
         let mounted = true;
-        if (Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
+        if (item?.modelo && Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
             setClientes(item.modelo.clientes);
             return () => { mounted = false; };
         }
         setLoadingClientes(true);
-        MDL.crm.cliente.getAll()
+        MDL.crm?.cliente?.getAll?.()
             .then((resp: any) => {
                 if (!mounted) return;
                 const all = Array.isArray(resp) ? resp : Object.values(resp || {}).filter((c: any) => !!c);
-                setClientes(all);
-                item.modelo.clientes = all;
+                if (Array.isArray(all)) {
+                    setClientes(all);
+                    if (item?.modelo) {
+                        item.modelo.clientes = all;
+                    }
+                }
             })
             .catch(() => { })
             .finally(() => { if (mounted) setLoadingClientes(false); });
         return () => { mounted = false; };
-    }, []);
+    }, [item]);
 
     return (
         <SView style={{ marginTop: 10 }}>
@@ -516,21 +530,21 @@ const ListaSuscripciones = ({ item }: any) => {
             </SView>
             {isOpen && (
                 <SView col={"xs-12"}>
-                    {Array.from({ length: Math.min(visible, cantidadMiembros) }, (_, i) => (
+                    {Array.from({ length: Math.min(Math.max(0, visible || 0), Math.max(0, cantidadMiembros || 0)) }, (_, i) => (
                         <SuscripcionItem
                             key={`suscripcion-${item.modelo.key}-${i}`}
                             index={i}
                             item={item}
-                            suscriptor={item.modelo.suscriptores[i] || null}
+                            suscriptor={item.modelo.suscriptores?.[i] || null}
                             clientes={clientes}
                             loadingClientes={loadingClientes}
                         />
                     ))}
-                    {visible < cantidadMiembros && (
+                    {(visible || 0) < (cantidadMiembros || 0) && (
                         <SView style={{ paddingVertical: 8, alignItems: "center", backgroundColor: STheme.color.card, borderRadius: 4, marginTop: 4 }}
                             onPress={() => setVisible(v => v + 10)}>
                             <SText fontSize={12} color={STheme.color.lightGray}>
-                                {`Mostrar ${Math.min(10, cantidadMiembros - visible)} más (${cantidadMiembros - visible} restantes)`}
+                                {`Mostrar ${Math.min(10, Math.max(0, (cantidadMiembros || 0) - (visible || 0)))} más (${Math.max(0, (cantidadMiembros || 0) - (visible || 0))} restantes)`}
                             </SText>
                         </SView>
                     )}
@@ -597,24 +611,25 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
 
     React.useEffect(() => {
         const inicio = suscriptor?.fecha_inicio || "";
-        const fin = suscriptor?.fecha_fin || calcularFechaFin(inicio);
+        const fin = suscriptor?.fecha_fin || (inicio ? calcularFechaFin(inicio) : "");
         setCliente(suscriptor?.cliente || null);
         setFechaInicio(inicio);
         setFechaFin(fin);
     }, [suscriptor, calcularFechaFin]);
 
     const saveSuscriptor = React.useCallback((updates: any) => {
+        if (!item?.modelo?.suscriptores || !Array.isArray(item.modelo.suscriptores)) return;
         const suscriptores = item.modelo.suscriptores;
         const current = suscriptores[index] || {};
         suscriptores[index] = {
             ...current,
-            key: current.key || `suscriptor-${item.modelo.key}-${index}`,
+            key: current.key || `suscriptor-${item.modelo?.key || 'unknown'}-${index}`,
             cliente: updates.cliente !== undefined ? updates.cliente : cliente,
             key_cliente: updates.key_cliente !== undefined ? updates.key_cliente : cliente?.key,
             fecha_inicio: updates.fecha_inicio !== undefined ? updates.fecha_inicio : fechaInicio,
             fecha_fin: updates.fecha_fin !== undefined ? updates.fecha_fin : fechaFin,
         };
-    }, [index, item.modelo.key, cliente, fechaInicio, fechaFin]);
+    }, [index, item?.modelo?.key, cliente, fechaInicio, fechaFin]);
 
     const onChangeFechaInicio = React.useCallback((value: string) => {
         const fin = calcularFechaFin(value);
@@ -653,6 +668,7 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
     const fechaFinError = hayAlgo && !fechaFin;
 
     const onSelectCliente = React.useCallback((selected: any) => {
+        if (!selected) return;
         const selectedCliente = selected?.data?.cliente || selected?.data;
         setCliente(selectedCliente);
         saveSuscriptor({ cliente: selectedCliente, key_cliente: selected?.value });
@@ -723,12 +739,16 @@ const CostoItemBase = ({ costo, moneda, totalItem }: any) => {
     }, [costo]);
 
     React.useEffect(() => {
-        if (!costo.key_modelo_cliente) return;
-        const cliente = (costo.clientes || []).find((c: any) => c.key === costo.key_modelo_cliente);
+        if (!costo?.key_modelo_cliente) return;
+        const cliente = (costo?.clientes || []).find((c: any) => c?.key === costo.key_modelo_cliente);
         if (!cliente) return;
-        const comision = parseFloat(cliente.comision || "0");
-        setProgrammaticMonto(totalItem * (comision / 100));
-    }, [totalItem, costo.key_modelo_cliente, costo, setProgrammaticMonto]);
+        const comision = parseFloat(cliente?.comision || "0");
+        if (isNaN(comision)) return;
+        const nuevoMonto = (totalItem || 0) * (comision / 100);
+        if (!isNaN(nuevoMonto)) {
+            setProgrammaticMonto(nuevoMonto);
+        }
+    }, [totalItem, costo?.key_modelo_cliente, costo, setProgrammaticMonto]);
 
     const clienteError = !!monto && !clienteKey;
     const montoError = !!clienteKey && !monto;
@@ -745,16 +765,25 @@ const CostoItemBase = ({ costo, moneda, totalItem }: any) => {
     [costo.clientes]);
 
     const onSelectCliente = React.useCallback((selected: any) => {
-        costo.key_modelo_cliente = selected.value;
-        costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente?.nombres}`;
-        const comision = parseFloat(selected.data.comision || "0");
-        setProgrammaticMonto(totalItem * (comision / 100));
-        setClienteKey(selected.value);
+        if (!selected || !costo) return;
+        costo.key_modelo_cliente = selected?.value || "";
+        const clienteNombre = selected?.data?.cliente?.nombres || selected?.data?.nombres || "Cliente";
+        costo.__descripcion = `Costo por ${costo?.descripcion || ""} para ${clienteNombre}`;
+        const comision = parseFloat(selected?.data?.comision || "0");
+        if (!isNaN(comision)) {
+            const nuevoMonto = (totalItem || 0) * (comision / 100);
+            if (!isNaN(nuevoMonto)) {
+                setProgrammaticMonto(nuevoMonto);
+            }
+        }
+        setClienteKey(selected?.value || "");
     }, [costo, totalItem, setProgrammaticMonto]);
 
     const onChangeMonto = React.useCallback((e: string) => {
+        if (!e || typeof e !== 'string' || !costo) return;
         setInputValue(e);
-        const valor = parseFloat(e) || 0;
+        const valor = parseFloat(e);
+        if (isNaN(valor)) return;
         setMonto(valor);
         costo.monto = valor;
     }, [costo]);
