@@ -28,16 +28,24 @@ export default class Modelo extends Component {
 			});
 			return;
 		}
-		const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
+		const [modelos, recetas] = await Promise.all([
+			MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal),
+			MDL.inventario.getReceta_ByModelo().catch(() => [])
+		]);
 
 		let monedas = MDL.empresa.monedas?.length ? MDL.empresa.monedas : await MDL.empresa.getMonedas();
+
+		const recetasByModelo = Object.fromEntries(
+			(recetas ?? []).map(item => [item?.key_modelo, item])
+		);
 
 		const puedeVerModelosInactivos = MDL.rolesPermisos.getPermiso({ url: "/productos/modelo", permiso: "ver_modelos_inactivos" });
 
 		this.modelos = (puedeVerModelosInactivos ? modelos : modelos.filter(e => e.activo != 0)).map(e => ({
 			...e,
 			compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
-			venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
+			venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {},
+			receta: recetasByModelo[e.key] || null
 		})).sort((a, b) => {
 			const tipoA = a.tipo_producto?.tipo || "";
 			const tipoB = b.tipo_producto?.tipo || "";
