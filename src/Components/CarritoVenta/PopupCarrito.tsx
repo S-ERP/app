@@ -469,6 +469,8 @@ class ListaIngredientes extends React.Component<{ item: any }> {
         this.mounted = false;
     }
 
+    groupedIngredientes: any[] = [];
+
     agrupar(ingredientes: any[]) {
         const porGrupo: Record<string, any[]> = {};
         ingredientes.forEach((ing: any) => {
@@ -543,14 +545,19 @@ class SlotIngrediente extends React.Component<{ item: any; keyIngrediente: strin
         item.modelo.ingredientesSeleccionados[keyIngrediente][slot] = opciones[0];
     }
 
+    options: any[] = [];
+
     render() {
         const { item, keyIngrediente, opciones, slot } = this.props;
         const { seleccion } = this.state;
-        const options = opciones.map((op: any) => ({
-            label: op.modelo_requerido,
-            value: op.key_modelo_requerido,
-            data: op,
-        }));
+        if (this.options.length !== opciones.length) {
+            this.options = opciones.map((op: any) => ({
+                label: op.modelo_requerido,
+                value: op.key_modelo_requerido,
+                data: op,
+            }));
+        }
+        const options = this.options;
         return (
             <SView style={{
                 height: 22, borderRadius: 6, marginBottom: 4,
