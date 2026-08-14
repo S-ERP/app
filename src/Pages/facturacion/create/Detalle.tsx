@@ -56,6 +56,7 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
 
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.codigoProducto}>
             <FiltroSelector
+
                 label=""
                 defaultOption={item.codigoProducto ? String(item.codigoProducto) : ""}
                 skipInitialOnSelect
@@ -97,9 +98,11 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
             />
         </Cell>
 
+        {/* <Cell style={{ padding: 2 }}  > */}
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.unidadMedida}>
             <FiltroSelector
                 label=""
+                // defaultOption={item.unidadMedida ?? null}
                 defaultOption={item.unidadMedida ?? ""}
                 skipInitialOnSelect
 
@@ -189,8 +192,10 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
 
 export default class Detalle extends React.Component<DetalleProps> {
 
-    state = {}
-
+    state = {
+        filtroProductoRef: null,
+        filtroUnidadMedidaRef: null,
+    }
     handleAddItem() {
         this.props.factura.data.detalle.push({
             codigoProducto: "",
