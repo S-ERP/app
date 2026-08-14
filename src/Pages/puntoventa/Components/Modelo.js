@@ -33,6 +33,10 @@ export default class Modelo extends Component {
 			MDL.inventario.getReceta_ByModelo().catch(() => [])
 		]);
 
+		// console.clear();
+		// console.log("trae todo");
+		// console.log(JSON.stringify(recetas)); 
+
 		let monedas = MDL.empresa.monedas?.length ? MDL.empresa.monedas : await MDL.empresa.getMonedas();
 
 		const recetasByModelo = Object.fromEntries(
@@ -45,8 +49,8 @@ export default class Modelo extends Component {
 			...e,
 			compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
 			venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {},
-			receta: recetasByModelo[e.key] || null
-		})).sort((a, b) => {
+			receta: recetasByModelo[e.key]?.ingredientes || null
+ 		})).sort((a, b) => {
 			const tipoA = a.tipo_producto?.tipo || "";
 			const tipoB = b.tipo_producto?.tipo || "";
 			if (tipoA < tipoB) return -1;
@@ -134,6 +138,8 @@ export default class Modelo extends Component {
 												precio_venta_moneda: precioFormateado,
 												monedaSymbol,
 											};
+											console.clear();
+											console.log(JSON.stringify(productoAjustado));
 											this.props.onPressProducto?.(productoAjustado);
 										}}
 									>
