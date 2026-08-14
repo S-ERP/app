@@ -517,12 +517,12 @@ class GrupoIngrediente extends React.Component<{ item: any; grupo: any; titulo: 
         return (
             <SView style={{ marginBottom: 6, marginTop: 2 }}>
                 <SText fontSize={UI.font.tiny} color={STheme.color.lightGray} style={{ marginBottom: 2 }}>
-                    {titulo}{cantidadRequerida > 1 ? ` (elegí ${cantidadRequerida})` : ""}
+                    {titulo}{cantidadRequerida > 0 ? ` (elige ${cantidadRequerida})` : ""}
                 </SText>
                 {/* working */}
-                {/* {slots.map((slot) => (
+                {slots.map((slot) => (
                     <SlotIngrediente key={slot} item={item} keyIngrediente={key_ingrediente} opciones={opciones} slot={slot} />
-                ))} */}
+                ))}
             </SView>
         );
     }
