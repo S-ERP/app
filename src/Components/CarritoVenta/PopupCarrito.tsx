@@ -11,7 +11,7 @@ import InputSelector from "../Selectores/InputSelector";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
-const cambios = 0;
+const cambios = 1;
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -428,7 +428,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             </SView>
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
-            {cambios === 1 && <ListaIngredientes item={item} />}
+            <ListaIngredientes item={item} />
+            {/* {cambios === 1 && <ListaIngredientes item={item} />} */}
         </SView>
     );
 };
@@ -486,7 +487,7 @@ class ListaIngredientes extends React.Component<{ item: any }> {
         return (
             <SView style={{ marginTop: 10 }}>
                 <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => this.setState({ isOpen: !isOpen })}>
-                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Ingredientes"}</SText>
+                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Combo"}</SText>
                     <SView flex />
                     <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{grupos.length}{")"}</SText>
                     <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
@@ -518,9 +519,10 @@ class GrupoIngrediente extends React.Component<{ item: any; grupo: any; titulo: 
                 <SText fontSize={UI.font.tiny} color={STheme.color.lightGray} style={{ marginBottom: 2 }}>
                     {titulo}{cantidadRequerida > 1 ? ` (elegí ${cantidadRequerida})` : ""}
                 </SText>
-                {slots.map((slot) => (
+                {/* working */}
+                {/* {slots.map((slot) => (
                     <SlotIngrediente key={slot} item={item} keyIngrediente={key_ingrediente} opciones={opciones} slot={slot} />
-                ))}
+                ))} */}
             </SView>
         );
     }
