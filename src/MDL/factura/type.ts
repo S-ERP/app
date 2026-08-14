@@ -2,6 +2,7 @@
 
 
 export type FacturaDetalle = {
+  _id?: string;
   actividadEconomica: string;
   codigoProductoSin: string;
   codigoProducto: string;

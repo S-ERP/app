@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SIcon, SInput, SMath, SText, STheme, SView, SViewProps } from "servisofts-component";
+import { SHr, SIcon, SInput, SMath, SText, STheme, SView, SViewProps, SUuid } from "servisofts-component";
 import Label from "./Label";
 import { Factura, FacturaDetalle } from "../../../MDL/factura/type";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
@@ -140,7 +140,7 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
                 <SInput2
                     type="money"
                     style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
-                    defaultValue={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
+                    value={(parseFloat(item.precioUnitario ?? "0") || 0).toFixed(2)}
                     onChangeText={e => {
                         item.precioUnitario = e;
                         calcularSubTotal();
@@ -155,7 +155,7 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
                 <SInput2
                     type="money"
                     style={{ width: "100%", fontSize: 12, textAlign: "right", paddingRight: 2, color: STheme.color.text }}
-                    defaultValue={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
+                    value={(parseFloat(item.montoDescuento ?? "0") || 0).toFixed(2)}
                     onChangeText={e => {
                         item.montoDescuento = e;
                         calcularSubTotal();
@@ -191,6 +191,7 @@ export default class Detalle extends React.Component<DetalleProps> {
     }
     handleAddItem() {
         this.props.factura.data.detalle.push({
+            _id: SUuid(),
             codigoProducto: "",
             codigoProductoSin: "",
             actividadEconomica: "",
@@ -266,7 +267,7 @@ export default class Detalle extends React.Component<DetalleProps> {
                     <SInput2
                         type="money"
                         style={{ width: "100%", fontSize: 11, textAlign: "center", color: STheme.color.text }}
-                        defaultValue={(parseFloat(this.props.factura.data.descuentoAdicional ?? "0") || 0).toFixed(2)}
+                        value={(parseFloat(this.props.factura.data.descuentoAdicional ?? "0") || 0).toFixed(2)}
                         onChangeText={e => {
                             this.props.factura.data.descuentoAdicional = e ?? "0";
                             this.setState({ ...this.state });
@@ -309,7 +310,7 @@ export default class Detalle extends React.Component<DetalleProps> {
             <FlatList
                 scrollEnabled={false}
                 data={this.props.factura.data.detalle}
-                keyExtractor={(_, index) => String(index)}
+                keyExtractor={(item, _) => item._id ?? String(_)}
                 renderItem={({ item, index }) => (
                     <Item
                         item={item}

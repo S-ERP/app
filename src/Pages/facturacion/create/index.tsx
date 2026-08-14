@@ -64,6 +64,7 @@ export default class index extends React.Component {
                 codigoDocumentoSector: "1",
                 detalle: [
                     {
+                        _id: SUuid(),
                         codigoProducto: "",
                         codigoProductoSin: "",
                         actividadEconomica: "",
@@ -247,74 +248,53 @@ export default class index extends React.Component {
         if (!this.validarAntesDeEmitir()) return;
 
         const faccc = this.factura;
-        // console.clear();
-        // console.dir(JSON.stringify(faccc));
         console.dir(faccc);
 
-        this.factura.data.numeroDocumento = "";
-        this.factura.data.nombreRazonSocial = "";
-        this.factura.data.complemento = "";
-        this.factura.data.detalle = [
-            {
-                codigoProducto: "",
-                codigoProductoSin: "",
-                actividadEconomica: "",
-                cantidad: "1",
-                unidadMedida: "1",
-                descripcion: "",
-                precioUnitario: "0",
-                montoDescuento: "0",
-                subTotal: "0",
-                numeroImei: "",
-                numeroSerie: ""
-            }
-        ];
-        this.setState({ ...this.state });
+        SNotification.send({
+            key: "facturacionEmitir",
+            title: "Emitiendo factura",
+            type: "loading"
+        })
+        MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
+            SNotification.send({
+                key: "facturacionEmitir",
+                title: "Factura emitida con éxito",
+                color: STheme.color.success,
+                time: 5000,
+            });
+            MDL.factura.imprimir({ cuf: e.data.cuf })
 
+            this.factura.data.numeroDocumento = "";
+            this.factura.data.nombreRazonSocial = "";
+            this.factura.data.complemento = "";
+            this.factura.data.descuentoAdicional = "0";
+            this.factura.data.detalle = [
+                {
+                    _id: SUuid(),
+                    codigoProducto: "",
+                    codigoProductoSin: "",
+                    actividadEconomica: "",
+                    cantidad: "1",
+                    unidadMedida: "1",
+                    descripcion: "",
+                    precioUnitario: "0",
+                    montoDescuento: "0",
+                    subTotal: "0",
+                    numeroImei: "",
+                    numeroSerie: ""
+                }
+            ];
+            this.setState({ ...this.state });
 
-        // SNotification.send({
-        //     key: "facturacionEmitir",
-        //     title: "Emitiendo factura",
-        //     type: "loading"
-        // })
-        // MDL.factura.emitir(this.factura, this.state.ambiente).then((e) => {
-        //     SNotification.send({
-        //         key: "facturacionEmitir",
-        //         title: "Factura emitida con éxito",
-        //         color: STheme.color.success,
-        //         time: 5000,
-        //     });
-        //     MDL.factura.imprimir({ cuf: e.data.cuf })
-
-        //     this.factura.data.numeroDocumento = "";
-        //     this.factura.data.nombreRazonSocial = "";
-        //     this.factura.data.complemento = "";
-        //     this.factura.data.detalle = [
-        //         {
-        //             codigoProducto: "",
-        //             codigoProductoSin: "",
-        //             actividadEconomica: "",
-        //             cantidad: "1",
-        //             unidadMedida: "1",
-        //             descripcion: "",
-        //             precioUnitario: "0",
-        //             montoDescuento: "0",
-        //             subTotal: "0",
-        //             numeroImei: "",
-        //             numeroSerie: ""
-        //         }
-        //     ];
-        //     this.setState({ ...this.state });
-
-        // }).catch((e) => {
-        //     SNotification.send({
-        //         key: "facturacionEmitir",
-        //         title: "Ocurrio un error al emitir la factura",
-        //         body: e.error + "aaaa",
-        //         color: STheme.color.danger,
-        //         time: 5000,
-        //     })
-        // })
+        }).catch((e) => {
+            SNotification.send({
+                key: "facturacionEmitir",
+                title: "Ocurrio un error al emitir la factura",
+                body: e.error + "aaaa",
+                color: STheme.color.danger,
+                time: 5000,
+            })
+        })
     }
     render() {
         const titleText = `Emitir Factura (Ambiente: ${this.state.ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`;
