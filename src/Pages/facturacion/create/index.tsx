@@ -244,14 +244,13 @@ export default class index extends React.Component {
     }
 
     handleEnviar() {
-        this.validarAntesDeEmitir();
+        if (!this.validarAntesDeEmitir()) return;
 
         const faccc = this.factura;
         // console.clear();
         // console.dir(JSON.stringify(faccc));
         console.dir(faccc);
 
-        // return;
         SNotification.send({
             key: "facturacionEmitir",
             title: "Emitiendo factura",
@@ -327,7 +326,7 @@ export default class index extends React.Component {
                     <Label >{"(Con Derecho a Crédito Fiscal)"}</Label>
                 </SView>
                 <SHr h={16} />
-                <Cabecera factura={this.factura} parametricas={this.parametricas} />
+                <Cabecera factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
                 <Detalle factura={this.factura} parametricas={this.parametricas} mostrarErrores={this.state.mostrarErrores} />
                 <SHr h={16} />
