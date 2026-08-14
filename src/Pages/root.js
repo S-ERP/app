@@ -135,11 +135,9 @@ class index extends Component {
                     return <SView col={"xs-12"} card padding={8} row onPress={() => {
                         Model.empresa.Action.setEmpresa(a.empresa);
                         let time = Platform.select({ web: 400, native: 800 });
-                        new SThread(time, "sadasd").start(() => {
+                        new SThread(time, `empresa_nav_${a.key_empresa}`).start(() => {
                             SNavigation.goBack();
                         })
-
-                        // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })
                     }}>
                         <SView width={40} height={40} card>
                             <SImage src={Model.empresa._get_image_download_path(SSocket.api, a?.empresa?.key)} style={{
@@ -168,18 +166,19 @@ class index extends Component {
         return <SPage>
             <Container >
                 <SHr height={10} />
-                <SView style={{ alignItems: "flex-end", position: "absolute", top: 2, right: 2, }}
+                <SView style={{ alignItems: "flex-end", position: "absolute", top: 2, right: 2, cursor: "pointer", zIndex: 10 }}
                     onPress={() => {
+                        console.log("Popup opening...", { data: this.props?.data });
                         SPopup.open({ key: "menuLat", content: <BoxMenu datas={this.props?.data} /> });
                     }}
                 >
-                    <SView width={45} height={45} center backgroundColor={STheme.color.card} style={{ borderRadius: 30, zIndex: 9, }}>
+                    <SView width={45} height={45} center backgroundColor={STheme.color.card} style={{ borderRadius: 30, zIndex: 11, }}>
                         <SIcon name="configurar" fill={STheme.color.text} width={25} height={25} />
                     </SView>
                 </SView>
                 <SView width={150} height={150} style={{ padding: 4 }}>
                     <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
-                        <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} style={{
+                        <SImage src={`${SSocket.api.root}usuario/${encodeURIComponent(Model.usuario.Action.getKey())}`} style={{
                             resizeMode: "cover"
                         }} />
                     </SView>
@@ -209,7 +208,8 @@ class index extends Component {
                 {this.renderEmpresa(usuario)}
                 <SHr height={30} />
             </Container>
-        </SPage >
+        </SPage>
+
     }
 }
 
