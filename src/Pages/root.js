@@ -45,73 +45,9 @@ class index extends Component {
     static HIDDEN = true;
     getAcciones(usuario) {
         return <SView row center>
-            {/* <SText padding={16} card onPress={() => {
-                SNavigation.navigate("/empresa/new")
-            }} center>Crear empresa</SText>
-            <SView width={8} /> */}
-            {/* <SText padding={16} card onPress={() => {
-                SNavigation.navigate("/empresa")
-            }} center>Crear empresa</SText> */}
             <Card label={"Puedes construir tu propia empresa y personalizarla."} icon={'empresa'} value={"CREAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa/new")
             }} />
-            {/* <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={'empresaBuscar'} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
-                SNavigation.navigate("/empresa", {
-                    onSelect: (empresa) => {
-                        SPopup.confirm({
-                            title: "¿Seguro que quieres suscribirte a la empresa?",
-                            message: "Se agregará un acceso directo de la empresa en la ventana de inicio.",
-                            onPress: () => {
-                                if (!this.arr) return null;
-                                let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
-                                if (obj) {
-                                    // SPopup.alert("Ya participas en esta empresa.")
-                                    SPopup.alert("Ya eres parte de la empresa.")
-                                    return;
-
-                                }
-                                Model.empresa_usuario.Action.registro({
-                                    data: {
-                                        key_usuario: usuario.key,
-                                        key_empresa: empresa.key,
-                                        alias: `${usuario.Nombres} ${usuario.Apellidos}`,
-                                        empresa: empresa
-                                    }
-                                })
-                            }
-                        })
-                    }
-                })
-            }} /> */}
-            <SView width={8} />
-            {/* <SText padding={16} card onPress={() => {
-                SNavigation.navigate("/empresa", {
-                    onSelect: (empresa) => {
-                        SPopup.confirm({
-                            title: "¿Seguro que quieres suscribirte a la empresa?",
-                            message: "Se agregará un acceso directo de la empresa en la ventana de inicio.",
-                            onPress: () => {
-                                if (!this.arr) return null;
-                                let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
-                                if (obj) {
-                                    // SPopup.alert("Ya participas en esta empresa.")
-                                    SPopup.alert("Ya eres parte de la empresa.")
-                                    return;
-
-                                }
-                                Model.empresa_usuario.Action.registro({
-                                    data: {
-                                        key_usuario: usuario.key,
-                                        key_empresa: empresa.key,
-                                        alias: `${usuario.Nombres} ${usuario.Apellidos}`,
-                                        empresa: empresa
-                                    }
-                                })
-                            }
-                        })
-                    }
-                })
-            }} center>Buscar empresa</SText> */}
         </SView>
     }
     renderEmpresa = (usuario) => {
@@ -148,8 +84,6 @@ class index extends Component {
                         <SView flex>
                             <SText bold fontSize={16}>{a?.empresa?.razon_social}</SText>
                             <SText color={STheme.color.gray}>{a?.empresa?.nit}</SText>
-                            {/* <SHr /> */}
-                            {/* <SText >Tu alias: {a?.alias}</SText> */}
                         </SView>
                     </SView>
                 }}
@@ -184,25 +118,8 @@ class index extends Component {
                     </SView>
                 </SView>
                 <SHr />
-                {/* <SText fontSize={20} bold>Hola, {usuario.Nombres} {usuario.Apellidos}</SText> */}
                 <STextPlay time={50} fontSize={18} bold center>{`Hola, ${usuario.Nombres} ${usuario.Apellidos} \n¿Qué deseas hacer? `}</STextPlay>
-                {/* <SText fontSize={14}>{usuario.Correo}</SText> */}
                 <SHr height={15} />
-                {/* <SView width={240} height={100} >
-                    <SIcon name="pregunta1" width={240} height={100} fill={STheme.color.card}/>
-                    <SView style={{
-                        position: "absolute",
-                        width: "100%",
-                        height: "90%",
-                        top: 0,
-                        right: 0,
-                    }} center>
-                        <STextPlay fontSize={18} bold>{"¿Qué deseas hacer?"}</STextPlay>
-                    </SView>
-                </SView> */}
-                {/* <SHr height={15} /> */}
-                {/* <SText fontSize={14}>C.I.: {usuario.CI}</SText> */}
-                {/* <SHr h={16} /> */}
                 {this.getAcciones(usuario)}
                 <SHr h={16} />
                 {this.renderEmpresa(usuario)}
