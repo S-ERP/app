@@ -135,7 +135,7 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
             />
         </Cell>
 
-        <Cell style={{ padding: 8 }} error={mostrarErrores && !((parseFloat(item.precioUnitario ?? "0") || 0) > 0)}>
+        <Cell style={{ padding: 8 }} error={mostrarErrores && (!item.precioUnitario || item.precioUnitario.trim() === "" || parseFloat(item.precioUnitario) <= 0)}>
             <SView style={{ width: "100%", borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4, paddingHorizontal: 2, paddingVertical: 3.5, backgroundColor: STheme.color.card }}>
                 <SInput2
                     type="money"

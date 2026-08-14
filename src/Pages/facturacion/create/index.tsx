@@ -168,56 +168,36 @@ export default class index extends React.Component {
 
     validarAntesDeEmitir() {
         const detalle = this.factura.data.detalle;
+        const data = this.factura.data;
+
+        const hayCamposVaciosCabecera = !data.numeroDocumento || !data.nombreRazonSocial || !data.codigoCliente
+            || !data.numeroFactura || !data.codigoMetodoPago || !data.direccion || !data.telefono;
+
         const hayCamposVaciosDetalle = detalle.some((item) => {
             return !item.codigoProducto || item.codigoProducto.trim() === ""
                 || !item.unidadMedida || item.unidadMedida.trim() === ""
-                || !item.precioUnitario || item.precioUnitario.trim() === ""
+                || !item.precioUnitario || item.precioUnitario.trim() === "" || parseFloat(item.precioUnitario) <= 0
                 || !item.cantidad || item.cantidad.trim() === ""
                 || !item.actividadEconomica || item.actividadEconomica.trim() === ""
                 || !item.descripcion || item.descripcion.trim() === ""
                 || item.montoDescuento == null || item.montoDescuento.trim() === "";
         });
 
-        if (hayCamposVaciosDetalle) {
+        const hayCamposVacios = hayCamposVaciosCabecera || hayCamposVaciosDetalle;
+        if (hayCamposVacios) {
             this.setState({ mostrarErrores: true });
+            SNotification.send({
+                title: "Campos incompletos",
+                body: "Debe completar los campos requeridos.",
+                color: STheme.color.danger,
+                time: 2000,
+            });
             return false;
         }
         this.setState({ mostrarErrores: false });
 
         for (let i = 0; i < detalle.length; i++) {
             const item = detalle[i];
-            // 🔴 codigoProducto
-            if (!item.codigoProducto || item.codigoProducto.trim() === "") {
-                SNotification.send({
-                    title: "codigoProducto requerida",
-                    body: `El item ${i + 1} no tiene codigoProducto.`,
-                    color: STheme.color.danger,
-                    time: 1000,
-
-                });
-                return false; // 🔥 IMPORTANTE
-            }// 🔴 UNIDAD DE MEDIDA
-            if (!item.unidadMedida || item.unidadMedida.trim() === "") {
-                SNotification.send({
-                    title: "Unidad de medida requerida",
-                    body: `El item ${i + 1} no tiene unidad de medida.`,
-                    color: STheme.color.danger,
-                    time: 1000,
-
-                });
-                return false; // 🔥 IMPORTANTE
-            }
-            // 🔴 PRECIO UNITARIO
-            if (!item.precioUnitario || item.precioUnitario.trim() === "") {
-                SNotification.send({
-                    title: "Precio requerido",
-                    body: `El item ${i + 1} no tiene precio unitario.`,
-                    color: STheme.color.danger,
-                    time: 1000,
-                });
-                return false;
-            }
-            // 🔴 PRECIO INVÁLIDO
             const precio = parseFloat(item.precioUnitario);
             if (isNaN(precio) || precio <= 0) {
                 SNotification.send({
@@ -227,7 +207,8 @@ export default class index extends React.Component {
                     time: 1000,
                 });
                 return false;
-            } const cantidad = parseFloat(item.cantidad ?? "0");
+            }
+            const cantidad = parseFloat(item.cantidad ?? "0");
             const descuento = parseFloat(item.montoDescuento ?? "0");
             const cantidadValida = isNaN(cantidad) ? 0 : cantidad;
             const precioValido = isNaN(precio) ? 0 : precio;
@@ -243,9 +224,7 @@ export default class index extends React.Component {
                 return false;
             }
         }
-        // aqui pongo que no tiene leyenda y genera
-        // this.factura.data.leyenda = "";
-        // 🔴 VALIDAR LEYENDA
+
         if (!this.factura.data.leyenda || this.factura.data.leyenda.trim() === "") {
             const leyendas = this.parametricas.leyendasFactura;
             if (leyendas && leyendas.length > 0) {
