@@ -428,6 +428,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             </SView>
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
+            <ListaReceta item={item} />
             <ListaIngredientes item={item} />
             {/* {cambios === 1 && <ListaIngredientes item={item} />} */}
         </SView>
@@ -681,6 +682,48 @@ const ListaSuscripciones = ({ item }: any) => {
                             </SText>
                         </SView>
                     )}
+                </SView>
+            )}
+        </SView>
+    );
+};
+
+const ListaReceta = ({ item }: any) => {
+    const [isOpen, setIsOpen] = React.useState(true);
+    const receta = item.modelo?.receta;
+    if (!receta) return null;
+
+    const ingredientes = receta?.ingredientes || [];
+    if (ingredientes.length === 0) return null;
+
+    return (
+        <SView style={{ marginTop: 10 }}>
+            <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
+                <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Receta"}</SText>
+                <SView flex />
+                <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{ingredientes.length}{")"}</SText>
+                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
+                    <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
+                        style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+                </SView>
+            </SView>
+            {isOpen && (
+                <SView col={"xs-12"}>
+                    {ingredientes.map((ing: any, idx: number) => (
+                        <SView key={idx} style={{ marginBottom: 8, paddingLeft: 8 }}>
+                            <SView row style={{ alignItems: "center", gap: 8 }}>
+                                <SView style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: STheme.color.lightGray }} />
+                                <SView flex>
+                                    <SText fontSize={UI.font.small} color={STheme.color.text}>{ing.descripcion || ing.nombre || "Sin descripción"}</SText>
+                                    {ing.cantidad && (
+                                        <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
+                                            {ing.cantidad}{ing.unidad ? ` ${ing.unidad}` : ""}
+                                        </SText>
+                                    )}
+                                </SView>
+                            </SView>
+                        </SView>
+                    ))}
                 </SView>
             )}
         </SView>
