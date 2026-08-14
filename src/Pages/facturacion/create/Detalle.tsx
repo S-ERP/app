@@ -56,10 +56,7 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
 
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.codigoProducto}>
             <FiltroSelector
-
                 label=""
-                defaultOption={item.codigoProducto ? String(item.codigoProducto) : ""}
-                skipInitialOnSelect
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
                         ambiente: MDL.factura.ambiente,
@@ -102,10 +99,6 @@ const Item = ({ item, reload, onDelete, mostrarErrores }: {
         <Cell style={{ padding: 2 }} error={mostrarErrores && !item.unidadMedida}>
             <FiltroSelector
                 label=""
-                // defaultOption={item.unidadMedida ?? null}
-                defaultOption={item.unidadMedida ?? ""}
-                skipInitialOnSelect
-
                 loadData={async () => {
                     const data = await MDL.factura.getParametrica({
                         ambiente: MDL.factura.ambiente,
