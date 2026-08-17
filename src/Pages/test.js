@@ -1,55 +1,53 @@
 import React, { Component } from "react";
 import { SPage } from "servisofts-component";
-import MDL from "../MDL";
-import PopupCarrito from "../Components/CarritoCompra/PopupCarrito";
-
-const ITEMS_QUEMADOS = [
-  {
-    modelo: {
-      key: "modelo-1",
-      descripcion: "Laptop HP ProBook 450",
-      precio_compra: 3500,
-      precio_compra_moneda: 3500,
-      venta_moneda: { key: "bs", tipo_cambio: 1 },
-      fecha_vencimiento: null,
-    },
-    cantidad: 2,
-    precio: 3500,
-  },
-  {
-    modelo: {
-      key: "modelo-2",
-      descripcion: "Mouse inalámbrico Logitech M170",
-      precio_compra: 0,
-      precio_compra_moneda: 45,
-      venta_moneda: { key: "bs", tipo_cambio: 1 },
-      fecha_vencimiento: null,
-    },
-    cantidad: 5,
-    precio: 45,
-  },
-  {
-    modelo: {
-      key: "modelo-3",
-      descripcion: "Yogurt Pil 1L (perecedero)",
-      precio_compra: 12.5,
-      precio_compra_moneda: 12.5,
-      venta_moneda: { key: "bs", tipo_cambio: 1 },
-      fecha_vencimiento: "2026-08-15T00:00:00",
-    },
-    cantidad: 10,
-    precio: 12.5,
-  },
-];
 
 export default class Test extends Component {
-  componentDidMount() {
-    MDL.carrito.carrito_compra.items = ITEMS_QUEMADOS;
-    MDL.carrito.calcularValoresCarritDeCompras();
-    PopupCarrito.open({});
-  }
+  state = {
+    loading: false,
+    mensaje: "",
+  };
+
+  hacerBackup = async () => {
+    mira pode hacer que uncion esto
+
+    /home/servisofts/Documents/GitHub/alvaro/serp_alvaro/server/alvaro_backup.sh
+  };
 
   render() {
-    return <SPage title="Test"></SPage>;
+    const { loading, mensaje } = this.state;
+
+    return (
+      <SPage title="Alvaro">
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          <button
+            onClick={this.hacerBackup}
+            disabled={loading}
+            style={{
+              padding: "12px 24px",
+              fontSize: "16px",
+              backgroundColor: loading ? "#ccc" : "#27ae60",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Respaldando..." : "Alvaro"}
+          </button>
+
+          {mensaje && (
+            <p
+              style={{
+                marginTop: "20px",
+                fontSize: "14px",
+                color: mensaje.includes("Error") ? "red" : "green",
+              }}
+            >
+              {mensaje}
+            </p>
+          )}
+        </div>
+      </SPage>
+    );
   }
 }
