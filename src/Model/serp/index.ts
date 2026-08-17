@@ -7,6 +7,7 @@ import cuenta_movimiento from "./cuenta_movimiento";
 import tarea from "./tarea";
 import nota from "./nota"
 import label from "./label";
+import alvaro from "./alvaro";
 export default {
     dato,
     rol_dato,
@@ -16,5 +17,6 @@ export default {
     cuenta_movimiento,
     tarea,
     nota,
-    label
+    label,
+    alvaro
 }
