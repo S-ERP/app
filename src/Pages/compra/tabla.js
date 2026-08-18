@@ -602,14 +602,18 @@ export default class tabla extends Component {
 				<DinamicTable.Col key="tipo_producto_" label="Tipos" width={100} height={60}
 					data={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))]} wrap
 					cellStyle={{ padding: 4, gap: 4 }}
-					customComponent={e => [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto))].map(tipo => {
-						const estilo = TIPO_PRODUCTO_MAP[tipo?.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
-						return (
-							<SView key={tipo} style={{ backgroundColor: estilo.color, borderRadius: 4, padding: 5 }}>
-								<SText style={{ fontSize: 12, color: STheme.color.text }}>{estilo.label}</SText>
-							</SView>
-						);
-					})}
+					customComponent={e => {
+						const tipos = [...new Set((e.row?.detalles ?? []).map(h => h?.data?.tipo_producto).filter(Boolean))];
+						if (tipos.length === 0) return null;
+						return tipos.map(tipo => {
+							const estilo = TIPO_PRODUCTO_MAP[tipo?.toLowerCase()] || { color: STheme.color.lightGray, label: tipo };
+							return (
+								<SView key={tipo} style={{ backgroundColor: estilo.color, borderRadius: 4, padding: 5 }}>
+									<SText style={{ fontSize: 12, color: STheme.color.text }}>{estilo.label}</SText>
+								</SView>
+							);
+						});
+					}}
 				/>
 
 				<DinamicTable.Col key="descripcion" label="Concepto" width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
@@ -618,6 +622,7 @@ export default class tabla extends Component {
 					customComponent={(e) => {
 						const MAX_LINEAS = 3;
 						const detalles = e.row?.detalles ?? [];
+						if (detalles.length === 0) return null;
 						const visibles = detalles.slice(0, MAX_LINEAS);
 						const restantes = detalles.length - visibles.length;
 						return (
