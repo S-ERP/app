@@ -431,7 +431,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
                 </SView>
             </SView>
-            <ListaReceta item={item} />
+            {/* <ListaReceta item={item} /> */}
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
         </SView>
