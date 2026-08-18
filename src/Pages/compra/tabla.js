@@ -939,6 +939,7 @@ export default class tabla extends Component {
 			</DinamicTable>
 		);
 	}
+	// alvaro
 	render() {
 		return (
 			<SPage title="Tabla Gestión de Compras" disableScroll>

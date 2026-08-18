@@ -115,11 +115,9 @@ export default class FechaFullFilter extends Component {
                                     this.setState({
                                         entre_fecha: val.value === "entre",
                                         key_opciones: val.value
-                                    }
-                                        // , () => {
-                                        //     this.form?.submit();
-                                        // }
-                                    );
+                                    }, () => {
+                                        this.form?.submit();
+                                    });
                                 }
                             },
                             fecha_inicio: {
@@ -127,14 +125,24 @@ export default class FechaFullFilter extends Component {
                                 type: "date",
                                 col: "xs-3.9",
                                 defaultValue: this.state.fecha_inicio,
-                                style: { display: this.state.entre_fecha ? "block" : "none" }
+                                style: { display: this.state.entre_fecha ? "block" : "none" },
+                                onChange: () => {
+                                    new SThread(200).start(() => {
+                                        this.form?.submit();
+                                    });
+                                }
                             },
                             fecha_fin: {
                                 label: "Fecha Fin",
                                 type: "date",
                                 col: "xs-3.9",
                                 defaultValue: this.state.fecha_fin,
-                                style: { display: this.state.entre_fecha ? "block" : "none" }
+                                style: { display: this.state.entre_fecha ? "block" : "none" },
+                                onChange: () => {
+                                    new SThread(200).start(() => {
+                                        this.form?.submit();
+                                    });
+                                }
                             },
                         }}
                         onSubmit={(values) => {

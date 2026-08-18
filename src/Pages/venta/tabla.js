@@ -28,8 +28,8 @@ export default class tabla extends Component {
 		const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 		this.state = {
 			pdfFiles: {},
-			fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
-			fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
+			fecha_inicio: fmt(hoy),
+			fecha_fin: fmt(hoy),
 		};
 		this._fechaFilterListo = false;
 	}
@@ -41,8 +41,7 @@ export default class tabla extends Component {
 				title: "Cargando ventas...",
 				type: "loading",
 			});
-			const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-			console.log("Registros obtenidosss:", registros);
+			const registros = await MDL.compra_venta.getTransaccion("venta", this.state.fecha_inicio, this.state.fecha_fin);
 
 			const empresa = await MDL.empresa.getFull();
 			if (!registros || !empresa) {
@@ -184,7 +183,7 @@ export default class tabla extends Component {
 
 			return ventasEnriquecidas;
 		} catch (error) {
-			console.error("❌ Error en loadInitialData:", error?.message || error, error);
+			console.warn("Error en loadInitialData:", error);
 			SNotification.send({
 				key: "load_ventas",
 				title: "Error al cargar ventas",
@@ -368,7 +367,7 @@ export default class tabla extends Component {
 										SNotification.send({ key: notificationKey, title: `${tipoLabel} registrada`, body: isManual ? "Factura manual agregada correctamente." : `NIT: ${nit}, Razón social: ${razon_social}`, color: STheme.color.success, time: 5000, });
 										SPopup.close(`registrar_factura_${tipoFactura}_${venta.key}`);
 									} catch (error) {
-										console.error("Error al editar la venta:", error);
+										console.warn("Error al editar la venta:", error);
 										SNotification.send({ key: notificationKey, title: "Error al registrar factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
 									}
 								}}
@@ -448,7 +447,7 @@ export default class tabla extends Component {
 											await Linking.openURL(row.factura.link_factura);
 											SNotification.send({ key: notificationKey, title: "Archivo abierto", body: "La factura se abrió correctamente.", color: STheme.color.success, time: 3000, });
 										} catch (error) {
-											console.error("Error al abrir PDF:", error);
+											console.warn("Error al abrir PDF:", error);
 											SNotification.send({
 												key: notificationKey,
 												title: "Error al abrir archivo",
@@ -508,7 +507,7 @@ export default class tabla extends Component {
 										SNotification.send({ key: notificationKey, title: "Venta anulada", body: "La venta se anuló correctamente.", color: STheme.color.success, });
 									})
 									.catch((error) => {
-										console.error("Error al anular venta:", error);
+										console.warn("Error al anular venta:", error);
 										SNotification.send({ key: notificationKey, title: "Error Anular Venta", body: error?.message || String(error), color: STheme.color.danger, });
 									});
 							};
@@ -585,7 +584,7 @@ export default class tabla extends Component {
 										this.DinamicTable?.loadData();
 										SNotification.send({ key: notificationKey, title: "Factura anulada", body: "La factura se anuló correctamente.", color: STheme.color.warning, time: 5000, });
 									} catch (error) {
-										console.error("Error al anular factura:", error);
+										console.warn("Error al anular factura:", error);
 										SNotification.send({ key: notificationKey, title: "Error al anular factura", body: error?.message || "Intente nuevamente.", color: STheme.color.danger, time: 5000, });
 									}
 								},
@@ -1103,7 +1102,7 @@ export default class tabla extends Component {
 
 	render() {
 		return (
-			<SPage title="Tabla de Ventas" disableScroll>
+			<SPage title="Tabla Gestión de Ventas" disableScroll>
 				<SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
 					<SView col={"xs-12 sm-8.2 lg-3.3"} row center>
 						<FechaFullFilter
