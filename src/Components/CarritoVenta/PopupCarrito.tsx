@@ -416,7 +416,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 value={(item?.cantidad || 0).toString()}
                                 onChangeText={(e) => {
                                     if (typeof e !== 'string') return;
-                                    if (!e || e.trim() === '') return;
+                                    if (e?.trim() === '') {
+                                        if (item?.modelo) {
+                                            item.cantidad = 0;
+                                            MDL.carrito.calcularValoresCarritDeVentas();
+                                        }
+                                        return;
+                                    }
                                     const cantidad = parseFloat(e);
                                     if (isNaN(cantidad) || cantidad < 0) return;
                                     if (item?.modelo) {
