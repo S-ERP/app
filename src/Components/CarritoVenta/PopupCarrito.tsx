@@ -415,7 +415,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 icon={<SText fontSize={10} color={STheme.color.text}>{"x"}</SText>}
                                 value={(item?.cantidad || 0).toString()}
                                 onChangeText={(e) => {
-                                    if (!e || typeof e !== 'string') return;
+                                    if (typeof e !== 'string') return;
+                                    if (!e || e.trim() === '') return;
                                     const cantidad = parseFloat(e);
                                     if (isNaN(cantidad) || cantidad < 0) return;
                                     if (item?.modelo) {
