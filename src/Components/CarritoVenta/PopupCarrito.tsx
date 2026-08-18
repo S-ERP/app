@@ -11,7 +11,7 @@ import InputSelector from "../Selectores/InputSelector";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
-const cambios = 1;
+const cambios = 0;
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -436,9 +436,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
                 </SView>
             </SView>
+            <ListaReceta item={item} />
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
-            <ListaReceta item={item} />
         </SView>
     );
 };
@@ -557,9 +557,9 @@ const ListaSuscripciones = ({ item }: any) => {
 const ListaReceta = ({ item }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const receta = item.modelo?.receta;
-    if (!receta) return null;
+    if (!receta || !Array.isArray(receta)) return null;
 
-    const ingredientes = receta?.ingredientes || [];
+    const ingredientes = receta.length === 0 ? [] : receta;
     if (ingredientes.length === 0) return null;
 
     return (
@@ -577,17 +577,28 @@ const ListaReceta = ({ item }: any) => {
                 <SView col={"xs-12"}>
                     {ingredientes.map((ing: any, idx: number) => (
                         <SView key={idx} style={{ marginBottom: 8, paddingLeft: 8 }}>
-                            <SView row style={{ alignItems: "center", gap: 8 }}>
-                                <SView style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: STheme.color.lightGray }} />
-                                <SView flex>
-                                    <SText fontSize={UI.font.small} color={STheme.color.text}>{ing.descripcion || ing.nombre || "Sin descripción"}</SText>
-                                    {ing.cantidad && (
-                                        <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
-                                            {ing.cantidad}{ing.unidad ? ` ${ing.unidad}` : ""}
-                                        </SText>
-                                    )}
+                            <SText fontSize={UI.font.small} bold color={STheme.color.text} style={{ marginBottom: 4 }}>
+                                {ing.descripcion || "Sin descripción"}
+                            </SText>
+                            {ing.opciones && Array.isArray(ing.opciones) && ing.opciones.length > 0 && (
+                                <SView>
+                                    {ing.opciones.map((opcion: any, opIdx: number) => (
+                                        <SView key={opIdx} style={{ marginBottom: 4, paddingLeft: 8 }}>
+                                            <SView row style={{ alignItems: "center", gap: 8 }}>
+                                                <SView style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colorVenta }} />
+                                                <SView flex>
+                                                    <SText fontSize={UI.font.small} color={STheme.color.text}>
+                                                        {opcion.descripcion || "Sin descripción"}
+                                                    </SText>
+                                                    <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
+                                                        Venta: {opcion.precio_venta || 0}
+                                                    </SText>
+                                                </SView>
+                                            </SView>
+                                        </SView>
+                                    ))}
                                 </SView>
-                            </SView>
+                            )}
                         </SView>
                     ))}
                 </SView>
@@ -762,7 +773,7 @@ const CostoItemBase = ({ costo, moneda, totalItem }: any) => {
                 <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{c.comision} %</SText>
             ),
         })),
-    [costo.clientes]);
+        [costo.clientes]);
 
     const onSelectCliente = React.useCallback((selected: any) => {
         if (!selected || !costo) return;
