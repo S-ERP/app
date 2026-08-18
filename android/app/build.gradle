@@ -122,8 +122,8 @@ android {
         applicationId "com.servisofts_erp_app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10022
-        versionName "1.0.22"
+        versionCode 10023
+        versionName "1.0.23"
     }
     splits {
         abi {

@@ -308,7 +308,7 @@ export default class tabla extends Component {
 									style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
 								<SHr height={10} />
 								<SInput
-									label="Telefono"
+									label="Teléfono"
 									placeholder="Ingrese número de teléfono"
 									onChangeText={val => telefono = val}
 									style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
@@ -342,7 +342,7 @@ export default class tabla extends Component {
 											razon_social: isManual ? "" : razon_social,
 											correo_electronico: isManual ? "" : correo_electronico,
 											telefono: isManual ? "" : telefono,
-											leyenda: "alvaro es probando la leyenda",
+											leyenda: "alvaro está probando la leyenda",
 											detalles: (venta?.detalles ?? [])?.map((d) => d?.descripcion)?.join(", "),
 											archivo_pdf: isManual ? { name: this.state.pdfFiles?.[venta.key]?.name, type: this.state.pdfFiles?.[venta.key]?.type, } : {},
 											link_factura: isManual ? this.state.pdfFiles?.[venta.key]?.link || null : "",

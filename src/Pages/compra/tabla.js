@@ -279,7 +279,7 @@ export default class tabla extends Component {
 									style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
 								<SHr height={10} />
 								<SInput
-									label="Telefono"
+									label="Teléfono"
 									placeholder="Ingrese número de teléfono"
 									onChangeText={val => telefono = val}
 									style={{ height: 40, borderRadius: 6, backgroundColor: STheme.color.lightGray + "22", color: STheme.color.text, }} />
