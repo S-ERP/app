@@ -552,14 +552,12 @@ const ListaSuscripciones = ({ item }: any) => {
 const ListaReceta = ({ item }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const receta = item.modelo?.receta;
-    if (!receta || !Array.isArray(receta)) return null;
-
-    const ingredientes = receta.length === 0 ? [] : receta;
-    if (ingredientes.length === 0) return null;
+    const cantidadCarrito = item.cantidad || 0;
+    const ingredientes = receta && Array.isArray(receta) ? receta : [];
 
     const inicializarSelecciones = () => {
         const selecciones: Record<string, any> = {};
-        const cantidadCarrito = item.cantidad || 1;
+        if (!Array.isArray(ingredientes)) return selecciones;
         ingredientes.forEach((ing: any, idx: number) => {
             const cantidadIngrediente = ing.cantidad || 1;
             const totalSelectores = cantidadCarrito * cantidadIngrediente;
@@ -578,6 +576,8 @@ const ListaReceta = ({ item }: any) => {
             [key]: opcion
         }));
     };
+
+    if (!receta || !Array.isArray(receta) || cantidadCarrito === 0 || ingredientes.length === 0) return null;
 
     return (
         <SView style={{ marginTop: 10 }}>
