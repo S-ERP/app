@@ -20,6 +20,21 @@ export default class Action extends SAction {
         })
     }
 
+    crearBackupBackend(data: any) {
+        return new Promise((resolve, reject) => {
+            SSocket.sendPromise({
+                component: "alvaro",
+                type: "crearBackupBackend",
+                ...data
+            }).then((e: any) => {
+                this._dispatch(e);
+                resolve(e);
+            }).catch(e => {
+                reject(e);
+            })
+        })
+    }
+
     listarBackups(key_empresa: string) {
         return new Promise((resolve, reject) => {
             SSocket.sendPromise({
@@ -108,5 +123,31 @@ export default class Action extends SAction {
         }
 
         return this.listarBackups(key_empresa);
+    }
+
+    verBackupBackend() {
+        return new Promise((resolve, reject) => {
+            SSocket.sendPromise({
+                component: "alvaro",
+                type: "backend_ver_backup"
+            }).then((e: any) => {
+                resolve(e);
+            }).catch(e => {
+                reject(e);
+            })
+        })
+    }
+
+    verBackupFrontend() {
+        return new Promise((resolve, reject) => {
+            SSocket.sendPromise({
+                component: "alvaro",
+                type: "frontend_ver_backup"
+            }).then((e: any) => {
+                resolve(e);
+            }).catch(e => {
+                reject(e);
+            })
+        })
     }
 }
