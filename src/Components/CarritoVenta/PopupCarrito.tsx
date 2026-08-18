@@ -558,23 +558,23 @@ const ListaReceta = ({ item }: any) => {
     if (ingredientes.length === 0) return null;
 
     const inicializarSelecciones = () => {
-        const selecciones: Record<number, any> = {};
+        const selecciones: Record<string, any> = {};
         ingredientes.forEach((ing: any, idx: number) => {
-            selecciones[idx] = ing.opciones?.[0] || null;
+            const cantidad = ing.cantidad || 1;
+            for (let i = 0; i < cantidad; i++) {
+                selecciones[`${idx}-${i}`] = ing.opciones?.[0] || null;
+            }
         });
         return selecciones;
     };
 
     const [selecciones, setSelecciones] = React.useState(inicializarSelecciones());
 
-    const handleSelectOpcion = (ingIdx: number, opcion: any) => {
+    const handleSelectOpcion = (key: string, opcion: any) => {
         setSelecciones(prev => ({
             ...prev,
-            [ingIdx]: opcion
+            [key]: opcion
         }));
-        if (item?.modelo?.receta_selecciones) {
-            item.modelo.receta_selecciones[ingIdx] = opcion;
-        }
     };
 
     return (
@@ -591,8 +591,8 @@ const ListaReceta = ({ item }: any) => {
             {isOpen && (
                 <SView col={"xs-12"}>
                     {ingredientes.map((ing: any, idx: number) => {
+                        const cantidad = ing.cantidad || 1;
                         const opciones = ing.opciones && Array.isArray(ing.opciones) ? ing.opciones : [];
-                        const selectedOpcion = selecciones[idx];
                         const options = opciones.map((op: any) => ({
                             label: op.descripcion || "Sin descripción",
                             value: op.key_modelo || idx,
@@ -611,22 +611,30 @@ const ListaReceta = ({ item }: any) => {
                                         {ing.descripcion || "Sin descripción"}
                                     </SText>
                                     <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>
-                                        (elige {ing.cantidad || 1})
+                                        (elige {cantidad})
                                     </SText>
                                 </SView>
-                                <SView style={{
-                                    height: 28, borderRadius: 6,
-                                    backgroundColor: STheme.color.lightGray + "15",
-                                    borderWidth: 1, borderColor: STheme.color.lightGray + "35",
-                                }}>
-                                    <InputSelector
-                                        customStyle="erp"
-                                        placeholder="Elige una opción"
-                                        options={options}
-                                        defaultValue={selectedOpcion?.key_modelo || null}
-                                        onSelect={(selected: any) => handleSelectOpcion(idx, selected?.data)}
-                                    />
-                                </SView>
+                                {Array.from({ length: cantidad }).map((_, i) => {
+                                    const key = `${idx}-${i}`;
+                                    const selectedOpcion = selecciones[key];
+                                    return (
+                                        <SView key={key} style={{ marginBottom: 8 }}>
+                                            <SView style={{
+                                                height: 28, borderRadius: 6,
+                                                backgroundColor: STheme.color.lightGray + "15",
+                                                borderWidth: 1, borderColor: STheme.color.lightGray + "35",
+                                            }}>
+                                                <InputSelector
+                                                    customStyle="erp"
+                                                    placeholder="Elige una opción"
+                                                    options={options}
+                                                    defaultValue={selectedOpcion?.key_modelo || null}
+                                                    onSelect={(selected: any) => handleSelectOpcion(key, selected?.data)}
+                                                />
+                                            </SView>
+                                        </SView>
+                                    );
+                                })}
                             </SView>
                         );
                     })}
