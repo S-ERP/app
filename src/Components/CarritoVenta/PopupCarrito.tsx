@@ -557,6 +557,26 @@ const ListaReceta = ({ item }: any) => {
     const ingredientes = receta.length === 0 ? [] : receta;
     if (ingredientes.length === 0) return null;
 
+    const inicializarSelecciones = () => {
+        const selecciones: Record<number, any> = {};
+        ingredientes.forEach((ing: any, idx: number) => {
+            selecciones[idx] = ing.opciones?.[0] || null;
+        });
+        return selecciones;
+    };
+
+    const [selecciones, setSelecciones] = React.useState(inicializarSelecciones());
+
+    const handleSelectOpcion = (ingIdx: number, opcion: any) => {
+        setSelecciones(prev => ({
+            ...prev,
+            [ingIdx]: opcion
+        }));
+        if (item?.modelo?.receta_selecciones) {
+            item.modelo.receta_selecciones[ingIdx] = opcion;
+        }
+    };
+
     return (
         <SView style={{ marginTop: 10 }}>
             <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
@@ -570,32 +590,46 @@ const ListaReceta = ({ item }: any) => {
             </SView>
             {isOpen && (
                 <SView col={"xs-12"}>
-                    {ingredientes.map((ing: any, idx: number) => (
-                        <SView key={idx} style={{ marginBottom: 8, paddingLeft: 8 }}>
-                            <SText fontSize={UI.font.small} bold color={STheme.color.text} style={{ marginBottom: 4 }}>
-                                {ing.descripcion || "Sin descripción"}
-                            </SText>
-                            {ing.opciones && Array.isArray(ing.opciones) && ing.opciones.length > 0 && (
-                                <SView>
-                                    {ing.opciones.map((opcion: any, opIdx: number) => (
-                                        <SView key={opIdx} style={{ marginBottom: 4, paddingLeft: 8 }}>
-                                            <SView row style={{ alignItems: "center", gap: 8 }}>
-                                                <SView style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colorVenta }} />
-                                                <SView flex>
-                                                    <SText fontSize={UI.font.small} color={STheme.color.text}>
-                                                        {opcion.descripcion || "Sin descripción"}
-                                                    </SText>
-                                                    <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
-                                                        Venta: {opcion.precio_venta || 0}
-                                                    </SText>
-                                                </SView>
-                                            </SView>
-                                        </SView>
-                                    ))}
+                    {ingredientes.map((ing: any, idx: number) => {
+                        const opciones = ing.opciones && Array.isArray(ing.opciones) ? ing.opciones : [];
+                        const selectedOpcion = selecciones[idx];
+                        const options = opciones.map((op: any) => ({
+                            label: op.descripcion || "Sin descripción",
+                            value: op.key_modelo || idx,
+                            data: op,
+                            customComponent: (
+                                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
+                                    {op.precio_venta || 0}
+                                </SText>
+                            ),
+                        }));
+
+                        return (
+                            <SView key={idx} style={{ marginBottom: 10 }}>
+                                <SView row style={{ alignItems: "center", gap: 4, marginBottom: 6 }}>
+                                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>
+                                        {ing.descripcion || "Sin descripción"}
+                                    </SText>
+                                    <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>
+                                        (elige {ing.cantidad || 1})
+                                    </SText>
                                 </SView>
-                            )}
-                        </SView>
-                    ))}
+                                <SView style={{
+                                    height: 28, borderRadius: 6,
+                                    backgroundColor: STheme.color.lightGray + "15",
+                                    borderWidth: 1, borderColor: STheme.color.lightGray + "35",
+                                }}>
+                                    <InputSelector
+                                        customStyle="erp"
+                                        placeholder="Elige una opción"
+                                        options={options}
+                                        defaultValue={selectedOpcion?.key_modelo || null}
+                                        onSelect={(selected: any) => handleSelectOpcion(idx, selected?.data)}
+                                    />
+                                </SView>
+                            </SView>
+                        );
+                    })}
                 </SView>
             )}
         </SView>
