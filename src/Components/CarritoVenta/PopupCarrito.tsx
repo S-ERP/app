@@ -11,7 +11,7 @@ import InputSelector from "../Selectores/InputSelector";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
-const cambios = 0;
+
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -21,12 +21,7 @@ const UI = {
             header: colorVenta,
             danger: STheme.color.danger,
             card: STheme.color.card,
-            itemBg: STheme.color.background,
-            mutedDark: STheme.color.background,
-            accent: colorVenta,
-            error: STheme.color.danger,
             textMuted: STheme.color.lightGray,
-            border: STheme.color.lightGray + "40",
         };
     }
 };
