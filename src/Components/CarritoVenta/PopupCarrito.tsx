@@ -559,9 +559,11 @@ const ListaReceta = ({ item }: any) => {
 
     const inicializarSelecciones = () => {
         const selecciones: Record<string, any> = {};
+        const cantidadCarrito = item.cantidad || 1;
         ingredientes.forEach((ing: any, idx: number) => {
-            const cantidad = ing.cantidad || 1;
-            for (let i = 0; i < cantidad; i++) {
+            const cantidadIngrediente = ing.cantidad || 1;
+            const totalSelectores = cantidadCarrito * cantidadIngrediente;
+            for (let i = 0; i < totalSelectores; i++) {
                 selecciones[`${idx}-${i}`] = ing.opciones?.[0] || null;
             }
         });
@@ -591,7 +593,9 @@ const ListaReceta = ({ item }: any) => {
             {isOpen && (
                 <SView col={"xs-12"}>
                     {ingredientes.map((ing: any, idx: number) => {
-                        const cantidad = ing.cantidad || 1;
+                        const cantidadIngrediente = ing.cantidad || 1;
+                        const cantidadCarrito = item.cantidad || 1;
+                        const totalSelectores = cantidadCarrito * cantidadIngrediente;
                         const opciones = ing.opciones && Array.isArray(ing.opciones) ? ing.opciones : [];
                         const options = opciones.map((op: any) => ({
                             label: op.descripcion || "Sin descripción",
@@ -611,10 +615,10 @@ const ListaReceta = ({ item }: any) => {
                                         {ing.descripcion || "Sin descripción"}
                                     </SText>
                                     <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>
-                                        (elige {cantidad})
+                                        ({totalSelectores})
                                     </SText>
                                 </SView>
-                                {Array.from({ length: cantidad }).map((_, i) => {
+                                {Array.from({ length: totalSelectores }).map((_, i) => {
                                     const key = `${idx}-${i}`;
                                     const selectedOpcion = selecciones[key];
                                     return (
