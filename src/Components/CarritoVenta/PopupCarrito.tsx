@@ -407,14 +407,15 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         </SView>
                         <SView style={{
                             width: 52, height: 22, borderRadius: 6, alignItems: "center", justifyContent: "center", overflow: "hidden",
-                            backgroundColor: (item?.cantidad || 0) === 0 ? STheme.color.danger + "22" : STheme.color.lightGray + "18",
+                            backgroundColor: item?.cantidad < 1 ? STheme.color.danger   : STheme.color.lightGray + "18",
+
                             borderWidth: 1,
                             borderColor: (item?.cantidad || 0) === 0 ? STheme.color.danger : STheme.color.lightGray + "40",
                         }}>
                             <SInput
-                                style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: (item?.cantidad || 0) === 0 ? STheme.color.danger : STheme.color.text, fontWeight: "bold" }}
+                                style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: (item?.cantidad || 0) === 0 ? STheme.color.white : STheme.color.text, fontWeight: "bold" }}
                                 type="money2"
-                                icon={<SText fontSize={10} color={(item?.cantidad || 0) === 0 ? STheme.color.danger : STheme.color.text}>{"x"}</SText>}
+                                icon={<SText fontSize={10} color={(item?.cantidad || 0) === 0 ? STheme.color.white : STheme.color.text}>{"x"}</SText>}
                                 value={(item?.cantidad || 0).toString()}
                                 onChangeText={(e) => {
                                     if (typeof e !== 'string') return;
