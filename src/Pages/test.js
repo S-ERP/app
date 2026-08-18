@@ -15,11 +15,11 @@ export default class Test extends Component {
   }
 
   cargarBackups = async () => {
-    this.setState({ cargandoBackups: true });
+    this.setState({ cargandoBackups: true, mensaje: "" });
     try {
       const empresa = Model.empresa.Action.getSelect();
       if (!empresa) {
-        this.setState({ mensaje: "Selecciona una empresa primero", cargandoBackups: false });
+        this.setState({ mensaje: "⚠️ Selecciona una empresa primero", cargandoBackups: false });
         return;
       }
 
@@ -31,14 +31,14 @@ export default class Test extends Component {
         if (Array.isArray(data)) {
           backupsList = data;
         } else if (typeof data === 'object' && data !== null) {
-          backupsList = Object.values(data);
+          backupsList = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
         }
       }
 
       this.setState({ backups: backupsList, cargandoBackups: false });
     } catch (error) {
       this.setState({
-        mensaje: "Error al cargar backups: " + error.message,
+        mensaje: "❌ Error al cargar backups: " + error.message,
         cargandoBackups: false
       });
     }
@@ -51,8 +51,7 @@ export default class Test extends Component {
       const usuario = Model.usuario.Action.getKey();
 
       if (!empresa || !usuario) {
-        this.setState({ mensaje: "Falta seleccionar empresa o usuario" });
-        this.setState({ loading: false });
+        this.setState({ mensaje: "⚠️ Falta seleccionar empresa o usuario", loading: false });
         return;
       }
 
@@ -64,136 +63,139 @@ export default class Test extends Component {
       });
 
       if (response.estado === "exito") {
-        this.setState({ mensaje: "✓ Backup creado exitosamente" });
-        this.cargarBackups();
+        this.setState({ mensaje: "✅ Backup creado exitosamente" });
+        setTimeout(() => this.cargarBackups(), 1000);
       } else {
-        this.setState({ mensaje: "✗ Error: " + (response.error || "desconocido") });
+        this.setState({ mensaje: "❌ Error: " + (response.error || "desconocido") });
       }
     } catch (error) {
-      this.setState({ mensaje: "✗ Error: " + error.message });
+      this.setState({ mensaje: "❌ Error: " + error.message });
     } finally {
       this.setState({ loading: false });
     }
   };
 
-  restaurarBackup = async (backupKey) => {
-    this.setState({ loading: true, mensaje: "" });
-    try {
-      const usuario = Model.usuario.Action.getKey();
-      const response = await Model.alvaro.Action.restaurarBackup(backupKey, usuario);
+  renderTablaBackups() {
+    const { backups } = this.state;
 
-      if (response.estado === "exito") {
-        this.setState({ mensaje: "✓ Backup restaurado exitosamente" });
-        this.cargarBackups();
-      } else {
-        this.setState({ mensaje: "✗ Error: " + (response.error || "desconocido") });
-      }
-    } catch (error) {
-      this.setState({ mensaje: "✗ Error: " + error.message });
-    } finally {
-      this.setState({ loading: false });
-    }
-  };
-
-  eliminarBackup = async (backupKey) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este backup?")) {
-      return;
-    }
-
-    this.setState({ loading: true, mensaje: "" });
-    try {
-      const usuario = Model.usuario.Action.getKey();
-      const response = await Model.alvaro.Action.eliminarBackup(backupKey, usuario);
-
-      if (response.estado === "exito") {
-        this.setState({ mensaje: "✓ Backup eliminado exitosamente" });
-        this.cargarBackups();
-      } else {
-        this.setState({ mensaje: "✗ Error: " + (response.error || "desconocido") });
-      }
-    } catch (error) {
-      this.setState({ mensaje: "✗ Error: " + error.message });
-    } finally {
-      this.setState({ loading: false });
-    }
-  };
-
-  renderBackupItem = (backup) => {
-    const { loading } = this.state;
-
-    if (!backup || typeof backup !== 'object') {
-      return null;
+    if (!Array.isArray(backups) || backups.length === 0) {
+      return <p style={{ color: "#999", textAlign: "center", padding: "20px" }}>No hay backups disponibles</p>;
     }
 
     return (
-      <div
-        key={backup.key || Math.random()}
-        style={{
-          border: "1px solid #ddd",
+      <div style={{ overflowX: "auto" }}>
+        <table style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          backgroundColor: "#fff",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
           borderRadius: "8px",
-          padding: "12px",
-          marginBottom: "10px",
-          backgroundColor: "#f9f9f9",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <p style={{ margin: "0 0 5px 0", fontWeight: "bold" }}>
-            {backup.nombre || "Backup sin nombre"}
-          </p>
-          <small style={{ color: "#666" }}>{backup.descripcion || "-"}</small>
-          <br />
-          <small style={{ color: "#999" }}>
-            {backup.fecha_creacion ? new Date(backup.fecha_creacion).toLocaleString() : "Fecha desconocida"}
-          </small>
-        </div>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            onClick={() => this.restaurarBackup(backup.key)}
-            disabled={loading}
-            style={{
-              padding: "8px 16px",
-              fontSize: "12px",
-              backgroundColor: "#27ae60",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-          >
-            Restaurar
-          </button>
-          <button
-            onClick={() => this.eliminarBackup(backup.key)}
-            disabled={loading}
-            style={{
-              padding: "8px 16px",
-              fontSize: "12px",
-              backgroundColor: "#e74c3c",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-          >
-            Eliminar
-          </button>
+          overflow: "hidden"
+        }}>
+          <thead>
+            <tr style={{ backgroundColor: "#34495e", color: "white" }}>
+              <th style={{ padding: "12px", textAlign: "left", fontWeight: "bold" }}>Nombre</th>
+              <th style={{ padding: "12px", textAlign: "center", fontWeight: "bold" }}>Tamaño</th>
+              <th style={{ padding: "12px", textAlign: "center", fontWeight: "bold" }}>Fecha</th>
+              <th style={{ padding: "12px", textAlign: "center", fontWeight: "bold" }}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {backups.map((backup, index) => (
+              <tr
+                key={backup.nombre || index}
+                style={{
+                  backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff",
+                  borderBottom: "1px solid #ddd",
+                  transition: "background-color 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#ecf0f1"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#f9f9f9" : "#fff"}
+              >
+                <td style={{ padding: "12px", fontFamily: "monospace", fontSize: "13px" }}>
+                  {backup.nombre || "-"}
+                </td>
+                <td style={{ padding: "12px", textAlign: "center", fontSize: "13px" }}>
+                  <span style={{ backgroundColor: "#e8f4f8", padding: "4px 8px", borderRadius: "4px" }}>
+                    {backup.tamaño || "0 B"}
+                  </span>
+                </td>
+                <td style={{ padding: "12px", textAlign: "center", fontSize: "13px", color: "#666" }}>
+                  {backup.fecha || "-"}
+                </td>
+                <td style={{ padding: "12px", textAlign: "center" }}>
+                  <button
+                    onClick={() => this.descargarBackup(backup)}
+                    style={{
+                      padding: "6px 12px",
+                      fontSize: "12px",
+                      backgroundColor: "#3498db",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      marginRight: "5px",
+                      transition: "background-color 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = "#2980b9"}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = "#3498db"}
+                  >
+                    📥
+                  </button>
+                  <button
+                    onClick={() => this.copiarRuta(backup)}
+                    style={{
+                      padding: "6px 12px",
+                      fontSize: "12px",
+                      backgroundColor: "#9b59b6",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      transition: "background-color 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = "#8e44ad"}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = "#9b59b6"}
+                  >
+                    📋
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ marginTop: "10px", fontSize: "12px", color: "#666", textAlign: "right" }}>
+          Total: <strong>{backups.length}</strong> backups
         </div>
       </div>
     );
-  };
+  }
+
+  descargarBackup = (backup) => {
+    alert(`Para descargar el backup:\n\n${backup.nombre}\n\nRuta: ${backup.ruta}`);
+  }
+
+  copiarRuta = (backup) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(backup.ruta);
+      this.setState({ mensaje: "✅ Ruta copiada al portapapeles" });
+      setTimeout(() => this.setState({ mensaje: "" }), 3000);
+    } else {
+      alert(backup.ruta);
+    }
+  }
 
   render() {
-    const { loading, mensaje, backups, cargandoBackups } = this.state;
+    const { loading, mensaje, cargandoBackups } = this.state;
 
     return (
       <SPage title="Alvaro - Sistema de Backups">
-        <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-          <h2 style={{ color: "#333", marginTop: 0 }}>Gestión de Backups</h2>
+        <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
+          <h1 style={{ color: "#2c3e50", marginTop: 0, borderBottom: "3px solid #3498db", paddingBottom: "10px" }}>
+            🔒 Gestión de Backups - Alvaro
+          </h1>
 
-          <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
             <button
               onClick={this.crearBackup}
               disabled={loading}
@@ -201,15 +203,17 @@ export default class Test extends Component {
                 padding: "12px 24px",
                 fontSize: "16px",
                 fontWeight: "bold",
-                backgroundColor: loading ? "#ccc" : "#3498db",
+                backgroundColor: loading ? "#ccc" : "#27ae60",
                 color: "white",
                 border: "none",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 cursor: loading ? "not-allowed" : "pointer",
-                marginRight: "10px",
+                transition: "background-color 0.2s"
               }}
+              onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = "#229954")}
+              onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = "#27ae60")}
             >
-              {loading ? "Creando..." : "✓ Crear Nuevo Backup"}
+              {loading ? "⏳ Creando..." : "✅ Crear Nuevo Backup"}
             </button>
 
             <button
@@ -222,39 +226,41 @@ export default class Test extends Component {
                 backgroundColor: cargandoBackups ? "#ccc" : "#95a5a6",
                 color: "white",
                 border: "none",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 cursor: cargandoBackups ? "not-allowed" : "pointer",
+                transition: "background-color 0.2s"
               }}
+              onMouseEnter={(e) => !cargandoBackups && (e.target.style.backgroundColor = "#7f8c8d")}
+              onMouseLeave={(e) => !cargandoBackups && (e.target.style.backgroundColor = "#95a5a6")}
             >
-              {cargandoBackups ? "Cargando..." : "🔄 Recargar"}
+              {cargandoBackups ? "⏳ Cargando..." : "🔄 Recargar"}
             </button>
           </div>
 
           {mensaje && (
             <div
               style={{
-                padding: "12px",
+                padding: "12px 16px",
                 marginBottom: "20px",
-                borderRadius: "4px",
-                backgroundColor: mensaje.includes("✓") ? "#d4edda" : "#f8d7da",
-                color: mensaje.includes("✓") ? "#155724" : "#721c24",
-                border: `1px solid ${mensaje.includes("✓") ? "#c3e6cb" : "#f5c6cb"}`,
+                borderRadius: "6px",
+                backgroundColor: mensaje.includes("❌") ? "#fadbd8" : "#d5f4e6",
+                color: mensaje.includes("❌") ? "#922b21" : "#186a3b",
+                border: `1px solid ${mensaje.includes("❌") ? "#f5b7b1" : "#a9dfbf"}`,
+                fontWeight: "500"
               }}
             >
               {mensaje}
             </div>
           )}
 
-          <div>
-            <h3 style={{ color: "#333", marginTop: "20px" }}>
-              Backups Disponibles ({Array.isArray(backups) ? backups.length : 0})
-            </h3>
-
-            {!Array.isArray(backups) || backups.length === 0 ? (
-              <p style={{ color: "#999" }}>No hay backups disponibles</p>
-            ) : (
-              backups.filter(b => b).map((backup) => this.renderBackupItem(backup))
-            )}
+          <div style={{
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            padding: "20px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+          }}>
+            <h3 style={{ color: "#2c3e50", margin: "0 0 15px 0" }}>📦 Backups Disponibles</h3>
+            {this.renderTablaBackups()}
           </div>
         </div>
       </SPage>
