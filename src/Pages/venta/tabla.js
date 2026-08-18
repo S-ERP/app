@@ -57,41 +57,41 @@ export default class tabla extends Component {
 			}
 
 			const sucursales = empresa?.sucursales || [];
-			const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-			if (ventas.length === 0) console.warn("No se encontraron ventas.");
-			const keysUsuarios = [...new Set(ventas.map(v => v.key_usuario).filter(Boolean))];
-			const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-			const usuariosMap = Array.isArray(usuarios) ? Object.fromEntries(usuarios.map(u => [u.key, u])) : usuarios || {};
-			const [proveedores, clientes, habilidadResp, resumenCuotasResp] = await Promise.all([
-				MDL.inventario.proveedor.getAllProveedor(),
-				MDL.crm.cliente.getAll(),
-				MDL.habilidad.getAllWithUsuarios(),
-				MDL.compra_venta.getCuotasResumenTotal_ventas(),
+			const ventas = Object?.values(registros)?.filter(cv => cv?.tipo === "venta");
+			if (ventas?.length === 0) console.warn("No se encontraron ventas.");
+			const keysUsuarios = [...new Set(ventas?.map(v => v?.key_usuario)?.filter(Boolean))];
+			const usuarios = await MDL?.usuario?.getByKeys(keysUsuarios);
+			const usuariosMap = Array?.isArray(usuarios) ? Object?.fromEntries(usuarios?.map(u => [u?.key, u])) : usuarios || {};
+			const [proveedores, clientes, habilidadResp, resumenCuotasResp] = await Promise?.all([
+				MDL?.inventario?.proveedor?.getAllProveedor(),
+				MDL?.crm?.cliente?.getAll(),
+				MDL?.habilidad?.getAllWithUsuarios(),
+				MDL?.compra_venta?.getCuotasResumenTotal_ventas(),
 			]);
 			if (!proveedores) console.warn("No se pudieron obtener proveedores.");
 			if (!clientes) console.warn("No se pudieron obtener clientes.");
-			const clientesMap = Array.isArray(clientes) ? Object.fromEntries(clientes.map(c => [c.key, c])) : clientes || {};
-			const habilidadArr = Array.isArray(habilidadResp) ? habilidadResp : Object.values(habilidadResp || {});
-			const resumenCuotasArr = Array.isArray(resumenCuotasResp) ? resumenCuotasResp : Object.values(resumenCuotasResp || {});
+			const clientesMap = Array?.isArray(clientes) ? Object?.fromEntries(clientes?.map(c => [c?.key, c])) : clientes || {};
+			const habilidadArr = Array?.isArray(habilidadResp) ? habilidadResp : Object?.values(habilidadResp || {});
+			const resumenCuotasArr = Array?.isArray(resumenCuotasResp) ? resumenCuotasResp : Object?.values(resumenCuotasResp || {});
 			const clienteAgregadoMap = {};
-			ventas.forEach(v => {
-				if (Number(v.estado) === 0) return;
-				const keyCliente = v.key_cliente;
+			ventas?.forEach(v => {
+				if (Number(v?.estado) === 0) return;
+				const keyCliente = v?.key_cliente;
 				if (!keyCliente) return;
 				if (!clienteAgregadoMap[keyCliente]) {
 					clienteAgregadoMap[keyCliente] = { total_map: {}, pagado_map: {}, mora_map: {}, total_base: 0, pagado_base: 0, mora_base: 0 };
 				}
 				const acc = clienteAgregadoMap[keyCliente];
-				const key = v.key_moneda || 'desconocida';
-				const tot = Number(v.cuotas?.total || 0);
-				const pag = Number(v.monto_amortizado || 0);
-				const mora = Number(v.cuotas_en_mora?.monto || 0);
-				if (tot > 0) acc.total_map[key] = (acc.total_map[key] || 0) + tot;
-				if (pag > 0) acc.pagado_map[key] = (acc.pagado_map[key] || 0) + pag;
-				if (mora > 0) acc.mora_map[key] = (acc.mora_map[key] || 0) + mora;
-				acc.total_base += Number(v.cuotas?.total_base || 0);
-				acc.pagado_base += Number(v.monto_amortizado_base || 0);
-				acc.mora_base += Number(v.cuotas_en_mora?.monto_base || 0);
+				const key = v?.key_moneda || 'desconocida';
+				const tot = Number(v?.cuotas?.total || 0);
+				const pag = Number(v?.monto_amortizado || 0);
+				const mora = Number(v?.cuotas_en_mora?.monto || 0);
+				if (tot > 0) acc.total_map[key] = (acc?.total_map[key] || 0) + tot;
+				if (pag > 0) acc.pagado_map[key] = (acc?.pagado_map[key] || 0) + pag;
+				if (mora > 0) acc.mora_map[key] = (acc?.mora_map[key] || 0) + mora;
+				acc.total_base += Number(v?.cuotas?.total_base || 0);
+				acc.pagado_base += Number(v?.monto_amortizado_base || 0);
+				acc.mora_base += Number(v?.cuotas_en_mora?.monto_base || 0);
 			});
 			const getDeudaClienteAgregada = keyCliente => {
 				const acc = clienteAgregadoMap[keyCliente];
@@ -109,61 +109,61 @@ export default class tabla extends Component {
 			};
 			const suscripcionesFull = await MDL.compra_venta.getsuscripciones_full();
 			const suscripcionesMap = {};
-			(suscripcionesFull || []).forEach(row => {
-				const key = row.key_compra_venta_detalle;
+			(suscripcionesFull || [])?.forEach(row => {
+				const key = row?.key_compra_venta_detalle;
 				if (!key) return;
 				if (!suscripcionesMap[key]) {
-					const cupos = Number(row.modelo?.cantidad_suscriptores) || 0;
+					const cupos = Number(row?.modelo?.cantidad_suscriptores) || 0;
 					suscripcionesMap[key] = [{ cupos, suscriptos: 0, disponibles: cupos, suscriptores: [] }];
 				}
-				const entry = suscripcionesMap[key][0];
-				entry.suscriptores.push(row);
-				entry.suscriptos += 1;
-				entry.disponibles = Math.max(0, entry.cupos - entry.suscriptos);
+				const entry = suscripcionesMap[key]?.[0];
+				entry?.suscriptores?.push(row);
+				entry && (entry.suscriptos += 1);
+				entry && (entry.disponibles = Math?.max(0, entry?.cupos - entry?.suscriptos));
 			});
 			const totalesMap = {};
-			ventas.forEach(cv => {
+			ventas?.forEach(cv => {
 				try {
-					totalesMap[cv.key] = MDL.compra_venta.getTotales({ ...cv, detalle: cv.detalles }) || {};
+					totalesMap[cv?.key] = MDL?.compra_venta?.getTotales({ ...cv, detalle: cv?.detalles }) || {};
 				} catch (e) {
-					totalesMap[cv.key] = {};
+					totalesMap[cv?.key] = {};
 				}
 			});
-			const ventasEnriquecidas = ventas.map(cv => {
-				const detallesEnriquecidos = (cv.detalles || []).map(d => {
-					const suscripcion = suscripcionesMap[d.key]?.[0] || {};
+			const ventasEnriquecidas = ventas?.map(cv => {
+				const detallesEnriquecidos = (cv?.detalles || [])?.map(d => {
+					const suscripcion = suscripcionesMap[d?.key]?.[0] || {};
 
 					return {
 						...d,
 						...suscripcion,
-						suscriptores: (suscripcion.suscriptores || []).map(s => ({ ...s, cliente: clientesMap[s.key_cliente] || {} }))
+						suscriptores: (suscripcion?.suscriptores || [])?.map(s => ({ ...s, cliente: clientesMap[s?.key_cliente] || {} }))
 					};
 				});
-				const total_disponibles = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.disponibles) || 0), 0);
-				const total_suscriptos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.suscriptos) || 0), 0);
-				const total_cupos = detallesEnriquecidos.reduce((sum, d) => sum + (Number(d.cupos) || 0), 0);
-				const cuotas = cv.cuotas || {};
-				const cuotaUnitaria = cuotas.total && cuotas.cantidad ? cuotas.total / cuotas.cantidad : 0;
-				const cantidad_pagada = cuotaUnitaria > 0 ? Math.round((cv.monto_amortizado || 0) / cuotaUnitaria) : 0;
-				const cantidad_pendiente = Math.max(0, (cuotas.cantidad || 0) - (cv.cuotas_en_mora?.cantidad || 0) - cantidad_pagada);
+				const total_disponibles = detallesEnriquecidos?.reduce((sum, d) => sum + (Number(d?.disponibles) || 0), 0);
+				const total_suscriptos = detallesEnriquecidos?.reduce((sum, d) => sum + (Number(d?.suscriptos) || 0), 0);
+				const total_cupos = detallesEnriquecidos?.reduce((sum, d) => sum + (Number(d?.cupos) || 0), 0);
+				const cuotas = cv?.cuotas || {};
+				const cuotaUnitaria = cuotas?.total && cuotas?.cantidad ? cuotas?.total / cuotas?.cantidad : 0;
+				const cantidad_pagada = cuotaUnitaria > 0 ? Math?.round((cv?.monto_amortizado || 0) / cuotaUnitaria) : 0;
+				const cantidad_pendiente = Math?.max(0, (cuotas?.cantidad || 0) - (cv?.cuotas_en_mora?.cantidad || 0) - cantidad_pagada);
 				return {
 					...cv,
 					total_disponibles,
 					total_suscriptos,
 					total_cupos,
 					detalles: detallesEnriquecidos,
-					moneda: empresa?.monedas?.find(m => m.key === cv.key_moneda) || {},
-					sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
+					moneda: empresa?.monedas?.find(m => m?.key === cv?.key_moneda) || {},
+					sucursal: sucursales?.find(s => s?.key === cv?.key_sucursal) || {},
 					usuario: usuariosMap[cv?.key_usuario] || {},
 					empresa,
-					proveedor: (proveedores || []).find(p => p.key === cv.key_proveedor) || {},
+					proveedor: (proveedores || []).find(p => p?.key === cv?.key_proveedor) || {},
 					cliente: (() => {
-						const clienteBase = clientesMap[cv.key_cliente] || {};
-						const { deuda_por_moneda, mora_por_moneda, totales_base } = getDeudaClienteAgregada(clienteBase.key);
+						const clienteBase = clientesMap[cv?.key_cliente] || {};
+						const { deuda_por_moneda, mora_por_moneda, totales_base } = getDeudaClienteAgregada(clienteBase?.key);
 						return {
 							...clienteBase,
-							habilidades: habilidadArr.filter(h => Array.isArray(h.key_usuarios) && h.key_usuarios.includes(clienteBase.key)),
-							resumen_cuota: resumenCuotasArr.find(r => r.key_cliente === clienteBase.key) || null,
+							habilidades: habilidadArr?.filter(h => Array?.isArray(h?.key_usuarios) && h?.key_usuarios?.includes(clienteBase?.key)),
+							resumen_cuota: resumenCuotasArr?.find(r => r?.key_cliente === clienteBase?.key) || null,
 							deuda_por_moneda,
 							mora_por_moneda,
 							totales_base,
@@ -200,10 +200,10 @@ export default class tabla extends Component {
 
 	footerCuotasYMonto(cuotaSelector, montoBaseSelector) {
 		return ({ dinamicTable }) => {
-			const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
+			const rows = (dinamicTable?.dataFiltrada || []).map(d => d?.__original);
 			const totalCuotas = rows.reduce((s, row) => s + (Number(cuotaSelector(row)) || 0), 0);
 			const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
-			const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+			const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 			return (
 				<SView height={40} style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
 					<SText numberOfLines={1} style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
@@ -343,7 +343,7 @@ export default class tabla extends Component {
 											correo_electronico: isManual ? "" : correo_electronico,
 											telefono: isManual ? "" : telefono,
 											leyenda: "alvaro es probando la leyenda",
-											detalles: (venta.detalles ?? []).map((d) => d.descripcion).join(", "),
+											detalles: (venta?.detalles ?? [])?.map((d) => d?.descripcion)?.join(", "),
 											archivo_pdf: isManual ? { name: this.state.pdfFiles?.[venta.key]?.name, type: this.state.pdfFiles?.[venta.key]?.type, } : {},
 											link_factura: isManual ? this.state.pdfFiles?.[venta.key]?.link || null : "",
 											factura_seleccionada: tipoLabel,
@@ -706,7 +706,7 @@ export default class tabla extends Component {
 
 				<DinamicTable.Col key="descripcion" label="Concepto" width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
 
-				<DinamicTable.Col key="detalles_" label="Detalle" width={210} height={60} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
+				<DinamicTable.Col key="detalles_" label="Detalle" width={210} height={60} data={(e) => (e.row?.detalles ?? []).map(d => d?.descripcion)}
 					customComponent={(e) => {
 						const MAX_LINEAS = 3;
 						const detalles = e.row?.detalles ?? [];
@@ -715,7 +715,7 @@ export default class tabla extends Component {
 						const restantes = detalles.length - visibles.length;
 						return (
 							<SView col>
-								{visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} </SText>))}
+								{visibles.map((d, index) => (<SText key={index} fontSize={11}>• {d?.descripcion} </SText>))}
 								{restantes > 0 && <SText fontSize={11} color={STheme.color.lightGray}>+{restantes} más</SText>}
 							</SView>
 						);
@@ -895,7 +895,7 @@ export default class tabla extends Component {
 				<DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={125} height={60}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + (Number(row.monto_amortizado_base) || 0), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
 					}}
 					dataType="number"
@@ -914,7 +914,7 @@ export default class tabla extends Component {
 						const fmt = SMath.formatMoney(monto);
 						const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
 						const baseMonto = e.row?.monto_amortizado_base || 0;
-						const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = monedas.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						const baseFmt = SMath.formatMoney(baseMonto);
 						const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
 						const showBase = baseMonto > 0 && sim !== baseSim;
@@ -955,7 +955,7 @@ export default class tabla extends Component {
 				<DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={125} height={60}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((Number(row.cuotas?.total_base) || 0) - (Number(row.monto_amortizado_base) || 0)), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
 					}}
 					dataType="number"
@@ -973,7 +973,7 @@ export default class tabla extends Component {
 						const fmt = SMath.formatMoney(monto);
 						const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
 						const baseMonto = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0);
-						const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = monedas.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						const baseFmt = SMath.formatMoney(baseMonto);
 						const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
 						const showBase = baseMonto > 0 && sim !== baseSim;
@@ -1012,7 +1012,7 @@ export default class tabla extends Component {
 				<DinamicTable.Col wrap key="en_mora" label="Mora" width={125} height={60}
 					sumTotal={rows => {
 						const totalBase = rows.reduce((s, row) => s + (Number(row.cuotas_en_mora?.monto_base) || 0), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						return totalBase ? `${baseSim} ${SMath.formatMoney(totalBase)}` : '';
 					}}
 					dataType="number"
@@ -1030,7 +1030,7 @@ export default class tabla extends Component {
 						const fmt = SMath.formatMoney(monto);
 						const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
 						const baseMonto = e.row?.cuotas_en_mora?.monto_base || 0;
-						const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = monedas.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						const baseFmt = SMath.formatMoney(baseMonto);
 						const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
 						const showBase = baseMonto > 0 && sim !== baseSim;

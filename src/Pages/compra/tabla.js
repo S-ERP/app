@@ -125,17 +125,17 @@ export default class tabla extends Component {
 				const cantidad_pendiente = Math.max(0, (cuotas.cantidad || 0) - (cv.cuotas_en_mora?.cantidad || 0) - cantidad_pagada);
 				return {
 					...cv,
-					moneda: empresa?.monedas?.find(m => m.key === cv.key_moneda) || {},
-					sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
+					moneda: empresa?.monedas?.find(m => m?.key === cv?.key_moneda) || {},
+					sucursal: sucursales?.find(s => s?.key === cv?.key_sucursal) || {},
 					usuario: usuariosMap[cv?.key_usuario] || {},
 					empresa,
-					subtotal: totalesMap[cv.key]?.subtotal || "0",
+					subtotal: totalesMap[cv?.key]?.subtotal || "0",
 					proveedor: (() => {
-						const proveedorBase = proveedoresMap[cv.key_proveedor] || {};
-						const { deuda_por_moneda, mora_por_moneda, totales_base } = getDeudaProveedorAgregada(proveedorBase.key);
+						const proveedorBase = proveedoresMap[cv?.key_proveedor] || {};
+						const { deuda_por_moneda, mora_por_moneda, totales_base } = getDeudaProveedorAgregada(proveedorBase?.key);
 						return {
 							...proveedorBase,
-							resumen_cuota: resumenCuotasArr.find(r => r.key_proveedor === proveedorBase.key) || null,
+							resumen_cuota: resumenCuotasArr?.find(r => r?.key_proveedor === proveedorBase?.key) || null,
 							deuda_por_moneda,
 							mora_por_moneda,
 							totales_base,
@@ -171,10 +171,10 @@ export default class tabla extends Component {
 
 	footerCuotasYMonto(cuotaSelector, montoBaseSelector) {
 		return ({ dinamicTable }) => {
-			const rows = (dinamicTable?.dataFiltrada || []).map(d => d.__original);
+			const rows = (dinamicTable?.dataFiltrada || []).map(d => d?.__original);
 			const totalCuotas = rows.reduce((s, row) => s + (Number(cuotaSelector(row)) || 0), 0);
 			const totalMonto = rows.reduce((s, row) => s + (Number(montoBaseSelector(row)) || 0), 0);
-			const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+			const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 			return (
 				<SView height={40} style={{ padding: 4, alignItems: 'flex-end', width: '100%', borderTopWidth: 1, borderColor: STheme.color.lightGray + '50' }}>
 					<SText numberOfLines={1} style={{ fontSize: 10, opacity: 0.8 }}>{totalCuotas} {totalCuotas === 1 ? 'cuota' : 'cuotas'}</SText>
@@ -618,7 +618,7 @@ export default class tabla extends Component {
 
 				<DinamicTable.Col key="descripcion" label="Concepto" width={140} height={60} data={(e) => e.row?.observacion ?? ""} />
 
-				<DinamicTable.Col key="detalles_" label="Detalle" width={230} height={60} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
+				<DinamicTable.Col key="detalles_" label="Detalle" width={230} height={60} data={(e) => (e.row?.detalles ?? []).map(d => d?.descripcion)}
 					customComponent={(e) => {
 						const MAX_LINEAS = 3;
 						const detalles = e.row?.detalles ?? [];
@@ -628,7 +628,7 @@ export default class tabla extends Component {
 						return (
 							<SView col>
 								{visibles.map((d, index) => (
-									<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row?.moneda?.observacion} x{d.cantidad}</SText>
+									<SText key={index} fontSize={11}>• {d?.descripcion} {d?.precio_unitario_base} {e.row?.moneda?.observacion} x{d?.cantidad}</SText>
 								))}
 								{restantes > 0 && <SText fontSize={11} color={STheme.color.lightGray}>+{restantes} más</SText>}
 							</SView>
@@ -802,11 +802,11 @@ export default class tabla extends Component {
 				<DinamicTable.Col key="monto_amortizado" wrap label="Monto" width={130} height={60}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + (Number(row.monto_amortizado_base) || 0), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
 					}}
 					footerComponent={this.footerCuotasYMonto(row => row.cuotas?.cantidad_pagada, row => row.monto_amortizado_base)}
-					data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.monto_amortizado || 0; const base = e.row?.monto_amortizado_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+					data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.monto_amortizado || 0; const base = e.row?.monto_amortizado_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
 					cellStyle={{  backgroundColor: STheme.color.success + "33" }}
 					customComponent={e => {
 						const monedas = e.row?.empresa?.monedas || [];
@@ -817,7 +817,7 @@ export default class tabla extends Component {
 						const fmt = SMath.formatMoney(monto);
 						const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
 						const baseMonto = e.row?.monto_amortizado_base || 0;
-						const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = monedas.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						const baseFmt = SMath.formatMoney(baseMonto);
 						const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
 						const showBase = baseMonto > 0 && sim !== baseSim;
@@ -854,11 +854,11 @@ export default class tabla extends Component {
 				<DinamicTable.Col key="monto_deuda" wrap label="Deuda" width={130} height={60}
 					sumTotal={rows => {
 						const total = rows.reduce((s, row) => s + ((Number(row.cuotas?.total_base) || 0) - (Number(row.monto_amortizado_base) || 0)), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						return total ? `${baseSim} ${SMath.formatMoney(total)}` : '';
 					}}
 					footerComponent={this.footerCuotasYMonto(row => row.cuotas?.cantidad_pendiente, row => (row.cuotas?.total_base ?? 0) - (row.monto_amortizado_base ?? 0))}
-					data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+					data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0); const base = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0); const baseSim = e.row?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
 					cellStyle={{   backgroundColor: STheme.color.warning + "33" }}
 					customComponent={e => {
 						const monedas = e.row?.empresa?.monedas || [];
@@ -869,7 +869,7 @@ export default class tabla extends Component {
 						const fmt = SMath.formatMoney(monto);
 						const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
 						const baseMonto = (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0);
-						const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = monedas.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						const baseFmt = SMath.formatMoney(baseMonto);
 						const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
 						const showBase = baseMonto > 0 && sim !== baseSim;
@@ -907,11 +907,11 @@ export default class tabla extends Component {
 				<DinamicTable.Col wrap key="en_mora" label="Mora" width={130} height={60}
 					sumTotal={rows => {
 						const totalBase = rows.reduce((s, row) => s + (Number(row.cuotas_en_mora?.monto_base) || 0), 0);
-						const baseSim = rows[0]?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = rows[0]?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						return totalBase ? `${baseSim} ${SMath.formatMoney(totalBase)}` : '';
 					}}
 					footerComponent={this.footerCuotasYMonto(row => row.cuotas_en_mora?.cantidad, row => row.cuotas_en_mora?.monto_base)}
-					data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.cuotas_en_mora?.monto || 0; const base = e.row?.cuotas_en_mora?.monto_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
+					data={(e) => { const sim = e.row?.moneda?.observacion || 'Bs'; const monto = e.row?.cuotas_en_mora?.monto || 0; const base = e.row?.cuotas_en_mora?.monto_base || 0; const baseSim = e.row?.empresa?.monedas?.find(m => m?.tipo === 'base')?.observacion || 'Bs'; return !monto ? '' : sim !== baseSim ? `${sim} ${SMath.formatMoney(monto)} => ${baseSim} ${SMath.formatMoney(base)}` : `${sim} ${SMath.formatMoney(monto)}`; }}
 					cellStyle={{   backgroundColor: STheme.color.danger + "33" }}
 					customComponent={e => {
 						const monedas = e.row?.empresa?.monedas || [];
@@ -922,7 +922,7 @@ export default class tabla extends Component {
 						const fmt = SMath.formatMoney(monto);
 						const num = fmt.startsWith(sim) ? fmt.replace(sim, '').trim() : fmt;
 						const baseMonto = e.row?.cuotas_en_mora?.monto_base || 0;
-						const baseSim = monedas.find(m => m.tipo === 'base')?.observacion || 'Bs';
+						const baseSim = monedas.find(m => m?.tipo === 'base')?.observacion || 'Bs';
 						const baseFmt = SMath.formatMoney(baseMonto);
 						const baseNum = baseFmt.startsWith(baseSim) ? baseFmt.replace(baseSim, '').trim() : baseFmt;
 						const showBase = baseMonto > 0 && sim !== baseSim;
@@ -944,7 +944,6 @@ export default class tabla extends Component {
 			</DinamicTable>
 		);
 	}
-	// alvaro
 	render() {
 		return (
 			<SPage title="Tabla Gestión de Compras" disableScroll>

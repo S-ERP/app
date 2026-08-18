@@ -11,7 +11,7 @@ import InputSelector from "../Selectores/InputSelector";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
-const cambios = 1;
+
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -21,12 +21,7 @@ const UI = {
             header: colorVenta,
             danger: STheme.color.danger,
             card: STheme.color.card,
-            itemBg: STheme.color.background,
-            mutedDark: STheme.color.background,
-            accent: colorVenta,
-            error: STheme.color.danger,
             textMuted: STheme.color.lightGray,
-            border: STheme.color.lightGray + "40",
         };
     }
 };
@@ -121,9 +116,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     componentWillUnmount(): void {
-        MDL.carrito.removeEventListener(this.handleChange);
+        MDL.carrito.removeEventListener("handleChange", this.handleChange);
         if (this.evento) {
-            MDL.compra_venta.removeEventListener(this.evento);
+            MDL.compra_venta.removeEventListener("moneda_seleccionada", this.evento);
         }
         (globalThis as any).document?.removeEventListener("keydown", this.handleKeyDown);
     }
@@ -287,13 +282,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const calcularPrecio = () => {
-        if (!moneda) return item.modelo.precio_venta;
+        if (!moneda || !item?.modelo) return item?.modelo?.precio_venta || 0;
         if (item.modelo.venta_moneda?.key === moneda?.key) {
             return item.modelo.precio_venta;
         }
         const tipoCambioVenta = item.modelo.venta_moneda?.tipo_cambio || 1;
         const tipoCambioSeleccionada = moneda?.tipo_cambio || 1;
-        return item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
+        if (tipoCambioSeleccionada === 0) return item.modelo.precio_venta || 0;
+        return (item.modelo.precio_venta || 0) * (tipoCambioVenta / tipoCambioSeleccionada);
     };
     const [precio, setPrecio] = React.useState(calcularPrecio);
     const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
@@ -376,10 +372,14 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             style={{ width: "100%", fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: STheme.color.text }}
                                             defaultValue={precioFormateado.toString()}
                                             onChangeText={(e) => {
+                                                if (!e || typeof e !== 'string') return;
                                                 setPrecioStr(e);
-                                                const n = parseFloat(e) || 0;
+                                                const n = parseFloat(e);
+                                                if (isNaN(n)) return;
                                                 setPrecio(n);
-                                                item.modelo.precio_venta_moneda = n * (moneda?.tipo_cambio || 1);
+                                                if (item?.modelo && moneda?.tipo_cambio) {
+                                                    item.modelo.precio_venta_moneda = n * moneda.tipo_cambio;
+                                                }
                                                 MDL.carrito.calcularValoresCarritDeVentas();
                                             }}
                                         />
@@ -413,10 +413,15 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 style={{ fontSize: UI.font.small, paddingLeft: 0.5, textAlign: "center", color: STheme.color.text, fontWeight: "bold" }}
                                 type="money2"
                                 icon={<SText fontSize={10} color={STheme.color.text}>{"x"}</SText>}
-                                value={item.cantidad.toString()}
+                                value={(item?.cantidad || 0).toString()}
                                 onChangeText={(e) => {
-                                    item.cantidad = e;
-                                    MDL.carrito.calcularValoresCarritDeVentas();
+                                    if (!e || typeof e !== 'string') return;
+                                    const cantidad = parseFloat(e);
+                                    if (isNaN(cantidad) || cantidad < 0) return;
+                                    if (item?.modelo) {
+                                        item.cantidad = cantidad;
+                                        MDL.carrito.calcularValoresCarritDeVentas();
+                                    }
                                 }}
                             />
                         </SView>
@@ -426,181 +431,42 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
                 </SView>
             </SView>
+            <ListaReceta item={item} />
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
-            <ListaIngredientes item={item} />
-            {/* {cambios === 1 && <ListaIngredientes item={item} />} */}
         </SView>
     );
 };
 
-class ListaIngredientes extends React.Component<{ item: any }> {
-    mounted = true;
-    state: { isOpen: boolean; ingredientes: any[] | null; nombresGrupo: Record<string, string> } = {
-        isOpen: true,
-        ingredientes: Array.isArray(this.props.item.modelo.ingredientes) ? this.props.item.modelo.ingredientes : null,
-        nombresGrupo: this.props.item.modelo.nombresIngredienteGrupo || {},
-    };
-
-    componentDidMount() {
-        const { item } = this.props;
-        console.warn("[ProKeybindings] archivo: if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) sin motivo indicado.");
-        if (Array.isArray(item.modelo.ingredientes) && item.modelo.nombresIngredienteGrupo) return;
-        Promise.all([
-            MDL.inventario.getReceta_ByModelo(),
-            MDL.inventario.getPizarraIngrediente(),
-        ])
-            .then(([resp, pizarra]: [any, any]) => {
-                console.warn("[ProKeybindings] archivo: if (!this.mounted) sin motivo indicado.");
-                if (!this.mounted) return;
-                const propio = (resp ?? []).find((a: any) => a?.key_modelo === item.modelo.key);
-                const list = propio?.ingredientes ?? [];
-                const nombresGrupo = Object.fromEntries((pizarra ?? []).map((i: any) => [i.key, i.descripcion]));
-                item.modelo.ingredientes = list;
-                item.modelo.nombresIngredienteGrupo = nombresGrupo;
-                this.setState({ ingredientes: list, nombresGrupo });
-            })
-            .catch(() => {
-                if (this.mounted) this.setState({ ingredientes: [] });
-            });
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
-    }
-
-    agrupar(ingredientes: any[]) {
-        const porGrupo: Record<string, any[]> = {};
-        ingredientes.forEach((ing: any) => {
-            const key = ing.key_ingrediente ?? ing.key_modelo_requerido;
-            if (!porGrupo[key]) porGrupo[key] = [];
-            porGrupo[key].push(ing);
-        });
-        return Object.entries(porGrupo).map(([key_ingrediente, opciones]) => ({ key_ingrediente, opciones }));
-    }
-
-    render() {
-        const { item } = this.props;
-        const { isOpen, ingredientes, nombresGrupo } = this.state;
-        const grupos = this.agrupar(ingredientes ?? []);
-        if (!grupos.length) return null;
-        return (
-            <SView style={{ marginTop: 10 }}>
-                <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => this.setState({ isOpen: !isOpen })}>
-                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Combo"}</SText>
-                    <SView flex />
-                    <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{grupos.length}{")"}</SText>
-                    <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
-                        <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
-                            style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
-                    </SView>
-                </SView>
-                {isOpen && (
-                    <SView col={"xs-12"}>
-                        {grupos.map((grupo) => (
-                            <GrupoIngrediente key={grupo.key_ingrediente} item={item} grupo={grupo}
-                                titulo={nombresGrupo[grupo.key_ingrediente] || "Ingrediente"} />
-                        ))}
-                    </SView>
-                )}
-            </SView>
-        );
-    }
-}
-
-class GrupoIngrediente extends React.Component<{ item: any; grupo: any; titulo: string }> {
-    render() {
-        const { item, grupo, titulo } = this.props;
-        const { key_ingrediente, opciones } = grupo;
-        const cantidadRequerida = Math.max(1, Number(opciones[0]?.cantidad ?? 1));
-        const slots = Array.from({ length: cantidadRequerida }, (_, i) => i);
-        return (
-            <SView style={{ marginBottom: 6, marginTop: 2 }}>
-                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray} style={{ marginBottom: 2 }}>
-                    {titulo}{cantidadRequerida > 1 ? ` (elegí ${cantidadRequerida})` : ""}
-                </SText>
-                {/* working */}
-                {/* {slots.map((slot) => (
-                    <SlotIngrediente key={slot} item={item} keyIngrediente={key_ingrediente} opciones={opciones} slot={slot} />
-                ))} */}
-            </SView>
-        );
-    }
-}
-
-class SlotIngrediente extends React.Component<{ item: any; keyIngrediente: string; opciones: any[]; slot: number }> {
-    state = {
-        seleccion: (this.props.item.modelo.ingredientesSeleccionados?.[this.props.keyIngrediente] || [])[this.props.slot]
-            || (this.props.opciones.length === 1 ? this.props.opciones[0] : null),
-    };
-
-    componentDidMount() {
-        const { item, keyIngrediente, opciones, slot } = this.props;
-        console.warn("[ProKeybindings] archivo: if (opciones.length !== 1) sin motivo indicado.");
-        if (opciones.length !== 1) return;
-        if (!item.modelo.ingredientesSeleccionados) item.modelo.ingredientesSeleccionados = {};
-        if (!item.modelo.ingredientesSeleccionados[keyIngrediente]) item.modelo.ingredientesSeleccionados[keyIngrediente] = [];
-        item.modelo.ingredientesSeleccionados[keyIngrediente][slot] = opciones[0];
-    }
-
-    render() {
-        const { item, keyIngrediente, opciones, slot } = this.props;
-        const { seleccion } = this.state;
-        const options = opciones.map((op: any) => ({
-            label: op.modelo_requerido,
-            value: op.key_modelo_requerido,
-            data: op,
-        }));
-        return (
-            <SView style={{
-                height: 22, borderRadius: 6, marginBottom: 4,
-                backgroundColor: !seleccion ? STheme.color.danger + "18" : STheme.color.lightGray + "15",
-                borderWidth: 1, borderColor: !seleccion ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
-            }}>
-                <InputSelector
-                    customStyle="erp"
-                    placeholder="Elegí una opción"
-                    options={options}
-                    defaultValue={seleccion?.key_modelo_requerido || null}
-                    onSelect={(selected: any) => {
-                        if (!item.modelo.ingredientesSeleccionados) item.modelo.ingredientesSeleccionados = {};
-                        if (!item.modelo.ingredientesSeleccionados[keyIngrediente]) item.modelo.ingredientesSeleccionados[keyIngrediente] = [];
-                        item.modelo.ingredientesSeleccionados[keyIngrediente][slot] = selected.data;
-                        this.setState({ seleccion: selected.data });
-                    }}
-                />
-            </SView>
-        );
-    }
-}
-
-const ListaCostos = ({ item, moneda, totalItem }: any) => {
+const ListaCostos = React.memo(({ item, moneda, totalItem }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
     if (!item?.modelo?.tipoCostos?.length) return null;
+
+    const costos = React.useMemo(() => item.modelo.tipoCostos, [item.modelo.tipoCostos]);
+
     return (
         <SView style={{ marginTop: 10 }}>
             <SView row style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
                 <SText fontSize={12} bold color={STheme.color.text}>{"Costos"}</SText>
                 <SView flex />
-                <SText fontSize={10} color={STheme.color.lightGray}>{" ("}{item.modelo.tipoCostos.length}{")"}</SText>
+                <SText fontSize={10} color={STheme.color.lightGray}>{" ("}{costos.length}{")"}</SText>
                 <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
                     <SIconApp name="Back" fill={STheme.color.lightGray} width={8} style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
                 </SView>
             </SView>
-            {isOpen && item.modelo.tipoCostos.map((costo: any) => (
+            {isOpen && costos.map((costo: any) => (
                 <CostoItem key={costo.key_tipo_costo} costo={costo} moneda={moneda} totalItem={totalItem} />
             ))}
         </SView>
     );
-};
+}, (prev, next) => {
+    return prev.item.modelo.tipoCostos === next.item.modelo.tipoCostos &&
+        prev.moneda === next.moneda &&
+        prev.totalItem === next.totalItem;
+});
 
-const ListaSuscripciones = ({ item }: any) => {
-    const [isOpen, setIsOpen] = React.useState(true);
-    const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
-    const [loadingClientes, setLoadingClientes] = React.useState(false);
-    const [visible, setVisible] = React.useState(3);
-    const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo.cantidad_suscriptores || 0);
-    if (!cantidadMiembros) return null;
+const normalizeSuscriptoresInline = (item: any) => {
+    if (item.modelo._suscriptoresNormalizados) return;
     let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
     if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
         suscriptores = [suscriptores];
@@ -608,29 +474,43 @@ const ListaSuscripciones = ({ item }: any) => {
         suscriptores = [];
     }
     item.modelo.suscriptores = suscriptores;
-    if (item.modelo.Suscritores) {
-        delete item.modelo.Suscritores;
-    }
+    if (item.modelo.Suscritores) delete item.modelo.Suscritores;
+    item.modelo._suscriptoresNormalizados = true;
+};
+
+const ListaSuscripciones = ({ item }: any) => {
+    const [isOpen, setIsOpen] = React.useState(true);
+    const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
+    const [loadingClientes, setLoadingClientes] = React.useState(false);
+    const [visible, setVisible] = React.useState(3);
+
+    normalizeSuscriptoresInline(item);
+
+    const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo.cantidad_suscriptores || 0);
+    if (!cantidadMiembros) return null;
 
     React.useEffect(() => {
         let mounted = true;
-        if (Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
+        if (item?.modelo && Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
             setClientes(item.modelo.clientes);
             return () => { mounted = false; };
         }
         setLoadingClientes(true);
-        MDL.crm.cliente.getAll()
+        MDL.crm?.cliente?.getAll?.()
             .then((resp: any) => {
-                console.warn("[ProKeybindings] archivo: if (!mounted) sin motivo indicado.");
                 if (!mounted) return;
                 const all = Array.isArray(resp) ? resp : Object.values(resp || {}).filter((c: any) => !!c);
-                setClientes(all);
-                item.modelo.clientes = all;
+                if (Array.isArray(all)) {
+                    setClientes(all);
+                    if (item?.modelo) {
+                        item.modelo.clientes = all;
+                    }
+                }
             })
             .catch(() => { })
             .finally(() => { if (mounted) setLoadingClientes(false); });
         return () => { mounted = false; };
-    }, []);
+    }, [item]);
 
     return (
         <SView style={{ marginTop: 10 }}>
@@ -645,21 +525,21 @@ const ListaSuscripciones = ({ item }: any) => {
             </SView>
             {isOpen && (
                 <SView col={"xs-12"}>
-                    {Array.from({ length: Math.min(visible, cantidadMiembros) }, (_, i) => (
+                    {Array.from({ length: Math.min(Math.max(0, visible || 0), Math.max(0, cantidadMiembros || 0)) }, (_, i) => (
                         <SuscripcionItem
                             key={`suscripcion-${item.modelo.key}-${i}`}
                             index={i}
                             item={item}
-                            suscriptor={item.modelo.suscriptores[i] || null}
+                            suscriptor={item.modelo.suscriptores?.[i] || null}
                             clientes={clientes}
                             loadingClientes={loadingClientes}
                         />
                     ))}
-                    {visible < cantidadMiembros && (
+                    {(visible || 0) < (cantidadMiembros || 0) && (
                         <SView style={{ paddingVertical: 8, alignItems: "center", backgroundColor: STheme.color.card, borderRadius: 4, marginTop: 4 }}
                             onPress={() => setVisible(v => v + 10)}>
                             <SText fontSize={12} color={STheme.color.lightGray}>
-                                {`Mostrar ${Math.min(10, cantidadMiembros - visible)} más (${cantidadMiembros - visible} restantes)`}
+                                {`Mostrar ${Math.min(10, Math.max(0, (cantidadMiembros || 0) - (visible || 0)))} más (${Math.max(0, (cantidadMiembros || 0) - (visible || 0))} restantes)`}
                             </SText>
                         </SView>
                     )}
@@ -669,71 +549,182 @@ const ListaSuscripciones = ({ item }: any) => {
     );
 };
 
-const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }: any) => {
+const ListaReceta = ({ item }: any) => {
+    const [isOpen, setIsOpen] = React.useState(true);
+    const receta = item.modelo?.receta;
+    const cantidadCarrito = item.cantidad || 0;
+    const ingredientes = receta && Array.isArray(receta) ? receta : [];
+
+    const inicializarSelecciones = () => {
+        const selecciones: Record<string, any> = {};
+        if (!Array.isArray(ingredientes)) return selecciones;
+        ingredientes.forEach((ing: any, idx: number) => {
+            const cantidadIngrediente = ing.cantidad || 1;
+            const totalSelectores = cantidadCarrito * cantidadIngrediente;
+            for (let i = 0; i < totalSelectores; i++) {
+                selecciones[`${idx}-${i}`] = ing.opciones?.[0] || null;
+            }
+        });
+        return selecciones;
+    };
+
+    const [selecciones, setSelecciones] = React.useState(inicializarSelecciones());
+
+    const handleSelectOpcion = (key: string, opcion: any) => {
+        setSelecciones(prev => ({
+            ...prev,
+            [key]: opcion
+        }));
+    };
+
+    if (!receta || !Array.isArray(receta) || cantidadCarrito === 0 || ingredientes.length === 0) return null;
+
+    return (
+        <SView style={{ marginTop: 10 }}>
+            <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
+                <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Combo"}</SText>
+                <SView flex />
+                <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{ingredientes.length}{")"}</SText>
+                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
+                    <SIconApp name="Back" fill={STheme.color.lightGray} width={8}
+                        style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+                </SView>
+            </SView>
+            {isOpen && (
+                <SView col={"xs-12"}>
+                    {ingredientes.map((ing: any, idx: number) => {
+                        const cantidadIngrediente = ing.cantidad || 1;
+                        const cantidadCarrito = item.cantidad || 1;
+                        const totalSelectores = cantidadCarrito * cantidadIngrediente;
+                        const opciones = ing.opciones && Array.isArray(ing.opciones) ? ing.opciones : [];
+                        const options = opciones.map((op: any) => ({
+                            label: op.descripcion || "Sin descripción",
+                            value: op.key_modelo || idx,
+                            data: op,
+                            customComponent: (
+                                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
+                                    {op.precio_venta || 0}
+                                </SText>
+                            ),
+                        }));
+
+                        return (
+                            <SView key={idx} style={{ marginBottom: 10 }}>
+                                <SView row style={{ alignItems: "center", gap: 4, marginBottom: 6 }}>
+                                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>
+                                        {ing.descripcion || "Sin descripción"}
+                                    </SText>
+                                    <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>
+                                        ({totalSelectores})
+                                    </SText>
+                                </SView>
+                                {Array.from({ length: totalSelectores }).map((_, i) => {
+                                    const key = `${idx}-${i}`;
+                                    const selectedOpcion = selecciones[key];
+                                    return (
+                                        <SView key={key} style={{ marginBottom: 8 }}>
+                                            <SView style={{
+                                                height: 28, borderRadius: 6,
+                                                backgroundColor: STheme.color.lightGray + "15",
+                                                borderWidth: 1, borderColor: STheme.color.lightGray + "35",
+                                            }}>
+                                                <InputSelector
+                                                    customStyle="erp"
+                                                    placeholder="Elige una opción"
+                                                    options={options}
+                                                    defaultValue={selectedOpcion?.key_modelo || null}
+                                                    onSelect={(selected: any) => handleSelectOpcion(key, selected?.data)}
+                                                />
+                                            </SView>
+                                        </SView>
+                                    );
+                                })}
+                            </SView>
+                        );
+                    })}
+                </SView>
+            )}
+        </SView>
+    );
+};
+
+const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingClientes }: any) => {
     const [fechaInicio, setFechaInicio] = React.useState(suscriptor?.fecha_inicio || "");
     const [fechaFin, setFechaFin] = React.useState(suscriptor?.fecha_fin || "");
     const [cliente, setCliente] = React.useState(suscriptor?.cliente || null);
-    const calcularFechaFin = (fechaInicioValue: string) => {
+
+    const calcularFechaFin = React.useCallback((fechaInicioValue: string) => {
         if (!fechaInicioValue) return "";
         const dias = convertirADias(item.modelo?.duracion_medida, Number(item.modelo?.duracion || 0));
         if (!dias || isNaN(dias)) return "";
         const fecha = new SDate(fechaInicioValue, "yyyy-MM-dd");
         return fecha.addDay(dias - 1).toString("yyyy-MM-dd");
-    };
+    }, [item.modelo?.duracion_medida, item.modelo?.duracion]);
+
     React.useEffect(() => {
         const inicio = suscriptor?.fecha_inicio || "";
-        const fin = suscriptor?.fecha_fin || calcularFechaFin(inicio);
+        const fin = suscriptor?.fecha_fin || (inicio ? calcularFechaFin(inicio) : "");
         setCliente(suscriptor?.cliente || null);
         setFechaInicio(inicio);
         setFechaFin(fin);
-    }, [suscriptor]);
-    const saveSuscriptor = (updates: any) => {
-        let suscriptores = item.modelo.suscriptores || item.modelo.Suscritores || [];
-        if (typeof suscriptores === 'object' && !Array.isArray(suscriptores)) {
-            suscriptores = [suscriptores];
-        } else if (!Array.isArray(suscriptores)) {
-            suscriptores = [];
-        }
-        item.modelo.suscriptores = suscriptores;
-        if (item.modelo.Suscritores) delete item.modelo.Suscritores;
-        const current = item.modelo.suscriptores[index] || {};
-        item.modelo.suscriptores[index] = {
+    }, [suscriptor, calcularFechaFin]);
+
+    const saveSuscriptor = React.useCallback((updates: any) => {
+        if (!item?.modelo?.suscriptores || !Array.isArray(item.modelo.suscriptores)) return;
+        const suscriptores = item.modelo.suscriptores;
+        const current = suscriptores[index] || {};
+        suscriptores[index] = {
             ...current,
-            key: current.key || `suscriptor-${item.modelo.key}-${index}`,
+            key: current.key || `suscriptor-${item.modelo?.key || 'unknown'}-${index}`,
             cliente: updates.cliente !== undefined ? updates.cliente : cliente,
             key_cliente: updates.key_cliente !== undefined ? updates.key_cliente : cliente?.key,
             fecha_inicio: updates.fecha_inicio !== undefined ? updates.fecha_inicio : fechaInicio,
             fecha_fin: updates.fecha_fin !== undefined ? updates.fecha_fin : fechaFin,
         };
-    };
+    }, [index, item?.modelo?.key, cliente, fechaInicio, fechaFin]);
 
-    const onChangeFechaInicio = (value: string) => {
+    const onChangeFechaInicio = React.useCallback((value: string) => {
         const fin = calcularFechaFin(value);
         setFechaInicio(value);
         setFechaFin(fin);
         saveSuscriptor({ fecha_inicio: value, fecha_fin: fin });
-    };
-    const onChangeFechaFin = (value: string) => {
+    }, [calcularFechaFin, saveSuscriptor]);
+
+    const onChangeFechaFin = React.useCallback((value: string) => {
         setFechaFin(value);
         saveSuscriptor({ fecha_fin: value });
-    };
-    const options = clientes.length > 0 ? clientes.map((c: any) => {
-        const clienteData = c?.cliente ? c.cliente : c;
-        return {
-            label: clienteData?.nombres || clienteData?.razon_social || "Sin cliente",
-            value: c?.key || clienteData?.key || "",
-            data: c,
-            customComponent: (
-                <SText fontSize={10} color={STheme.color.lightGray}>
-                    {c?.comision ? `${c.comision} %` : clienteData?.nit ? clienteData?.nit : "Cliente"}
-                </SText>
-            ),
-        };
-    }) : [{ label: loadingClientes ? "Cargando clientes..." : "No hay clientes", value: "", data: null }];
+    }, [saveSuscriptor]);
+
+    const options = React.useMemo(() => {
+        if (clientes.length > 0) {
+            return clientes.map((c: any) => {
+                const clienteData = c?.cliente ? c.cliente : c;
+                return {
+                    label: clienteData?.nombres || clienteData?.razon_social || "Sin cliente",
+                    value: c?.key || clienteData?.key || "",
+                    data: c,
+                    customComponent: (
+                        <SText fontSize={10} color={STheme.color.lightGray}>
+                            {c?.comision ? `${c.comision} %` : clienteData?.nit ? clienteData?.nit : "Cliente"}
+                        </SText>
+                    ),
+                };
+            });
+        }
+        return [{ label: loadingClientes ? "Cargando clientes..." : "No hay clientes", value: "", data: null }];
+    }, [clientes, loadingClientes]);
+
     const hayAlgo = !!cliente || !!fechaInicio || !!fechaFin;
     const clienteError = hayAlgo && !cliente;
     const fechaInicioError = hayAlgo && !fechaInicio;
     const fechaFinError = hayAlgo && !fechaFin;
+
+    const onSelectCliente = React.useCallback((selected: any) => {
+        if (!selected) return;
+        const selectedCliente = selected?.data?.cliente || selected?.data;
+        setCliente(selectedCliente);
+        saveSuscriptor({ cliente: selectedCliente, key_cliente: selected?.value });
+    }, [saveSuscriptor]);
 
     return (
         <SView style={{ marginBottom: 10 }}>
@@ -748,11 +739,7 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
                     placeholder="Selecciona un cliente"
                     options={options}
                     defaultValue={cliente?.key || null}
-                    onSelect={(selected: any) => {
-                        const selectedCliente = selected?.data?.cliente || selected?.data;
-                        setCliente(selectedCliente);
-                        saveSuscriptor({ cliente: selectedCliente, key_cliente: selected?.value });
-                    }}
+                    onSelect={onSelectCliente}
                 />
             </SView>
             <SView row style={{ gap: 8 }}>
@@ -783,28 +770,76 @@ const SuscripcionItem = ({ index, item, suscriptor, clientes, loadingClientes }:
     );
 };
 
-const CostoItem = ({ costo, moneda, totalItem }: any) => {
+const SuscripcionItem = React.memo(SuscripcionItemBase, (prev, next) => {
+    return prev.index === next.index &&
+        prev.suscriptor === next.suscriptor &&
+        prev.clientes === next.clientes &&
+        prev.loadingClientes === next.loadingClientes;
+});
+
+const CostoItemBase = ({ costo, moneda, totalItem }: any) => {
     const [monto, setMonto] = React.useState(costo.monto || 0);
     const [inputValue, setInputValue] = React.useState((costo.monto || 0).toFixed(2));
     const [clienteKey, setClienteKey] = React.useState(costo.key_modelo_cliente || "");
     const [resetKey, setResetKey] = React.useState(0);
-    const setProgrammaticMonto = (nuevoMonto: number) => {
+
+    const setProgrammaticMonto = React.useCallback((nuevoMonto: number) => {
         setMonto(nuevoMonto);
         setInputValue(nuevoMonto.toFixed(2));
         setResetKey(k => k + 1);
         costo.monto = nuevoMonto;
-    };
+    }, [costo]);
+
     React.useEffect(() => {
-        console.warn("[ProKeybindings] archivo: if (!costo.key_modelo_cliente) sin motivo indicado.");
-        if (!costo.key_modelo_cliente) return;
-        const cliente = (costo.clientes || []).find((c: any) => c.key === costo.key_modelo_cliente);
-        console.warn("[ProKeybindings] archivo: if (!cliente) sin motivo indicado.");
+        if (!costo?.key_modelo_cliente) return;
+        const cliente = (costo?.clientes || []).find((c: any) => c?.key === costo.key_modelo_cliente);
         if (!cliente) return;
-        const comision = parseFloat(cliente.comision || "0");
-        setProgrammaticMonto(totalItem * (comision / 100));
-    }, [totalItem, costo.key_modelo_cliente]);
+        const comision = parseFloat(cliente?.comision || "0");
+        if (isNaN(comision)) return;
+        const nuevoMonto = (totalItem || 0) * (comision / 100);
+        if (!isNaN(nuevoMonto)) {
+            setProgrammaticMonto(nuevoMonto);
+        }
+    }, [totalItem, costo?.key_modelo_cliente, costo, setProgrammaticMonto]);
+
     const clienteError = !!monto && !clienteKey;
     const montoError = !!clienteKey && !monto;
+
+    const clienteOptions = React.useMemo(() =>
+        (costo.clientes || []).map((c: any) => ({
+            label: c.cliente?.nombres || c.cliente?.razon_social || c.nombres || "Sin nombre",
+            value: c.key,
+            data: c,
+            customComponent: (
+                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{c.comision} %</SText>
+            ),
+        })),
+        [costo.clientes]);
+
+    const onSelectCliente = React.useCallback((selected: any) => {
+        if (!selected || !costo) return;
+        costo.key_modelo_cliente = selected?.value || "";
+        const clienteNombre = selected?.data?.cliente?.nombres || selected?.data?.nombres || "Cliente";
+        costo.__descripcion = `Costo por ${costo?.descripcion || ""} para ${clienteNombre}`;
+        const comision = parseFloat(selected?.data?.comision || "0");
+        if (!isNaN(comision)) {
+            const nuevoMonto = (totalItem || 0) * (comision / 100);
+            if (!isNaN(nuevoMonto)) {
+                setProgrammaticMonto(nuevoMonto);
+            }
+        }
+        setClienteKey(selected?.value || "");
+    }, [costo, totalItem, setProgrammaticMonto]);
+
+    const onChangeMonto = React.useCallback((e: string) => {
+        if (!e || typeof e !== 'string' || !costo) return;
+        setInputValue(e);
+        const valor = parseFloat(e);
+        if (isNaN(valor)) return;
+        setMonto(valor);
+        costo.monto = valor;
+    }, [costo]);
+
     return (
         <SView style={{ marginBottom: 4 }}>
             <SText fontSize={UI.font.small} color={UI.colors.textMuted} style={{ marginBottom: 1 }}>{costo.descripcion}</SText>
@@ -817,22 +852,9 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                     <InputSelector
                         customStyle="erp"
                         placeholder="Seleccionar cliente"
-                        options={(costo.clientes || []).map((c: any) => ({
-                            label: c.cliente?.nombres || c.cliente?.razon_social || c.nombres || "Sin nombre",
-                            value: c.key,
-                            data: c,
-                            customComponent: (
-                                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>{c.comision} %</SText>
-                            ),
-                        }))}
+                        options={clienteOptions}
                         defaultValue={costo.key_modelo_cliente || null}
-                        onSelect={(selected: any) => {
-                            costo.key_modelo_cliente = selected.value;
-                            costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente?.nombres}`;
-                            const comision = parseFloat(selected.data.comision || "0");
-                            setProgrammaticMonto(totalItem * (comision / 100));
-                            setClienteKey(selected.value);
-                        }}
+                        onSelect={onSelectCliente}
                     />
                 </SView>
                 <SView style={{
@@ -849,12 +871,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                                 type="money"
                                 style={{ fontSize: UI.font.small, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 defaultValue={inputValue}
-                                onChangeText={(e: string) => {
-                                    setInputValue(e);
-                                    const valor = parseFloat(e) || 0;
-                                    setMonto(valor);
-                                    costo.monto = valor;
-                                }}
+                                onChangeText={onChangeMonto}
                             />
                         </SView>
                     </SView>
@@ -863,3 +880,9 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
         </SView>
     );
 };
+
+const CostoItem = React.memo(CostoItemBase, (prev, next) => {
+    return prev.costo === next.costo &&
+        prev.moneda === next.moneda &&
+        prev.totalItem === next.totalItem;
+});
