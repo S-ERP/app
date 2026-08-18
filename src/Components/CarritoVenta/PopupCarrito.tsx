@@ -580,7 +580,7 @@ const ListaReceta = ({ item }: any) => {
     return (
         <SView style={{ marginTop: 10 }}>
             <SView row style={{ borderColor: STheme.color.lightGray, borderBottomWidth: 1, paddingBottom: 4, marginBottom: 4, alignItems: "center", }} onPress={() => setIsOpen(!isOpen)}>
-                <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Receta"}</SText>
+                <SText fontSize={UI.font.small} bold color={STheme.color.text}>{"Combo"}</SText>
                 <SView flex />
                 <SText fontSize={UI.font.tiny} color={STheme.color.text}>{" ("}{ingredientes.length}{")"}</SText>
                 <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center", marginLeft: 4 }}>
