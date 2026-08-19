@@ -17,6 +17,13 @@ import FiltroSelector from './Components/FiltroSelector';
 import PopupDesgloseTipoCosto from './Components/PopupDesgloseTipoCosto';
 import FormularioTipoProducto from '../Components/FormularioTipoProducto';
 import PopupAgregarMarca from '../marca/Components/PopupAgregarMarca';
+const formatPrice = (value) => {
+	const num = (value ?? 0).toFixed(5);
+	const [integer, decimal] = num.split('.');
+	const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+	return `${formattedInteger},${decimal}`;
+};
+
 export default class table extends Component {
 	constructor(props) {
 		super(props);
@@ -484,13 +491,13 @@ export default class table extends Component {
 					dataType="number"
 					sumExcel
 					data={(e) => e.row?.precio_compra ?? ""}
-					format={e => (e.data ? SMath.formatMoney(e.data, 5) : '')}
+					format={e => (e.data ? formatPrice(e.data) : '')}
 					customComponent={e => {
 						return (
 							<>
 								{(e.data) ?
 									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
-										<SText color={"#4120ff"} fontSize={13} numberOfLines={0}>  {e.row?.precio_compra ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data, 5)}  </SText>
+										<SText color={"#4120ff"} fontSize={13} numberOfLines={0}>  {e.row?.precio_compra ? e.row?.venta_moneda?.observacion : ""} {formatPrice(e.data)}  </SText>
 									</SView> : null}
 							</>
 						);
@@ -503,13 +510,13 @@ export default class table extends Component {
 					dataType="number"
 					sumExcel
 					data={(e) => e.row?.precio_venta ?? ""}
-					format={e => (e.data ? SMath.formatMoney(e.data, 5) : '')}
+					format={e => (e.data ? formatPrice(e.data) : '')}
 					customComponent={e => {
 						return (
 							<>
 								{(e.data) ?
 									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
-										<SText color={STheme.color.success} fontSize={13} numberOfLines={0}>  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data, 5)}  </SText>
+										<SText color={STheme.color.success} fontSize={13} numberOfLines={0}>  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""} {formatPrice(e.data)}  </SText>
 									</SView> : null}
 							</>
 						);
