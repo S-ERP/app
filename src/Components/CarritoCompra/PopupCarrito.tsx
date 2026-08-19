@@ -277,6 +277,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                             ref={inputPrecioRef}
                                             name="precio"
                                             type="money"
+                                            decimals={5}
                                             style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: STheme.color.text }}
                                             defaultValue={precioFormateado}
                                             onChangeText={(e) => {
