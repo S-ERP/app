@@ -125,7 +125,7 @@ export default class table extends Component {
 		);
 	}
 	render() {
-		return <SPage title={"Modelos"} disableScroll>
+		return <SPage title={"Modedddlos"} disableScroll>
 			<SView row col={"xs-12"} style={{
 				backgroundColor: "transparent",
 				borderBottomWidth: 1,
@@ -484,13 +484,13 @@ export default class table extends Component {
 					dataType="number"
 					sumExcel
 					data={(e) => e.row?.precio_compra ?? ""}
-					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data, 5) : '')}
 					customComponent={e => {
 						return (
 							<>
 								{(e.data) ?
 									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
-										<SText color={"#4120ff"} fontSize={13} numberOfLines={0}>  {e.row?.precio_compra ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data)}  </SText>
+										<SText color={"#4120ff"} fontSize={13} numberOfLines={0}>  {e.row?.precio_compra ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data, 5)}  </SText>
 									</SView> : null}
 							</>
 						);
@@ -503,13 +503,13 @@ export default class table extends Component {
 					dataType="number"
 					sumExcel
 					data={(e) => e.row?.precio_venta ?? ""}
-					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data, 5) : '')}
 					customComponent={e => {
 						return (
 							<>
 								{(e.data) ?
 									<SView center row style={{ justifyContent: "flex-end", paddingHorizontal: 4 }}>
-										<SText color={STheme.color.success} fontSize={13} numberOfLines={0}>  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data)}  </SText>
+										<SText color={STheme.color.success} fontSize={13} numberOfLines={0}>  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""} {SMath.formatMoney(e.data, 5)}  </SText>
 									</SView> : null}
 							</>
 						);
