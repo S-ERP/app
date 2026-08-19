@@ -7,7 +7,6 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import MDL from "../../MDL";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-import InputSelector from "../Selectores/InputSelector";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
@@ -132,7 +131,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     <SGradient colors={[colorVenta, "#1b5e20"]} deg={120} />
                     <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center", }}>
                         <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}> <SText fontSize={UI.font.icon}>🛒</SText> </SView>
-                        <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrito de Ventas"}</SText>
+                        <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carritsssso de Ventas"}</SText>
                         <SView flex />
                         <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center", }} onPress={() => SPopup.close("PopupCarrito")} > <SText fontSize={UI.font.tiny} bold color={STheme.color.white}>{"✕"}</SText> </SView>
                     </SView>
@@ -441,7 +440,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
                 </SView>
             </SView>
-            {/* <ListaReceta item={item} /> */}
+            <ListaReceta item={item} />
             <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad} />
             <ListaSuscripciones item={item} />
         </SView>
@@ -580,13 +579,6 @@ const ListaReceta = ({ item }: any) => {
 
     const [selecciones, setSelecciones] = React.useState(inicializarSelecciones());
 
-    const handleSelectOpcion = (key: string, opcion: any) => {
-        setSelecciones(prev => ({
-            ...prev,
-            [key]: opcion
-        }));
-    };
-
     if (!receta || !Array.isArray(receta) || cantidadCarrito === 0 || ingredientes.length === 0) return null;
 
     return (
@@ -630,22 +622,12 @@ const ListaReceta = ({ item }: any) => {
                                 </SView>
                                 {Array.from({ length: totalSelectores }).map((_, i) => {
                                     const key = `${idx}-${i}`;
-                                    const selectedOpcion = selecciones[key];
+                                    const selectedOpcion = selecciones[key] || opciones[0];
                                     return (
                                         <SView key={key} style={{ marginBottom: 8 }}>
-                                            <SView style={{
-                                                height: 28, borderRadius: 6,
-                                                backgroundColor: STheme.color.lightGray + "15",
-                                                borderWidth: 1, borderColor: STheme.color.lightGray + "35",
-                                            }}>
-                                                <InputSelector
-                                                    customStyle="erp"
-                                                    placeholder="Elige una opción"
-                                                    options={options}
-                                                    defaultValue={selectedOpcion?.key_modelo || null}
-                                                    onSelect={(selected: any) => handleSelectOpcion(key, selected?.data)}
-                                                />
-                                            </SView>
+                                            <SText fontSize={UI.font.small} color={STheme.color.text}>
+                                                {selectedOpcion?.descripcion || "Sin descripción"}
+                                            </SText>
                                         </SView>
                                     );
                                 })}
