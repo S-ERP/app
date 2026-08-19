@@ -6,6 +6,13 @@ import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
+const formatPrice = (value) => {
+	const num = (value ?? 0).toFixed(5);
+	const [integer, decimal] = num.split('.');
+	const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+	return `${formattedInteger},${decimal}`;
+};
+
 const sorters = [
     { key: "tipo_producto_tipo", order: "asc", type: "string" },
     { key: "descripcion", order: "asc", type: "string" } // asumí que "nombre" es "descripcion"
@@ -124,7 +131,7 @@ export default class Modelo extends Component {
                                 const tipoCambioProducto = producto.venta_moneda?.tipo_cambio || 1;
                                 const tipoCambioSeleccionada = selectedMoneda?.tipo_cambio || 1;
                                 const precioConvertido = producto.precio_compra * (tipoCambioProducto / tipoCambioSeleccionada);
-                                const precioFormateado = SMath.formatMoney(precioConvertido, 5);
+                                const precioFormateado = formatPrice(precioConvertido);
                                 const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : "Bs";
                                 return (
                                     <SView
