@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
-import { SForm, SHr, SLoad, SMath, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
+import { SForm, SHr, SLoad, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import Btn from '../../empresa/config/Components/Btn';
@@ -381,12 +381,10 @@ export default class FormularioModelo extends Component<Props> {
                         },
                         "precio_compra": {
                             col: "xs-5.5 sm-3",
-                            // defaultValue: (!this.props.editObject?.precio_compra ? "" : SMath.formatMoney(parseFloat(this.props.editObject?.precio_compra ?? 0), 6)),
-                            defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
-                            // defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
+                            defaultValue: (!this.props.editObject?.precio_compra ? "" : this.props.editObject?.precio_compra),
                             icon: <SIconApp name='Egreso' width={20} />,
-                            label: "Precioss compra", placeholder: "0,00",
-                            type: "money",
+                            label: "Precio compra est", placeholder: "0,00000",
+                            type: "money", decimals: 5,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.focus("precio_venta");
                             }
@@ -410,8 +408,8 @@ export default class FormularioModelo extends Component<Props> {
                             col: "xs-5.5 sm-3",
                             style: { left: 4, },
                             icon: <SIconApp name='Ingreso' width={20} />,
-                            defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
-                            label: "Precio venta", placeholder: "0,00", type: "money",
+                            defaultValue: (!this.props.editObject?.precio_venta ? "" : this.props.editObject?.precio_venta),
+                            label: "Precio venta", placeholder: "0,00000", type: "money", decimals: 5,
                         },
                         "precio_venta_moneda": {
                             col: "xs-12 sm-2.5",
@@ -469,8 +467,8 @@ export default class FormularioModelo extends Component<Props> {
                             activo: data.activo ? 1 : 0,
                             observacion: data.observacion,
                             barcode: data.barcode,
-                            precio_compra: parseFloat(data.precio_compra ?? 0),
-                            precio_venta: parseFloat(data.precio_venta ?? 0),
+                            precio_compra: parseFloat(data.precio_compra?.toString().replace(',', '.') ?? 0),
+                            precio_venta: parseFloat(data.precio_venta?.toString().replace(',', '.') ?? 0),
                             key_cuenta_contable_inventario: this.state.key_cuenta_contable_inventario,
                             // aqui estoy dejando pasar duracion medida y suscriptores vacio
                             duracion: parseInt(data.duracion ?? "0"),
