@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dimensions } from 'react-native';
-import { SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-component';
+import { SNotification, SScrollView2, SText, STheme, SView, SMath } from 'servisofts-component';
 import MDL from '../../../MDL';
 import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
@@ -124,7 +124,7 @@ export default class Modelo extends Component {
                                 const tipoCambioProducto = producto.venta_moneda?.tipo_cambio || 1;
                                 const tipoCambioSeleccionada = selectedMoneda?.tipo_cambio || 1;
                                 const precioConvertido = producto.precio_compra * (tipoCambioProducto / tipoCambioSeleccionada);
-                                const precioFormateado = Number.isInteger(precioConvertido) ? precioConvertido.toString() : precioConvertido.toFixed(2);
+                                const precioFormateado = SMath.formatMoney(precioConvertido, 5);
                                 const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : "Bs";
                                 return (
                                     <SView
