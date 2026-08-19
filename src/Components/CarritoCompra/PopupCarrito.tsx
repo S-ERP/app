@@ -283,13 +283,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                         <SInput2
                                             ref={inputPrecioRef}
                                             name="precio"
+                                            type="money"
                                             decimals={5}
                                             style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: STheme.color.text }}
                                             defaultValue={precioFormateado}
                                             onChangeText={(e) => {
-                                                const formatted = formatPrice(parseFloat(e.toString().replace(/[.,]/g, (m) => m === ',' ? '.' : m)) || 0);
-                                                setPrecioStr(formatted);
-                                                const n = parseFloat(e.toString().replace(/[.,]/g, (m) => m === ',' ? '.' : m)) || 0;
+                                                setPrecioStr(e);
+                                                const n = parseFloat(e.toString().replace(',', '.')) || 0;
                                                 setPrecio(n);
                                                 if (modelo) {
                                                     modelo.precio_compra_moneda = moneda ? n * (moneda.tipo_cambio || 1) : n;
