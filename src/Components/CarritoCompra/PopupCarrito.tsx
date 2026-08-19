@@ -10,6 +10,13 @@ import { ColorCompraVenta } from "../../Config/theme";
 
 const colorCompra = ColorCompraVenta.compra;
 
+const formatPrice = (value: number) => {
+    const num = (value ?? 0).toFixed(5);
+    const [integer, decimal] = num.split('.');
+    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${formattedInteger},${decimal}`;
+};
+
 type PopupCarritoProps = {}
 const UI = {
     font: { icon: 18, title: 16, subtitle: 14, small: 12, tiny: 10 },
@@ -185,13 +192,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         return precioBase * (tipoCambioVenta / tipoCambioSeleccionada);
     };
     const [precio, setPrecio] = React.useState(calcularPrecio);
-    const [precioStr, setPrecioStr] = React.useState(() => (calcularPrecio() ?? 0).toFixed(2));
+    const [precioStr, setPrecioStr] = React.useState(() => formatPrice(calcularPrecio() ?? 0));
     const [imgError, setImgError] = React.useState(false);
     const inputPrecioRef = React.useRef<SInput2Class>(null);
     React.useEffect(() => {
         const p = calcularPrecio();
         setPrecio(p);
-        const str = (p ?? 0).toFixed(2);
+        const str = formatPrice(p ?? 0);
         setPrecioStr(str);
         inputPrecioRef.current?.setValue(str);
     }, [monedaKey, precioBase]);
@@ -203,7 +210,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             </SView>
         );
     }
-    const precioFormateado = (precio ?? 0).toFixed(2);
+    const precioFormateado = formatPrice(precio ?? 0);
     const subtotalStr = SMath.formatMoney(precio * (item.cantidad ?? 0));
     const subtotalLargo = precioStr.replace(/[^0-9]/g, '').length > 8;
     const formatFecha = (dateStr: string) => {
@@ -276,13 +283,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                         <SInput2
                                             ref={inputPrecioRef}
                                             name="precio"
-                                            type="money"
                                             decimals={5}
                                             style={{ fontSize: UI.font.small, textAlign: "right", paddingRight: 0, color: STheme.color.text }}
                                             defaultValue={precioFormateado}
                                             onChangeText={(e) => {
-                                                setPrecioStr(e);
-                                                const n = parseFloat(e) || 0;
+                                                const formatted = formatPrice(parseFloat(e.toString().replace(/[.,]/g, (m) => m === ',' ? '.' : m)) || 0);
+                                                setPrecioStr(formatted);
+                                                const n = parseFloat(e.toString().replace(/[.,]/g, (m) => m === ',' ? '.' : m)) || 0;
                                                 setPrecio(n);
                                                 if (modelo) {
                                                     modelo.precio_compra_moneda = moneda ? n * (moneda.tipo_cambio || 1) : n;
