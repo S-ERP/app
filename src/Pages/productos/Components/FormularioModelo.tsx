@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
-import { SForm, SHr, SLoad, SNotification, SPopup, SText, STheme, SView, Upload, SMath } from 'servisofts-component';
+import { SForm, SHr, SLoad, SMath, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import Btn from '../../empresa/config/Components/Btn';
@@ -286,7 +286,7 @@ export default class FormularioModelo extends Component<Props> {
                             col: "xs-12",
                             defaultValue: this.props.editObject ? !!this.props.editObject?.activo : true,
                             label: <SView row center>
-                                <SText fontSize={16}>Activar en Ventas</SText>
+                                <SText fontSize={16}>Activar en Ventadds</SText>
                                 <SView width={8} />
                                 <ToolTips type="info" small descripcion='Al desactivar esta opción, este modelo dejará de estar disponible en el punto de venta para los cajeros.' />
                             </SView>,
@@ -381,9 +381,12 @@ export default class FormularioModelo extends Component<Props> {
                         },
                         "precio_compra": {
                             col: "xs-5.5 sm-3",
-                            defaultValue: (!this.props.editObject?.precio_compra ? "" : SMath.formatMoney(parseFloat(this.props.editObject?.precio_compra ?? 0), 6)),
+                            // defaultValue: (!this.props.editObject?.precio_compra ? "" : SMath.formatMoney(parseFloat(this.props.editObject?.precio_compra ?? 0), 6)),
+                            defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
+                            // defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
                             icon: <SIconApp name='Egreso' width={20} />,
-                            label: "Precio compra est", placeholder: "0,00", type: "text", 
+                            label: "Precioss compra", placeholder: "0,00",
+                            type: "money",
                             onSubmitEditing: () => {
                                 if (this.form) this.form.focus("precio_venta");
                             }
@@ -407,8 +410,8 @@ export default class FormularioModelo extends Component<Props> {
                             col: "xs-5.5 sm-3",
                             style: { left: 4, },
                             icon: <SIconApp name='Ingreso' width={20} />,
-                            defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(5).replace('.', ',')),
-                            label: "Precio venta", placeholder: "0,00000", type: "text",
+                            defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
+                            label: "Precio venta", placeholder: "0,00", type: "money",
                         },
                         "precio_venta_moneda": {
                             col: "xs-12 sm-2.5",
@@ -466,8 +469,8 @@ export default class FormularioModelo extends Component<Props> {
                             activo: data.activo ? 1 : 0,
                             observacion: data.observacion,
                             barcode: data.barcode,
-                            precio_compra: parseFloat((data.precio_compra ?? 0).toString().replace(',', '.')),
-                            precio_venta: parseFloat((data.precio_venta ?? 0).toString().replace(',', '.')),
+                            precio_compra: parseFloat(data.precio_compra ?? 0),
+                            precio_venta: parseFloat(data.precio_venta ?? 0),
                             key_cuenta_contable_inventario: this.state.key_cuenta_contable_inventario,
                             // aqui estoy dejando pasar duracion medida y suscriptores vacio
                             duracion: parseInt(data.duracion ?? "0"),
