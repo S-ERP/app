@@ -381,9 +381,9 @@ export default class FormularioModelo extends Component<Props> {
                     },
                     "precio_compra": {
                         col: "xs-5.5 sm-3",
-                        defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
+                        defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(5).replace('.', ',')),
                         icon: <SIconApp name='Egreso' width={20} />,
-                        label: "Precio compra", placeholder: "0,00", type: "money",
+                        label: "Precio compra", placeholder: "0,00000", type: "text",
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("precio_venta");
                         }
@@ -407,8 +407,8 @@ export default class FormularioModelo extends Component<Props> {
                         col: "xs-5.5 sm-3",
                         style: { left: 4, },
                         icon: <SIconApp name='Ingreso' width={20} />,
-                        defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
-                        label: "Precio venta", placeholder: "0,00", type: "money",
+                        defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(5).replace('.', ',')),
+                        label: "Precio venta", placeholder: "0,00000", type: "text",
                     },
                     "precio_venta_moneda": {
                         col: "xs-12 sm-2.5",
