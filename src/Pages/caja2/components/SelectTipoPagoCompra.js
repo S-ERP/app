@@ -186,7 +186,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 backgroundColor: STheme.color.card, borderWidth: 1, borderColor: headerColor,
                                 borderRadius: 4, paddingHorizontal: 1, height: 32, justifyContent: "center"
                             }}>
-                                <SText bold style={{ marginRight: 2 }} color={headerColor}> {item?.moneda?.observacion ?? "BS"} </SText>
+                                <SText bold style={{ marginRight: 2 }} color={headerColor}>alv {item?.moneda?.observacion ?? "BS"} </SText>
                                 <SView flex row>
                                     <SInput2 ref={ref => item.__ref = ref} autoFocus name={`monto_${item.key}`} type="money"
                                         style={{ width: "100%", textAlign: "right", fontSize: 14, }}
