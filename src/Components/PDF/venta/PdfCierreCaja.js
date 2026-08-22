@@ -337,11 +337,13 @@ export default class PdfCierreCaja {
     }
 
     static async imprimirPDF(key_caja) {
+        console.log("📥 Iniciando carga de datos para caja:", key_caja);
         const [cajaRaw, usuarios, empresa] = await Promise.all([
             MDL.caja.getByKey(key_caja),
             MDL.usuario.getAll(),
             MDL.empresa.getFull()
         ]);
+        console.log("✅ Datos cargados - cajaRaw:", cajaRaw);
 
         const sucursal = empresa?.sucursales.find(s => s.key === cajaRaw.key_sucursal);
         const monedas = empresa?.monedas || [];
@@ -353,6 +355,7 @@ export default class PdfCierreCaja {
             cajero: usuarios[cajaRaw.key_usuario]
         };
 
+        console.log("📥 Cargando movimientos, tipo_pago y detalle...");
         const [movimientosRaw, empresa_tipo_pago, rawDetalle] = await Promise.all([
             MDL.caja.getDetalle(key_caja),
             MDL.caja.empresa_tipo_pago_getAll(),
@@ -363,6 +366,7 @@ export default class PdfCierreCaja {
                 key_caja
             )
         ]);
+        console.log("✅ Movimientos cargados:", movimientosRaw.length, "items");
 
 
 
@@ -417,7 +421,11 @@ export default class PdfCierreCaja {
         empresa_tipo_pago_pv.sort((a, b) =>
             (a.tipo_pago?.orden || 0) - (b.tipo_pago?.orden || 0)
         );
-        const apertura = Number(cajaRaw.monto_apertura) || 0;
+        console.log("🔍 Buscando movimiento de apertura en:", movimientosRaw.map(m => ({ tipo: m.tipo, monto: m.monto })));
+        const movimientoApertura = movimientosRaw.find(m => m.tipo === "apertura");
+        console.log("✅ Movimiento apertura encontrado:", movimientoApertura);
+        const apertura = movimientoApertura ? Number(movimientoApertura.monto) : (Number(cajaRaw.monto_apertura) || 0);
+        console.log("💰 Monto apertura final:", apertura);
 
         let ventas = {};
         let egresos = 0;
@@ -469,13 +477,17 @@ export default class PdfCierreCaja {
 
         const resumen = [];
 
+        console.log("📋 Construyendo resumen...");
+        console.log("1️⃣ Agregando Apertura:", { label: "Apertura", value: apertura, moneda: moneda_base?.observacion });
         resumen.push({
             label: "Apertura",
             value: apertura,
             moneda: moneda_base
         });
 
+        console.log("2️⃣ Ventas por tipo:", ventas);
         Object.keys(ventas).forEach(k => {
+            console.log(`  - Ventas ${k}: ${ventas[k]}`);
             resumen.push({
                 label: `Ventas ${k}`,
                 value: ventas[k],
@@ -483,6 +495,7 @@ export default class PdfCierreCaja {
             });
         });
 
+        console.log("3️⃣ Egresos:", egresos);
         if (egresos !== 0) {
             resumen.push({
                 label: "Traspaso a banca",
@@ -492,6 +505,9 @@ export default class PdfCierreCaja {
         }
 
         const total = resumen.reduce((sum, i) => sum + (Number(i.value) || 0), 0);
+
+        console.log("4️⃣ Total calculado:", total);
+        console.log("📊 Resumen completo:", resumen.map(r => ({ label: r.label, value: r.value, formatted: formatCurrency(r.value, r.moneda?.observacion) })));
 
         resumen.push({
             label: "Total",
