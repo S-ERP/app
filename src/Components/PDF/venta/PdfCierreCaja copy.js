@@ -103,7 +103,8 @@ export default class PdfCierreCaja {
     }
 
     static detalleMovimientos(movimientos) {
-        return movimientos.map((mov, i) => (
+        const movimientosFiltered = movimientos.filter(mov => mov.tipo_ !== "apertura");
+        return movimientosFiltered.map((mov, i) => (
             <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", marginBottom: 6 }}>
                 <SPDF.View style={{ flex: 1 }}>
                     <SPDF.Text style={text}>{mov.hora}</SPDF.Text>
@@ -309,6 +310,10 @@ export default class PdfCierreCaja {
         let egresos = 0;
 
         movimientos.forEach(m => {
+            if (m.tipo === "apertura") {
+                console.log("⏭️ Saltando movimiento de apertura");
+                return;
+            }
             if (m.monto > 0) {
                 ventas[m.tipo] = (ventas[m.tipo] || 0) + m.monto;
             } else {
