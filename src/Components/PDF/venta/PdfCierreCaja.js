@@ -13,7 +13,7 @@ const line = { width: "100%", height: 1.5, backgroundColor: "#DDDDDD" };
 
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const formatCurrency = (val = 0, simbolo = '') => {
-    const [integer, decimal] = toNumber(val).toFixed(2).split('.');
+    const [integer, decimal] = toNumber(val).toFixed(5).split('.');
     const intStr = parseInt(integer, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     return simbolo ? `${intStr},${decimal} ${simbolo}` : `${intStr},${decimal}`;
 };
@@ -256,9 +256,7 @@ export default class PdfCierreCaja {
         return (
             <SPDF.View style={{ width: "100%" }}>
                 <SPDF.View style={{ height: 20 }} />
-                <SPDF.Text style={{ ...label, fontSize: 12 }}>
-                    Ventas en Caja
-                </SPDF.Text>
+                <SPDF.Text style={{ ...label, fontSize: 12 }}>Ventas en Caja</SPDF.Text>
                 {PdfCierreCaja.espacio(10)}
                 {lista
                     // .filter(item => item.detalle != null)
@@ -513,7 +511,7 @@ export default class PdfCierreCaja {
             >
                 {PdfCierreCaja.Cajero(caja)}
                 {PdfCierreCaja.espacio(8)}
-                <SPDF.View style={{ width: "100%", alignItems: "center" }}> <SPDF.Text style={{ ...label, fontSize: 12 }}> Detalle de Transacciones </SPDF.Text> </SPDF.View>
+                <SPDF.View style={{ width: "100%", alignItems: "center" }}> <SPDF.Text style={{ ...label, fontSize: 12 }}> Detalle ded Transacciones </SPDF.Text> </SPDF.View>
                 {PdfCierreCaja.espacio(8)}
                 {PdfCierreCaja.linea()}
                 {PdfCierreCaja.espacio(8)}
