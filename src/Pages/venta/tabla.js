@@ -13,6 +13,7 @@ import PopupUploadFactura from './Components/PopupUploadFactura';
 import { Linking } from 'react-native'
 import FechaFullFilter from '../../Components/FechaFullFilter';
 import PButtom from '../../Components/PButtom';
+import PopupSuscriptor from './profile2/Components/PopupSuscriptor';
 
 const TIPO_PRODUCTO_MAP = {
 	servicio: { color: "#2563eb", label: "Servicio" },
@@ -515,7 +516,7 @@ export default class tabla extends Component {
 								key: popupKey,
 								content: (
 									<SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 400, maxWidth: "100%" }} padding={16} withoutFeedback>
-										<SText fontSize={18}  col={"xs-12"} center bold>Anular venta</SText>
+										<SText fontSize={18} col={"xs-12"} center bold>Anular venta</SText>
 										<SHr height={12} />
 										<SText fontSize={13} color={STheme.color.text + "99"}>Complete los siguientes datos para continuar con la anulación de la venta.</SText>
 										<SHr height={16} />
@@ -824,6 +825,38 @@ export default class tabla extends Component {
 						</SView>
 					}}
 				/>
+
+				<DinamicTable.Col
+					key="suscripcion"
+					label="Suscripción"
+					width={120}
+					height={60}
+					data={(e) => e.row ?? ""}
+					customComponent={(e) => {
+						let data = null;
+						let servicio = null;
+						console.log("dataaa", e.row);
+						data = e.row?.detalles?.filter(d => d?.data?.tipo_producto === "servicio");
+						
+						console.log("dataaa2", data);
+						if (data && data.length === 1) {
+							console.log("data", data);
+							servicio = data[0];
+							data[0].cliente = e.row?.cliente;
+						}
+
+						console.log("dataCompleto", servicio);
+						if (servicio === null) return null;
+
+						return <SView row center onPress={() => {
+							console.log("Abrir suscripcion", e.row);
+							PopupSuscriptor.open({ data: servicio, })
+						}}>
+							<SView backgroundColor={STheme.color.warning} style={{ borderRadius: 4, padding: 4 }} center>
+								<SText color={STheme.color.text} fontSize={12}>Añadir</SText>
+							</SView>
+						</SView>
+					}} />
 
 				<DinamicTable.Col
 					key="factura_seleccionada"

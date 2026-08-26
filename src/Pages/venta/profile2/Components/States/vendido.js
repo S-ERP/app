@@ -247,6 +247,7 @@ export default class vendido extends Component {
                 </SView>
                 <Separador1 />
                 <Detalle data={this.data} disabled onPress={(data) => {
+                    console.log("DETALLE", data)
                     PopupSuscriptor.open({ data: data, })
                 }} />
                 <Separador1 />
