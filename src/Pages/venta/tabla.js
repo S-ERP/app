@@ -763,7 +763,7 @@ export default class tabla extends Component {
 					}}
 				/>
 
-				<DinamicTable.Col key="cliente" label="Cliente" width={100} height={60} data={(e) => e.row?.cliente?.nombres ?? ""}
+				<DinamicTable.Col key="cliente" label="Cliente" width={150} height={60} data={(e) => e.row?.cliente?.nombres ?? ""}
 					customComponent={e => {
 						const nombre = e.row?.cliente?.nombres || "";
 						const avatarSize = e.filterList ? 16 : 21;
@@ -835,6 +835,7 @@ export default class tabla extends Component {
 					customComponent={(e) => {
 						let data = null;
 						let servicio = null;
+						let titulo = "Añadir";
 						console.log("dataaa", e.row);
 						data = e.row?.detalles?.filter(d => d?.data?.tipo_producto === "servicio");
 						
@@ -843,17 +844,24 @@ export default class tabla extends Component {
 							console.log("data", data);
 							servicio = data[0];
 							data[0].cliente = e.row?.cliente;
+							console.log(data[0]?.suscriptores)
+							if (data[0]?.suscriptores.length > 0) {
+								titulo = "Ver";
+							}
 						}
 
 						console.log("dataCompleto", servicio);
 						if (servicio === null) return null;
 
+
+
 						return <SView row center onPress={() => {
 							console.log("Abrir suscripcion", e.row);
 							PopupSuscriptor.open({ data: servicio, })
+							this.DinamicTable?.loadData();
 						}}>
 							<SView backgroundColor={STheme.color.warning} style={{ borderRadius: 4, padding: 4 }} center>
-								<SText color={STheme.color.text} fontSize={12}>Añadir</SText>
+								<SText color={STheme.color.text} fontSize={12}>{titulo}</SText>
 							</SView>
 						</SView>
 					}} />

@@ -571,12 +571,6 @@ const SelectorCliente = ({ cliente, onSelect }) => {
             setState({ clientes });
         });
     }, []);
-    React.useEffect(() => {
-        if (cliente?.key) {
-            onSelect({ value: cliente.key, label: cliente.nombres ?? "-" });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cliente?.key]);
     return (
         <SView style={{ width: "100%", height: 40, backgroundColor: STheme.color.card }}>
             <InputSelector
