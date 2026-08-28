@@ -145,6 +145,19 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data || {});
   }
+  async getSuscripcionesByCliente(key_cliente: string) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "suscripcion",
+      type: "getByKeyCliente",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+      key_cliente: key_cliente,
+    });
+    const data = resp?.data;
+    return Array.isArray(data) ? data : Object.values(data || {});
+  }
   async saveModeloCliente(modelo_cliente: {
     key?: string,
     key_cliente: string,

@@ -97,3 +97,7 @@ curl --location --request GET '192.168.2.1:30051/api' \
     "key_campana": "890dcea2-fbeb-4683-a333-2ecac9b26d97"
     }'
 ```
+
+
+
+

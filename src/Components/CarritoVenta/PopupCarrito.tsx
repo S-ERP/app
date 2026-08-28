@@ -8,6 +8,7 @@ import SIconApp from "../../Assets/SIconApp";
 import MDL from "../../MDL";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
+import InputSelector from "../Selectores/InputSelector";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
 
@@ -54,19 +55,90 @@ const normalizeSuscriptores = (item: any) => {
 
 type CampoIncompletoSusc = { itemDesc: string; index: number } | null;
 
-const validarSuscripcionesParcialesItems = (items: any[]): CampoIncompletoSusc => {
+// Obligatorio: TODOS los slots de miembros deben estar completos (cliente + fecha_inicio + fecha_fin).
+const validarSuscripcionesCompletasItems = (items: any[]): CampoIncompletoSusc => {
     for (const item of items) {
         const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo?.cantidad_suscriptores || 0);
         if (!cantidadMiembros) continue;
         const suscriptores = normalizeSuscriptores(item);
         for (let i = 0; i < cantidadMiembros; i++) {
             const s = suscriptores[i];
-            const hayAlgo = !!(s?.cliente || s?.key_cliente || s?.fecha_inicio || s?.fecha_fin);
             const completo = !!(s?.key_cliente || s?.cliente?.key) && !!s?.fecha_inicio && !!s?.fecha_fin;
-            if (hayAlgo && !completo) return { itemDesc: item.modelo?.descripcion ?? "un producto", index: i };
+            if (!completo) return { itemDesc: item.modelo?.descripcion ?? "un producto", index: i };
         }
     }
     return null;
+};
+
+// yyyy-MM-dd sin importar si viene como fecha o timestamp ("2026-08-03T04:00:00.000Z")
+const toYmd = (v: any): string => {
+    if (!v) return "";
+    if (typeof v === "string") return v.length >= 10 ? v.slice(0, 10) : v;
+    try { return new SDate(v).toString("yyyy-MM-dd"); } catch { return ""; }
+};
+const hoyYmd = () => new SDate().toString("yyyy-MM-dd");
+
+// Cache de modelo->tipo_producto (para filtrar suscripciones del mismo tipo)
+let __modeloTipoMapPromise: Promise<Record<string, string>> | null = null;
+const getModeloTipoMap = (): Promise<Record<string, string>> => {
+    if (!__modeloTipoMapPromise) {
+        __modeloTipoMapPromise = (async () => {
+            try {
+                const modelos: any = await MDL.inventario.getAllModelo();
+                const list = Array.isArray(modelos) ? modelos : Object.values(modelos || {});
+                const map: Record<string, string> = {};
+                list.forEach((m: any) => { if (m?.key) map[m.key] = m?.key_tipo_producto; });
+                return map;
+            } catch { return {}; }
+        })();
+    }
+    return __modeloTipoMapPromise;
+};
+
+// Sin cache: consulta fresca al servidor en cada selección para recalcular siempre.
+const getSubsCliente = (key_cliente: string): Promise<any[]> => {
+    return MDL.inventario.getSuscripcionesByCliente(key_cliente).catch(() => []);
+};
+
+// Calcula la fecha de inicio encadenada para un cliente y un item:
+//  - sin cobertura activa del mismo tipo_producto -> hoy
+//  - con cobertura activa (fecha_fin >= hoy)       -> fin + 1 dia
+// Considera suscripciones ya registradas y los OTROS slots ya cargados en el carrito.
+// Excluye el slot actual (item + index) para no anclarse en su propio valor previo.
+const calcularInicioEncadenado = async (key_cliente: string, item: any, index?: number): Promise<string> => {
+    const hoy = hoyYmd();
+    if (!key_cliente) return hoy;
+    const tipoActual = item?.modelo?.key_tipo_producto;
+    let anchor: string | null = null;
+    const considerar = (fin?: string, estado?: number) => {
+        if (estado != null && Number(estado) <= 0) return;
+        const f = toYmd(fin);
+        if (f && f >= hoy && (!anchor || f > anchor)) anchor = f;
+    };
+    try {
+        const [subs, tipoMap] = await Promise.all([getSubsCliente(key_cliente), getModeloTipoMap()]);
+        (subs || []).forEach((s: any) => {
+            const km = s?.producto?.key_modelo;
+            const tipo = tipoMap[km];
+            if (tipoActual && tipo && tipo !== tipoActual) return; // distinto tipo_producto
+            considerar(s?.fecha_fin, s?.estado);
+        });
+    } catch { }
+    // Encadenado con OTROS slots ya cargados en el carrito (mismo cliente + mismo tipo).
+    try {
+        const items = (MDL as any).carrito?.carrito_venta?.items || [];
+        items.forEach((it: any) => {
+            if (tipoActual && it?.modelo?.key_tipo_producto !== tipoActual) return;
+            (it?.modelo?.suscriptores || []).forEach((s: any, sIdx: number) => {
+                if (it === item && sIdx === index) return; // excluir el slot actual
+                const kc = s?.key_cliente || s?.cliente?.key;
+                if (kc !== key_cliente) return;
+                considerar(s?.fecha_fin);
+            });
+        });
+    } catch { }
+    if (anchor) return new SDate(anchor, "yyyy-MM-dd").addDay(1).toString("yyyy-MM-dd");
+    return hoy;
 };
 
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
@@ -229,11 +301,11 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 return;
                             }
 
-                            const suscError = validarSuscripcionesParcialesItems(items);
+                            const suscError = validarSuscripcionesCompletasItems(items);
                             if (suscError) {
                                 SNotification.send({
-                                    title: "Miembro incompleto",
-                                    body: `El miembro ${suscError.index + 1} de "${suscError.itemDesc}" tiene campos sin completar. Completá todos los datos o borrálos.`,
+                                    title: "Datos de miembro requeridos",
+                                    body: `Completá el cliente y las fechas del miembro ${suscError.index + 1} de "${suscError.itemDesc}". Todos los miembros son obligatorios.`,
                                     color: STheme.color.danger,
                                     time: 6000,
                                 });
@@ -487,39 +559,59 @@ const normalizeSuscriptoresInline = (item: any) => {
     item.modelo._suscriptoresNormalizados = true;
 };
 
+// Store reactivo compartido de clientes: se refresca fresco al abrir (refleja altas/bajas
+// externas) y notifica en vivo a todos los selectores cuando se crea uno inline.
+const keyDe = (c: any) => c?.key || c?.cliente?.key || "";
+const clientesStore = (() => {
+    let list: any[] = [];
+    const subs = new Set<() => void>();
+    const notify = () => subs.forEach(fn => { try { fn(); } catch { } });
+    const normalize = (resp: any) => (Array.isArray(resp) ? resp : Object.values(resp || {})).filter(Boolean);
+    return {
+        getList: () => list,
+        subscribe(fn: () => void) { subs.add(fn); return () => { subs.delete(fn); }; },
+        async refresh() {
+            try {
+                const resp = await MDL.crm?.cliente?.getAll?.();
+                list = normalize(resp);
+                notify();
+            } catch { /* mantenemos la lista previa */ }
+            return list;
+        },
+        add(c: any) {
+            const k = keyDe(c);
+            if (!k || list.some((x: any) => keyDe(x) === k)) return;
+            list = [...list, c];
+            notify();
+        },
+        remove(key: string) {
+            const before = list.length;
+            list = list.filter((x: any) => keyDe(x) !== key);
+            if (list.length !== before) notify();
+        },
+    };
+})();
+
 const ListaSuscripciones = ({ item }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
-    const [clientes, setClientes] = React.useState<any[]>(Array.isArray(item.modelo.clientes) ? item.modelo.clientes : []);
-    const [loadingClientes, setLoadingClientes] = React.useState(false);
+    const [clientes, setClientes] = React.useState<any[]>(clientesStore.getList());
+    const [loadingClientes, setLoadingClientes] = React.useState(clientesStore.getList().length === 0);
     const [visible, setVisible] = React.useState(3);
 
     normalizeSuscriptoresInline(item);
 
     const cantidadMiembros = Number(item.cantidad || 0) * Number(item.modelo.cantidad_suscriptores || 0);
-    if (!cantidadMiembros) return null;
 
     React.useEffect(() => {
-        let mounted = true;
-        if (item?.modelo && Array.isArray(item.modelo.clientes) && item.modelo.clientes.length > 0) {
-            setClientes(item.modelo.clientes);
-            return () => { mounted = false; };
-        }
-        setLoadingClientes(true);
-        MDL.crm?.cliente?.getAll?.()
-            .then((resp: any) => {
-                if (!mounted) return;
-                const all = Array.isArray(resp) ? resp : Object.values(resp || {}).filter((c: any) => !!c);
-                if (Array.isArray(all)) {
-                    setClientes(all);
-                    if (item?.modelo) {
-                        item.modelo.clientes = all;
-                    }
-                }
-            })
-            .catch(() => { })
-            .finally(() => { if (mounted) setLoadingClientes(false); });
-        return () => { mounted = false; };
-    }, [item]);
+        const unsub = clientesStore.subscribe(() => setClientes(clientesStore.getList()));
+        if (clientesStore.getList().length === 0) setLoadingClientes(true);
+        clientesStore.refresh().finally(() => setLoadingClientes(false));
+        return unsub;
+    }, []);
+
+    const handleClienteCreado = React.useCallback((c: any) => { clientesStore.add(c); }, []);
+
+    if (!cantidadMiembros) return null;
 
     return (
         <SView style={{ marginTop: 10 }}>
@@ -542,6 +634,7 @@ const ListaSuscripciones = ({ item }: any) => {
                             suscriptor={item.modelo.suscriptores?.[i] || null}
                             clientes={clientes}
                             loadingClientes={loadingClientes}
+                            onClienteCreado={handleClienteCreado}
                         />
                     ))}
                     {(visible || 0) < (cantidadMiembros || 0) && (
@@ -640,16 +733,22 @@ const ListaReceta = ({ item }: any) => {
     );
 };
 
-const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingClientes }: any) => {
+const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingClientes, onClienteCreado }: any) => {
     const [fechaInicio, setFechaInicio] = React.useState(suscriptor?.fecha_inicio || "");
     const [fechaFin, setFechaFin] = React.useState(suscriptor?.fecha_fin || "");
     const [cliente, setCliente] = React.useState(suscriptor?.cliente || null);
 
     const calcularFechaFin = React.useCallback((fechaInicioValue: string) => {
         if (!fechaInicioValue) return "";
-        const dias = convertirADias(item.modelo?.duracion_medida, Number(item.modelo?.duracion || 0));
-        if (!dias || isNaN(dias)) return "";
+        const medida = item.modelo?.duracion_medida;
+        const cantidad = Number(item.modelo?.duracion || 0);
+        if (!cantidad || isNaN(cantidad)) return "";
         const fecha = new SDate(fechaInicioValue, "yyyy-MM-dd");
+        // "meses"/"años" -> calendario (ej. 1 mes: 26 -> 26). Resto -> inicio + (dias - 1).
+        if (medida === "meses") return fecha.addMonth(cantidad).toString("yyyy-MM-dd");
+        if (medida === "anos" || medida === "años") return fecha.addYear(cantidad).toString("yyyy-MM-dd");
+        const dias = convertirADias(medida, cantidad);
+        if (!dias || isNaN(dias)) return "";
         return fecha.addDay(dias - 1).toString("yyyy-MM-dd");
     }, [item.modelo?.duracion_medida, item.modelo?.duracion]);
 
@@ -711,12 +810,39 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
     const fechaInicioError = hayAlgo && !fechaInicio;
     const fechaFinError = hayAlgo && !fechaFin;
 
-    const onSelectCliente = React.useCallback((selected: any) => {
+    const onSelectCliente = React.useCallback(async (selected: any) => {
         if (!selected) return;
         const selectedCliente = selected?.data?.cliente || selected?.data;
+        const key_cliente = selected?.value || selectedCliente?.key;
         setCliente(selectedCliente);
-        saveSuscriptor({ cliente: selectedCliente, key_cliente: selected?.value });
-    }, [saveSuscriptor]);
+        saveSuscriptor({ cliente: selectedCliente, key_cliente });
+        // Cálculo automático de fechas (encadenado) al seleccionar el miembro
+        try {
+            const inicio = await calcularInicioEncadenado(key_cliente, item, index);
+            const fin = calcularFechaFin(inicio);
+            setFechaInicio(inicio);
+            setFechaFin(fin);
+            saveSuscriptor({ cliente: selectedCliente, key_cliente, fecha_inicio: inicio, fecha_fin: fin });
+        } catch { }
+    }, [saveSuscriptor, item, index, calcularFechaFin]);
+
+    // Crear cliente inline cuando no existe (escribe el nombre y elige "+ Registrar ...")
+    const onCreateCliente = React.useCallback(async (texto: string) => {
+        const nombre = (texto || "").trim();
+        if (!nombre) throw new Error("Nombre vacío");
+        const resp: any = await MDL.crm.cliente.registrar({
+            razon_social: nombre,
+            nombres: nombre,
+            key_empresa: MDL.empresa.select?.key,
+        } as any);
+        if (!resp?.key) {
+            SNotification.send({ title: "Error", body: "No se pudo crear el cliente.", color: STheme.color.danger, time: 3000 });
+            throw new Error("No se pudo crear el cliente");
+        }
+        onClienteCreado?.(resp);
+        SNotification.send({ title: "Cliente creado", body: nombre, time: 2000, color: STheme.color.success });
+        return { label: resp?.nombres || resp?.razon_social || nombre, value: resp.key, data: resp };
+    }, [onClienteCreado]);
 
     return (
         <SView style={{ marginBottom: 10 }}>
@@ -728,10 +854,11 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
             }}>
                 <InputSelector
                     customStyle="erp"
-                    placeholder="Selecciona un cliente"
+                    placeholder="Selecciona o escribe para crear"
                     options={options}
                     defaultValue={cliente?.key || null}
                     onSelect={onSelectCliente}
+                    onCreate={onCreateCliente}
                 />
             </SView>
             <SView row style={{ gap: 8 }}>
@@ -741,7 +868,7 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
                     borderWidth: 1, borderColor: fechaInicioError ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
                 }}>
                     <SInput style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }} type="date"
-                        icon={<SText width={50} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"F. Inicio"}</SText>}
+                        icon={<SText width={50} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"Desde"}</SText>}
                         value={fechaInicio}
                         onChangeText={onChangeFechaInicio}
                     />
@@ -752,7 +879,7 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
                     borderWidth: 1, borderColor: fechaFinError ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
                 }}>
                     <SInput style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }} type="date"
-                        icon={<SText width={40} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"F. Fin"}</SText>}
+                        icon={<SText width={40} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"Hasta"}</SText>}
                         value={fechaFin}
                         onChangeText={onChangeFechaFin}
                     />

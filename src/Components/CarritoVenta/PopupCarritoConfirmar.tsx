@@ -64,7 +64,44 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.cargarMonedaSeleccionada();
         this.cargarClientes();
         this.cargarDescuentos();
+        this.prefillClienteMiembro();
         (globalThis as any).document?.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    // Último cliente elegido en los slots de miembros (suscripción) del carrito.
+    getUltimoClienteMiembro() {
+        try {
+            const items = MDL.carrito.carrito_venta?.items || [];
+            let encontrado: any = null;
+            items.forEach((it: any) => {
+                const susc = it?.modelo?.suscriptores || [];
+                susc.forEach((s: any) => {
+                    const c = s?.cliente;
+                    const key = s?.key_cliente || c?.key;
+                    if (key) encontrado = (c && c.key) ? c : { key, ...(c || {}) };
+                });
+            });
+            return encontrado;
+        } catch { return null; }
+    }
+
+    // Carga por defecto el cliente de la venta con el último miembro seleccionado (editable).
+    prefillClienteMiembro() {
+        if (this.state.key_cliente) return;
+        const c = this.getUltimoClienteMiembro();
+        if (!c?.key) return;
+        const nombre = (c?.razon_social || c?.nombres || "").trim();
+        if (!nombre) return;
+        // Aseguramos que el cliente esté en la lista para que setValue -> onChangeText lo resuelva.
+        this.setState((prev: any) => {
+            const clientes = prev.clientes || [];
+            const existe = clientes.some((x: any) => x?.key === c.key);
+            return existe ? null : { clientes: [...clientes, c] };
+        }, () => {
+            this.proveedor = c;
+            // setValue escribe el texto y dispara onChangeText (que setea key_cliente, razon_social, nit).
+            this.inputCliente?.setValue?.(nombre);
+        });
     }
     componentWillUnmount(): void {
         this._mounted = false;
