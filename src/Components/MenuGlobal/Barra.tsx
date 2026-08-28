@@ -260,6 +260,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Asistencias"} url={"/asistencias"} />
                         <Page label={"Registrar asistencia"} url={"/asistencia"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Dashboard"} url={"/asistencia/dashboard"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>{/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
                 </ScrollView>
