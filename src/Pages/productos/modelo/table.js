@@ -132,7 +132,7 @@ export default class table extends Component {
 		);
 	}
 	render() {
-		return <SPage title={"Modedddlos"} disableScroll>
+		return <SPage title={"Modelos"} disableScroll>
 			<SView row col={"xs-12"} style={{
 				backgroundColor: "transparent",
 				borderBottomWidth: 1,
@@ -353,6 +353,18 @@ export default class table extends Component {
 
 				<DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
 
+				<DinamicTable.Col key={"activo"} label='Estado' width={70}
+					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+					data={(e) => e.row.activo == null ? "" : (e.row.activo ? "Activo" : "Inactivo")}
+					customComponent={e => {
+						if (e.row.activo == null) return;
+						const color = e.row.activo ? "#017aff" : STheme.color.danger;
+						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: color + "99", borderWidth: 1, borderColor: color }}>
+							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+						</SView>
+					}}
+				/>
+				
 				<DinamicTable.Col key="nombre" label="Nombre" headerStyle={{ paddingLeft: 4 }} width={190} height={60}
 					data={(e) => e.row.descripcion ?? ""}
 					customComponent={e => {
@@ -376,6 +388,9 @@ export default class table extends Component {
 						);
 					}}
 				/>
+
+
+
 				<DinamicTable.Col key="ingrediente" label="Ingrediente" width={180}
 					wrap
 					textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
@@ -577,17 +592,7 @@ export default class table extends Component {
 
 				<DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
 
-				<DinamicTable.Col key={"activo"} label='Estado' width={70}
-					cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
-					data={(e) => e.row.activo == null ? "" : (e.row.activo ? "Activo" : "Inactivo")}
-					customComponent={e => {
-						if (e.row.activo == null) return;
-						const color = e.row.activo ? "#017aff" : STheme.color.danger;
-						return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: color + "99", borderWidth: 1, borderColor: color }}>
-							<SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
-						</SView>
-					}}
-				/>
+
 
 				<DinamicTable.Col
 					key={"contactos_"}

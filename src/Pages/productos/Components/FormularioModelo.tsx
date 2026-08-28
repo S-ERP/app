@@ -286,7 +286,7 @@ export default class FormularioModelo extends Component<Props> {
                             col: "xs-12",
                             defaultValue: this.props.editObject ? !!this.props.editObject?.activo : true,
                             label: <SView row center>
-                                <SText fontSize={16}>Activar en Ventadds</SText>
+                                <SText fontSize={16}>Activar en Ventas</SText>
                                 <SView width={8} />
                                 <ToolTips type="info" small descripcion='Al desactivar esta opción, este modelo dejará de estar disponible en el punto de venta para los cajeros.' />
                             </SView>,

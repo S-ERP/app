@@ -7,9 +7,17 @@ type Props = {
     onSuccess?: () => void
 }
 
-export default class PopupRegistrarAsistencia extends Component<Props> {
+type State = {
+    clientes: any[],
+    sucursales: any[],
+    resultado: any,
+    paquete: any,
+    selectedSucursal: any,
+}
+
+export default class PopupRegistrarAsistencia extends Component<Props, State> {
     form: SForm | undefined;
-    state = {
+    state: State = {
         clientes: [],
         sucursales: [],
         resultado: null,
@@ -45,7 +53,20 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
     loadDataSucursales = async () => {
         const empresa = await MDL.empresa.getFull();
         const sucursales = empresa?.sucursales ? Object.values(empresa.sucursales) : [];
-        this.setState({ sucursales });
+        this.setState({ sucursales }, () => this.preseleccionarSucursalCaja());
+    };
+
+    // Si hay una caja abierta, dejar seleccionada por defecto su sucursal.
+    preseleccionarSucursalCaja = async () => {
+        try {
+            const caja = MDL.caja.activa ?? await MDL.caja.getActiva();
+            const key_sucursal = caja?.key_sucursal;
+            if (!key_sucursal) return;
+            const selected = this.state.sucursales.find((s: any) => s.key === key_sucursal);
+            if (selected) this.setState({ selectedSucursal: selected });
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     loadClientes = async () => {
@@ -125,8 +146,14 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
         return await MDL.empresa.getAllSucursales();
     }
 
-    registrarAsistencia = () => {
-        if (!this.state.resultado || !this.state.paquete || !this.state.selectedSucursal) {
+    registrarAsistencia = (data: any = {}) => {
+        // Resuelve la sucursal desde el valor del form o desde la caja activa como respaldo.
+        const sucursalForm = data?.sucursal
+            ? this.state.sucursales.find((s: any) => s.descripcion === data.sucursal)
+            : null;
+        const sucursal = sucursalForm ?? this.state.selectedSucursal;
+
+        if (!this.state.resultado || !this.state.paquete || !sucursal) {
             SNotification.send({
                 key: "Asistencia",
                 title: "Datos incompletos",
@@ -137,11 +164,15 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
             return;
         }
 
+        const fecha = data?.fecha || new Date().toISOString().split("T")[0];
+        const hora = data?.hora || `${new Date().getHours().toString().padStart(2, "0")}:${new Date().getMinutes().toString().padStart(2, "0")}`;
+
         const dataFormateada = {
             key_cliente: this.state.resultado.key,
             key_suscripcion: this.state.paquete.key,
-            key_sucursal: this.state.selectedSucursal.key,
-            key_empresa: MDL.empresa.select.key
+            key_sucursal: sucursal.key,
+            key_empresa: MDL.empresa.select.key,
+            fecha_on: `${fecha} ${hora}:00`,
         };
 
         SNotification.send({ key: "AsistenciaLoading", title: "Registrando asistencia", body: "Por favor espere...", color: STheme.color.info, time: 0 });
@@ -267,6 +298,7 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                                 ref={ref => this.form = ref}
                                                 row
                                                 style={{ justifyContent: "space-between" }}
+                                                onSubmit={(data: any) => this.registrarAsistencia(data)}
                                                 inputs={{
                                                     fecha: {
                                                         col: "xs-5.5", label: "Fecha", type: "date", defaultValue: new Date().toISOString().split("T")[0],
@@ -291,6 +323,8 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                                         type: "select2",
                                                         label: "Sucursal",
                                                         placeholder: "Selecciona una sucursal",
+                                                        isRequired: true,
+                                                        defaultValue: this.state.selectedSucursal?.descripcion,
                                                         options: this.state.sucursales.map(s => s.descripcion),
                                                         onChangeText: (text) => {
                                                             const selected = this.state.sucursales.find(s => s.descripcion === text);
@@ -302,7 +336,7 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                             <SHr height={8} />
                                             {this.state.paquete && (
                                                 <SView col="xs-12">
-                                                    <SView width={"100%"} height={40} center backgroundColor={"#292929"} onPress={this.registrarAsistencia} style={{ borderRadius: 4 }}>
+                                                    <SView width={"100%"} height={40} center backgroundColor={"#292929"} onPress={() => this.form?.submit()} style={{ borderRadius: 4 }}>
                                                         <SText color={STheme.color.white} bold>Registrar asistencia</SText>
                                                     </SView>
                                                 </SView>
