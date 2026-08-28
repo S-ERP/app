@@ -1,6 +1,6 @@
 import React from "react";
 
-import { FlatList, Image } from "react-native";
+import { Animated, FlatList, Image } from "react-native";
 import { SDate, SGradient, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 
@@ -11,6 +11,7 @@ import SInput2, { SInput2Class } from "../SForm2/SInput2";
 import InputSelector from "../Selectores/InputSelector";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 const colorVenta = "#2e7d32";
+const colorAdvertencia = "#EAB308"; // amarillo para avisos (no es un error)
 
 type PopupCarritoProps = {}
 const UI = {
@@ -76,7 +77,7 @@ const toYmd = (v: any): string => {
     if (typeof v === "string") return v.length >= 10 ? v.slice(0, 10) : v;
     try { return new SDate(v).toString("yyyy-MM-dd"); } catch { return ""; }
 };
-const hoyYmd = () => new SDate().toString("yyyy-MM-dd");
+const hoyYmd = (): string => String(new SDate().toString("yyyy-MM-dd"));
 
 // Cache de modelo->tipo_producto (para filtrar suscripciones del mismo tipo)
 let __modeloTipoMapPromise: Promise<Record<string, string>> | null = null;
@@ -105,9 +106,10 @@ const getSubsCliente = (key_cliente: string): Promise<any[]> => {
 //  - con cobertura activa (fecha_fin >= hoy)       -> fin + 1 dia
 // Considera suscripciones ya registradas y los OTROS slots ya cargados en el carrito.
 // Excluye el slot actual (item + index) para no anclarse en su propio valor previo.
-const calcularInicioEncadenado = async (key_cliente: string, item: any, index?: number): Promise<string> => {
+type ResultadoInicio = { inicio: string; vigenteHasta: string | null };
+const calcularInicioEncadenado = async (key_cliente: string, item: any, index?: number): Promise<ResultadoInicio> => {
     const hoy = hoyYmd();
-    if (!key_cliente) return hoy;
+    if (!key_cliente) return { inicio: hoy, vigenteHasta: null };
     const tipoActual = item?.modelo?.key_tipo_producto;
     let anchor: string | null = null;
     const considerar = (fin?: string, estado?: number) => {
@@ -137,8 +139,8 @@ const calcularInicioEncadenado = async (key_cliente: string, item: any, index?: 
             });
         });
     } catch { }
-    if (anchor) return new SDate(anchor, "yyyy-MM-dd").addDay(1).toString("yyyy-MM-dd");
-    return hoy;
+    if (anchor) return { inicio: String(new SDate(anchor, "yyyy-MM-dd").addDay(1).toString("yyyy-MM-dd")), vigenteHasta: anchor };
+    return { inicio: hoy, vigenteHasta: null };
 };
 
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
@@ -304,9 +306,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             const suscError = validarSuscripcionesCompletasItems(items);
                             if (suscError) {
                                 SNotification.send({
-                                    title: "Datos de miembro requeridos",
-                                    body: `Completá el cliente y las fechas del miembro ${suscError.index + 1} de "${suscError.itemDesc}". Todos los miembros son obligatorios.`,
-                                    color: STheme.color.danger,
+                                    title: "Falta seleccionar el miembro",
+                                    body: `Seleccioná el cliente y las fechas del miembro ${suscError.index + 1} de "${suscError.itemDesc}". Todos los miembros son obligatorios.`,
+                                    color: colorAdvertencia,
                                     time: 6000,
                                 });
                                 console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
@@ -733,10 +735,50 @@ const ListaReceta = ({ item }: any) => {
     );
 };
 
+// Parpadeo mientras `active` (campo obligatorio vacío) para llamar la atención.
+const useBlink = (active: boolean) => {
+    const anim = React.useRef(new Animated.Value(0)).current;
+    React.useEffect(() => {
+        if (!active) { anim.stopAnimation(); anim.setValue(0); return; }
+        const loop = Animated.loop(
+            Animated.sequence([
+                Animated.timing(anim, { toValue: 1, duration: 550, useNativeDriver: false }),
+                Animated.timing(anim, { toValue: 0, duration: 550, useNativeDriver: false }),
+            ])
+        );
+        loop.start();
+        return () => loop.stop();
+    }, [active, anim]);
+    return anim;
+};
+
+// Contenedor de campo obligatorio: borde/fondo rojo parpadeante si `error`, normal si no.
+const CampoObligatorio = ({ error, flex, style, children }: any) => {
+    const anim = useBlink(!!error);
+    const base: any = { borderRadius: 6, borderWidth: 1, ...(flex ? { flex: 1 } : null), ...(style || {}) };
+    if (!error) {
+        return (
+            <SView style={{ ...base, backgroundColor: STheme.color.lightGray + "15", borderColor: STheme.color.lightGray + "35" }}>
+                {children}
+            </SView>
+        );
+    }
+    return (
+        <Animated.View style={{
+            ...base,
+            backgroundColor: anim.interpolate({ inputRange: [0, 1], outputRange: [STheme.color.danger + "12", STheme.color.danger + "55"] }),
+            borderColor: anim.interpolate({ inputRange: [0, 1], outputRange: [STheme.color.danger + "40", STheme.color.danger] }),
+        }}>
+            {children}
+        </Animated.View>
+    );
+};
+
 const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingClientes, onClienteCreado }: any) => {
     const [fechaInicio, setFechaInicio] = React.useState(suscriptor?.fecha_inicio || "");
     const [fechaFin, setFechaFin] = React.useState(suscriptor?.fecha_fin || "");
     const [cliente, setCliente] = React.useState(suscriptor?.cliente || null);
+    const [vigenteHasta, setVigenteHasta] = React.useState<string | null>(null);
 
     const calcularFechaFin = React.useCallback((fechaInicioValue: string) => {
         if (!fechaInicioValue) return "";
@@ -758,6 +800,7 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
         setCliente(suscriptor?.cliente || null);
         setFechaInicio(inicio);
         setFechaFin(fin);
+        setVigenteHasta(null);
     }, [suscriptor, calcularFechaFin]);
 
     const saveSuscriptor = React.useCallback((updates: any) => {
@@ -805,10 +848,10 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
         return [{ label: loadingClientes ? "Cargando clientes..." : "No hay clientes", value: "", data: null }];
     }, [clientes, loadingClientes]);
 
-    const hayAlgo = !!cliente || !!fechaInicio || !!fechaFin;
-    const clienteError = hayAlgo && !cliente;
-    const fechaInicioError = hayAlgo && !fechaInicio;
-    const fechaFinError = hayAlgo && !fechaFin;
+    // El cliente del miembro es obligatorio: se marca en rojo mientras no se seleccione.
+    const clienteError = !cliente;
+    const fechaInicioError = !fechaInicio;
+    const fechaFinError = !fechaFin;
 
     const onSelectCliente = React.useCallback(async (selected: any) => {
         if (!selected) return;
@@ -818,10 +861,11 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
         saveSuscriptor({ cliente: selectedCliente, key_cliente });
         // Cálculo automático de fechas (encadenado) al seleccionar el miembro
         try {
-            const inicio = await calcularInicioEncadenado(key_cliente, item, index);
+            const { inicio, vigenteHasta: vh } = await calcularInicioEncadenado(key_cliente, item, index);
             const fin = calcularFechaFin(inicio);
             setFechaInicio(inicio);
             setFechaFin(fin);
+            setVigenteHasta(vh);
             saveSuscriptor({ cliente: selectedCliente, key_cliente, fecha_inicio: inicio, fecha_fin: fin });
         } catch { }
     }, [saveSuscriptor, item, index, calcularFechaFin]);
@@ -847,11 +891,7 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
     return (
         <SView style={{ marginBottom: 10 }}>
             <SText fontSize={UI.font.tiny} bold color={STheme.color.text} style={{ marginBottom: 2 }}> {"Miembro "}{index + 1} </SText>
-            <SView style={{
-                height: 22, borderRadius: 6, marginBottom: 6,
-                backgroundColor: clienteError ? STheme.color.danger + "18" : STheme.color.lightGray + "15",
-                borderWidth: 1, borderColor: clienteError ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
-            }}>
+            <CampoObligatorio error={clienteError} style={{ height: 22, marginBottom: 6 }}>
                 <InputSelector
                     customStyle="erp"
                     placeholder="Selecciona o escribe para crear"
@@ -860,31 +900,28 @@ const SuscripcionItemBase = ({ index, item, suscriptor, clientes, loadingCliente
                     onSelect={onSelectCliente}
                     onCreate={onCreateCliente}
                 />
-            </SView>
+            </CampoObligatorio>
             <SView row style={{ gap: 8 }}>
-                <SView flex style={{
-                    height: 22, borderRadius: 6,
-                    backgroundColor: fechaInicioError ? STheme.color.danger + "18" : STheme.color.lightGray + "15",
-                    borderWidth: 1, borderColor: fechaInicioError ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
-                }}>
+                <CampoObligatorio error={fechaInicioError} flex style={{ height: 22 }}>
                     <SInput style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }} type="date"
-                        icon={<SText width={50} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"Desde"}</SText>}
+                        icon={<SText width={40} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"Desde"}</SText>}
                         value={fechaInicio}
                         onChangeText={onChangeFechaInicio}
                     />
-                </SView>
-                <SView flex style={{
-                    height: 22, borderRadius: 6,
-                    backgroundColor: fechaFinError ? STheme.color.danger + "18" : STheme.color.lightGray + "15",
-                    borderWidth: 1, borderColor: fechaFinError ? STheme.color.danger + "50" : STheme.color.lightGray + "35",
-                }}>
+                </CampoObligatorio>
+                <CampoObligatorio error={fechaFinError} flex style={{ height: 22 }}>
                     <SInput style={{ height: 20, fontSize: UI.font.small, padding: 0, paddingLeft: 4 }} type="date"
                         icon={<SText width={40} fontSize={UI.font.tiny} numberOfLines={1} color={STheme.color.text} style={{ marginLeft: 4 }}>{"Hasta"}</SText>}
                         value={fechaFin}
                         onChangeText={onChangeFechaFin}
                     />
-                </SView>
+                </CampoObligatorio>
             </SView>
+            {vigenteHasta ? (
+                <SText fontSize={UI.font.tiny} color={colorAdvertencia} style={{ marginTop: 3 }}>
+                    {`Su suscripción activa vence el ${new SDate(vigenteHasta, "yyyy-MM-dd").toString("dd/MM/yyyy")}. La nueva inicia al día siguiente.`}
+                </SText>
+            ) : null}
         </SView>
     );
 };

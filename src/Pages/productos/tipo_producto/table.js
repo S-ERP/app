@@ -37,6 +37,12 @@ export default class table extends Component {
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}
                 loadData={this.loadData.bind(this)}
+                loadInitialState={async () => ({
+                    groupers: [{
+                        key: "tipo",
+                        type: "string"
+                    }]
+                })}
                 selectType='single'
                 onSelect={e => {
                     FloatMenu.open({
@@ -156,8 +162,8 @@ const ImageLabel = (props) => {
         alignItems: "center",
     }}>
         <SView style={{
-            width: 30,
-            height: 30,
+            width: 25,
+            height: 25,
             borderRadius: 4,
             overflow: "hidden",
             backgroundColor: STheme.color.card + "66",

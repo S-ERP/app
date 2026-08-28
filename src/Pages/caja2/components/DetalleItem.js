@@ -313,7 +313,7 @@ export default class DetalleItem extends Component {
       <SView center style={{ position: "absolute", right: 0, top: 4, opacity: anulado ? 0.45 : 1 }}>
         <SView center>
           <SText fontSize={18} bold color={color}>
-            {moneda?.observacion} {SMath.formatMoney(monto, 5)}
+            {moneda?.observacion} {SMath.formatMoney(monto, 2)}
           </SText>
         </SView>
       </SView>
