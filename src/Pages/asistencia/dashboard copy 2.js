@@ -70,7 +70,7 @@ export default class Dashboard extends React.Component {
                 name: (!r.key_sucursal || r.key_sucursal === "sin")
                     ? "Sin sucursal"
                     : (sucursalNombre[r.key_sucursal] || "Sucursal ?"),
-                total: Number(r.suscripciones || 0),
+                total: Number(r.suscriptores || 0),
             }));
 
             const porPaquete = (rep.por_paquete || []).map((r) => ({
@@ -156,7 +156,7 @@ export default class Dashboard extends React.Component {
                                 <SView col={"xs-12"} row style={{ flexWrap: "wrap" }}>
                                     <SView col={"xs-12 md-7"} padding={8}>
                                         <SView style={cardStyle}>
-                                            <SText bold fontSize={14}>Suscripciones activas por sucursal</SText>
+                                            <SText bold fontSize={14}>Suscriptores activos por sucursal</SText>
                                             <SHr height={12} />
                                             <BarraRechartsBd
                                                 data={porSucursal}

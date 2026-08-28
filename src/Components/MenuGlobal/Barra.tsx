@@ -83,7 +83,7 @@ export default class Barra extends React.Component {
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
 
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
-                        <Page label={"Tipos de cliente"} url={"/tipo_cliente"}  />
+                        <Page label={"Tipos de cliente"} url={"/tipo_cliente"} />
                     </Page>
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
@@ -127,9 +127,9 @@ export default class Barra extends React.Component {
                         <Page label={"Historial de Cajas"} url={"/caja/reporte_cajas"} permiso="reporteHistorial" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Historial mis Cajas"} url={"/caja/reporte_mis_cajas"} permiso="reporteMiHistorial" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Movimientos de Cajas"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-                        <Page label={"Informe Caja"} url={"/caja/ventas_caja"} permiso="reporteInforme" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
-                        <Page label={"Detalle Caja"} url={"/caja/detalle_caja"} permiso="reporteDetalle" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
-                        <Page label={"Ventas anuladas caja"} url={"/caja/anuladas_caja"} permiso="reporteAnuladas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />}  />
+                        <Page label={"Informe Caja"} url={"/caja/ventas_caja"} permiso="reporteInforme" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Detalle Caja"} url={"/caja/detalle_caja"} permiso="reporteDetalle" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Ventas anuladas caja"} url={"/caja/anuladas_caja"} permiso="reporteAnuladas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
 
 
                         <Page label={"Pagos QR"} url={"/solicitud_qr/table"} permiso="pagosqr" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
@@ -258,9 +258,11 @@ export default class Barra extends React.Component {
                         permiso_url="/asistencia"
                         icon={<ImagePage key_page="d73efd88-89f5-461c-8bb2-b634d835883b" />}
                     >
+                        <Page label={"Dashboard"} url={"/asistencia/dashboard"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Asistencias"} url={"/asistencias"} />
                         <Page label={"Registrar asistencia"} url={"/asistencia"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-                        <Page label={"Dashboard"} url={"/asistencia/dashboard"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Suscriptores"} url={"/suscriptores"} permiso="ver" />
+
                     </Page>{/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
                 </ScrollView>
