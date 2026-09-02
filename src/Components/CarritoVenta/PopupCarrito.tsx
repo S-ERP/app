@@ -260,7 +260,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             const items = MDL.carrito.carrito_venta.items;
                             const itemConPrecioInvalido = items.find(it => {
                                 const precio = (it?.modelo as any)?.precio_venta_moneda || (it?.modelo as any)?.precio_venta || 0;
-                                return precio <= 0;
+                                return precio < 0;
                             });
                             if (itemConPrecioInvalido) {
                                 SNotification.send({
