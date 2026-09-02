@@ -205,7 +205,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     <SGradient colors={[colorVenta, "#1b5e20"]} deg={120} />
                     <SView row style={{ paddingHorizontal: 14, paddingVertical: 10, alignItems: "center", }}>
                         <SView style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center", marginRight: 8 }}> <SText fontSize={UI.font.icon}>🛒</SText> </SView>
-                        <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carritsssso de Ventas"}</SText>
+                        <SText fontSize={UI.font.title} bold color={STheme.color.white}>{"Carrito de Ventas"}</SText>
                         <SView flex />
                         <SView style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.colors.danger, justifyContent: "center", alignItems: "center", }} onPress={() => SPopup.close("PopupCarrito")} > <SText fontSize={UI.font.tiny} bold color={STheme.color.white}>{"✕"}</SText> </SView>
                     </SView>
