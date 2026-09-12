@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { SView, SPage, SHr, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation, SNotification } from 'servisofts-component';
+import { SView, SPage, SHr, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation, SNotification, SSwitch } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
@@ -20,6 +20,7 @@ export default class reporteMoviminetos extends Component {
 			fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
 			fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
 			data: [],
+			mostrarAnuladas: true,
 		};
 		this._periodoListo = false;
 	}
@@ -53,6 +54,24 @@ export default class reporteMoviminetos extends Component {
 			d.key_compra_venta === key_compra_venta &&
 			["anulacion_venta", "anulacion_compra"].includes((d.tipo || "").toLowerCase())
 		);
+	}
+
+	filtrarAnuladas(data) {
+		if (this.state.mostrarAnuladas) return data || [];
+
+		const keysAnulados = new Set(
+			(data || [])
+				.filter(item => ["anulacion_venta", "anulacion_compra"].includes((item?.tipo || "").toLowerCase()))
+				.map(item => item?.key_compra_venta)
+				.filter(Boolean)
+		);
+
+		return (data || []).filter(item => {
+			const tipoLower = (item?.tipo || "").toLowerCase();
+			if (tipoLower === "anulacion_venta" || tipoLower === "anulacion_compra") return false;
+			if (item?.key_compra_venta && keysAnulados.has(item.key_compra_venta)) return false;
+			return true;
+		});
 	}
 
 	colorTipoPago(estado) {
@@ -203,8 +222,9 @@ export default class reporteMoviminetos extends Component {
 			<DinamicTable
 				ref={ref => (this.DinamicTable = ref)}
 				loadData={() => this.loadInitialData().then(data => {
-					this.setState({ data });
-					return data;
+					const filteredData = this.filtrarAnuladas(data);
+					this.setState({ data: filteredData });
+					return filteredData;
 				})}
 				key="id"
 				keyExtractor={e => e.key}
@@ -688,18 +708,33 @@ export default class reporteMoviminetos extends Component {
 		return (
 			<SPage title="Historial de Movimientos / Transacciones" disableScroll>
 				<SHr height={8} />
-				<SView width={260} center>
-					<DateTimeBetween
-						fecha_inicio={this.state.fecha_inicio}
-						fecha_fin={this.state.fecha_fin}
-						onChange={({ fecha_inicio, fecha_fin }) => {
-							const esPrimerLlamado = !this._periodoListo;
-							this._periodoListo = true;
-							this.setState({ fecha_inicio, fecha_fin }, () => {
-								if (!esPrimerLlamado && this.DinamicTable) this.DinamicTable.loadData();
-							});
-						}}
-					/>
+				<SView row col={"xs-12"} >
+					<SView center>
+						<DateTimeBetween
+							fecha_inicio={this.state.fecha_inicio}
+							fecha_fin={this.state.fecha_fin}
+							onChange={({ fecha_inicio, fecha_fin }) => {
+								const esPrimerLlamado = !this._periodoListo;
+								this._periodoListo = true;
+								this.setState({ fecha_inicio, fecha_fin }, () => {
+									if (!esPrimerLlamado && this.DinamicTable) this.DinamicTable.loadData();
+								});
+							}}
+						/>
+					</SView>
+					<SView width={20} />
+					<SView width={200} row center>
+						<SText fontSize={12} color={STheme.color.text + "99"}>Mostrar anuladas</SText>
+						<SView width={10} />
+						<SSwitch
+							value={this.state.mostrarAnuladas}
+							onChange={(value) => {
+								this.setState({ mostrarAnuladas: value }, () => {
+									if (this.DinamicTable) this.DinamicTable.loadData();
+								});
+							}}
+						/>
+					</SView>
 				</SView>
 				<SHr height={8} />
 
