@@ -10,6 +10,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
 import { Linking } from 'react-native';
 import label from '../ajustes/label';
+import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
 
 export default class ventas_caja extends Component {
 	constructor(props) {
@@ -24,6 +25,7 @@ export default class ventas_caja extends Component {
 			data2: [],
 			data3: [],
 			sucursales: {},
+			selectedSucursal: null,
 		};
 		this._periodoListo = false;
 	}
@@ -161,7 +163,7 @@ export default class ventas_caja extends Component {
 			// const movimientos = await MDL.caja.getAllMovimientosCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
 			let movimientos = [];
 			if (this._periodoListo) {
-				movimientos = await MDL.caja.execute_function("resumen_caja_ventas_por_dia_detalle3", [MDL.empresa.select.key, fecha_inicio, fecha_fin]);
+				movimientos = await MDL.caja.execute_function("resumen_caja_ventas_por_dia_detalle3", [MDL.empresa.select.key, fecha_inicio, fecha_fin, this.state.selectedSucursal?.key]);
 
 			} else {
 				movimientos = await MDL.caja.execute_function("resumen_caja_ventas_por_dia_detalle3", [MDL.empresa.select.key, "2024-01-01", "2030-09-05"]);
@@ -1003,7 +1005,8 @@ export default class ventas_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					// format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="total_qr" label="QR" width={140} height={60} data={(e) => e.row?.total_qr > 0 ? ((e.row?.total_qr || 0)) : 0}
 					sumTotal={rows => {
@@ -1014,7 +1017,8 @@ export default class ventas_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					// format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="total_credito" label="CRÉDITO" width={140} height={60} data={(e) => e.row?.total_credito > 0 ? ((e.row?.total_credito || 0)) : 0}
 					sumTotal={rows => {
@@ -1025,7 +1029,8 @@ export default class ventas_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					// format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="venta_bruta" label="VENTA BRUTA" width={140} height={60} data={(e) => e.row?.venta_bruta > 0 ? ((e.row?.venta_bruta || 0)) : 0}
 					sumTotal={rows => {
@@ -1036,7 +1041,8 @@ export default class ventas_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					// format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="anulaciones" label="ANULACIONES" width={140} height={60} data={(e) => e.row?.anulaciones ? ((e.row?.anulaciones || 0)) : 0}
 					sumTotal={rows => {
@@ -1047,7 +1053,8 @@ export default class ventas_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					//format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="venta_neta" label="VENTA NETA" width={140} height={60} data={(e) => e.row?.venta_neta > 0 ? ((e.row?.venta_neta || 0)) : 0}
 					sumTotal={rows => {
@@ -1058,7 +1065,7 @@ export default class ventas_caja extends Component {
 					sumExcel
 					excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 				<DinamicTable.Col key="nro_ventas" label="NRO. VENTAS" width={140} height={60} data={(e) => e.row?.nro_ventas || 0}
 					sumTotal={rows => {
@@ -1069,7 +1076,7 @@ export default class ventas_caja extends Component {
 					sumExcel
 					// excelFormat="#,##0.00"
 					dataType="number"
-					format={e => (e.data ? (e.data) : '')}
+					format={e => (e.data ? SMath.formatMoney(e.data) : '')}
 				/>
 
 
@@ -1086,21 +1093,39 @@ export default class ventas_caja extends Component {
 		return (
 			<SPage title="Informe Caja"  >
 				<SHr height={8} />
-				<SView width={260} center>
-					<DateTimeBetween
-						fecha_inicio={this.state.fecha_inicio}
-						fecha_fin={this.state.fecha_fin}
-						onChange={({ fecha_inicio, fecha_fin }) => {
-							const esPrimerLlamado = !this._periodoListo;
-							this._periodoListo = true;
-							this.setState({ fecha_inicio, fecha_fin }, () => {
-								if (!esPrimerLlamado && this.DinamicTable) this.DinamicTable.loadData();
-								if (!esPrimerLlamado && this.DinamicTable2) this.DinamicTable2.loadData();
-								if (!esPrimerLlamado && this.DinamicTable3) this.DinamicTable3.loadData();
+				<SView col={"xs-12"} row >
+					<SView  center>
+						<DateTimeBetween
+							fecha_inicio={this.state.fecha_inicio}
+							fecha_fin={this.state.fecha_fin}
+							onChange={({ fecha_inicio, fecha_fin }) => {
+								const esPrimerLlamado = !this._periodoListo;
+								this._periodoListo = true;
+								this.setState({ fecha_inicio, fecha_fin }, () => {
+									if (!esPrimerLlamado && this.DinamicTable) this.DinamicTable.loadData();
+									if (!esPrimerLlamado && this.DinamicTable2) this.DinamicTable2.loadData();
+									if (!esPrimerLlamado && this.DinamicTable3) this.DinamicTable3.loadData();
 
-							});
-						}}
-					/>
+								});
+							}}
+						/>
+					</SView>
+					<SView width={15} />
+					<SView width={150}>
+						<FiltroSelector
+							ref={ref => this.filtroSucursalRef = ref}
+							label="Sucursal"
+							loadData={MDL.empresa.getAllSucursales}
+							mapOption={a => ({ key: a.key, nombre: a.descripcion })}
+							onSelect={item => {
+								this.setState({ selectedSucursal: item }, () => {
+									this.DinamicTable?.loadData();
+									this.DinamicTable2?.loadData();
+									this.DinamicTable3?.loadData();
+								});
+							}}
+						/>
+					</SView>
 				</SView>
 				<SHr height={8} />
 				<SText fontSize={16} bold >INGRESO POR DÍA</SText>
