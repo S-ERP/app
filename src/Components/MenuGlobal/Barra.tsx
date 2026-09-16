@@ -249,6 +249,7 @@ export default class Barra extends React.Component {
                         <Page label={"Ventas"} permiso="ver" url={"/dashboard"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Inventario"} permiso="ver" url={"/dashboard/inventario"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Cajas"} url={"/dashboard/cajas"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Traspasos"} url={"/dashboard/traspasos"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
 
 
                     </Page>
