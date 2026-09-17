@@ -116,6 +116,7 @@ export default class Barra extends React.Component {
                         <Page label={"Stock2"} url={"/productos/modelo/table2"} permiso_url="/productos/modelo/table" permiso="ver" />
                         <Page label={"Pizarra"} url={"/productos/pizarra"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Traspaso entre almacenes"} url={"/productos/traspaso_inventario"} permiso="ver" permiso_url="/inventario/almacen" />
+                        <Page label={"Reducción de inventario"} url={"/productos/reduccion_inventario"} permiso="ver" permiso_url="/productos/reduccion_inventario" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
                     </Page>
