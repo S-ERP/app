@@ -57,7 +57,7 @@ export default class reduccion_inventario extends React.Component {
             throw "El almacen de origen y destino no pueden ser el mismo";
         }
 
-        let descripcion = this.detalleTraspasoInput.getValue();
+        let descripcion = this.detalleReduccionInput.getValue();
 
         try {
             const resp = await SSocket.sendPromise({
@@ -79,6 +79,60 @@ export default class reduccion_inventario extends React.Component {
         } catch (e) {
             throw e?.error;
         }
+
+        this.selectItems = [];
+        this.mainTable.loadData();
+        this.traspasoTable.loadData();
+
+    }
+
+    async handleReduccion() {
+
+        const almacen_origen = this.almacen;
+        const motivo_reduccion = this.motivo_reduccion;
+        if (!almacen_origen?.key) {
+            throw "Seleccione el almacen de origen";
+        }
+        if (!motivo_reduccion?.key) {
+            throw "Seleccione motivo de reducción";
+        }
+        if (almacen_origen.key == motivo_reduccion.key) {
+            throw "El almacen de origen y destino no pueden ser el mismo";
+        }
+
+        let descripcion = this.detalleReduccionInput.getValue();
+
+        try {
+            const resp = await SSocket.sendPromise({
+                service: "inventario",
+                component: "modelo",
+                type: "reduccion_inventario",
+                descripcion: descripcion,
+                key_usuario: MDL.usuario?.session?.key,
+                key_empresa: MDL.empresa?.select?.key,
+                key_almacen_origen: almacen_origen.key,
+                motivo_reduccion: motivo_reduccion.descripcion,
+                data: this.selectItems.map(i => {
+                    return {
+                        key_modelo: i.key,
+                        cantidad: i.cantidad
+                    }
+                })
+            })
+        } catch (e) {
+            throw e?.error;
+        }
+
+        // let dd = this.selectItems.map(i => {
+        //     return {
+        //         key_modelo: i.key,
+        //         cantidad: i.cantidad
+        //     }
+        // })
+        // console.log(almacen_origen.key)
+        // console.log(motivo_reduccion.descripcion)
+        // console.log(dd)
+
 
         this.selectItems = [];
         this.mainTable.loadData();
@@ -259,21 +313,21 @@ export default class reduccion_inventario extends React.Component {
                             return <SView col={"xs-12"} style={{
                                 alignItems: "flex-end"
                             }}>
-                                <SHr />
+                                <SHr height={10} />
                                 <SView col={"xs-6"} card style={{
-                                    padding: 8,
+                                    padding: 12,
                                     paddingHorizontal: 16,
                                     borderRadius: 4,
                                     backgroundColor: STheme.color.background,
                                 }}>
-                                    <SText fontSize={14} color={STheme.color.text}>
+                                    <SText col={"xs-12"} fontSize={16} bold color={STheme.color.warning} style={{alignContent:"flex-end", textAlign:"right"}}>
                                         {"Total de productos a reducir: " + this.selectItems.length}
                                     </SText>
                                     <SHr />
                                     {/* <SText fontSize={14} color={STheme.color.text}>
                                         {"Total de la reducción: " + this.selectItems.reduce((a, b) => a + (b.precio_compra * b.cantidad), 0).toFixed(2)}
                                     </SText> */}
-                                    <SText fontSize={14} color={STheme.color.text}>
+                                    {/* <SText fontSize={17} color={STheme.color.warning} bold style={{alignContent:"flex-end", textAlign:"right"}}>
                                         {"Total de la reducción: " +
                                             this.selectItems
                                                 .reduce(
@@ -285,9 +339,9 @@ export default class reduccion_inventario extends React.Component {
                                                 )
                                                 .toFixed(2)
                                         }
-                                    </SText>
+                                    </SText> */}
                                 </SView>
-                                <SHr />
+                                <SHr height={15} />
                                 <SView style={{
                                     backgroundColor: STheme.color.warning,
                                     padding: 8,
@@ -295,9 +349,85 @@ export default class reduccion_inventario extends React.Component {
                                     borderRadius: 4,
                                 }} onPress={() => {
 
+                                    const itemInvalido = this.selectItems.find(i => {
+                                        const cantidad = Number(i.cantidad);
+                                        return i.cantidad === undefined || i.cantidad === null || i.cantidad === "" || isNaN(cantidad) || cantidad <= 0;
+                                    });
+                                    if (itemInvalido) {
+                                        SNotification.send({
+                                            key: "reduccion_inventario",
+                                            title: "Reducción de inventario",
+                                            body: "La cantidad de \"" + (itemInvalido.descripcion || "un producto") + "\" debe estar completa y ser mayor a 0",
+                                            time: 5000,
+                                            color: STheme.color.error
+                                        });
+                                        return;
+                                    }
+
+                                    SPopup.open({
+                                        key: "confirm_reduccion",
+                                        content: <SView col={"xs-12"} center>
+                                            <SView style={{
+                                                width: 300,
+                                                height: 150,
+                                                padding: 16,
+                                                borderRadius: 8,
+                                                backgroundColor: STheme.color.background,
+                                            }} withoutFeedback>
+                                                <SText bold fontSize={16}>¿Confirmar reducción de inventario?</SText>
+                                                <SHr />
+                                                <SInput ref={ref => this.detalleReduccionInput = ref} placeholder={"Detalle de la reducción"} />
+                                                <SHr />
+                                                <SView col={"xs-12"} row center>
+                                                    <SView style={{
+                                                        backgroundColor: STheme.color.success,
+                                                        padding: 8,
+                                                        paddingHorizontal: 16,
+                                                        borderRadius: 4,
+                                                        marginRight: 8,
+                                                    }} onPress={() => {
+
+                                                        SNotification.send({
+                                                            key: "reduccion_inventario",
+                                                            title: "Reducción de inventario",
+                                                            body: "Se esta procesando la reducción de inventario",
+                                                            type: "loading"
+
+                                                        })
+                                                        this.handleReduccion().then(() => {
+                                                            SNotification.send({
+                                                                key: "reduccion_inventario",
+                                                                title: "Reducción de inventario",
+                                                                body: "La reducción de inventario se realizo con exito",
+                                                                time: 5000,
+                                                                color: STheme.color.success
+                                                            })
+                                                            SPopup.close("confirm_reduccion");
+                                                            // this.selectItems = [];
+                                                            // this.mainTable.loadData();
+                                                            // this.traspasoTable.loadData();
+                                                        }).catch(e => {
+                                                            SNotification.send({
+                                                                key: "reduccion_inventario",
+                                                                title: "Reducción de inventario",
+                                                                body: "Error al realizar la reducción de inventario: " + e,
+                                                                time: 5000,
+                                                                color: STheme.color.error
+                                                            })
+                                                            console.error(e);
+                                                        });
+                                                    }}>
+                                                        <SText>{"CONFIRMAR"}</SText>
+                                                    </SView>
+                                                </SView>
+                                            </SView>
+                                        </SView>
+
+                                    })
+
 
                                     // SPopup.open({
-                                    //     key: "confirm_traspaso",
+                                    //     key: "confirm_reduccion",
                                     //     content: <SView col={"xs-12"} center>
                                     //         <SView style={{
                                     //             width: 300,
@@ -308,7 +438,7 @@ export default class reduccion_inventario extends React.Component {
                                     //         }} withoutFeedback>
                                     //             <SText>¿Confirmar traspaso de inventario?</SText>
                                     //             <SHr />
-                                    //             <SInput ref={ref => this.detalleTraspasoInput = ref} placeholder={"Detalle del traspaso"} />
+                                    //             <SInput ref={ref => this.detalleReduccionInput = ref} placeholder={"Detalle del traspaso"} />
                                     //             <SHr />
                                     //             <SView col={"xs-12"} row center>
                                     //                 <SView style={{
@@ -334,7 +464,7 @@ export default class reduccion_inventario extends React.Component {
                                     //                             time: 5000,
                                     //                             color: STheme.color.success
                                     //                         })
-                                    //                         SPopup.close("confirm_traspaso");
+                                    //                         SPopup.close("confirm_reduccion");
                                     //                         // this.selectItems = [];
                                     //                         // this.mainTable.loadData();
                                     //                         // this.traspasoTable.loadData();
@@ -359,7 +489,7 @@ export default class reduccion_inventario extends React.Component {
 
 
                                 }}>
-                                    <SText>{"CONFIRMAR REDUCCIÓN"}</SText>
+                                    <SText bold>{"CONFIRMAR REDUCCIÓN"}</SText>
                                 </SView>
                             </SView>
                         }}
@@ -378,12 +508,12 @@ export default class reduccion_inventario extends React.Component {
                                 return <InputCantidad row={e.row} onChange={() => this.traspasoTable.loadData()} />
                             }}
                         />
-                        <DinamicTable.Col key={"precio_compra"} label='Precio de Compra' width={100} data={(e) => e.row.precio_compra} wrap
+                        {/* <DinamicTable.Col key={"precio_compra"} label='Precio de Compra' width={100} data={(e) => e.row.precio_compra} wrap
                             textStyle={{ fontSize: 12 }}
                         />
                         <DinamicTable.Col key={"subtotal"} label='Subtotal' width={100} data={(e) => e.row.precio_compra * e.row.cantidad} wrap
                             textStyle={{ fontSize: 12 }}
-                        />
+                        /> */}
 
                     </DinamicTable>
                 </SView>
