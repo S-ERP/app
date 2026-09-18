@@ -426,66 +426,6 @@ export default class reduccion_inventario extends React.Component {
                                     })
 
 
-                                    // SPopup.open({
-                                    //     key: "confirm_reduccion",
-                                    //     content: <SView col={"xs-12"} center>
-                                    //         <SView style={{
-                                    //             width: 300,
-                                    //             height: 150,
-                                    //             padding: 16,
-                                    //             borderRadius: 8,
-                                    //             backgroundColor: STheme.color.background,
-                                    //         }} withoutFeedback>
-                                    //             <SText>¿Confirmar traspaso de inventario?</SText>
-                                    //             <SHr />
-                                    //             <SInput ref={ref => this.detalleReduccionInput = ref} placeholder={"Detalle del traspaso"} />
-                                    //             <SHr />
-                                    //             <SView col={"xs-12"} row center>
-                                    //                 <SView style={{
-                                    //                     backgroundColor: STheme.color.success,
-                                    //                     padding: 8,
-                                    //                     paddingHorizontal: 16,
-                                    //                     borderRadius: 4,
-                                    //                     marginRight: 8,
-                                    //                 }} onPress={() => {
-
-                                    //                     SNotification.send({
-                                    //                         key: "traspaso_inventario",
-                                    //                         title: "Traspaso de inventario",
-                                    //                         body: "Se esta procesando el traspaso de inventario",
-                                    //                         type: "loading"
-
-                                    //                     })
-                                    //                     this.handleTraspaso().then(() => {
-                                    //                         SNotification.send({
-                                    //                             key: "traspaso_inventario",
-                                    //                             title: "Traspaso de inventario",
-                                    //                             body: "El traspaso de inventario se realizo con exito",
-                                    //                             time: 5000,
-                                    //                             color: STheme.color.success
-                                    //                         })
-                                    //                         SPopup.close("confirm_reduccion");
-                                    //                         // this.selectItems = [];
-                                    //                         // this.mainTable.loadData();
-                                    //                         // this.traspasoTable.loadData();
-                                    //                     }).catch(e => {
-                                    //                         SNotification.send({
-                                    //                             key: "traspaso_inventario",
-                                    //                             title: "Traspaso de inventario",
-                                    //                             body: "Error al realizar el traspaso de inventario: " + e,
-                                    //                             time: 5000,
-                                    //                             color: STheme.color.error
-                                    //                         })
-                                    //                         console.error(e);
-                                    //                     });
-                                    //                 }}>
-                                    //                     <SText>{"CONFIRMAR"}</SText>
-                                    //                 </SView>
-                                    //             </SView>
-                                    //         </SView>
-                                    //     </SView>
-
-                                    // })
 
 
                                 }}>
