@@ -192,6 +192,19 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   async reporte_libro_diario() {
     return await this.executeFunction("reporte_libro_diario", [MDL?.empresa?.select?.key])
   }
+  async reporte_libro_diario_paginado(params: { fecha_inicio: string, fecha_fin: string, limit: number, offset: number }) {
+    const resp: any = await SSocket.sendPromise({
+      service: "contabilidad",
+      component: "reporte",
+      type: "getLibroDiarioPaginado",
+      key_empresa: MDL?.empresa?.select?.key,
+      fecha_inicio: params.fecha_inicio,
+      fecha_fin: params.fecha_fin,
+      limit: params.limit,
+      offset: params.offset,
+    })
+    return { data: resp.data as any[], total: resp.total as number };
+  }
   async executeFunction(name: string, params?: any[]) {
     const resp: any = await SSocket.sendPromise({
       service: "contabilidad",

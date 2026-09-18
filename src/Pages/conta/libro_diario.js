@@ -1,13 +1,31 @@
 import React from "react";
-import { SInput, SMath, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SInput, SMath, SNavigation, SPage, SText, STheme, SView, SHr } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
 import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
+import DateTimeBetween from "../../Components/DateTimeBetween";
+
+const PAGE_LIMIT = 300;
 
 export default class libro_diario extends React.Component {
     // static HIDDEN= true;
     dinamicTable: DinamicTable<any>;
+
+    constructor(props) {
+        super(props);
+        const hoy = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        this.state = {
+            fecha_inicio: fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+            fecha_fin: fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)),
+            page: 1,
+            total: 0,
+        };
+        this._periodoListo = false;
+    }
+
     componentDidMount() {
 
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/libro_diario", permiso: "ver" }).then((permit) => {
@@ -22,23 +40,26 @@ export default class libro_diario extends React.Component {
     }
     async loadData() {
         try {
+            const { fecha_inicio, fecha_fin, page } = this.state;
             const empresa = await MDL.empresa.getFull();
-            const data = await MDL.contabilidad.reporte_libro_diario();
+            const { data, total } = await MDL.contabilidad.reporte_libro_diario_paginado({
+                fecha_inicio,
+                fecha_fin,
+                limit: PAGE_LIMIT,
+                offset: (page - 1) * PAGE_LIMIT,
+            });
+            this.setState({ total });
             const cliente = await MDL.crm.cliente.getAll();
             const monedabase = empresa.monedas.find(b => b.tipo == "base")
-            let tagsKeys = {};
             data.map(a => {
                 a.moneda = empresa.monedas.find(b => b.key == a.key_moneda)
                 a.moneda_base = monedabase
                 if (a.tags) {
-                    tagsKeys = { ...tagsKeys, ...a.tags }
                     if (a.tags.key_cliente) {
                         a.cliente = cliente.find(c => c.key == a.tags.key_cliente)
                     }
                 }
             })
-
-            console.log(Object.keys(tagsKeys))
 
             return data;
         } catch (error) {
@@ -47,14 +68,62 @@ export default class libro_diario extends React.Component {
         }
     }
 
+    getTotalPages() {
+        return Math.max(1, Math.ceil(this.state.total / PAGE_LIMIT));
+    }
+
+    changePage(delta) {
+        const totalPages = this.getTotalPages();
+        const nextPage = this.state.page + delta;
+        if (nextPage < 1 || nextPage > totalPages) return;
+        this.setState({ page: nextPage }, () => this.dinamicTable?.loadData());
+    }
+
     numberColor(val) {
         val = parseFloat(val || "0");
         if (val > 0) return STheme.color.text;
         if (val < 0) return STheme.color.danger;
         return STheme.color.card;
     }
+    renderPaginador() {
+        const totalPages = this.getTotalPages();
+        return <SView row center style={{ gap: 8 }}>
+            <SView
+                padding={6}
+                style={{ opacity: this.state.page <= 1 ? 0.4 : 1 }}
+                onPress={() => this.changePage(-1)}
+            >
+                <SText>{"‹ Anterior"}</SText>
+            </SView>
+            <SText fontSize={12}>{`Página ${this.state.page} de ${totalPages} (${this.state.total} filas)`}</SText>
+            <SView
+                padding={6}
+                style={{ opacity: this.state.page >= totalPages ? 0.4 : 1 }}
+                onPress={() => this.changePage(1)}
+            >
+                <SText>{"Siguiente ›"}</SText>
+            </SView>
+        </SView>
+    }
     render() {
         return <SPage title={"Libro Diario"} center disableScroll>
+            <SView row col={"xs-12"} style={{ alignItems: 'center', flexWrap: 'wrap', paddingHorizontal: 8, gap: 8 }}>
+                <SView width={260} center>
+                    <DateTimeBetween
+                        fecha_inicio={this.state.fecha_inicio}
+                        fecha_fin={this.state.fecha_fin}
+                        onChange={({ fecha_inicio, fecha_fin }) => {
+                            const esPrimerLlamado = !this._periodoListo;
+                            this._periodoListo = true;
+                            this.setState({ fecha_inicio, fecha_fin, page: 1 }, () => {
+                                if (!esPrimerLlamado && this.dinamicTable) this.dinamicTable.loadData();
+                            });
+                        }}
+                    />
+                </SView>
+                {this.renderPaginador()}
+            </SView>
+            <SHr />
             <SView col={"xs-12"} flex>
                 <DinamicTable
                     ref={(e) => this.dinamicTable = e}
