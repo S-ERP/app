@@ -19,7 +19,7 @@ import FiltroSelector2 from "../modelo/Components/FiltroSelector2";
 export default class pizarra extends React.Component {
     state = {
         key_sucursal: MDL.caja?.activa?.key_sucursal,
-        filtro: "capsula",
+        filtro: null,
         selectedSucursal: null,
         selectedAlmacen: null,
         selectedStock: null,
@@ -575,7 +575,9 @@ export default class pizarra extends React.Component {
                         backgroundColor: STheme.color.card,
                         opacity: 1
                     }}
-                    value={this.state.filtro}// ✅ Agregar esto
+                     value={this.state.filtro}// ✅ Agregar esto
+                    //value=""// ✅ Agregar esto
+                    //defaultValue=""// ✅ Agregar esto
 
                     onChangeText={e => {
                         this.setState({ filtro: e }, () => this.loadData())
@@ -624,7 +626,7 @@ export default class pizarra extends React.Component {
         </SView>
     }
     render() {
-        return <SPage title={"pizarrasss"} disableScroll>
+        return <SPage title={"Pizarra"} disableScroll>
             <Pizarra id={"productos_pizarra"} scale={0.5} exponentDeRedondeoDeMovimiento={10}
                 onSelectChange={e => {
                     if (this.selectMenu) {

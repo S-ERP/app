@@ -5,7 +5,6 @@ import { SDate, SGradient, SInput, SMath, SNotification, SPopup, SText, STheme, 
 import SSocket from "servisofts-socket";
 
 import SIconApp from "../../Assets/SIconApp";
-import CheckBox from "../CheckBox";
 import MDL from "../../MDL";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
@@ -67,32 +66,6 @@ const validarSuscripcionesCompletasItems = (items: any[]): CampoIncompletoSusc =
             const s = suscriptores[i];
             const completo = !!(s?.key_cliente || s?.cliente?.key) && !!s?.fecha_inicio && !!s?.fecha_fin;
             if (!completo) return { itemDesc: item.modelo?.descripcion ?? "un producto", index: i };
-        }
-    }
-    return null;
-};
-
-type CampoIncompletoReceta = { itemDesc: string; ingDesc: string } | null;
-
-// Obligatorio: en cada ingrediente elegible (con más de 1 opción disponible), TODAS las
-// unidades del carrito deben tener la cantidad de opciones requerida ya seleccionada.
-// Los ingredientes con una sola opción disponible son fijos (se incluyen por defecto) y no requieren selección.
-const validarRecetaCompletaItems = (items: any[]): CampoIncompletoReceta => {
-    for (const item of items) {
-        const receta = item.modelo?.receta;
-        if (!Array.isArray(receta) || receta.length === 0) continue;
-        const cantidadCarrito = item.cantidad || 0;
-        if (!cantidadCarrito) continue;
-        for (const ing of receta) {
-            const opciones = Array.isArray(ing.opciones) ? ing.opciones : [];
-            if (opciones.length <= 1) continue; // fijo, no requiere selección
-            const cantidadRequerida = Number(ing.cantidad) || 1;
-            for (let u = 0; u < cantidadCarrito; u++) {
-                const seleccionadas = ing.unidades?.[u]?.length || 0;
-                if (seleccionadas !== cantidadRequerida) {
-                    return { itemDesc: item.modelo?.descripcion ?? "un producto", ingDesc: ing.descripcion ?? "una opción" };
-                }
-            }
         }
     }
     return null;
@@ -335,18 +308,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 SNotification.send({
                                     title: "Falta seleccionar el miembro",
                                     body: `Seleccioná el cliente y las fechas del miembro ${suscError.index + 1} de "${suscError.itemDesc}". Todos los miembros son obligatorios.`,
-                                    color: colorAdvertencia,
-                                    time: 6000,
-                                });
-                                console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
-                                return;
-                            }
-
-                            const recetaError = validarRecetaCompletaItems(items);
-                            if (recetaError) {
-                                SNotification.send({
-                                    title: "Falta completar el combo",
-                                    body: `Selecciona las opciones de "${recetaError.ingDesc}" en "${recetaError.itemDesc}".`,
                                     color: colorAdvertencia,
                                     time: 6000,
                                 });
@@ -698,9 +659,22 @@ const ListaReceta = ({ item }: any) => {
     const cantidadCarrito = item.cantidad || 0;
     const ingredientes = receta && Array.isArray(receta) ? receta : [];
 
-    if (!receta || !Array.isArray(receta) || cantidadCarrito === 0 || ingredientes.length === 0) return null;
+    const inicializarSelecciones = () => {
+        const selecciones: Record<string, any> = {};
+        if (!Array.isArray(ingredientes)) return selecciones;
+        ingredientes.forEach((ing: any, idx: number) => {
+            const cantidadIngrediente = ing.cantidad || 1;
+            const totalSelectores = cantidadCarrito * cantidadIngrediente;
+            for (let i = 0; i < totalSelectores; i++) {
+                selecciones[`${idx}-${i}`] = ing.opciones?.[0] || null;
+            }
+        });
+        return selecciones;
+    };
 
-    const unidades = Array.from({ length: cantidadCarrito });
+    const [selecciones, setSelecciones] = React.useState(inicializarSelecciones());
+
+    if (!receta || !Array.isArray(receta) || cantidadCarrito === 0 || ingredientes.length === 0) return null;
 
     return (
         <SView style={{ marginTop: 10 }}>
@@ -715,151 +689,53 @@ const ListaReceta = ({ item }: any) => {
             </SView>
             {isOpen && (
                 <SView col={"xs-12"}>
-                    {unidades.map((_, u) => (
-                        <SView key={`combo-unidad-${item.modelo.key}-${u}`} style={{ marginBottom: 10 }}>
-                            {cantidadCarrito > 1 && (
-                                <SText fontSize={UI.font.tiny} bold color={STheme.color.lightGray} style={{ marginBottom: 4 }}>
-                                    {"Unidad "}{u + 1}
+                    {ingredientes.map((ing: any, idx: number) => {
+                        const cantidadIngrediente = ing.cantidad || 1;
+                        const cantidadCarrito = item.cantidad || 1;
+                        const totalSelectores = cantidadCarrito * cantidadIngrediente;
+                        const opciones = ing.opciones && Array.isArray(ing.opciones) ? ing.opciones : [];
+                        const options = opciones.map((op: any) => ({
+                            label: op.descripcion || "Sin descripción",
+                            value: op.key_modelo || idx,
+                            data: op,
+                            customComponent: (
+                                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
+                                    {op.precio_venta || 0}
                                 </SText>
-                            )}
-                            {ingredientes.map((ing: any, idx: number) => (
-                                <ComboIngredienteGroup
-                                    key={`combo-ing-${item.modelo.key}-${idx}-${u}`}
-                                    ing={ing}
-                                    unitIndex={u}
-                                />
-                            ))}
-                        </SView>
-                    ))}
+                            ),
+                        }));
+
+                        return (
+                            <SView key={idx} style={{ marginBottom: 10 }}>
+                                <SView row style={{ alignItems: "center", gap: 4, marginBottom: 6 }}>
+                                    <SText fontSize={UI.font.small} bold color={STheme.color.text}>
+                                        {ing.descripcion || "Sin descripción"}
+                                    </SText>
+                                    <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>
+                                        ({totalSelectores})
+                                    </SText>
+                                </SView>
+                                {Array.from({ length: totalSelectores }).map((_, i) => {
+                                    const key = `${idx}-${i}`;
+                                    const selectedOpcion = selecciones[key] || opciones[0];
+                                    console.log(selecciones, "selecciones");
+                                    console.log(opciones, "opciones");
+                                    return (
+                                        <SView key={key} style={{ marginBottom: 8 }}>
+                                            <SText fontSize={UI.font.small} color={STheme.color.text}>
+                                                {selectedOpcion?.descripcion || "Sin descripción"}
+                                            </SText>
+                                        </SView>
+                                    );
+                                })}
+                            </SView>
+                        );
+                    })}
                 </SView>
             )}
         </SView>
     );
 };
-
-// Grupo de opciones de un ingrediente del combo para UNA unidad del carrito.
-// - Si solo hay 1 opción disponible: no hay nada que elegir, queda fija/incluida por defecto (bloqueada).
-// - Si hay más de 1 opción: se puede marcar con checkbox hasta completar `ing.cantidad` opciones.
-// La selección se persiste en `ing.unidades[unitIndex]` (dentro de item.modelo.receta) para que
-// viaje junto al item en el registro de venta.
-const ComboIngredienteGroupBase = ({ ing, unitIndex }: any) => {
-    const opciones: any[] = Array.isArray(ing.opciones) ? ing.opciones : [];
-    const cantidadRequerida = Number(ing.cantidad) || 1;
-    const esFijo = opciones.length <= 1;
-
-    if (!Array.isArray(ing.unidades)) ing.unidades = [];
-
-    const persistir = React.useCallback((keys: string[]) => {
-        ing.unidades[unitIndex] = keys
-            .map((k) => opciones.find((o: any) => o.key_modelo === k))
-            .filter(Boolean);
-    }, [ing, unitIndex, opciones]);
-
-    const inicial = React.useCallback(() => {
-        const guardada = ing.unidades[unitIndex];
-        if (Array.isArray(guardada) && guardada.length > 0) {
-            return guardada.map((o: any) => o?.key_modelo).filter(Boolean);
-        }
-        if (esFijo && opciones[0]) {
-            return Array.from({ length: cantidadRequerida }, () => opciones[0].key_modelo);
-        }
-        return [];
-    }, [ing, unitIndex, esFijo, opciones, cantidadRequerida]);
-
-    const [seleccion, setSeleccion] = React.useState<string[]>(inicial);
-
-    // Fija por defecto la única opción disponible (si aún no estaba persistida).
-    React.useEffect(() => {
-        if (esFijo && opciones[0] && !Array.isArray(ing.unidades[unitIndex])) {
-            persistir(seleccion);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    if (opciones.length === 0) {
-        return (
-            <SView row style={{ alignItems: "center", paddingVertical: 3 }}>
-                <SText fontSize={UI.font.small} color={STheme.color.text}>{ing.descripcion || "Sin descripción"}</SText>
-                <SView flex />
-                <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>{"x"}{cantidadRequerida}</SText>
-            </SView>
-        );
-    }
-
-    const toggleOpcion = (key_modelo: string) => {
-        if (esFijo) return;
-        setSeleccion((prev) => {
-            let next: string[];
-            if (prev.includes(key_modelo)) {
-                next = prev.filter((k) => k !== key_modelo);
-            } else {
-                if (prev.length >= cantidadRequerida) return prev;
-                next = [...prev, key_modelo];
-            }
-            persistir(next);
-            return next;
-        });
-    };
-
-    const completo = seleccion.length === cantidadRequerida;
-
-    return (
-        <SView style={{ marginBottom: 8 }}>
-            <SView row style={{ alignItems: "center", gap: 4, marginBottom: 4 }}>
-                <SText fontSize={UI.font.small} bold color={STheme.color.text}>
-                    {ing.descripcion || "Sin descripción"}
-                </SText>
-                {esFijo ? (
-                    <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>{"(incluido)"}</SText>
-                ) : (
-                    <SText fontSize={UI.font.tiny} color={completo ? colorVenta : colorAdvertencia}>
-                        {"("}{seleccion.length}{"/"}{cantidadRequerida}{")"}
-                    </SText>
-                )}
-            </SView>
-            <CampoObligatorio error={!esFijo && !completo} style={{ padding: 6 }}>
-                {opciones.map((op: any) => {
-                    const key_modelo = op.key_modelo;
-                    const selected = esFijo ? true : seleccion.includes(key_modelo);
-                    const bloqueado = !esFijo && !selected && seleccion.length >= cantidadRequerida;
-                    return (
-                        <SView
-                            key={key_modelo}
-                            row
-                            style={{ alignItems: "center", paddingVertical: 3, opacity: bloqueado ? 0.4 : 1 }}
-                            onPress={esFijo || bloqueado ? undefined : () => toggleOpcion(key_modelo)}
-                        >
-                            {esFijo ? (
-                                <SView style={{
-                                    width: 16, height: 16, borderRadius: 4,
-                                    backgroundColor: STheme.color.lightGray + "40",
-                                    alignItems: "center", justifyContent: "center",
-                                }}>
-                                    <SIconApp name="bien" fill={STheme.color.lightGray} width={10} />
-                                </SView>
-                            ) : (
-                                <CheckBox value={selected} onChange={() => toggleOpcion(key_modelo)} />
-                            )}
-                            <SView width={8} />
-                            <SText flex fontSize={UI.font.small} color={STheme.color.text}>
-                                {op.descripcion || "Sin descripción"}
-                            </SText>
-                            {/* {!!op.precio_venta && (
-                                <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
-                                    {op.precio_venta}
-                                </SText>
-                            )} */}
-                        </SView>
-                    );
-                })}
-            </CampoObligatorio>
-        </SView>
-    );
-};
-
-const ComboIngredienteGroup = React.memo(ComboIngredienteGroupBase, (prev, next) => {
-    return prev.ing === next.ing && prev.unitIndex === next.unitIndex;
-});
 
 // Parpadeo mientras `active` (campo obligatorio vacío) para llamar la atención.
 const useBlink = (active: boolean) => {
