@@ -5,7 +5,6 @@ import { SDate, SGradient, SInput, SMath, SNotification, SPopup, SText, STheme, 
 import SSocket from "servisofts-socket";
 
 import SIconApp from "../../Assets/SIconApp";
-import CheckBox from "../CheckBox";
 import MDL from "../../MDL";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 import SInput2, { SInput2Class } from "../SForm2/SInput2";
@@ -121,6 +120,70 @@ const getModeloTipoMap = (): Promise<Record<string, string>> => {
         })();
     }
     return __modeloTipoMapPromise;
+};
+
+type StockInfo = { stock: number; activo: number };
+
+// Cache de modelo->{stock, activo} en la sucursal de la caja activa, para mostrar
+// disponibilidad de las opciones del combo y bloquear las que no tengan stock o estén
+// inactivas. Se vuelve a pedir si cambia la sucursal.
+let __stockMapPromise: Promise<Record<string, StockInfo>> | null = null;
+let __stockMapSucursal: string | null = null;
+const getStockMapBySucursal = (key_sucursal?: string | null): Promise<Record<string, StockInfo>> => {
+    if (!key_sucursal) return Promise.resolve({});
+    if (!__stockMapPromise || __stockMapSucursal !== key_sucursal) {
+        __stockMapSucursal = key_sucursal;
+        __stockMapPromise = (async () => {
+            try {
+                const modelos: any = await MDL.inventario.getAllModeloStockBySucursal(key_sucursal);
+                const list = Array.isArray(modelos) ? modelos : Object.values(modelos || {});
+                const map: Record<string, StockInfo> = {};
+                list.forEach((m: any) => {
+                    if (!m?.key) return;
+                    map[m.key] = { stock: Number(m.stock) || 0, activo: m.activo == null ? 1 : Number(m.activo) };
+                });
+                return map;
+            } catch { return {}; }
+        })();
+    }
+    return __stockMapPromise;
+};
+
+type CampoIncompletoStock = { itemDesc: string; opDesc: string; motivo: "sin_stock" | "inactivo" } | null;
+
+// Obligatorio: ninguna opción del combo que vaya a venderse (la fija/incluida, o las
+// efectivamente elegidas cuando hay alternativas) puede estar sin stock o inactiva.
+// La fija se valida siempre porque se incluye sí o sí, sin que el cliente pueda elegir otra.
+const validarStockOpcionesItems = (items: any[], stockMap: Record<string, StockInfo>): CampoIncompletoStock => {
+    for (const item of items) {
+        const receta = item.modelo?.receta;
+        if (!Array.isArray(receta) || receta.length === 0) continue;
+        for (const ing of receta) {
+            const opciones = Array.isArray(ing.opciones) ? ing.opciones : [];
+            if (opciones.length === 0) continue;
+            const esFijo = opciones.length <= 1;
+            const keysAValidar = esFijo
+                ? [opciones[0]?.key_modelo].filter(Boolean)
+                : Array.from(new Set(
+                    (Array.isArray(ing.unidades) ? ing.unidades : [])
+                        .flat()
+                        .map((o: any) => o?.key_modelo)
+                        .filter(Boolean)
+                ));
+            for (const key_modelo of keysAValidar) {
+                const op = opciones.find((o: any) => o.key_modelo === key_modelo);
+                const info = stockMap[key_modelo as string];
+                if (!info) continue; // sin datos de stock -> no se bloquea
+                if (Number(info.activo) === 0) {
+                    return { itemDesc: item.modelo?.descripcion ?? "un producto", opDesc: op?.descripcion ?? "una opción", motivo: "inactivo" };
+                }
+                if (Number(info.stock) <= 0) {
+                    return { itemDesc: item.modelo?.descripcion ?? "un producto", opDesc: op?.descripcion ?? "una opción", motivo: "sin_stock" };
+                }
+            }
+        }
+    }
+    return null;
 };
 
 // Sin cache: consulta fresca al servidor en cada selección para recalcular siempre.
@@ -283,7 +346,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         <SView flex style={{
                             backgroundColor: UI.colors.header, borderRadius: 6, paddingVertical: 9, alignItems: "center", justifyContent: "center",
                             shadowColor: colorVenta, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8,
-                        }} onPress={() => {
+                        }} onPress={async () => {
                             const items = MDL.carrito.carrito_venta.items;
                             const itemConPrecioInvalido = items.find(it => {
                                 const precio = (it?.modelo as any)?.precio_venta_moneda || (it?.modelo as any)?.precio_venta || 0;
@@ -348,6 +411,19 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                     title: "Falta completar el combo",
                                     body: `Selecciona las opciones de "${recetaError.ingDesc}" en "${recetaError.itemDesc}".`,
                                     color: colorAdvertencia,
+                                    time: 6000,
+                                });
+                                console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
+                                return;
+                            }
+
+                            const stockMap = await getStockMapBySucursal(MDL.caja.activa?.key_sucursal);
+                            const stockOpcionError = validarStockOpcionesItems(items, stockMap);
+                            if (stockOpcionError) {
+                                SNotification.send({
+                                    title: stockOpcionError.motivo === "inactivo" ? "Producto inactivo" : "Sin stock",
+                                    body: `"${stockOpcionError.opDesc}" del combo "${stockOpcionError.itemDesc}" ${stockOpcionError.motivo === "inactivo" ? "está inactivo" : "no tiene stock"}.`,
+                                    color: STheme.color.danger,
                                     time: 6000,
                                 });
                                 console.warn("[ProKeybindings] archivo: condición no cumplida, se cancela.");
@@ -694,9 +770,19 @@ const ListaSuscripciones = ({ item }: any) => {
 
 const ListaReceta = ({ item }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
+    const [stockMap, setStockMap] = React.useState<Record<string, StockInfo>>({});
     const receta = item.modelo?.receta;
     const cantidadCarrito = item.cantidad || 0;
     const ingredientes = receta && Array.isArray(receta) ? receta : [];
+
+    // Stock/activo de las opciones del combo, en la sucursal de la caja activa.
+    React.useEffect(() => {
+        const key_sucursal = MDL.caja.activa?.key_sucursal;
+        if (!key_sucursal) return;
+        let vivo = true;
+        getStockMapBySucursal(key_sucursal).then((map) => { if (vivo) setStockMap(map); });
+        return () => { vivo = false; };
+    }, []);
 
     if (!receta || !Array.isArray(receta) || cantidadCarrito === 0 || ingredientes.length === 0) return null;
 
@@ -727,6 +813,7 @@ const ListaReceta = ({ item }: any) => {
                                     key={`combo-ing-${item.modelo.key}-${idx}-${u}`}
                                     ing={ing}
                                     unitIndex={u}
+                                    stockMap={stockMap}
                                 />
                             ))}
                         </SView>
@@ -737,42 +824,134 @@ const ListaReceta = ({ item }: any) => {
     );
 };
 
+// Selector numérico (MIN / - / input / + / MAX) usado para elegir cuántas unidades
+// de una misma opción del combo se quieren (permite repetir el mismo producto
+// varias veces hasta completar `ing.cantidad`). Basado en el InputCantidad de
+// Pages/productos/Components/Elaborar.tsx.
+const InputCantidad = React.forwardRef((props: any, ref: any) => {
+    const { getMax, getMin, onChangeText, ...rest } = props;
+    const input = React.useRef<SInput>(null);
+
+    React.useImperativeHandle(ref, () => ({
+        setValue: (value: any) => {
+            if (!input.current) return;
+            input.current.setValue(value);
+        },
+        getValue: () => {
+            if (!input.current) return;
+            return input.current.getValue();
+        }
+    }));
+
+    return (
+        <SView row center style={{ width: 96, height: 22, borderWidth: 1, borderColor: STheme.color.card, borderRadius: 4 }}>
+            <SView card style={{ width: 18, height: 20 }} center onPress={() => {
+                if (!input.current) return;
+                input.current.setValue("");
+            }}>
+                <SText style={{ fontSize: 6 }} center>{"MIN"}</SText>
+            </SView>
+            <SView card style={{ width: 18, height: 20 }} center onPress={() => {
+                if (!input.current) return;
+                const val = parseFloat(input.current.getValue() ?? 0) - 1;
+                if (val <= (getMin ? getMin() : 0)) {
+                    input.current.setValue("");
+                    return;
+                }
+                input.current.setValue(val);
+            }}>
+                <SText center>{"-"}</SText>
+            </SView>
+            <SView style={{ flex: 1, height: 20 }}>
+                <SInput
+                    ref={input}
+                    style={{ height: 20, fontSize: 12, backgroundColor: "transparent", paddingLeft: 2, paddingRight: 2 }}
+                    icon={<SView />}
+                    iconR={<SView />}
+                    customStyle={"erp"}
+                    type='money2'
+                    onChangeText={onChangeText}
+                    {...rest}
+                />
+            </SView>
+            <SView card style={{ width: 18, height: 20 }} center onPress={() => {
+                if (!input.current) return;
+                const toValue = parseFloat(input.current.getValue() || "0") + 1;
+                if (getMax && getMax() < toValue) return;
+                input.current.setValue(toValue);
+            }}>
+                <SText center>{"+"}</SText>
+            </SView>
+            <SView card style={{ width: 18, height: 20 }} center onPress={() => {
+                if (!input.current) return;
+                input.current.setValue(parseFloat((getMax ? getMax() : 0) || "0"));
+            }}>
+                <SText style={{ fontSize: 6 }} center>{"MAX"}</SText>
+            </SView>
+        </SView>
+    );
+});
+
 // Grupo de opciones de un ingrediente del combo para UNA unidad del carrito.
 // - Si solo hay 1 opción disponible: no hay nada que elegir, queda fija/incluida por defecto (bloqueada).
-// - Si hay más de 1 opción: se puede marcar con checkbox hasta completar `ing.cantidad` opciones.
+// - Si hay más de 1 opción: se elige, por opción, CUÁNTAS unidades de esa opción se quieren
+//   (con InputCantidad), permitiendo repetir la misma opción varias veces, hasta que la suma
+//   de todas las opciones complete `ing.cantidad`.
 // La selección se persiste en `ing.unidades[unitIndex]` (dentro de item.modelo.receta) para que
-// viaje junto al item en el registro de venta.
-const ComboIngredienteGroupBase = ({ ing, unitIndex }: any) => {
+// viaje junto al item en el registro de venta: un array con la opción repetida tantas veces como
+// cantidad elegida (así el `.length` sigue representando el total seleccionado).
+const ComboIngredienteGroupBase = ({ ing, unitIndex, stockMap }: any) => {
     const opciones: any[] = Array.isArray(ing.opciones) ? ing.opciones : [];
     const cantidadRequerida = Number(ing.cantidad) || 1;
     const esFijo = opciones.length <= 1;
 
     if (!Array.isArray(ing.unidades)) ing.unidades = [];
 
-    const persistir = React.useCallback((keys: string[]) => {
-        ing.unidades[unitIndex] = keys
-            .map((k) => opciones.find((o: any) => o.key_modelo === k))
-            .filter(Boolean);
+    const inputsRef = React.useRef<Record<string, any>>({});
+
+    const persistir = React.useCallback((cantidades: Record<string, number>) => {
+        const list: any[] = [];
+        opciones.forEach((o: any) => {
+            const n = Math.max(0, Math.floor(cantidades[o.key_modelo] || 0));
+            for (let i = 0; i < n; i++) list.push(o);
+        });
+        ing.unidades[unitIndex] = list;
     }, [ing, unitIndex, opciones]);
 
-    const inicial = React.useCallback(() => {
+    const inicial = React.useCallback((): Record<string, number> => {
         const guardada = ing.unidades[unitIndex];
+        const cantidades: Record<string, number> = {};
         if (Array.isArray(guardada) && guardada.length > 0) {
-            return guardada.map((o: any) => o?.key_modelo).filter(Boolean);
+            guardada.forEach((o: any) => {
+                const k = o?.key_modelo;
+                if (!k) return;
+                cantidades[k] = (cantidades[k] || 0) + 1;
+            });
+            return cantidades;
         }
         if (esFijo && opciones[0]) {
-            return Array.from({ length: cantidadRequerida }, () => opciones[0].key_modelo);
+            cantidades[opciones[0].key_modelo] = cantidadRequerida;
         }
-        return [];
+        return cantidades;
     }, [ing, unitIndex, esFijo, opciones, cantidadRequerida]);
 
-    const [seleccion, setSeleccion] = React.useState<string[]>(inicial);
+    const [cantidades, setCantidades] = React.useState<Record<string, number>>(inicial);
 
-    // Fija por defecto la única opción disponible (si aún no estaba persistida).
+    // Fija por defecto la única opción disponible (si aún no estaba persistida), y
+    // restaura en pantalla las cantidades ya guardadas de una selección previa.
     React.useEffect(() => {
-        if (esFijo && opciones[0] && !Array.isArray(ing.unidades[unitIndex])) {
-            persistir(seleccion);
+        if (esFijo) {
+            if (opciones[0] && !Array.isArray(ing.unidades[unitIndex])) {
+                persistir(cantidades);
+            }
+            return;
         }
+        Object.keys(cantidades).forEach((key) => {
+            const ref = inputsRef.current[key];
+            if (ref && cantidades[key]) {
+                ref.setValue(cantidades[key]);
+            }
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -786,22 +965,21 @@ const ComboIngredienteGroupBase = ({ ing, unitIndex }: any) => {
         );
     }
 
-    const toggleOpcion = (key_modelo: string) => {
-        if (esFijo) return;
-        setSeleccion((prev) => {
-            let next: string[];
-            if (prev.includes(key_modelo)) {
-                next = prev.filter((k) => k !== key_modelo);
+    const totalSeleccionado = Object.values(cantidades).reduce((a: number, b: number) => a + (Number(b) || 0), 0);
+    const completo = totalSeleccionado === cantidadRequerida;
+
+    const actualizarCantidad = (key_modelo: string, valor: number) => {
+        setCantidades((prev) => {
+            const next = { ...prev };
+            if (valor > 0) {
+                next[key_modelo] = valor;
             } else {
-                if (prev.length >= cantidadRequerida) return prev;
-                next = [...prev, key_modelo];
+                delete next[key_modelo];
             }
             persistir(next);
             return next;
         });
     };
-
-    const completo = seleccion.length === cantidadRequerida;
 
     return (
         <SView style={{ marginBottom: 8 }}>
@@ -813,21 +991,27 @@ const ComboIngredienteGroupBase = ({ ing, unitIndex }: any) => {
                     <SText fontSize={UI.font.tiny} color={STheme.color.textMuted}>{"(incluido)"}</SText>
                 ) : (
                     <SText fontSize={UI.font.tiny} color={completo ? colorVenta : colorAdvertencia}>
-                        {"("}{seleccion.length}{"/"}{cantidadRequerida}{")"}
+                        {"("}{totalSeleccionado}{"/"}{cantidadRequerida}{")"}
                     </SText>
                 )}
             </SView>
             <CampoObligatorio error={!esFijo && !completo} style={{ padding: 6 }}>
                 {opciones.map((op: any) => {
                     const key_modelo = op.key_modelo;
-                    const selected = esFijo ? true : seleccion.includes(key_modelo);
-                    const bloqueado = !esFijo && !selected && seleccion.length >= cantidadRequerida;
+                    const cantidadOpcion = cantidades[key_modelo] || 0;
+                    const restante = cantidadRequerida - (totalSeleccionado - cantidadOpcion);
+                    const info: StockInfo | undefined = stockMap?.[key_modelo];
+                    const sinStock = !!info && Number(info.stock) <= 0;
+                    const inactivo = !!info && Number(info.activo) === 0;
+                    // El fijo se incluye siempre (no hay otra opción entre la cual elegir);
+                    // solo se bloquea la selección cuando SÍ hay alternativas.
+                    const noDisponible = !esFijo && (sinStock || inactivo);
+                    const maxDisponible = noDisponible ? 0 : (info ? Math.max(0, Math.min(restante, Number(info.stock))) : restante);
                     return (
                         <SView
                             key={key_modelo}
                             row
-                            style={{ alignItems: "center", paddingVertical: 3, opacity: bloqueado ? 0.4 : 1 }}
-                            onPress={esFijo || bloqueado ? undefined : () => toggleOpcion(key_modelo)}
+                            style={{ alignItems: "center", paddingVertical: 3, opacity: noDisponible ? 0.5 : 1 }}
                         >
                             {esFijo ? (
                                 <SView style={{
@@ -837,13 +1021,49 @@ const ComboIngredienteGroupBase = ({ ing, unitIndex }: any) => {
                                 }}>
                                     <SIconApp name="bien" fill={STheme.color.lightGray} width={10} />
                                 </SView>
+                            ) : noDisponible ? (
+                                <SView style={{
+                                    width: 96, height: 22, borderRadius: 4, borderWidth: 1,
+                                    borderColor: STheme.color.danger + "60", alignItems: "center", justifyContent: "center",
+                                    backgroundColor: STheme.color.danger,
+                                }}>
+                                    <SText fontSize={9} color={STheme.color.text}>{inactivo ? "Inactivo" : "Sin stock"}</SText>
+                                </SView>
                             ) : (
-                                <CheckBox value={selected} onChange={() => toggleOpcion(key_modelo)} />
+                                <InputCantidad
+                                    ref={(r: any) => { inputsRef.current[key_modelo] = r; }}
+                                    getMax={() => maxDisponible}
+                                    getMin={() => 0}
+                                    onChangeText={(e: any) => {
+                                        if (e) {
+                                            const val = parseFloat(e);
+                                            if (isNaN(val)) return;
+                                            if (val > maxDisponible) {
+                                                actualizarCantidad(key_modelo, maxDisponible);
+                                                return maxDisponible;
+                                            }
+                                            actualizarCantidad(key_modelo, val);
+                                        } else {
+                                            actualizarCantidad(key_modelo, 0);
+                                        }
+                                    }}
+                                />
                             )}
                             <SView width={8} />
-                            <SText flex fontSize={UI.font.small} color={STheme.color.text}>
+                            <SText flex fontSize={UI.font.small} color={noDisponible ? STheme.color.lightGray : STheme.color.text}>
                                 {op.descripcion || "Sin descripción"}
                             </SText>
+                            {!!info && (
+                                <SView row style={{ alignItems: "center", gap: 4 }}>
+                                    <SText fontSize={UI.font.tiny} color={sinStock ? STheme.color.warning : STheme.color.lightGray}>
+                                        {`(${info.stock})`}
+                                    </SText>
+                                    {inactivo && (
+                                        <SText fontSize={UI.font.tiny} color={STheme.color.warning}>{"(Inactivo)"}</SText>
+                                    )}
+                                </SView>
+                            )}
+
                             {/* {!!op.precio_venta && (
                                 <SText fontSize={UI.font.tiny} color={STheme.color.lightGray}>
                                     {op.precio_venta}
@@ -858,7 +1078,7 @@ const ComboIngredienteGroupBase = ({ ing, unitIndex }: any) => {
 };
 
 const ComboIngredienteGroup = React.memo(ComboIngredienteGroupBase, (prev, next) => {
-    return prev.ing === next.ing && prev.unitIndex === next.unitIndex;
+    return prev.ing === next.ing && prev.unitIndex === next.unitIndex && prev.stockMap === next.stockMap;
 });
 
 // Parpadeo mientras `active` (campo obligatorio vacío) para llamar la atención.
@@ -879,22 +1099,24 @@ const useBlink = (active: boolean) => {
 };
 
 // Contenedor de campo obligatorio: borde/fondo rojo parpadeante si `error`, normal si no.
+// Siempre renderiza el mismo tipo de elemento (Animated.View) para que, al pasar de
+// error a completo (o viceversa), React NO desmonte/remonte a los hijos: si lo hiciera,
+// los InputCantidad de abajo (que guardan su valor de forma no controlada) perderían
+// lo ya tecleado justo al completarse la cantidad requerida.
 const CampoObligatorio = ({ error, flex, style, children }: any) => {
     const anim = useBlink(!!error);
     const base: any = { borderRadius: 6, borderWidth: 1, ...(flex ? { flex: 1 } : null), ...(style || {}) };
-    if (!error) {
-        return (
-            <SView style={{ ...base, backgroundColor: STheme.color.lightGray + "15", borderColor: STheme.color.lightGray + "35" }}>
-                {children}
-            </SView>
-        );
-    }
-    return (
-        <Animated.View style={{
-            ...base,
-            backgroundColor: anim.interpolate({ inputRange: [0, 1], outputRange: [STheme.color.danger + "12", STheme.color.danger + "55"] }),
+    const dynamicStyle = error
+        ? {
+            backgroundColor: anim.interpolate({ inputRange: [0, 1], outputRange: [STheme.color.danger + "12", STheme.color.danger + "20"] }),
             borderColor: anim.interpolate({ inputRange: [0, 1], outputRange: [STheme.color.danger + "40", STheme.color.danger] }),
-        }}>
+        }
+        : {
+            backgroundColor: STheme.color.lightGray + "15",
+            borderColor: STheme.color.lightGray + "35",
+        };
+    return (
+        <Animated.View style={{ ...base, ...dynamicStyle }}>
             {children}
         </Animated.View>
     );
