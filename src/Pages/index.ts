@@ -89,6 +89,7 @@ import tag from "./tag";
 import test3 from "./test3";
 import tabla from "./habilidad";
 import asistencia from "./asistencia";
+import molinete from "./molinete";
 import Asistencias from "./cliente/Asistencias";
 import Suscriptores from "./cliente/Suscriptores";
 import Test1 from "./test1";
@@ -187,6 +188,7 @@ export default SPage.combinePages("/", {
   ...contactos,
   ...tableros,
   ...asistencia,
+  ...molinete,
   ...costos,
   recharts,
   ...dashboard,

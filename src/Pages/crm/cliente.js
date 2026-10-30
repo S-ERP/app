@@ -9,6 +9,7 @@ import PButtom from '../../Components/PButtom';
 import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
+import { asignarHuellas, colHuella, escucharRegistroHuella, opcionHuella } from '../usuario/huella/tabla';
 
 const URL = "/crm/cliente";
 
@@ -16,7 +17,12 @@ const URL = "/crm/cliente";
 export default class cliente extends Component {
 
     onSelect = SNavigation.getParam("onSelect")
+    componentWillUnmount() {
+        this.dejarDeEscuchar?.();
+    }
+
     componentDidMount() {
+        this.dejarDeEscuchar = escucharRegistroHuella(() => this.DinamicTable?.loadData());
 
         MDL.rolesPermisos.getPermisoAsync({
             url: URL, permiso: "ver"
@@ -45,6 +51,7 @@ export default class cliente extends Component {
             Object.values(clientes).forEach(item => {
                 item.usuario = usuarios.find(u => u.key === item.key_usuario);
             });
+            await asignarHuellas(clientes);
             return clientes;
         } catch (error) {
             console.error('Error loading initial data:', error);
@@ -104,6 +111,11 @@ export default class cliente extends Component {
                                 });
                             }
                         })
+                        options.push(opcionHuella({
+                            key: row.key,
+                            nombre: [row.nombres, row.apellidos].filter(Boolean).join(" ") || row.razon_social,
+                            huella: row.huella,
+                        }));
                     }
 
                     if (MDL.rolesPermisos.getPermiso({
@@ -183,6 +195,7 @@ export default class cliente extends Component {
 
                 {/* <DinamicTable.Col key={"key"} label='ID' width={35} data={(e) => e.index + 1} /> */}
                 <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres} />
+                <DinamicTable.Col key="huella" label="Huella" width={110} {...colHuella} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={150} data={(e) => e.row.correo} />
                 <DinamicTable.Col key={"nit"} label='Nit' width={90} data={(e) => e.row.nit} />

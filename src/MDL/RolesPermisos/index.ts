@@ -218,4 +218,81 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
+    // Manuales de procedimientos (un manual se asigna a varios roles mediante manualRol)
+    async getAllManual() {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "manual",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_empresa": Model.empresa.Action.getKey()
+        })
+        return resp.data ?? {};
+    }
+
+    async registrarManual(data: any) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "manual",
+            "type": "registro",
+            "estado": "cargando",
+            "key_usuario": MDL.usuario.session?.key,
+            "data": { ...data, "key_empresa": Model.empresa.Action.getKey() }
+        })
+        return resp.data;
+    }
+
+    async editarManual(data: any) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "manual",
+            "type": "editar",
+            "estado": "cargando",
+            "key_usuario": MDL.usuario.session?.key,
+            "data": data
+        })
+        return resp.data;
+    }
+
+    async getAllManualRol() {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "manualRol",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_empresa": Model.empresa.Action.getKey()
+        })
+        return resp.data ?? {};
+    }
+
+    async registrarManualRol(key_manual: string, key_rol: string) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "manualRol",
+            "type": "registro",
+            "estado": "cargando",
+            "key_usuario": MDL.usuario.session?.key,
+            "data": { key_manual, key_rol, "key_empresa": Model.empresa.Action.getKey() }
+        })
+        return resp.data;
+    }
+
+    async editarManualRol(data: any) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "manualRol",
+            "type": "editar",
+            "estado": "cargando",
+            "key_usuario": MDL.usuario.session?.key,
+            "data": data
+        })
+        return resp.data;
+    }
 }

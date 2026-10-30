@@ -6,6 +6,7 @@ import Model from '../../Model';
 import { EditarUsuarioRol, EditarUsuarioRolEmpresa } from 'servisofts-rn-roles_permisos';
 import DatosDocumentos from './Components/DatosDocumentos';
 import AliasUsuario from './Components/AliasUsuario';
+import HuellasUsuario from './huella/HuellasUsuario';
 
 class index extends DPA.profile {
     constructor(props) {
@@ -43,6 +44,8 @@ class index extends DPA.profile {
             {/* <DatosDocumentosEditar key_usuario={this.pk} /> */}
             <SHr height={50} />
              <AliasUsuario key_usuario={this.pk} />
+             <SHr height={30} />
+            {this.$allowEdit() ? <HuellasUsuario key_usuario={this.pk} /> : null}
              <SHr height={30} />
             <EditarUsuarioRolEmpresa key_usuario={this.pk} key_empresa={Model.empresa.Action.getSelect()?.key} url={"/usuario"} permiso={"edit_rol"} />
             {/* <SHr height={50} /> */}

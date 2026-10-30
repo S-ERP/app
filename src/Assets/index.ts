@@ -1,6 +1,7 @@
 import { SAssets } from "servisofts-component";
 
 import Logo, { ReactComponent as LogoW } from "./svg/logo.svg";
+import Fp, { ReactComponent as FpW } from "./svg/fp.svg";
 import logoCompleto, { ReactComponent as logoCompletoW, } from "./svg/logoCompleto.svg";
 import profile2, { ReactComponent as profile2W } from "./svg/profile2.svg";
 import IconChecked, { ReactComponent as IconCheckedW, } from "./svg/iconChecked.svg";
@@ -344,6 +345,7 @@ import payMoney, { ReactComponent as payMoneyW } from "./svg/payMoney.svg";
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
+  Fp: { Native: Fp, Web: FpW },
 
 
   anular: { Native: anular, Web: anularW },

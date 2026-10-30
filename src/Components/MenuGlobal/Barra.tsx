@@ -73,6 +73,7 @@ export default class Barra extends React.Component {
             <SView col={"xs-12"} flex>
                 <ScrollView showsVerticalScrollIndicator={false} >
                     <Page label={"Home"} url={"/"} icon={<SIconApp name="ctaHome" stroke={STheme.color.text} fill="transparent" />} />
+                    <Page label={"Manuales"} url={"/rol/manual/mios"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     {/* <Page label={"Menu"} url={"/menu"} icon={<SIconApp name="Menu" fill={STheme.color.text} />} /> */}
                     <Page label={"Empresa"} icon={<ImagePage key_page="9b80fd4e-855c-430d-ad17-64449065eb3e" />} >
                         <Page label={"Perfil"} url={"/empresa"} permiso={"ver"} />
@@ -264,6 +265,7 @@ export default class Barra extends React.Component {
                         <Page label={"Asistencias"} url={"/asistencias"} />
                         <Page label={"Registrar asistencia"} url={"/asistencia"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Suscriptores"} url={"/suscriptores"} permiso="ver" />
+                        <Page label={"Molinetes"} url={"/molinete"} permiso="ver" />
 
                     </Page>{/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
@@ -281,6 +283,7 @@ export default class Barra extends React.Component {
                         {/* <Page label={"All"} url={"/usuario"} permiso="ver" /> */}
                         <Page label={"Usuarios"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
                         <Page label={"Roles y Permisos"} url={"/rol"} permiso="ver" />
+                        <Page label={"Manual de procedimientos"} url={"/rol/manual"} permiso="ver" permiso_url="/rol" />
                     </Page>
                     {/* <Page label={"Roles y Permisos"} url={"/rol"}
                         permiso="ver"

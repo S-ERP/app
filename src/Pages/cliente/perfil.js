@@ -6,6 +6,7 @@ import PopupCrearCliente from './Components/PopupCrearCliente';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
 import TurnoComponent from '../../Components/TurnoComponent';
 import PopupArticulos from './Components/PopupArticulos';
+import HuellasUsuario from '../usuario/huella/HuellasUsuario';
 const URL = "/crm/cliente";
 const COLOR_PROVEEDOR_BORDER = "#a046e8";
 const COLOR_PROVEEDOR_BG = "#a046e844";
@@ -169,10 +170,22 @@ export default class Perfil extends Component {
                     <SView col={"xs-12 md-12 lg-7"} padding={5}>
                         <Suscripcion cliente={this.data} onReload={this.loadData} loading={this.state.loading} />
                     </SView>
+                    {this.esProveedor || !MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' }) ? null :
+                        <SView col={"xs-12 md-6 lg-5"} padding={5}>
+                            <Huella cliente={this.data} loading={this.state.loading} />
+                        </SView>}
                 </SView>
             </SPage>
         );
     }
+}
+// La huella del cliente se guarda en zkteco con key_usuario = key del cliente.
+const Huella = ({ cliente, loading }) => {
+    return <SView col={"xs-12"} card padding={15} height style={cardTintStyle(cliente)}>
+        {loading || !cliente?.key
+            ? <><SkeletonLine width={120} height={16} /><SHr height={16} /><SkeletonLine width={220} height={60} /></>
+            : <HuellasUsuario key_usuario={cliente.key} nombre={[cliente.nombres, cliente.apellidos].filter(Boolean).join(" ") || cliente.razon_social} />}
+    </SView>
 }
 const Resumen = ({ cliente, loading }) => {
     return <SView col={"xs-12"} card center padding={15} height style={cardTintStyle(cliente)}>

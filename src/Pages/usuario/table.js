@@ -17,6 +17,7 @@ import FloatButtom from '../../Components/FloatButtom';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket';
 import FormCrearUsuario from './Components/FormCrearUsuario';
+import { asignarHuellas, colHuella, escucharRegistroHuella, opcionHuella } from './huella/tabla';
 
 
 const ImageLabel = ({ label, src, textStyle, wrap = true }) => {
@@ -32,6 +33,16 @@ const ImageLabel = ({ label, src, textStyle, wrap = true }) => {
 
 export default class table extends Component {
     static PERMISO = "ver"
+
+    componentDidMount() {
+        // Al volver de registrar una huella la tabla sigue montada: se recarga para actualizar la columna.
+        this.dejarDeEscuchar = escucharRegistroHuella(() => this.table?.loadData());
+    }
+
+    componentWillUnmount() {
+        this.dejarDeEscuchar?.();
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -63,6 +74,7 @@ export default class table extends Component {
                 usr.roles = roles;
                 return usr;
             }).filter(u => u && u.estado === "1");
+            await asignarHuellas(result);
 
             // const habilidad = await MDL.habilidad.getAllWithUsuarios();
             // result.forEach(user => {
@@ -193,6 +205,9 @@ export default class table extends Component {
 
                                 }
                             },
+                            ...(!Model.usuarioPage.Action.getPermiso({ url: "/usuario", permiso: "edit" }) ? [] : [
+                                opcionHuella({ key: e.row.key, nombre: e.row.Nombres + " " + e.row.Apellidos, huella: e.row.huella })
+                            ]),
                             {
                                 label: "Administrar Roles",
                                 icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
@@ -276,6 +291,7 @@ export default class table extends Component {
                     data={e => e.row.Correo}
                     width={200} />
 
+                <DinamicTable.Col key='huella' label='Huella' width={110} {...colHuella} />
                 <DinamicTable.Col
                     key='key-roles'
                     label='# roles'

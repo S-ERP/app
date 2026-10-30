@@ -12,6 +12,7 @@ import edit_datos from "./edit_datos";
 import _delete from "./delete";
 import restore from "./restore";
 import eliminados from "./eliminados";
+import huella_registro from "./huella/registro";
 const model = Model.usuario;
 
 export const Parent = {
@@ -30,6 +31,7 @@ export default SPage.combinePages(Parent.name, {
     "profile": profile,
     "edit": edit,
     "profile/edit_datos": edit_datos,
+    "profile/huella": huella_registro,
     "delete": _delete,
     "restore": restore
 })

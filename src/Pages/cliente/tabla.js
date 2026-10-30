@@ -6,6 +6,7 @@ import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
+import { asignarHuellas, colHuella, escucharRegistroHuella, opcionHuella } from '../usuario/huella/tabla';
 import PopupCrearCliente from './Components/PopupCrearCliente';
 import SIconApp from '../../Assets/SIconApp';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
@@ -40,10 +41,12 @@ export default class ListaClientes extends Component {
 				});
 			});
 		window.addEventListener("keydown", this.handleKeyDown);
+		this.dejarDeEscuchar = escucharRegistroHuella(() => this.DinamicTable?.loadData());
 	}
 
 	componentWillUnmount() {
 		window.removeEventListener("keydown", this.handleKeyDown);
+		this.dejarDeEscuchar?.();
 	}
 
 	handleKeyDown = (e) => {
@@ -136,6 +139,7 @@ export default class ListaClientes extends Component {
 					return filtro === "Deudor";
 				});
 			}
+			await asignarHuellas(data);
 			return data;
 		} catch (error) {
 			console.warn('Error al cargar los datos iniciales:', error);
@@ -343,6 +347,11 @@ export default class ListaClientes extends Component {
 								});
 							},
 						});
+						options.push(opcionHuella({
+							key: row.key,
+							nombre: [row.nombres, row.apellidos].filter(Boolean).join(" ") || row.razon_social,
+							huella: row.huella,
+						}));
 					}
 					if (row.ventas.length > 0) {
 						options.push({
@@ -423,6 +432,8 @@ export default class ListaClientes extends Component {
 				<DinamicTable.Col key="nombre_completo"
 					headerStyle={{ paddingLeft: 4 }}
 					label="Cliente" width={200} height={60} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderCliente(e)} />
+
+				<DinamicTable.Col key="huella" label="Huella" width={110} height={60} headerStyle={{ paddingLeft: 4 }} {...colHuella} />
 
 				<DinamicTable.Col key={"tipo_cliente"} label="Tipo cliente" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={100} height={80}
 					headerStyle={{ paddingLeft: 4 }}

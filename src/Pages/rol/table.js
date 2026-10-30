@@ -27,6 +27,7 @@ export default class table extends React.Component {
                     label: "Rol: " + e.row?.descripcion,
                     options: [
                         {  icon: <SIconApp name='permisos' fill={STheme.color.text} />, label: "Permisos",  onPress: () => { SNavigation.navigate("/rol/permiso", { key_rol: e.row.key }) } },
+                        { icon: <SIconApp name='Edit' />, label: "Manual de procedimientos", onPress: () => { SNavigation.navigate("/rol/manual", { key_rol: e.row.key }) } },
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Editar Rol",
