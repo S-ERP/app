@@ -12,6 +12,7 @@ import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
 export default class cajas extends React.Component {
     state = {
         loading: false,
+        simboloMoneda: "",
         fecha_inicio: null,
         fecha_fin: null,
         data: [],
@@ -29,8 +30,21 @@ export default class cajas extends React.Component {
 
     componentDidMount() {
         this._mounted = true;
+        this.loadMonedaBase();
         this.initDashboard();
     }
+
+    loadMonedaBase = async () => {
+        try {
+            const empresa = await MDL.empresa.getFull();
+            const monedaBase = empresa?.monedas?.find(moneda => moneda.tipo === "base");
+            if (this._mounted) this.setState({ simboloMoneda: monedaBase?.observacion ?? "" });
+        } catch (e) {
+            console.error("Error cargando moneda base:", e);
+        }
+    };
+
+    formatMonto = (monto) => `${this.state.simboloMoneda ?? ""} ${SMath.formatMoney(monto)}`.trim();
 
     componentWillUnmount() {
         this._mounted = false;
@@ -358,7 +372,7 @@ export default class cajas extends React.Component {
                             data={e => Number(e.row?.monto ?? e.row?.monto_total ?? e.row?.monto_base ?? 0)}
                             dataType="number"
                             cellStyle={e => ({ alignItems: "flex-end" })}
-                            format={e => `Bs ${SMath.formatMoney(e.data)}`}
+                            format={e => this.formatMonto(e.data)}
                         />
                         <DinamicTable.Col key="tipo_pago" label="Tipo pago" width={120} data={e => this.getPaymentKey(e.row) || ""} />
                         <DinamicTable.Col key="sucursal" label="Sucursal" width={140} data={e => e.row?.sucursal?.descripcion || e.row?.sucursal || ""} />
@@ -390,7 +404,7 @@ export default class cajas extends React.Component {
                 >
                     <SText fontSize={14} bold color={STheme.color.lightGray}>{title}</SText>
                     <SHr height={10} />
-                    <SText fontSize={22} bold color={color || STheme.color.text}>{`Bs ${SMath.formatMoney(amount)}`}</SText>
+                    <SText fontSize={22} bold color={color || STheme.color.text}>{this.formatMonto(amount)}</SText>
                     {/* {subtitle ? <SText fontSize={12} color={STheme.color.textGray}>{subtitle}</SText> : null} */}
                 </SView>
             </SView>

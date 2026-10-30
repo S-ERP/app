@@ -479,7 +479,7 @@ export default class ventas extends React.Component {
         try {
 
             const res = await MDL.inventario.execute_function(
-                "get_clientes_suscripcion_resumen_por_sucursal_filtro_fecha",
+                "rep_clientes_suscripcion_resumen_por_sucursal",
                 [MDL.empresa.select.key, null, this.state.fecha_inicio, this.state.fecha_fin]
             );
 
@@ -951,6 +951,49 @@ export default class ventas extends React.Component {
                             </SView>
                         );
                     })}
+                    {(() => {
+                        const sinSucursal = this.state.clientesActivos?.find(item => item.key_sucursal == null);
+                        if (!sinSucursal) return null;
+                        return (
+                            <SView key="sin_sucursal" col="xs-12 md-6 lg-3" padding={5}>
+                                <SView
+                                    card
+                                    style={{
+                                        padding: 15,
+                                        minHeight: 140,
+                                        borderRadius: 10,
+                                        borderTopWidth: 3,
+                                        borderTopColor: STheme.color.gray,
+                                        borderWidth: 0.5,
+                                        borderColor: STheme.color.gray,
+                                        backgroundColor: STheme.color.card,
+                                    }}
+                                >
+                                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <SText fontSize={14} bold>Clientes sin Sucursal</SText>
+                                        <SView style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: STheme.color.card, alignItems: 'center', justifyContent: 'center' }}>
+                                            <SIcon name="iconEdifcio" width={22} height={22} fill={STheme.color.text} />
+                                        </SView>
+                                    </SView>
+                                    <SHr />
+                                    <SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Clientes activos</SText>
+                                            <SText fontSize={12} bold>{Number(sinSucursal.clientes_activos || 0).toLocaleString('es-ES')}</SText>
+                                        </SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Nuevos clientes</SText>
+                                            <SText fontSize={12} bold>{Number(sinSucursal.nuevos_clientes || 0).toLocaleString('es-ES')}</SText>
+                                        </SView>
+                                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                            <SText fontSize={12} color={STheme.color.lightGray}>Reactivaciones</SText>
+                                            <SText fontSize={12} bold>{Number(sinSucursal.clientes_reactivados || 0).toLocaleString('es-ES')}</SText>
+                                        </SView>
+                                    </SView>
+                                </SView>
+                            </SView>
+                        );
+                    })()}
                 </SView>
             );
         };
