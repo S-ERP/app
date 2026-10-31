@@ -170,6 +170,11 @@ export default class lista extends Component {
                                 onPress: () => PopupHistorial.open({ dispositivo: e.row }),
                             },
                             {
+                                label: "Pantalla de ingresos",
+                                icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+                                onPress: () => SNavigation.navigate(URL + "/pantalla", { key_sucursal: e.row.sucursal?.key }),
+                            },
+                            {
                                 label: "Probar conexion",
                                 icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
                                 onPress: () => this.probar(e.row),

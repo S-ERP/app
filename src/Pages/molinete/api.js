@@ -1,5 +1,6 @@
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
+import MDL from '../../MDL';
 
 // Datos de los molinetes (dispositivos zkteco) de la empresa.
 // zkteco es compartido con Calistenia: punto_venta/getAll ya filtra por el servicio (serp)
@@ -117,6 +118,58 @@ export function accionPuerta(dispositivo, puerta, cerrar = false) {
 export async function getUsuariosDispositivo(key_dispositivo) {
     const resp = await zk("dispositivo", "getUsuariosActivos", { key_dispositivo }, 60000);
     return (Array.isArray(resp.data) ? resp.data : vals(resp.data)).filter(u => u.estado > 0);
+}
+
+// Sucursales de la empresa que tienen al menos un punto de venta zkteco (para la pantalla de ingresos).
+export async function getSucursalesConMolinete() {
+    const [sucursales, puntos] = await Promise.all([
+        getSucursalesEmpresa(),
+        zk("punto_venta", "getAll").then(e => vals(e.data)),
+    ]);
+    const keys = new Set(puntos.filter(p => p.estado > 0).map(p => p.key_sucursal));
+    return Object.values(sucursales).filter(s => keys.has(s.key));
+}
+
+// La pantalla de ingresos se suscribe a su sucursal; el server serp le manda zkteco/ingreso por cada marcacion
+// (ver ZKTecoIngresos). La suscripcion vive en la sesion del socket: hay que repetirla si se reconecta.
+export function suscribirIngresos(key_sucursal) {
+    return SSocket.sendPromise({ component: "zkteco", type: "suscribirIngresos", estado: "cargando", key_sucursal }, 15000);
+}
+
+// Como se muestra a una persona en la pantalla de ingresos: solo el primer nombre y la inicial del apellido.
+const persona = (nombres, apellidos, extra) => {
+    const n = (nombres ?? "").trim().split(/\s+/)[0] ?? "";
+    const a = (apellidos ?? "").trim();
+    return {
+        nombre: [nombres, apellidos].filter(Boolean).join(" "),
+        corto: (n + (a ? " " + a[0] + "." : "")).trim(),
+        iniciales: ((n[0] ?? "") + (a[0] ?? "")).toUpperCase(),
+        ...extra,
+    };
+};
+
+// Datos para mostrar a quien ingreso: nombre, y si es cliente, el plan de su suscripcion.
+export async function getPersonaIngreso(ingreso) {
+    const key = ingreso.key_usuario;
+    if (ingreso.tipo != "personal") {
+        const cliente = await MDL.crm.cliente.getByKey(key).catch(() => null);
+        if (cliente?.key) {
+            let plan = null;
+            const key_susc = ingreso.suscripcion?.key_suscripcion;
+            if (key_susc) {
+                const susc = await MDL.inventario.getSuscripcionesByCliente(key).catch(() => []);
+                // producto viene como objeto (descripcion, nombre, ...), no como texto.
+                const producto = susc.find(s => s.key == key_susc)?.producto;
+                plan = typeof producto == "string" ? producto : (producto?.descripcion || producto?.nombre || null);
+            }
+            if (!cliente.nombres && !cliente.apellidos) return persona(cliente.razon_social || "Cliente", "", { tipo: "cliente", plan });
+            return persona(cliente.nombres, cliente.apellidos, { tipo: "cliente", plan });
+        }
+    }
+    const usuarios = await MDL.usuario.getByKeys([key]).catch(() => []);
+    const u = (Array.isArray(usuarios) ? usuarios : Object.values(usuarios ?? {}))[0];
+    if (!u) return persona("Pin " + ingreso.pin, "", { tipo: ingreso.tipo });
+    return persona(u.Nombres, u.Apellidos, { tipo: "personal" });
 }
 
 // Keys de quienes deberian tener acceso hoy a la sucursal (consulta del server serp, ver ZKTecoAccesos).
