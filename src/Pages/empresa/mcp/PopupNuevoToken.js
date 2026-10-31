@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { SHr, SInput, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SCopy from '../../../Components/SCopy';
-import { crearToken } from './api';
+import MDL from '../../../MDL';
+import { crearToken, getUsuariosEmpresa } from './api';
 
 const KEY = "PopupNuevoToken";
 const ALCANCES = [
@@ -28,7 +29,15 @@ export default class PopupNuevoToken extends Component {
         });
     }
 
-    state = { descripcion: "", alcance: "lectura", vencimiento: "", guardando: false, token: null };
+    state = { descripcion: "", alcance: "lectura", vencimiento: "", guardando: false, token: null, usuarios: null, dueno: null, buscar: "" };
+
+    // Con /empresa/mcp otro_usuario se puede crear el token a nombre de otro usuario de la empresa.
+    puedeOtro = () => !!MDL.rolesPermisos.getPermiso({ url: "/empresa/mcp", permiso: "otro_usuario" });
+
+    componentDidMount() {
+        if (!this.puedeOtro()) return;
+        getUsuariosEmpresa().then(usuarios => this.setState({ usuarios })).catch(() => this.setState({ usuarios: [] }));
+    }
 
     async crear() {
         const descripcion = this.state.descripcion.trim();
@@ -42,6 +51,7 @@ export default class PopupNuevoToken extends Component {
                 descripcion,
                 alcance: this.state.alcance,
                 ...(this.state.vencimiento && { fecha_vencimiento: this.state.vencimiento + "T23:59:59" }),
+                ...(this.state.dueno && { key_usuario_token: this.state.dueno.key }),
             });
             this.setState({ token: t.token, guardando: false });
             this.props.onCreate?.();
@@ -55,7 +65,7 @@ export default class PopupNuevoToken extends Component {
         return <SView col={"xs-12"}>
             <SText fontSize={16} bold>Token creado</SText>
             <SHr height={8} />
-            <SText color={STheme.color.warning}>Cópielo ahora: no se volverá a mostrar.</SText>
+            <SText color={STheme.color.gray}>{this.state.dueno ? `Usuario: ${this.state.dueno.nombre}. ` : ""}Puedes volver a verlo desde la lista de tokens.</SText>
             <SHr height={12} />
             <SView card style={{ padding: 12, borderRadius: 8 }} onPress={() => SCopy.copy(this.state.token)}>
                 <SText fontSize={13} style={{ fontFamily: "monospace" }}>{this.state.token}</SText>
@@ -69,6 +79,31 @@ export default class PopupNuevoToken extends Component {
         </SView>
     }
 
+    renderDueno() {
+        if (!this.puedeOtro()) return null;
+        const { usuarios, dueno, buscar } = this.state;
+        const t = buscar.trim().toLowerCase();
+        const lista = (usuarios ?? []).filter(u => !t || u.nombre.toLowerCase().includes(t)).slice(0, 6);
+        return <SView col={"xs-12"}>
+            <SHr height={8} />
+            <SText fontSize={12} color={STheme.color.gray}>Usuario del token</SText>
+            <SHr height={4} />
+            {dueno ? <SView card row center style={{ padding: 10, borderRadius: 8 }}>
+                <SText flex bold>{dueno.nombre}</SText>
+                <SText color={STheme.color.gray} onPress={() => this.setState({ dueno: null })}>Cambiar</SText>
+            </SView> : <>
+                <SText fontSize={11} color={STheme.color.gray}>Vacío = tú mismo. Para crear el token de otro usuario, búscalo:</SText>
+                <SHr height={4} />
+                <SInput placeholder={usuarios ? "Buscar usuario..." : "Cargando usuarios..."} value={buscar}
+                    style={{ height: 38, borderRadius: 8 }} onChangeText={buscar => this.setState({ buscar })} />
+                {!t ? null : lista.map(u => <SView key={u.key} card style={{ padding: 8, borderRadius: 6, marginTop: 4 }}
+                    onPress={() => this.setState({ dueno: u, buscar: "" })}>
+                    <SText>{u.nombre}</SText>
+                </SView>)}
+            </>}
+        </SView>
+    }
+
     render() {
         if (this.state.token) return this.renderToken();
         return <SView col={"xs-12"}>
@@ -79,7 +114,7 @@ export default class PopupNuevoToken extends Component {
                 </SView>
             </SView>
             <SHr height={4} />
-            <SText fontSize={12} color={STheme.color.gray}>Permite que un asistente (Claude) trabaje con los datos de esta empresa, con tus permisos.</SText>
+            <SText fontSize={12} color={STheme.color.gray}>Permite que un asistente (Claude) trabaje con los datos de esta empresa. El token es de un usuario: actúa como él y con sus permisos.</SText>
             <SHr height={16} />
             <SInput placeholder="Descripción (ej: Claude de contabilidad)" value={this.state.descripcion}
                 style={{ height: 38, borderRadius: 8 }} onChangeText={descripcion => this.setState({ descripcion })} />
@@ -93,6 +128,7 @@ export default class PopupNuevoToken extends Component {
                     <SText fontSize={11} color={STheme.color.gray}>{a.detalle}</SText>
                 </SView>
             </SView>)}
+            {this.renderDueno()}
             <SHr height={8} />
             <SInput placeholder="Vence el (AAAA-MM-DD, opcional)" value={this.state.vencimiento}
                 style={{ height: 38, borderRadius: 8 }} onChangeText={vencimiento => this.setState({ vencimiento })} />

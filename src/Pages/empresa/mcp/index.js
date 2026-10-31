@@ -4,8 +4,10 @@ import { DinamicTable } from 'servisofts-table';
 import MDL from '../../../MDL';
 import Config from '../../../Config';
 import FloatMenu from '../../../Components/FloatMenu';
-import { anularToken, getTokens } from './api';
+import Model from '../../../Model';
+import { anularToken, getTokens, getUsuariosEmpresa } from './api';
 import PopupNuevoToken from './PopupNuevoToken';
+import PopupVerToken from './PopupVerToken';
 
 const URL = "/empresa/mcp";
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
@@ -29,9 +31,19 @@ export default class index extends Component {
         })
     }
 
+    nombres = {};
+    nombre = (key) => this.nombres[key] ?? (key ? key.slice(0, 8) + "…" : "");
+
+    // Ver el token: el dueño, quien lo creó, o con /empresa/mcp otro_usuario.
+    puedeVer = (row) => {
+        const yo = Model.usuario.Action.getKey();
+        return row.visible && (row.key_usuario == yo || row.key_usuario_creador == yo || puede("otro_usuario"));
+    }
+
     async loadData() {
         try {
-            const tokens = await getTokens();
+            const [tokens, usuarios] = await Promise.all([getTokens(), getUsuariosEmpresa().catch(() => [])]);
+            usuarios.forEach(u => this.nombres[u.key] = u.nombre);
             return tokens.sort((a, b) => String(b.fecha_on).localeCompare(String(a.fecha_on)));
         } catch (e) {
             SNotification.send({ title: "Error", body: e?.error ?? "No se pudo cargar los tokens.", color: STheme.color.danger, time: 4000 });
@@ -71,20 +83,25 @@ export default class index extends Component {
                 language='es'
                 loadData={this.loadData.bind(this)}
                 onSelect={(e) => {
-                    if (!puede("delete") || e.row.estado <= 0) return;
-                    FloatMenu.open({
-                        e: e.evt,
-                        label: e.row.descripcion,
-                        options: [{
-                            label: "Anular token",
-                            icon: <SIcon name="Delete" fill={STheme.color.text} />,
-                            onPress: () => this.anular(e.row),
-                        }]
-                    })
+                    const options = [];
+                    if (e.row.estado > 0 && this.puedeVer(e.row)) options.push({
+                        label: "Ver token",
+                        icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+                        onPress: () => PopupVerToken.open({ row: e.row, usuario: this.nombre(e.row.key_usuario) }),
+                    });
+                    if (e.row.estado > 0 && puede("delete")) options.push({
+                        label: "Anular token",
+                        icon: <SIcon name="Delete" fill={STheme.color.text} />,
+                        onPress: () => this.anular(e.row),
+                    });
+                    if (!options.length) return;
+                    FloatMenu.open({ e: e.evt, label: e.row.descripcion, options })
                 }}
             >
                 <DinamicTable.Col key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }} data={e => e.index + 1} width={30} />
                 <DinamicTable.Col key='descripcion' label='Descripción' data={e => e.row.descripcion} width={220} />
+                <DinamicTable.Col key='usuario' label='Usuario' data={e => this.nombre(e.row.key_usuario)} width={180} />
+                <DinamicTable.Col key='creador' label='Creado por' data={e => this.nombre(e.row.key_usuario_creador || e.row.key_usuario)} width={160} />
                 <DinamicTable.Col key='alcance' label='Alcance' data={e => e.row.alcance == "escritura" ? "Lectura y escritura" : "Solo lectura"} width={130} />
                 <DinamicTable.Col key='token_prefijo' label='Token' data={e => (e.row.token_prefijo ?? "") + "…"} width={120} />
                 <DinamicTable.Col key='estado' label='Estado' width={90}
