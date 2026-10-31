@@ -102,8 +102,9 @@ export default class index extends Component {
                 <DinamicTable.Col key='descripcion' label='Descripción' data={e => e.row.descripcion} width={220} />
                 <DinamicTable.Col key='usuario' label='Usuario' data={e => this.nombre(e.row.key_usuario)} width={180} />
                 <DinamicTable.Col key='creador' label='Creado por' data={e => this.nombre(e.row.key_usuario_creador || e.row.key_usuario)} width={160} />
+                <DinamicTable.Col key='origen' label='Tipo' data={e => e.row.origen == "oauth" ? "Conexión (claude.ai)" : "Token"} width={150} />
                 <DinamicTable.Col key='alcance' label='Alcance' data={e => e.row.alcance == "escritura" ? "Lectura y escritura" : "Solo lectura"} width={130} />
-                <DinamicTable.Col key='token_prefijo' label='Token' data={e => (e.row.token_prefijo ?? "") + "…"} width={120} />
+                <DinamicTable.Col key='token_prefijo' label='Token' data={e => e.row.origen == "oauth" ? "—" : (e.row.token_prefijo ?? "") + "…"} width={120} />
                 <DinamicTable.Col key='estado' label='Estado' width={90}
                     data={e => estadoToken(e.row).label}
                     customComponent={e => { const s = estadoToken(e.row); return <SText color={s.color}>{s.label}</SText> }} />
