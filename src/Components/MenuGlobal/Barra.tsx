@@ -85,6 +85,7 @@ export default class Barra extends React.Component {
 
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
                         <Page label={"Tipos de cliente"} url={"/tipo_cliente"} />
+                        <Page label={"Tokens MCP"} url={"/empresa/mcp"} permiso={"ver"} />
                     </Page>
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
