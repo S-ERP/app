@@ -78,9 +78,8 @@ export default class Suscriptores extends Component {
 		);
 	}
 
-	renderValidofecha(obj) {
-		if (!obj) return null;
-
+	// Texto y color del estado según las fechas; el texto también lo usa la columna para exportar/filtrar.
+	getEstadoFecha(obj) {
 		const now = new Date();
 		const fechaInicio = obj.fecha_inicio ? new Date(obj.fecha_inicio) : null;
 		const fechaFin = obj.fecha_fin ? new Date(obj.fecha_fin) : null;
@@ -98,6 +97,13 @@ export default class Suscriptores extends Component {
 			mensaje = "Futuro";
 			backgroundColor = "#595959";
 		}
+
+		return { mensaje, backgroundColor };
+	}
+
+	renderValidofecha(obj) {
+		if (!obj) return null;
+		const { mensaje, backgroundColor } = this.getEstadoFecha(obj);
 
 		return (
 			<SView col="xs-12" center row style={{ justifyContent: "center" }}>
@@ -426,7 +432,7 @@ export default class Suscriptores extends Component {
 				<DinamicTable.Col key={"var1_"} label='Precio' width={70} data={(e) => e.row?.producto?.precio && SMath.formatMoney(e.row?.producto?.precio)} />
 				<DinamicTable.Col key="var2_" label="Modelo" width={120} data={e => e.row?.modelo?.descripcion} />
 
-				<DinamicTable.Col key="estado_fecha_" label="Estado" width={100} data={(e) => e.row?.fecha_fin ?? ""} customComponent={e => this.renderValidofecha(e.row)} />
+				<DinamicTable.Col key="estado_fecha_" label="Estado" width={100} data={(e) => e.row ? this.getEstadoFecha(e.row).mensaje : ""} customComponent={e => this.renderValidofecha(e.row)} />
 
 				{ }
 				{ }
