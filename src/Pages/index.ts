@@ -96,6 +96,7 @@ import Test1 from "./test1";
 import costos from "./costos";
 import recharts from "./recharts/recharts";
 import dashboard from "./dashboard";
+import cybersource from "./cybersource";
 
 import SForm2Page from "../Components/SForm2/test";
 
@@ -192,5 +193,6 @@ export default SPage.combinePages("/", {
   ...costos,
   recharts,
   ...dashboard,
+  ...cybersource,
   "SForm2": SForm2Page,
 });
