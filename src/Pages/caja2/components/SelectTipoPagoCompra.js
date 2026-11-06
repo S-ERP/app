@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, SectionList } from 'react-native';
-import { SGradient, SHr, SInput, SLoad, SMath, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SGradient, SHr, SInput, SLoad, SMath, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import PagarConPasarela from '../../pasarela/Components/PagarConPasarela';
@@ -110,6 +110,11 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         this.pvtp.sort((a, b) => {
             return a.tipo_pago?.orden - b.tipo_pago?.orden
         })
+        // Tipo de pasarela de cada tipo de pago (p. ej. "cybersource": la venta solo se acepta con el pago aprobado).
+        if (this.pvtp.some(a => a.key_pasarela_empresa)) {
+            const pes = await MDL.caja.pasarela_empresa.getAll().catch(() => []);
+            this.pvtp.forEach(a => { a.__pasarela = pes.find(pe => pe.key == a.key_pasarela_empresa)?.key_pasarela; });
+        }
         this.setState({ ready: true });
     }
     get headerColor() {
@@ -252,7 +257,17 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     />
                                 </SView>
                             </SView>
-                            {item.key_pasarela_empresa && (
+                            {item.key_pasarela_empresa && item.__pasarela == "cybersource" && (
+                                item.__pago_tarjeta && item.__pago_tarjeta.monto == MDL.contabilidad.round(parseFloat(item.monto))
+                                    ? <SView style={{ paddingVertical: 6, paddingHorizontal: 10, backgroundColor: colorExito + "22", borderRadius: 4, alignSelf: "flex-end", marginTop: 4 }}>
+                                        <SText fontSize={11} color={colorExito} bold>{"✓ Pagado con tarjeta · Aut " + (item.__pago_tarjeta.cybersource?.aprobacion ?? "")}</SText>
+                                    </SView>
+                                    : <SView style={{ paddingVertical: 6, paddingHorizontal: 10, backgroundColor: colorVenta, borderRadius: 4, alignSelf: "flex-end", marginTop: 4 }}
+                                        onPress={() => this.cobrarConTarjeta(item)}>
+                                        <SText fontSize={11} color={STheme.color.white} bold>{"Cobrar con tarjeta"}</SText>
+                                    </SView>
+                            )}
+                            {item.key_pasarela_empresa && item.__pasarela != "cybersource" && (
                                 <SView style={{ paddingVertical: 6, paddingHorizontal: 10, backgroundColor: STheme.color.card, borderRadius: 4, alignSelf: "flex-end" }}
                                     onPress={() => PagarConPasarela.open({ key_pasarela_empresa: item.key_pasarela_empresa, monto: item.monto })}>
                                     <SText fontSize={11} color={STheme.color.lightGray}>{"Pagar con pasarela"}</SText>
@@ -263,6 +278,29 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                 </>}
             </SView>
         </SView>
+    }
+    // Cobro con tarjeta (pasarela cybersource): el cliente paga por QR/link y al aprobarse queda la referencia.
+    cobrarConTarjeta(item) {
+        const monto = MDL.contabilidad.round(parseFloat(item.monto));
+        if (!(monto > 0)) {
+            SNotification.send({ title: "Monto inválido", body: "Ingresa el monto a cobrar con tarjeta.", color: STheme.color.warning, time: 3000 });
+            return;
+        }
+        PagarConPasarela.open({
+            key_pasarela_empresa: item.key_pasarela_empresa,
+            monto,
+            descripcion: this.props.descripcion || "Venta",
+            onSuccess: (r) => {
+                item.__pago_tarjeta = r;
+                item.referencia = r.referencia;
+                this.forceUpdate();
+            },
+        });
+    }
+    // Tipos de pago con tarjeta seleccionados que aún no tienen un pago aprobado por su monto.
+    tarjetasPendientes() {
+        return this.pvtp.filter(a => a.__select && a.__pasarela == "cybersource"
+            && !(a.__pago_tarjeta && a.__pago_tarjeta.monto == MDL.contabilidad.round(parseFloat(a.monto))));
     }
     calcularMontoInsertadoNum() {
         let montoTotal = 0;
@@ -390,6 +428,12 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                         }}
                             onPress={(this.state.loading || !puedeConfirmar) ? undefined : async () => {
                                 if (this._submitting) return;
+                                const pendientes = this.tarjetasPendientes();
+                                if (pendientes.length) {
+                                    SNotification.send({ title: "Falta cobrar con tarjeta", body: "La venta se registra cuando el pago con tarjeta esté aprobado.", color: STheme.color.warning, time: 4000 });
+                                    this.cobrarConTarjeta(pendientes[0]);
+                                    return;
+                                }
                                 this._submitting = true;
                                 let montoTotal = 0;
                                 const elm = {};
