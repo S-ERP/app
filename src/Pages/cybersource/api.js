@@ -31,6 +31,7 @@ export const ESTADOS = {
     DECLINED: { label: "Rechazado", color: "danger" },
     ERROR: { label: "Error", color: "danger" },
     ANULADA: { label: "Anulado", color: "lightGray" },
+    REEMBOLSADA: { label: "Reembolsado", color: "lightGray" },
 };
 
 export const moneda = (m, cod = "BOB") => `${cod == "BOB" ? "Bs" : cod} ${Number(m ?? 0).toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

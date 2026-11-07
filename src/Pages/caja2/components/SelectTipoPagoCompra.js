@@ -259,6 +259,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 <SText style={{ marginRight: 2 }} >REF:  </SText>
                                 <SView flex row center >
                                     <SInput2
+                                        ref={ref => item.__ref_referencia = ref}
                                         placeholder="Referencia / Descripción"
                                         style={{ width: "100%", textAlign: "left", fontSize: 14, paddingRight: 4 }}
                                         defaultValue={item.referencia || ""}
@@ -310,6 +311,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             onSuccess: (r) => {
                 item.__pago_tarjeta = r;
                 item.referencia = r.referencia;
+                item.__ref_referencia?.setValue?.(r.referencia);
                 this.forceUpdate();
             },
         });
