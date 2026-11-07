@@ -8,6 +8,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import SCopy from '../../Components/SCopy';
 import { ESTADOS, URL, anularLink, fecha, getEstado, getPagos, moneda } from './api';
 import PopupNuevoLink from './PopupNuevoLink';
+import Nav from './Nav';
 
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
 const ymd = (d) => d.toISOString().slice(0, 10);
@@ -114,6 +115,7 @@ export default class pagos extends Component {
 
     render() {
         return <SPage title={"Cybersource · Pagos con tarjeta"} disableScroll>
+            <Nav activo="" />
             {this.renderAviso()}
             {this.renderResumen()}
             {this.renderFiltros()}

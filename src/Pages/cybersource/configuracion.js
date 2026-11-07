@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native';
 import { SHr, SInput, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../MDL';
 import { URL, getConfig, guardarConfig, probarConfig } from './api';
+import Nav from './Nav';
 
 const Btn = ({ label, color, onPress, disabled }) => <SView card center onPress={disabled ? null : onPress}
     style={{ height: 38, borderRadius: 8, paddingHorizontal: 16, backgroundColor: color, opacity: disabled ? 0.6 : 1 }}>
@@ -88,6 +89,7 @@ export default class configuracion extends Component {
         const s = this.state, set = (k) => (v) => this.setState({ [k]: v });
         if (s.cargando) return <SPage title={"Cybersource · Configuración"}><SText center>Cargando…</SText></SPage>;
         return <SPage title={"Cybersource · Configuración"} disableScroll>
+            <Nav activo="/configuracion" />
             <ScrollView><SView col={"xs-12"} center><SView col={"xs-12 md-10 lg-8 xl-6"} style={{ padding: 12 }}>
 
                 <SView row style={{ alignItems: "center", marginBottom: 12 }}>
