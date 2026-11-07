@@ -102,8 +102,11 @@ export default class configuracion extends Component {
                 <Seccion titulo="Comercio">
                     <Campo label="Nombre que ve el cliente en la página de pago" placeholder="Calistenia Bolivia" value={s.descripcion} onChangeText={set("descripcion")} />
                     <Campo label="Razón social (MDD 7)" placeholder="CALISTENIA BOLIVIA SRL" value={s.razon_social} onChangeText={set("razon_social")} />
-                    <Campo label="Rubro (MDD 14)" placeholder="Gimnasio" value={s.rubro} onChangeText={set("rubro")}
-                        ayuda="Datos que Linkser pide para el antifraude (Decision Manager)." />
+                    <SHr height={10} />
+                    <SText fontSize={11} color={STheme.color.lightGray}>
+                        Datos para el antifraude de Linkser (Decision Manager). Además se envían siempre: canal "Web" (MDD 9),
+                        vertical "Servicios" (MDD 14) y el número de organización del Merchant ID (MDD 87), como pidió Linkser.
+                    </SText>
                 </Seccion>
 
                 <Seccion titulo="Credenciales de Cybersource">
