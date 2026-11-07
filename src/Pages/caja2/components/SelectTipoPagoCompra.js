@@ -267,7 +267,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                 </SView>
                             </SView>
                             {item.__pasarela == "cybersource" && (
-                                item.__pago_tarjeta && item.__pago_tarjeta.monto == MDL.contabilidad.round(parseFloat(item.monto))
+                                item.__pago_tarjeta && item.__pago_tarjeta.monto == this.montoTarjeta(item)
                                     ? <SView style={{ paddingVertical: 6, paddingHorizontal: 10, backgroundColor: colorExito + "22", borderRadius: 4, alignSelf: "flex-end", marginTop: 4 }}>
                                         <SText fontSize={11} color={colorExito} bold>{"✓ Pagado con tarjeta · Aut " + (item.__pago_tarjeta.cybersource?.aprobacion ?? "")}</SText>
                                     </SView>
@@ -289,8 +289,12 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         </SView>
     }
     // Cobro con tarjeta (pasarela cybersource): el cliente paga por QR/link y al aprobarse queda la referencia.
+    // El cobro va en la moneda del tipo de pago (Cybersource cobra en BOB): item.monto está en moneda base.
+    montoTarjeta(item) {
+        return MDL.contabilidad.round(parseFloat(item.monto) / parseFloat(item.moneda?.tipo_cambio || 1));
+    }
     cobrarConTarjeta(item) {
-        const monto = MDL.contabilidad.round(parseFloat(item.monto));
+        const monto = this.montoTarjeta(item);
         if (!(monto > 0)) {
             SNotification.send({ title: "Monto inválido", body: "Ingresa el monto a cobrar con tarjeta.", color: STheme.color.warning, time: 3000 });
             return;
@@ -313,7 +317,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
     // Tipos de pago con tarjeta seleccionados que aún no tienen un pago aprobado por su monto.
     tarjetasPendientes() {
         return this.pvtp.filter(a => a.__select && a.__pasarela == "cybersource"
-            && !(a.__pago_tarjeta && a.__pago_tarjeta.monto == MDL.contabilidad.round(parseFloat(a.monto))));
+            && !(a.__pago_tarjeta && a.__pago_tarjeta.monto == this.montoTarjeta(a)));
     }
     calcularMontoInsertadoNum() {
         let montoTotal = 0;
