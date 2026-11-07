@@ -104,8 +104,9 @@ export default class tienda extends Component {
                     <SInput defaultValue={p.nombre ?? ""} placeholder={modelo?.descripcion ?? "Plan Mensual"} onChangeText={(v) => this.setProd(i, "nombre", v)} style={{ height: 38, borderRadius: 8 }} />
                 </Campo>
                 <Campo label="Modalidad" col="xs-6 md-3">
-                    <Select value={p.modalidad ?? "unico"} vacio="Pago único" options={[{ key: "cuotas", content: "Cuotas mensuales (débito automático)" }]}
-                        onChange={(v) => this.setProd(i, "modalidad", v || "unico")} />
+                    <SInput type="select" key={"mod" + (p.modalidad ?? "unico")} defaultValue={p.modalidad ?? "unico"} style={{ height: 38, borderRadius: 8 }}
+                        options={[{ key: "unico", content: "Pago único" }, { key: "cuotas", content: "Cuotas mensuales (débito automático)" }]}
+                        onChangeText={(v) => this.setProd(i, "modalidad", v || "unico")} />
                 </Campo>
                 {cuotas ? <Campo label="Cantidad de cuotas (meses)" col="xs-6 md-3">
                     <SInput defaultValue={String(p.cuotas ?? 12)} type="number" onChangeText={(v) => this.setProd(i, "cuotas", v)} style={{ height: 38, borderRadius: 8 }} />
@@ -167,7 +168,7 @@ export default class tienda extends Component {
                 <Seccion titulo="Registro de las ventas">
                     <SView row style={{ flexWrap: "wrap" }}>
                         <Campo label="Punto de venta (caja automática)">
-                            <Select value={t.key_punto_venta} options={(op.puntos_venta ?? []).map(x => ({ key: x.key, content: x.descripcion }))} onChange={(v) => this.set("key_punto_venta", v)} />
+                            <Select value={t.key_punto_venta} options={(op.puntos_venta ?? []).map(x => ({ key: x.key, content: `${x.descripcion} · ${x.sucursal ?? ""}` }))} onChange={(v) => this.set("key_punto_venta", v)} />
                         </Campo>
                         <Campo label="Almacén">
                             <Select value={t.key_almacen} options={(op.almacenes ?? []).map(x => ({ key: x.key, content: x.descripcion }))} onChange={(v) => this.set("key_almacen", v)} />
