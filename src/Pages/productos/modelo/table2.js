@@ -109,7 +109,8 @@ export default class table2 extends React.Component {
             row.key_tipo_producto !== orig.key_tipo_producto ||
             row.key_marca !== orig.key_marca ||
             row.precio_compra_moneda !== orig.precio_compra_moneda ||
-            row.precio_venta_moneda !== orig.precio_venta_moneda;
+            row.precio_venta_moneda !== orig.precio_venta_moneda ||
+            (row.venta_caja !== false) !== (orig.venta_caja !== false);
 
         this.setState(prev => {
             const next = new Set(prev.dirtyRows);
@@ -153,6 +154,7 @@ export default class table2 extends React.Component {
                     precio_venta_moneda: m.precio_venta_moneda,
                     codigo_ref: m.codigo_ref,
                     stock: m.stock,
+                    venta_caja: m.venta_caja,
                 };
             });
 
@@ -281,6 +283,7 @@ export default class table2 extends React.Component {
                         codigo_ref: row.codigo_ref,
                         precio_compra_moneda: row.precio_compra_moneda,
                         precio_venta_moneda: row.precio_venta_moneda,
+                        venta_caja: row.venta_caja !== false,
                         estado: 1,
                         key_usuario: MDL.usuario?.session?.key,
                     };
@@ -699,6 +702,25 @@ export default class table2 extends React.Component {
                                 }}
                             />
                         </View>
+                    }} />
+                <DinamicTable.Col key="venta_caja" label="Caja" width={50} dataType="string"
+                    data={(e) => e.row.venta_caja === false ? "No" : "Sí"}
+                    customComponent={e => {
+                        // Vender en caja: desmarcado = el producto no aparece ni se vende en las cajas (p. ej. solo tienda web).
+                        const activo = e.row.venta_caja !== false;
+                        return <SView flex center onPress={() => {
+                            e.row.venta_caja = !activo;
+                            this.checkAndUpdateDirty(e.row);
+                            this.forceUpdate();
+                        }}>
+                            <SView center style={{
+                                width: 16, height: 16, borderRadius: 3, borderWidth: 1.5,
+                                borderColor: activo ? STheme.color.success : STheme.color.lightGray,
+                                backgroundColor: activo ? STheme.color.success : "transparent",
+                            }}>
+                                {activo ? <SText fontSize={11} bold color={"#fff"}>✓</SText> : null}
+                            </SView>
+                        </SView>
                     }} />
                 {/* <DinamicTable.Col key="delete" label="" width={40}
                     data={e => ""}

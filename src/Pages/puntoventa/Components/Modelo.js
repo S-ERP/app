@@ -45,7 +45,8 @@ export default class Modelo extends Component {
 
 		const puedeVerModelosInactivos = MDL.rolesPermisos.getPermiso({ url: "/productos/modelo", permiso: "ver_modelos_inactivos" });
 
-		this.modelos = (puedeVerModelosInactivos ? modelos : modelos.filter(e => e.activo != 0)).map(e => ({
+		// "Vender en caja" desmarcado (venta_caja = false): el producto no se vende en caja (p. ej. solo tienda web).
+		this.modelos = (puedeVerModelosInactivos ? modelos : modelos.filter(e => e.activo != 0)).filter(e => e.venta_caja !== false).map(e => ({
 			...e,
 			compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
 			venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {},
