@@ -9,30 +9,18 @@ import SCopy from '../../Components/SCopy';
 import { ESTADOS, URL, anularLink, fecha, getEstado, getPagos, moneda } from './api';
 import PopupNuevoLink from './PopupNuevoLink';
 import Nav from './Nav';
+import DateTimeBetween from '../../Components/DateTimeBetween';
 
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
-const ymd = (d) => d.toISOString().slice(0, 10);
-const PERIODOS = {
-    hoy: () => { const d = ymd(new Date()); return [d, d]; },
-    mes: () => { const n = new Date(); return [ymd(new Date(n.getFullYear(), n.getMonth(), 1)), ymd(n)]; },
-    anterior: () => { const n = new Date(); return [ymd(new Date(n.getFullYear(), n.getMonth() - 1, 1)), ymd(new Date(n.getFullYear(), n.getMonth(), 0))]; },
-    todo: () => ["", ""],
-};
+// Mismo rango inicial que DateTimeBetween en modo "mes" (la tabla carga antes de que el selector avise).
+const mesActual = () => { const n = new Date(), f = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; return [f(new Date(n.getFullYear(), n.getMonth(), 1)), f(new Date(n.getFullYear(), n.getMonth() + 1, 0))]; };
 const estado = (row) => ESTADOS[row.state] ?? { label: row.state, color: "gray" };
 
-const Chip = ({ label, active, onPress }) => <SView card center onPress={onPress}
-    style={{ height: 30, paddingHorizontal: 12, borderRadius: 15, marginRight: 6, backgroundColor: active ? STheme.color.primary : STheme.color.card }}>
-    <SText fontSize={12} color={active ? "#fff" : STheme.color.text}>{label}</SText>
-</SView>
 
-const Kpi = ({ label, valor, color }) => <SView card style={{ padding: 12, borderRadius: 10, minWidth: 150, marginRight: 8, marginBottom: 8 }}>
-    <SText fontSize={12} color={STheme.color.gray}>{label}</SText>
-    <SText fontSize={20} bold color={color}>{valor}</SText>
-</SView>
 
 // Reporte de pagos con tarjeta de la empresa (links de pago Cybersource).
 export default class pagos extends Component {
-    state = { periodo: "mes", desde: PERIODOS.mes()[0], hasta: PERIODOS.mes()[1], filtroEstado: "", rows: [], estadoComercio: null };
+    state = { desde: mesActual()[0], hasta: mesActual()[1], filtroEstado: "", rows: [], estadoComercio: null };
 
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: URL, permiso: "ver" }).then(e => {
@@ -80,31 +68,34 @@ export default class pagos extends Component {
         </SView>
     }
 
-    renderResumen() {
-        const r = this.state.rows;
+    // Una sola barra compacta: período estándar del sistema, estado, totales y nuevo link (la tabla usa el resto).
+    renderBarra() {
+        const s = this.state, r = s.rows;
         const pagados = r.filter(x => x.state == "AUTHORIZED");
-        const pendientes = r.filter(x => ["CREADA", "SETUP", "PENDING_AUTHENTICATION", "AUTHORIZED_PENDING_REVIEW"].includes(x.state));
-        const rechazados = r.filter(x => ["DECLINED", "ERROR"].includes(x.state));
-        return <SView row style={{ paddingHorizontal: 8, paddingTop: 8, flexWrap: "wrap" }}>
-            <Kpi label="Cobrado" valor={moneda(pagados.reduce((a, x) => a + Number(x.monto ?? 0), 0))} color={STheme.color.success} />
-            <Kpi label="Pagos aprobados" valor={pagados.length} />
-            <Kpi label="Links pendientes" valor={pendientes.length} color={STheme.color.warning} />
-            <Kpi label="Rechazados" valor={rechazados.length} color={STheme.color.danger} />
-        </SView>
-    }
-
-    renderFiltros() {
-        const s = this.state;
-        const fechaInput = (k) => <SInput placeholder="AAAA-MM-DD" value={s[k]} style={{ height: 30, width: 120, borderRadius: 6 }}
-            onChangeText={(v) => { this.setState({ [k]: v, periodo: "" }); if (/^\d{4}-\d{2}-\d{2}$/.test(v) || v == "") this.recargar({ [k]: v }); }} />;
-        return <SView row style={{ padding: 8, alignItems: "center", flexWrap: "wrap" }}>
-            {[["hoy", "Hoy"], ["mes", "Este mes"], ["anterior", "Mes anterior"], ["todo", "Todo"]].map(([k, l]) =>
-                <Chip key={k} label={l} active={s.periodo == k} onPress={() => { const [desde, hasta] = PERIODOS[k](); this.recargar({ periodo: k, desde, hasta }); }} />)}
+        const pendientes = r.filter(x => ["CREADA", "SETUP", "PENDING_AUTHENTICATION", "AUTHORIZED_PENDING_REVIEW"].includes(x.state)).length;
+        const rechazados = r.filter(x => ["DECLINED", "ERROR"].includes(x.state)).length;
+        const Dato = ({ label, valor, color }) => <SView style={{ marginRight: 16 }}>
+            <SText fontSize={10} color={STheme.color.gray}>{label}</SText>
+            <SText fontSize={14} bold color={color}>{valor}</SText>
+        </SView>;
+        return <SView row style={{ paddingHorizontal: 8, paddingVertical: 6, alignItems: "center", flexWrap: "wrap" }}>
+            <SView width={260}>
+                <DateTimeBetween fecha_inicio={s.desde} fecha_fin={s.hasta} onChange={({ fecha_inicio, fecha_fin }) => {
+                    const primero = !this._periodoListo; this._periodoListo = true;
+                    this.setState({ desde: fecha_inicio, hasta: fecha_fin }, () => { if (!primero) this.table?.loadData(); });
+                }} />
+            </SView>
             <SView width={8} />
-            {fechaInput("desde")}<SText>{"  a  "}</SText>{fechaInput("hasta")}
-            <SView width={12} />
-            {[["", "Todos"], ["AUTHORIZED", "Pagados"], ["CREADA", "Pendientes"], ["DECLINED", "Rechazados"], ["ANULADA", "Anulados"]].map(([k, l]) =>
-                <Chip key={"e" + k} label={l} active={s.filtroEstado == k} onPress={() => this.recargar({ filtroEstado: k })} />)}
+            <SView width={160}>
+                <SInput type="select" defaultValue="" style={{ height: 38, borderRadius: 6 }}
+                    options={[{ key: "", content: "Todos los estados" }, { key: "AUTHORIZED", content: "Pagados" }, { key: "CREADA", content: "Pendientes" }, { key: "DECLINED", content: "Rechazados" }, { key: "ANULADA", content: "Anulados" }, { key: "REEMBOLSADA", content: "Reembolsados" }]}
+                    onChangeText={(v) => this.setState({ filtroEstado: v }, () => this.table?.loadData())} />
+            </SView>
+            <SView width={16} />
+            <Dato label="Cobrado" valor={moneda(pagados.reduce((a, x) => a + Number(x.monto ?? 0), 0))} color={STheme.color.success} />
+            <Dato label="Aprobados" valor={pagados.length} />
+            <Dato label="Pendientes" valor={pendientes} color={STheme.color.warning} />
+            <Dato label="Rechazados" valor={rechazados} color={STheme.color.danger} />
             <SView flex />
             {!puede("new") ? null : <SView card center onPress={() => PopupNuevoLink.open({ onCreate: () => this.table?.loadData() })}
                 style={{ height: 34, paddingHorizontal: 14, borderRadius: 8, backgroundColor: STheme.color.success }}>
@@ -117,8 +108,7 @@ export default class pagos extends Component {
         return <SPage title={"Cybersource · Pagos con tarjeta"} disableScroll>
             <Nav activo="" />
             {this.renderAviso()}
-            {this.renderResumen()}
-            {this.renderFiltros()}
+            {this.renderBarra()}
             <DinamicTable
                 ref={ref => this.table = ref}
                 selectType="single"

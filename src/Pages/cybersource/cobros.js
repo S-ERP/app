@@ -5,30 +5,15 @@ import MDL from '../../MDL';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import Nav from './Nav';
+import DateTimeBetween from '../../Components/DateTimeBetween';
 import { ESTADOS_COBRO, URL, dia, est, fecha, getCobros, moneda, nombreCliente } from './api';
 
-const ymd = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
-const PERIODOS = {
-    hoy: () => { const d = ymd(new Date()); return [d, d]; },
-    mes: () => { const n = new Date(); return [ymd(new Date(n.getFullYear(), n.getMonth(), 1)), ymd(new Date(n.getFullYear(), n.getMonth() + 1, 0))]; },
-    proximo: () => { const n = new Date(); return [ymd(new Date(n.getFullYear(), n.getMonth() + 1, 1)), ymd(new Date(n.getFullYear(), n.getMonth() + 2, 0))]; },
-    vencidos: () => ["", ymd(new Date())],
-    todo: () => ["", ""],
-};
-
-const Chip = ({ label, active, onPress }) => <SView card center onPress={onPress}
-    style={{ height: 30, paddingHorizontal: 12, borderRadius: 15, marginRight: 6, marginBottom: 4, backgroundColor: active ? STheme.color.primary : STheme.color.card }}>
-    <SText fontSize={12} color={active ? "#fff" : STheme.color.text}>{label}</SText>
-</SView>
-
-const Kpi = ({ label, valor, color }) => <SView card style={{ padding: 12, borderRadius: 10, minWidth: 150, marginRight: 8, marginBottom: 8 }}>
-    <SText fontSize={12} color={STheme.color.gray}>{label}</SText>
-    <SText fontSize={20} bold color={color}>{valor}</SText>
-</SView>
+// Mismo rango inicial que DateTimeBetween en modo "mes" (la tabla carga antes de que el selector avise).
+const mesActual = () => { const n = new Date(), f = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; return [f(new Date(n.getFullYear(), n.getMonth(), 1)), f(new Date(n.getFullYear(), n.getMonth() + 1, 0))]; };
 
 // Cobros de cuotas por fecha de vencimiento: lo cobrado, lo que falta y los rechazados (para seguimiento).
 export default class cobros extends Component {
-    state = { periodo: "mes", desde: PERIODOS.mes()[0], hasta: PERIODOS.mes()[1], filtro: "", rows: [] };
+    state = { desde: mesActual()[0], hasta: mesActual()[1], filtro: "", rows: [] };
 
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: URL, permiso: "ver" }).then(e => { if (!e) return SNavigation.goBack(); this.forceUpdate(); });
@@ -50,24 +35,30 @@ export default class cobros extends Component {
     render() {
         const s = this.state, r = s.rows;
         const suma = (f) => r.filter(f).reduce((a, x) => a + Number(x.monto ?? 0), 0);
-        const fechaInput = (k) => <SInput placeholder="AAAA-MM-DD" value={s[k]} style={{ height: 30, width: 120, borderRadius: 6 }}
-            onChangeText={(v) => { this.setState({ [k]: v, periodo: "" }); if (/^\d{4}-\d{2}-\d{2}$/.test(v) || v == "") this.recargar({ [k]: v }); }} />;
+        const Dato = ({ label, valor, color }) => <SView style={{ marginRight: 16 }}>
+            <SText fontSize={10} color={STheme.color.gray}>{label}</SText>
+            <SText fontSize={14} bold color={color}>{valor}</SText>
+        </SView>;
         return <SPage title={"Tienda web · Cobros de cuotas"} disableScroll>
             <Nav activo="/cobros" />
-            <SView row style={{ paddingHorizontal: 8, paddingTop: 8, flexWrap: "wrap" }}>
-                <Kpi label="Cobrado" valor={moneda(suma(x => x.state == "PAGADO"))} color={STheme.color.success} />
-                <Kpi label="Por cobrar" valor={moneda(suma(x => ["PENDIENTE", "REINTENTO", "COBRADO"].includes(x.state)))} />
-                <Kpi label="En mora" valor={moneda(suma(x => ["MORA", "INCIERTO"].includes(x.state)))} color={STheme.color.danger} />
-                <Kpi label="Reintentando" valor={r.filter(x => x.state == "REINTENTO").length} color={STheme.color.warning} />
-            </SView>
-            <SView row style={{ padding: 8, alignItems: "center", flexWrap: "wrap" }}>
-                {[["hoy", "Hoy"], ["mes", "Este mes"], ["proximo", "Mes próximo"], ["vencidos", "Hasta hoy"], ["todo", "Todo"]].map(([k, l]) =>
-                    <Chip key={k} label={l} active={s.periodo == k} onPress={() => { const [desde, hasta] = PERIODOS[k](); this.recargar({ periodo: k, desde, hasta }); }} />)}
+            <SView row style={{ paddingHorizontal: 8, paddingVertical: 6, alignItems: "center", flexWrap: "wrap" }}>
+                <SView width={260}>
+                    <DateTimeBetween fecha_inicio={s.desde} fecha_fin={s.hasta} onChange={({ fecha_inicio, fecha_fin }) => {
+                        const primero = !this._periodoListo; this._periodoListo = true;
+                        this.setState({ desde: fecha_inicio, hasta: fecha_fin }, () => { if (!primero) this.table?.loadData(); });
+                    }} />
+                </SView>
                 <SView width={8} />
-                {fechaInput("desde")}<SText>{"  a  "}</SText>{fechaInput("hasta")}
-                <SView width={12} />
-                {[["", "Todos"], ["PAGADO", "Pagados"], ["PENDIENTE", "Pendientes"], ["REINTENTO", "Reintentando"], ["MORA", "En mora"], ["INCIERTO", "Revisar"]].map(([k, l]) =>
-                    <Chip key={"e" + k} label={l} active={s.filtro == k} onPress={() => this.recargar({ filtro: k })} />)}
+                <SView width={170}>
+                    <SInput type="select" defaultValue="" style={{ height: 38, borderRadius: 6 }}
+                        options={[{ key: "", content: "Todos los estados" }, { key: "PAGADO", content: "Pagados" }, { key: "PENDIENTE", content: "Pendientes" }, { key: "REINTENTO", content: "Reintentando" }, { key: "MORA", content: "En mora" }, { key: "INCIERTO", content: "Revisar" }, { key: "ANULADO", content: "Anulados" }]}
+                        onChangeText={(v) => this.recargar({ filtro: v })} />
+                </SView>
+                <SView width={16} />
+                <Dato label="Cobrado" valor={moneda(suma(x => x.state == "PAGADO"))} color={STheme.color.success} />
+                <Dato label="Por cobrar" valor={moneda(suma(x => ["PENDIENTE", "REINTENTO", "COBRADO"].includes(x.state)))} />
+                <Dato label="En mora" valor={moneda(suma(x => ["MORA", "INCIERTO"].includes(x.state)))} color={STheme.color.danger} />
+                <Dato label="Reintentando" valor={r.filter(x => x.state == "REINTENTO").length} color={STheme.color.warning} />
             </SView>
             <DinamicTable
                 ref={ref => this.table = ref}
