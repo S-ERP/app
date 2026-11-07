@@ -137,6 +137,10 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                 overflow: "hidden", alignItems: "center",
             }}
                 onPress={() => {
+                    if (item.__select && item.__pago_tarjeta) {
+                        SNotification.send({ title: "Pago con tarjeta ya cobrado", body: "Este cobro con tarjeta ya se hizo: termina la venta con él.", color: STheme.color.warning, time: 5000 });
+                        return;
+                    }
                     item.__select = !item.__select;
                     const selecteds = this.pvtp.filter(a => !!a.__select);
                     if (!this.props.montoMaximoPorTipo) {
@@ -453,6 +457,8 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                         tipo_pago: item.tipo_pago,
                                         referencia: item.referencia ? "Ref: " + item.referencia : "",
                                         descripcion: item.descripcion || "",
+                                        // El servicio caja verifica este pago contra Cybersource antes de registrar la venta.
+                                        ...(item.__pago_tarjeta?.cybersource?.key ? { pago_tarjeta: { key: item.__pago_tarjeta.cybersource.key } } : {}),
                                     }
                                     montoTotal += parseFloat(item.monto)
                                 });
