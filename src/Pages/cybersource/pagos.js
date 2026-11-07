@@ -10,6 +10,7 @@ import { ESTADOS, URL, anularLink, fecha, getEstado, getPagos, moneda } from './
 import PopupNuevoLink from './PopupNuevoLink';
 import Nav from './Nav';
 import DateTimeBetween from '../../Components/DateTimeBetween';
+import FiltroSelect from './FiltroSelect';
 
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
 // Mismo rango inicial que DateTimeBetween en modo "mes" (la tabla carga antes de que el selector avise).
@@ -79,18 +80,14 @@ export default class pagos extends Component {
             <SText fontSize={14} bold color={color}>{valor}</SText>
         </SView>;
         return <SView row style={{ paddingHorizontal: 8, paddingVertical: 6, alignItems: "center", flexWrap: "wrap" }}>
-            <SView width={260}>
+            <SView width={350}>
                 <DateTimeBetween fecha_inicio={s.desde} fecha_fin={s.hasta} onChange={({ fecha_inicio, fecha_fin }) => {
                     const primero = !this._periodoListo; this._periodoListo = true;
                     this.setState({ desde: fecha_inicio, hasta: fecha_fin }, () => { if (!primero) this.table?.loadData(); });
                 }} />
             </SView>
             <SView width={8} />
-            <SView width={160}>
-                <SInput type="select" defaultValue="" style={{ height: 38, borderRadius: 6 }}
-                    options={[{ key: "", content: "Todos los estados" }, { key: "AUTHORIZED", content: "Pagados" }, { key: "CREADA", content: "Pendientes" }, { key: "DECLINED", content: "Rechazados" }, { key: "ANULADA", content: "Anulados" }, { key: "REEMBOLSADA", content: "Reembolsados" }]}
-                    onChangeText={(v) => this.setState({ filtroEstado: v }, () => this.table?.loadData())} />
-            </SView>
+            <FiltroSelect label="Estado" options={[["", "Todos los estados"], ["AUTHORIZED", "Pagados"], ["CREADA", "Pendientes"], ["DECLINED", "Rechazados"], ["ANULADA", "Anulados"], ["REEMBOLSADA", "Reembolsados"]]} onChange={(v) => this.setState({ filtroEstado: v }, () => this.table?.loadData())} />
             <SView width={16} />
             <Dato label="Cobrado" valor={moneda(pagados.reduce((a, x) => a + Number(x.monto ?? 0), 0))} color={STheme.color.success} />
             <Dato label="Aprobados" valor={pagados.length} />

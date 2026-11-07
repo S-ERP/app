@@ -6,6 +6,7 @@ import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import Nav from './Nav';
 import DateTimeBetween from '../../Components/DateTimeBetween';
+import FiltroSelect from './FiltroSelect';
 import { ESTADOS_COBRO, URL, dia, est, fecha, getCobros, moneda, nombreCliente } from './api';
 
 // Mismo rango inicial que DateTimeBetween en modo "mes" (la tabla carga antes de que el selector avise).
@@ -42,18 +43,14 @@ export default class cobros extends Component {
         return <SPage title={"Tienda web · Cobros de cuotas"} disableScroll>
             <Nav activo="/cobros" />
             <SView row style={{ paddingHorizontal: 8, paddingVertical: 6, alignItems: "center", flexWrap: "wrap" }}>
-                <SView width={260}>
+                <SView width={350}>
                     <DateTimeBetween fecha_inicio={s.desde} fecha_fin={s.hasta} onChange={({ fecha_inicio, fecha_fin }) => {
                         const primero = !this._periodoListo; this._periodoListo = true;
                         this.setState({ desde: fecha_inicio, hasta: fecha_fin }, () => { if (!primero) this.table?.loadData(); });
                     }} />
                 </SView>
                 <SView width={8} />
-                <SView width={170}>
-                    <SInput type="select" defaultValue="" style={{ height: 38, borderRadius: 6 }}
-                        options={[{ key: "", content: "Todos los estados" }, { key: "PAGADO", content: "Pagados" }, { key: "PENDIENTE", content: "Pendientes" }, { key: "REINTENTO", content: "Reintentando" }, { key: "MORA", content: "En mora" }, { key: "INCIERTO", content: "Revisar" }, { key: "ANULADO", content: "Anulados" }]}
-                        onChangeText={(v) => this.recargar({ filtro: v })} />
-                </SView>
+                <FiltroSelect label="Estado" options={[["", "Todos los estados"], ["PAGADO", "Pagados"], ["PENDIENTE", "Pendientes"], ["REINTENTO", "Reintentando"], ["MORA", "En mora"], ["INCIERTO", "Revisar"], ["ANULADO", "Anulados"]]} onChange={(v) => this.recargar({ filtro: v })} />
                 <SView width={16} />
                 <Dato label="Cobrado" valor={moneda(suma(x => x.state == "PAGADO"))} color={STheme.color.success} />
                 <Dato label="Por cobrar" valor={moneda(suma(x => ["PENDIENTE", "REINTENTO", "COBRADO"].includes(x.state)))} />
