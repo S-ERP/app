@@ -110,11 +110,16 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         this.pvtp.sort((a, b) => {
             return a.tipo_pago?.orden - b.tipo_pago?.orden
         })
-        // Tipo de pasarela de cada tipo de pago (p. ej. "cybersource": la venta solo se acepta con el pago aprobado).
-        if (this.pvtp.some(a => a.key_pasarela_empresa)) {
-            const pes = await MDL.caja.pasarela_empresa.getAll().catch(() => []);
-            this.pvtp.forEach(a => { a.__pasarela = pes.find(pe => pe.key == a.key_pasarela_empresa)?.key_pasarela; });
-        }
+        // Tipo de pasarela de cada tipo de pago. La pasarela "cybersource" se vincula al revés (params.key_empresa_tipo_pago
+        // de la pasarela_empresa) para que el tipo de pago no tenga key_pasarela_empresa: el servicio caja manda a
+        // cotización toda venta con pasarela, y aquí el pago ya está aprobado antes de aceptar.
+        const pes = await MDL.caja.pasarela_empresa.getAll().catch(() => []);
+        this.pvtp.forEach(a => {
+            const pe = pes.find(pe => pe.key == a.key_pasarela_empresa)
+                ?? pes.find(pe => pe.key_pasarela == "cybersource" && pe?.params?.key_empresa_tipo_pago == a.key);
+            a.__pasarela = pe?.key_pasarela;
+            a.__key_pasarela_empresa = pe?.key;
+        });
         this.setState({ ready: true });
     }
     get headerColor() {
@@ -257,7 +262,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
                                     />
                                 </SView>
                             </SView>
-                            {item.key_pasarela_empresa && item.__pasarela == "cybersource" && (
+                            {item.__pasarela == "cybersource" && (
                                 item.__pago_tarjeta && item.__pago_tarjeta.monto == MDL.contabilidad.round(parseFloat(item.monto))
                                     ? <SView style={{ paddingVertical: 6, paddingHorizontal: 10, backgroundColor: colorExito + "22", borderRadius: 4, alignSelf: "flex-end", marginTop: 4 }}>
                                         <SText fontSize={11} color={colorExito} bold>{"✓ Pagado con tarjeta · Aut " + (item.__pago_tarjeta.cybersource?.aprobacion ?? "")}</SText>
@@ -289,7 +294,7 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
         // Mismo tipo de pago y monto -> mismo link: si se cierra el popup y se vuelve a abrir, no se crea un segundo cobro.
         if (!item.__solicitud) item.__solicitud = "caja-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
         PagarConPasarela.open({
-            key_pasarela_empresa: item.key_pasarela_empresa,
+            key_pasarela_empresa: item.__key_pasarela_empresa,
             monto,
             descripcion: this.props.descripcion || "Venta",
             key_solicitud: item.__solicitud + "-" + monto.toFixed(2),
