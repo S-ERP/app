@@ -286,10 +286,14 @@ export default class SelectTipoPagoCompra extends Component<SelectTipoPagoCompra
             SNotification.send({ title: "Monto inválido", body: "Ingresa el monto a cobrar con tarjeta.", color: STheme.color.warning, time: 3000 });
             return;
         }
+        // Mismo tipo de pago y monto -> mismo link: si se cierra el popup y se vuelve a abrir, no se crea un segundo cobro.
+        if (!item.__solicitud) item.__solicitud = "caja-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
         PagarConPasarela.open({
             key_pasarela_empresa: item.key_pasarela_empresa,
             monto,
             descripcion: this.props.descripcion || "Venta",
+            key_solicitud: item.__solicitud + "-" + monto.toFixed(2),
+            capa: "2",
             onSuccess: (r) => {
                 item.__pago_tarjeta = r;
                 item.referencia = r.referencia;

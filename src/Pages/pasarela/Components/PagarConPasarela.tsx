@@ -11,16 +11,18 @@ type Props = {
     monto: number,
     onCancel?: Function,
     onSuccess?: Function,
-    data?: any
+    data?: any,
+    descripcion?: string,
+    key_solicitud?: string,
+    // "2": capa superior (zIndex 999), para abrirlo encima de otro popup tipo "2" como el selector de pagos de caja.
+    capa?: "1" | "2"
 }
 
 
 export default class PagarConPasarela extends Component<Props> {
 
     static open(props: Props) {
-        SPopup.open({
-            key: "PagarConPasarela",
-            content: <SView style={{
+        const caja = <SView style={{
                 width: "100%",
                 maxHeight: "100%",
                 maxWidth: 500,
@@ -40,7 +42,13 @@ export default class PagarConPasarela extends Component<Props> {
                     }}
 
                 />
-            </SView>
+            </SView>;
+        SPopup.open({
+            key: "PagarConPasarela",
+            type: props.capa ?? "1",
+            content: props.capa == "2"
+                ? <SView style={{ width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.55)", justifyContent: "center", alignItems: "center", padding: 12 }}>{caja}</SView>
+                : caja,
         })
     }
 

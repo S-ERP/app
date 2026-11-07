@@ -35,7 +35,9 @@ export default class cybersource extends React.Component<Props> {
     async crear() {
         this.setState({ link: null, error: null, estado: null, mensaje: null });
         try {
-            const r: any = await cs("caja_cobrar", { data: { monto: this.props.monto, descripcion: this.props.descripcion || "Venta" } });
+            const r: any = await cs("caja_cobrar", {
+                data: { monto: this.props.monto, descripcion: this.props.descripcion || "Venta", key_solicitud: (this.props as any).key_solicitud },
+            });
             if (!this.activo) return;
             this.setState({ link: r.data, estado: r.data?.state });
             this.consultar();
