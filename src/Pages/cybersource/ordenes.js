@@ -7,6 +7,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import SCopy from '../../Components/SCopy';
 import Nav from './Nav';
 import { ESTADOS_ORDEN, URL, est, fecha, getOrdenes, moneda, nombreCliente, reprocesarOrden } from './api';
+import PopupAnularCompra from './PopupAnularCompra';
 
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
 
@@ -55,6 +56,7 @@ export default class ordenes extends Component {
                     if (o.key_compra_venta) options.push({ label: "Ver venta", icon: <SIcon name="Eyes" fill={STheme.color.text} />, onPress: () => SNavigation.navigate("/venta/profile2", { pk: o.key_compra_venta }) });
                     if (o.key_contrato) options.push({ label: "Ver contrato", icon: <SIcon name="Eyes" fill={STheme.color.text} />, onPress: () => SNavigation.navigate(URL + "/contrato", { pk: o.key_contrato }) });
                     if (["PAGADA", "ERROR"].includes(o.state) && puede("configurar")) options.push({ label: "Reintentar registrar la venta", icon: <SIcon name="Reload" fill={STheme.color.text} />, onPress: () => this.reprocesar(o) });
+                    if (o.state != "ANULADA" && puede("configurar")) options.push({ label: o.state == "VENTA" ? "Anular compra (devuelve el dinero)" : "Anular orden", icon: <SIcon name="Delete" fill={STheme.color.text} />, onPress: () => PopupAnularCompra.open(o, () => this.table?.loadData()) });
                     if (o.url_pago) options.push({ label: "Copiar link de pago", icon: <SIcon name="Paper" fill={STheme.color.text} />, onPress: () => SCopy.copy(o.url_pago) });
                     FloatMenu.open({ e: e.evt, label: nombreCliente(o.cliente), options });
                 }}
@@ -69,7 +71,7 @@ export default class ordenes extends Component {
                 <DinamicTable.Col key='state' label='Estado' width={150} data={e => est(ESTADOS_ORDEN, e.row.state).label}
                     customComponent={e => { const s = est(ESTADOS_ORDEN, e.row.state); return <SText color={STheme.color[s.color]}>{s.label}</SText> }} />
                 <DinamicTable.Col key='venta' label='Venta' data={e => String(e.row.key_compra_venta ?? "").slice(0, 8).toUpperCase()} width={90} />
-                <DinamicTable.Col key='error' label='Detalle' data={e => e.row.error ?? ""} width={260} />
+                <DinamicTable.Col key='error' label='Detalle' data={e => e.row.state == "ANULADA" && e.row.motivo_anulacion ? `Anulada: ${e.row.motivo_anulacion}` : (e.row.error ?? "")} width={260} />
                 <DinamicTable.Col key='origen' label='Origen' data={e => e.row.origen ?? ""} width={170} />
             </DinamicTable>
         </SPage>

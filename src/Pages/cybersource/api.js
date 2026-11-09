@@ -81,3 +81,4 @@ export const ESTADOS_COBRO = {
 export const est = (mapa, s) => mapa[s] ?? { label: s, color: "gray" };
 export const dia = (f) => f ? String(f).slice(0, 10) : "";
 export const nombreCliente = (c) => c ? `${c.nombres ?? ""} ${c.apellidos ?? ""}`.trim() : "";
+export const anularOrden = async (key, motivo) => (await tienda("orden_anular", { key, motivo })).data;

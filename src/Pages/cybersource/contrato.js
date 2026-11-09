@@ -4,6 +4,7 @@ import { SHr, SInput, SLoad, SNavigation, SNotification, SPage, SPopup, SText, S
 import MDL from '../../MDL';
 import SCopy from '../../Components/SCopy';
 import Nav from './Nav';
+import PopupAnularCompra from './PopupAnularCompra';
 import { ESTADOS_CONTRATO, ESTADOS_COBRO, URL, cancelarContrato, cobrarCuota, dia, est, fecha, getContrato, linkCuota, moneda, nombreCliente } from './api';
 
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
@@ -151,6 +152,8 @@ export default class contrato extends Component {
                     </SView>
                     <SView flex />
                     <Btn label="Ver venta" color={STheme.color.primary} onPress={() => SNavigation.navigate("/venta/profile2", { pk: k.key_compra_venta })} />
+                    {k.key_orden && puede("configurar") && d.cobros.some(c => c.state == "PAGADO") ? <Btn label="Anular compra" color={STheme.color.danger}
+                        onPress={() => PopupAnularCompra.open({ key: k.key_orden, state: "VENTA", modalidad: "cuotas", monto: k.monto_cuota, descripcion: k.descripcion, cliente: k.cliente }, () => this.cargar())} /> : null}
                     {["ACTIVO", "MOROSO"].includes(k.state) && puede("configurar") ? <Btn label="Cancelar contrato" color={STheme.color.danger} disabled={this.state.ocupado == "cancelar"} onPress={() => this.cancelar()} /> : null}
                 </SView>
                 <SHr height={12} />
