@@ -197,14 +197,17 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 		return data;
 	}
 
-	async getTransaccion(_tipo: String, fecha_inicio_: String, fecha_fin_: String) {
+	// incluirAnuladas: usa la versión de 5 parámetros de la función, que también devuelve las ventas anuladas (estado 0).
+	async getTransaccion(_tipo: String, fecha_inicio_: String, fecha_fin_: String, incluirAnuladas: boolean = false) {
 		const key_empresa = MDL.empresa?.select?.key || {};
+		const params = ["'" + key_empresa + "'", "'" + fecha_inicio_ + "'", "'" + fecha_fin_ + "'", "'" + _tipo + "'"];
+		if (incluirAnuladas) params.push("true");
 		const resp: any = await SSocket.sendPromise({
 			service: "compra_venta",
 			component: "reporte",
 			type: "execute_function",
 			func: "_get_compras_ventas_alvarito",
-			params: ["'" + key_empresa + "'", "'" + fecha_inicio_ + "'", "'" + fecha_fin_ + "'", "'" + _tipo + "'"],
+			params,
 		}, 60000);
 		return resp.data || [];
 	}

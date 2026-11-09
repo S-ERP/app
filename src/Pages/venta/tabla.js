@@ -42,7 +42,8 @@ export default class tabla extends Component {
 				title: "Cargando ventas...",
 				type: "loading",
 			});
-			const registros = await MDL.compra_venta.getTransaccion("venta", this.state.fecha_inicio, this.state.fecha_fin);
+			// También las anuladas: se muestran en gris y la tabla las oculta por defecto con el filtro "Estado ≠ Anulada".
+			const registros = await MDL.compra_venta.getTransaccion("venta", this.state.fecha_inicio, this.state.fecha_fin, true);
 
 			const empresa = await MDL.empresa.getFull();
 			if (!registros || !empresa) {
@@ -844,6 +845,7 @@ export default class tabla extends Component {
 							console.log("data", data);
 							servicio = data[0];
 							data[0].cliente = e.row?.cliente;
+							data[0].sucursal = e.row?.sucursal;
 							console.log(data[0]?.suscriptores)
 							if (data[0]?.suscriptores.length > 0) {
 								titulo = "Ver";
