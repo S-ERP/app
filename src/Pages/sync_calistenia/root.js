@@ -6,7 +6,7 @@ import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import {
     ORIGENES, TIPOS, TIPOS_PAGO_CAL, URL, corto, correrPasada, est, fecha, getClientes, getConciliacion, getEstado, getEventos, getPaquetes,
-    getSucursales, getTiposPago, guardarConfig, guardarSucursal, moneda, omitirEvento, reprocesarEvento
+    getSucursales, getTiposPago, guardarConfig, guardarSucursal, historicoCargar, historicoRevisar, moneda, omitirEvento, reprocesarEvento
 } from './api';
 
 const puede = (permiso) => !!MDL.rolesPermisos.getPermiso({ url: URL, permiso });
@@ -33,7 +33,7 @@ const Tabla = ({ load, children, onSelect, refTabla }) => <DinamicTable ref={ref
 // Panel de la sincronización con el sistema antiguo de Calistenia: estado de la tarea, conciliación del día,
 // eventos (con reintento), interruptor por sucursal y los mapeos de planes, tipos de pago y clientes.
 export default class root extends Component {
-    state = { tab: "estado", estado: null, fecha: hoy(), conciliacion: null };
+    state = { tab: "estado", estado: null, fecha: hoy(), conciliacion: null, mes: "2026-10", historico: null, cargando: false };
 
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: URL, permiso: "ver" }).then(e => { if (!e) return SNavigation.goBack(); this.cargarEstado(); });
@@ -132,6 +132,56 @@ export default class root extends Component {
                         </SView>
                     })}
                 </SView>}
+            {this.renderHistorico()}
+        </SView>
+    }
+
+    revisarHistorico() {
+        this.setState({ historico: null });
+        historicoRevisar(this.state.mes).then(historico => this.setState({ historico })).catch(e => this.setState({ historico: { error: e?.error ?? "No se pudo revisar" } }));
+    }
+
+    cargarHistorico() {
+        const h = this.state.historico, pendientes = (h?.sucursales ?? []).reduce((a, s) => a + s.ventas, 0);
+        SPopup.confirm({
+            title: `Cargar ${pendientes} ventas de ${this.state.mes}`,
+            message: `Se abre la gestión contable de ${this.state.mes} (se crea si no existe) y se registra cada venta con fecha contable ${h?.fecha_contable}. `
+                + "MIENTRAS DURA, S-ERP NO PUEDE VENDER (la gestión actual queda cerrada). Al terminar se vuelve a abrir la gestión actual, aunque haya errores.",
+            onPress: () => {
+                this.setState({ cargando: true });
+                historicoCargar(this.state.mes).then(r => {
+                    aviso("Carga histórica terminada", `${r?.cargadas ?? 0} ventas cargadas, ${r?.errores ?? 0} con error${r?.ultimo_error ? ": " + r.ultimo_error : ""}`, r?.errores ? STheme.color.warning : STheme.color.success);
+                }).catch(e => aviso("No se pudo", e?.error)).finally(() => { this.setState({ cargando: false }); this.revisarHistorico(); this.cargarEstado(); });
+            }
+        });
+    }
+
+    renderHistorico() {
+        const h = this.state.historico;
+        return <SView col={"xs-12"}>
+            <SView height={16} />
+            <SView row style={{ alignItems: "center", flexWrap: "wrap" }}>
+                <SText fontSize={15} bold>Carga histórica</SText>
+                <SView width={12} />
+                <SView width={110}><SInput placeholder="AAAA-MM" defaultValue={this.state.mes} onChangeText={mes => this.setState({ mes })} /></SView>
+                <SView width={8} />
+                <Boton label="Revisar" onPress={() => this.revisarHistorico()} />
+                {puede("configurar") && h?.sucursales?.some(s => s.ventas > 0) && !this.state.cargando ? <Boton label="Cargar el mes" color={STheme.color.warning + "55"} onPress={() => this.cargarHistorico()} /> : null}
+                {this.state.cargando ? <SText color={STheme.color.warning}>Cargando… (S-ERP no puede vender hasta que termine)</SText> : null}
+            </SView>
+            <SText fontSize={11} color={STheme.color.lightGray}>Ventas de Calistenia de un mes pasado (sucursales activas) que todavía no están en S-ERP. Se cargan con la fecha contable del último día del mes, en su gestión.</SText>
+            <SView height={6} />
+            {!h ? null : h.error ? <SText color={STheme.color.danger}>{h.error}</SText> : <SView col={"xs-12"}>
+                <SText fontSize={12}>Gestión de {h.mes}: {h.gestion_mes ? `existe (${h.gestion_mes.estado == 2 ? "abierta" : "cerrada"}${h.gestion_mes.ultimo_comprobante ? ", último comprobante " + fecha(h.gestion_mes.ultimo_comprobante) : ""})` : "no existe (se crea al cargar)"} · Abierta hoy: {fecha(h.gestion_abierta?.fecha).slice(0, 7) || "ninguna"} · Fecha contable: {h.fecha_contable}</SText>
+                <SView height={4} />
+                {(h.sucursales ?? []).length == 0 ? <SText fontSize={12}>No hay ventas de ese mes en las sucursales activas.</SText> : (h.sucursales ?? []).map((s, i) =>
+                    <SView key={i} row style={{ paddingVertical: 3, borderBottomWidth: 1, borderColor: STheme.color.card }}>
+                        <SView flex={2}><SText fontSize={12}>{s.sucursal}</SText></SView>
+                        <SView flex={1}><SText fontSize={12}>{s.ventas} pendientes</SText></SView>
+                        <SView flex={1}><SText fontSize={12}>{moneda(s.monto)}</SText></SView>
+                        <SView flex={1}><SText fontSize={12} color={STheme.color.lightGray}>{s.ya_copiadas} ya copiadas</SText></SView>
+                    </SView>)}
+            </SView>}
         </SView>
     }
 

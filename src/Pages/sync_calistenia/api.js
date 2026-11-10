@@ -24,6 +24,8 @@ export const getPaquetes = async () => (await sync("paquetes")).data ?? [];
 export const getTiposPago = async () => (await sync("tipos_pago")).data ?? [];
 export const getClientes = async () => (await sync("clientes")).data ?? [];
 export const getConciliacion = async (fecha) => (await sync("conciliacion", { fecha }, 180000)).data ?? [];
+export const historicoRevisar = async (mes) => (await sync("historico_revisar", { mes }, 180000)).data ?? {};
+export const historicoCargar = async (mes) => (await sync("historico_cargar", { mes }, 3600000)).data ?? {};
 
 export const ESTADOS = {
     PENDIENTE: { label: "Pendiente", color: "warning" },
