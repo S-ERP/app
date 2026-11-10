@@ -6,6 +6,7 @@ import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import SCopy from '../../Components/SCopy';
 import Nav from './Nav';
+import AvisoTareas from './AvisoTareas';
 import { ESTADOS_CONTRATO, ESTADOS_COBRO, URL, dia, est, getContratos, moneda, nombreCliente } from './api';
 
 const Chip = ({ label, active, onPress }) => <SView card center onPress={onPress}
@@ -61,6 +62,7 @@ export default class contratos extends Component {
     render() {
         return <SPage title={"Tienda web · Contratos en cuotas"} disableScroll>
             <Nav activo="/contratos" />
+            <AvisoTareas />
             {this.renderResumen()}
             <SView row style={{ padding: 8, flexWrap: "wrap" }}>
                 {[["", "Todos"], ["ACTIVO", "Activos"], ["MOROSO", "Morosos"], ["FINALIZADO", "Finalizados"], ["CANCELADO", "Cancelados"]].map(([k, l]) =>

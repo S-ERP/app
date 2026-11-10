@@ -116,9 +116,10 @@ export default class pagos extends Component {
                 loadData={this.loadData.bind(this)}
                 onSelect={(e) => {
                     const row = e.row, options = [];
-                    const abierto = !["AUTHORIZED", "ANULADA"].includes(row.state);
-                    options.push({ label: "Copiar link", icon: <SIcon name="Paper" fill={STheme.color.text} />, onPress: () => SCopy.copy(row.url) });
-                    options.push({ label: "Abrir página de pago", icon: <SIcon name="Eyes" fill={STheme.color.text} />, onPress: () => Linking.openURL(row.url) });
+                    const esLink = row.tipo != "mit"; // los cobros automáticos (débito de cuotas) no tienen página de pago
+                    const abierto = esLink && !["AUTHORIZED", "ANULADA", "REEMBOLSADA"].includes(row.state);
+                    if (esLink) options.push({ label: "Copiar link", icon: <SIcon name="Paper" fill={STheme.color.text} />, onPress: () => SCopy.copy(row.url) });
+                    if (esLink) options.push({ label: "Abrir página de pago", icon: <SIcon name="Eyes" fill={STheme.color.text} />, onPress: () => Linking.openURL(row.url) });
                     if (row.cybs_id) options.push({ label: "Copiar referencia Cybersource", icon: <SIcon name="Paper" fill={STheme.color.text} />, onPress: () => SCopy.copy(row.cybs_id) });
                     if (abierto && puede("delete")) options.push({ label: "Anular link", icon: <SIcon name="Delete" fill={STheme.color.text} />, onPress: () => this.anular(row) });
                     FloatMenu.open({ e: e.evt, label: row.descripcion, options })
@@ -126,6 +127,7 @@ export default class pagos extends Component {
             >
                 <DinamicTable.Col key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }} data={e => e.index + 1} width={30} />
                 <DinamicTable.Col key='fecha_on' label='Creado' data={e => fecha(e.row.fecha_on)} width={130} />
+                <DinamicTable.Col key='tipo' label='Origen' data={e => e.row.tipo == "mit" ? "Débito automático" : "Link de pago"} width={130} />
                 <DinamicTable.Col key='descripcion' label='Concepto' data={e => e.row.descripcion} width={220} />
                 <DinamicTable.Col key='cliente' label='Cliente' data={e => e.row.cliente?.nombre || e.row.cliente?.email || ""} width={160} />
                 <DinamicTable.Col key='monto' label='Monto' data={e => Number(e.row.monto ?? 0)} width={100}

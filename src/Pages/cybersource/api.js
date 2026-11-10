@@ -32,6 +32,8 @@ export const ESTADOS = {
     ERROR: { label: "Error", color: "danger" },
     ANULADA: { label: "Anulado", color: "lightGray" },
     REEMBOLSADA: { label: "Reembolsado", color: "lightGray" },
+    PROCESANDO: { label: "Procesando", color: "warning" },
+    INCIERTO: { label: "Revisar en Cybersource", color: "danger" },
 };
 
 export const moneda = (m, cod = "BOB") => `${cod == "BOB" ? "Bs" : cod} ${Number(m ?? 0).toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -82,3 +84,4 @@ export const est = (mapa, s) => mapa[s] ?? { label: s, color: "gray" };
 export const dia = (f) => f ? String(f).slice(0, 10) : "";
 export const nombreCliente = (c) => c ? `${c.nombres ?? ""} ${c.apellidos ?? ""}`.trim() : "";
 export const anularOrden = async (key, motivo) => (await tienda("orden_anular", { key, motivo })).data;
+export const getEstadoTareas = async () => (await tienda("estado_tareas")).data ?? {};

@@ -5,6 +5,7 @@ import MDL from '../../MDL';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import Nav from './Nav';
+import AvisoTareas from './AvisoTareas';
 import DateTimeBetween from '../../Components/DateTimeBetween';
 import FiltroSelect from './FiltroSelect';
 import { ESTADOS_COBRO, URL, dia, est, fecha, getCobros, moneda, nombreCliente } from './api';
@@ -42,6 +43,7 @@ export default class cobros extends Component {
         </SView>;
         return <SPage title={"Tienda web · Cobros de cuotas"} disableScroll>
             <Nav activo="/cobros" />
+            <AvisoTareas />
             <SView row style={{ paddingHorizontal: 8, paddingVertical: 6, alignItems: "center", flexWrap: "wrap" }}>
                 <SView width={350}>
                     <DateTimeBetween fecha_inicio={s.desde} fecha_fin={s.hasta} onChange={({ fecha_inicio, fecha_fin }) => {
