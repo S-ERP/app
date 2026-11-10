@@ -86,6 +86,7 @@ export default class Barra extends React.Component {
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
                         <Page label={"Tipos de cliente"} url={"/tipo_cliente"} />
                         <Page label={"Tokens MCP"} url={"/empresa/mcp"} permiso={"ver"} />
+                        <Page label={"Sync Calistenia"} url={"/sync_calistenia"} permiso={"ver"} />
                     </Page>
                     <Page label={"Cybersource"} icon={<SIconApp name="pagopagare" fill={STheme.color.text} />} >
                         <Page label={"Pagos con tarjeta"} url={"/cybersource"} permiso={"ver"} />
