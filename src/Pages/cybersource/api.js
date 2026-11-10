@@ -3,12 +3,12 @@ import Model from '../../Model';
 
 // Cobro con tarjeta (Cybersource / Linkser) de la empresa: componente "cybersource" del server serp,
 // que revisa los permisos de /cybersource y habla con el microservicio por la red interna.
-const cs = (type, extra = {}) => SSocket.sendPromise({
+const cs = (type, extra = {}, timeout) => SSocket.sendPromise({
     component: "cybersource", type, estado: "cargando",
     key_empresa: Model.empresa.Action.getKey(),
     key_usuario: Model.usuario.Action.getKey(),
     ...extra,
-});
+}, timeout);
 
 export const URL = "/cybersource";
 
@@ -20,6 +20,14 @@ export const anularLink = (key) => cs("link_anular", { key });
 export const getConfig = async () => (await cs("config_get")).data ?? {};
 export const guardarConfig = async (data) => (await cs("config_guardar", { data })).data;
 export const probarConfig = async () => (await cs("config_probar")).data ?? {};
+
+// ---- Liquidaciones de Linkser (conciliación de depósitos) ----
+export const getPendientesLiquidar = async () => (await cs("liq_pendientes", {}, 60000)).data ?? {};
+export const guardarConfigLiquidacion = async (data) => (await cs("liq_config_guardar", { data })).data ?? {};
+export const getLiquidaciones = async () => (await cs("liq_lista")).data ?? [];
+export const getLiquidacion = async (key) => (await cs("liq_detalle", { key })).data ?? {};
+export const registrarLiquidacion = async (data) => (await cs("liq_registrar", { data }, 120000)).data;
+export const anularLiquidacion = async (key, motivo) => (await cs("liq_anular", { key, motivo }, 120000)).data;
 
 // Estados del link de pago (columna state del microservicio).
 export const ESTADOS = {

@@ -11,6 +11,7 @@ const TABS = [
     ["/contratos", "Contratos"],
     ["/cobros", "Cobros"],
     ["/ordenes", "Órdenes web"],
+    ["/liquidaciones", "Liquidaciones", "configurar"],
     ["/tienda", "Tienda web", "configurar"],
     ["/configuracion", "Integración", "configurar"],
 ];

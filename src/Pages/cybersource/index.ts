@@ -6,6 +6,7 @@ import contrato from "./contrato";
 import cobros from "./cobros";
 import ordenes from "./ordenes";
 import tienda from "./tienda";
+import liquidaciones from "./liquidaciones";
 
 export default SPage.combinePages("cybersource", {
     "": pagos,
@@ -15,4 +16,5 @@ export default SPage.combinePages("cybersource", {
     "cobros": cobros,
     "ordenes": ordenes,
     "tienda": tienda,
+    "liquidaciones": liquidaciones,
 });
