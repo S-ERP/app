@@ -111,10 +111,10 @@ export default class liquidaciones extends Component {
                 {cuenta("key_cuenta_banco", "Banco donde deposita Linkser")}
                 {cuenta("key_cuenta_comision", "Gasto por comisión de Linkser")}
                 <Campo label="Comisión pactada (%)" col="xs-6 md-3">
-                    <SInput type="number" defaultValue={String(c.porcentaje_comision ?? "")} placeholder="Ej: 3.5" onChangeText={(v) => this.state.cfg.porcentaje_comision = v} style={{ height: 38, borderRadius: 8 }} />
+                    <SInput keyboardType="decimal-pad" defaultValue={String(c.porcentaje_comision ?? "")} placeholder="Ej: 3.5" onChangeText={(v) => this.state.cfg.porcentaje_comision = v} style={{ height: 38, borderRadius: 8 }} />
                 </Campo>
                 <Campo label="Tolerancia de diferencia (Bs)" col="xs-6 md-3">
-                    <SInput type="number" defaultValue={String(c.tolerancia ?? 1)} onChangeText={(v) => this.state.cfg.tolerancia = v} style={{ height: 38, borderRadius: 8 }} />
+                    <SInput keyboardType="decimal-pad" defaultValue={String(c.tolerancia ?? 1)} onChangeText={(v) => this.state.cfg.tolerancia = v} style={{ height: 38, borderRadius: 8 }} />
                 </Campo>
             </SView>
             <SHr height={8} />
@@ -122,7 +122,7 @@ export default class liquidaciones extends Component {
                 <Btn label="Guardar" onPress={() => {
                     const x = this.state.cfg;
                     guardarConfigLiquidacion({ key_cuenta_linkser: x.key_cuenta_linkser, key_cuenta_banco: x.key_cuenta_banco, key_cuenta_comision: x.key_cuenta_comision,
-                        porcentaje_comision: num(x.porcentaje_comision), tolerancia: num(x.tolerancia), cuentas: x.cuentas })
+                        porcentaje_comision: num(x.porcentaje_comision), tolerancia: x.tolerancia === undefined || x.tolerancia === "" ? 1 : num(x.tolerancia), cuentas: x.cuentas })
                         .then(c2 => { this.setState({ cfg: { ...c2, cuentas: c2.cuentas ?? {} }, editCfg: false }); SNotification.send({ title: "Configuración guardada", color: STheme.color.success, time: 3000 }); })
                         .catch(e => SNotification.send({ title: "No se pudo guardar", body: e?.error ?? "", color: STheme.color.danger, time: 6000 }));
                 }} />
@@ -196,7 +196,7 @@ export default class liquidaciones extends Component {
                         <SInput type="date" defaultValue={f.fecha_deposito} onChangeText={(v) => this.setState({ f: { ...this.state.f, fecha_deposito: v } })} style={{ height: 38, borderRadius: 8 }} />
                     </Campo>
                     <Campo label="Monto depositado (Bs)" col="xs-6 md-3">
-                        <SInput type="number" defaultValue={f.monto_depositado} placeholder="0.00" onChangeText={(v) => this.setState({ f: { ...this.state.f, monto_depositado: v } })} style={{ height: 38, borderRadius: 8 }} />
+                        <SInput keyboardType="decimal-pad" defaultValue={f.monto_depositado} placeholder="0.00" onChangeText={(v) => this.setState({ f: { ...this.state.f, monto_depositado: v } })} style={{ height: 38, borderRadius: 8 }} />
                     </Campo>
                     <Campo label="Referencia (n° de operación del banco)" col="xs-12 md-6">
                         <SInput defaultValue={f.referencia} onChangeText={(v) => this.state.f.referencia = v} style={{ height: 38, borderRadius: 8 }} />
