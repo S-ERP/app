@@ -17,6 +17,8 @@ export const getPagos = async ({ desde = "", hasta = "", state = "" } = {}) =>
     Object.values((await cs("pagos", { desde, hasta, state })).data ?? {});
 export const crearLink = async (data) => (await cs("link_registro", { data })).data;
 export const anularLink = (key) => cs("link_anular", { key });
+export const cobrarTarjetaGuardada = async (key, monto, key_solicitud) => (await cs("link_cobrar_token", { key, monto, key_solicitud }, 120000)).data;
+export const reembolsarPago = async (key) => (await cs("link_reembolsar", { key }, 120000)).data;
 export const getConfig = async () => (await cs("config_get")).data ?? {};
 export const guardarConfig = async (data) => (await cs("config_guardar", { data })).data;
 export const probarConfig = async () => (await cs("config_probar")).data ?? {};

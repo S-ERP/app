@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Linking } from 'react-native';
 import { SHr, SInput, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SCopy from '../../Components/SCopy';
-import { crearLink, moneda } from './api';
+import MDL from '../../MDL';
+import { URL, crearLink, moneda } from './api';
 
 const KEY = "PopupNuevoLinkPago";
 
@@ -32,7 +33,7 @@ export default class PopupNuevoLink extends Component {
         });
     }
 
-    state = { monto: "", descripcion: "", nombre: "", apellido: "", email: "", telefono: "", guardando: false, link: null };
+    state = { monto: "", descripcion: "", nombre: "", apellido: "", email: "", telefono: "", guardar_tarjeta: false, guardando: false, link: null };
 
     async crear() {
         const monto = Number(String(this.state.monto).replace(",", "."));
@@ -42,7 +43,7 @@ export default class PopupNuevoLink extends Component {
         const cliente = Object.fromEntries(["nombre", "apellido", "email", "telefono"].map(k => [k, this.state[k].trim()]).filter(([, v]) => v));
         this.setState({ guardando: true });
         try {
-            const link = await crearLink({ monto, descripcion, cliente });
+            const link = await crearLink({ monto, descripcion, cliente, ...(this.state.guardar_tarjeta ? { guardar_tarjeta: true } : {}) });
             this.setState({ link, guardando: false });
             this.props.onCreate?.();
         } catch (e) {
@@ -95,6 +96,16 @@ export default class PopupNuevoLink extends Component {
                 <SView flex><Campo label="Email" value={this.state.email} onChangeText={set("email")} /></SView>
                 <SView flex><Campo label="Celular (WhatsApp)" placeholder="59170000000" value={this.state.telefono} onChangeText={set("telefono")} /></SView>
             </SView>
+            {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "configurar" }) ? <>
+                <SHr height={12} />
+                <SView row style={{ alignItems: "center" }} onPress={() => this.setState({ guardar_tarjeta: !this.state.guardar_tarjeta })}>
+                    <SView center style={{ width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: STheme.color.primary, backgroundColor: this.state.guardar_tarjeta ? STheme.color.primary : "transparent" }}>
+                        {this.state.guardar_tarjeta ? <SText color="#fff" fontSize={12} bold>✓</SText> : null}
+                    </SView>
+                    <SView width={8} />
+                    <SView flex><SText fontSize={12}>Guardar la tarjeta para cobros automáticos (prueba de débito automático)</SText></SView>
+                </SView>
+            </> : null}
             <SHr height={18} />
             <SView row style={{ justifyContent: "flex-end", gap: 8 }}>
                 <Btn label="Cancelar" color={STheme.color.gray} onPress={() => SPopup.close(KEY)} />

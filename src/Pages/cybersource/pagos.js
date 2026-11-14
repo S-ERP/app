@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Linking } from 'react-native';
-import { SIcon, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../MDL';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import SCopy from '../../Components/SCopy';
-import { ESTADOS, URL, anularLink, fecha, getEstado, getPagos, moneda } from './api';
+import { ESTADOS, URL, anularLink, cobrarTarjetaGuardada, fecha, getEstado, getPagos, moneda, reembolsarPago } from './api';
 import PopupNuevoLink from './PopupNuevoLink';
 import Nav from './Nav';
 import DateTimeBetween from '../../Components/DateTimeBetween';
@@ -53,6 +53,47 @@ export default class pagos extends Component {
                 SNotification.send({ title: "Link anulado", body: row.descripcion, color: STheme.color.success, time: 3000 });
                 this.table?.loadData();
             }).catch(e => SNotification.send({ title: "No se pudo anular", body: e?.error ?? "", color: STheme.color.danger, time: 5000 }))
+        })
+    }
+
+    // Prueba de débito automático: cobra un monto chico (hasta Bs 10) con la tarjeta guardada del link.
+    cobrarGuardada(row) {
+        let monto = "1";
+        const solicitud = `${Date.now()}-${Math.random().toString(36).slice(2)}`; // el mismo intento no cobra dos veces
+        SPopup.open({
+            key: "popup-cobro-guardada",
+            content: <SView withoutFeedback style={{ width: "100%", maxWidth: 440, padding: 16, borderRadius: 12, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.card }}>
+                <SText bold fontSize={16}>Cobrar con la tarjeta guardada</SText>
+                <SHr height={6} />
+                <SText fontSize={13}>Cobro automático (sin el cliente presente) a la tarjeta {row.tarjeta ?? ""} del pago "{row.descripcion}". Solo para pruebas: hasta Bs 10.</SText>
+                <SHr height={10} />
+                <SInput defaultValue={monto} keyboardType="decimal-pad" onChangeText={(v) => monto = v} style={{ height: 38, borderRadius: 8 }} />
+                <SHr height={12} />
+                <SView row>
+                    <SView card center style={{ height: 38, paddingHorizontal: 16, borderRadius: 8, marginRight: 8, backgroundColor: STheme.color.success }} onPress={() => {
+                        const m = Number(String(monto).replace(",", "."));
+                        if (!(m > 0 && m <= 10)) return SNotification.send({ title: "Monto inválido", body: "Entre 0.01 y 10", color: STheme.color.warning, time: 3000 });
+                        SPopup.close("popup-cobro-guardada");
+                        cobrarTarjetaGuardada(row.key, m, solicitud).then(r => {
+                            const ok = r?.state == "AUTHORIZED";
+                            SNotification.send({ title: ok ? "Cobro aprobado" : "Cobro no aprobado", body: ok ? `Aut ${r.aprobacion ?? ""}` : (r?.mensaje ?? r?.state ?? ""), color: ok ? STheme.color.success : STheme.color.danger, time: 8000 });
+                            this.table?.loadData();
+                        }).catch(e => SNotification.send({ title: "No se pudo cobrar", body: e?.error ?? "", color: STheme.color.danger, time: 8000 }));
+                    }}><SText color="#fff" bold>Cobrar</SText></SView>
+                    <SView card center style={{ height: 38, paddingHorizontal: 16, borderRadius: 8, backgroundColor: STheme.color.gray }} onPress={() => SPopup.close("popup-cobro-guardada")}><SText color="#fff" bold>Volver</SText></SView>
+                </SView>
+            </SView>
+        });
+    }
+
+    reembolsar(row) {
+        SPopup.confirm({
+            title: "Devolver el pago",
+            message: `¿Devolver ${moneda(row.monto, row.moneda)} a la tarjeta ${row.tarjeta ?? ""}? (${row.descripcion})`,
+            onPress: () => reembolsarPago(row.key).then(r => {
+                SNotification.send({ title: "Pago devuelto", body: r?.state ?? "", color: STheme.color.success, time: 5000 });
+                this.table?.loadData();
+            }).catch(e => SNotification.send({ title: "No se pudo devolver", body: e?.error ?? "", color: STheme.color.danger, time: 8000 }))
         })
     }
 
@@ -121,6 +162,8 @@ export default class pagos extends Component {
                     if (esLink) options.push({ label: "Copiar link", icon: <SIcon name="Paper" fill={STheme.color.text} />, onPress: () => SCopy.copy(row.url) });
                     if (esLink) options.push({ label: "Abrir página de pago", icon: <SIcon name="Eyes" fill={STheme.color.text} />, onPress: () => Linking.openURL(row.url) });
                     if (row.cybs_id) options.push({ label: "Copiar referencia Cybersource", icon: <SIcon name="Paper" fill={STheme.color.text} />, onPress: () => SCopy.copy(row.cybs_id) });
+                    if (row.state == "AUTHORIZED" && row.tarjeta_guardada && puede("configurar")) options.push({ label: "Cobrar con la tarjeta guardada (prueba)", icon: <SIcon name="Reload" fill={STheme.color.text} />, onPress: () => this.cobrarGuardada(row) });
+                    if (row.state == "AUTHORIZED" && !row.consumido_por && puede("configurar")) options.push({ label: "Devolver el pago", icon: <SIcon name="Delete" fill={STheme.color.text} />, onPress: () => this.reembolsar(row) });
                     if (abierto && puede("delete")) options.push({ label: "Anular link", icon: <SIcon name="Delete" fill={STheme.color.text} />, onPress: () => this.anular(row) });
                     FloatMenu.open({ e: e.evt, label: row.descripcion, options })
                 }}
